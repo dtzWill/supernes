@@ -92,9 +92,11 @@
 #include "memmap.h"
 #include <math.h>
 
+#pragma GCC visibility push(internal)
 #include "dsp1emu.c"
 #include "dsp2emu.c"
 //#include "dsp3emu.cpp"
+#pragma GCC visibility pop
 
 void (*SetDSP)(uint8, uint16)=&DSP1SetByte;
 uint8 (*GetDSP)(uint16)=&DSP1GetByte;
@@ -1193,3 +1195,4 @@ uint8 DSP4GetByte(uint16 address)
 	return t;
 }
 */
+

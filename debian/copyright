@@ -1,0 +1,39 @@
+This is drnoksnes, partially written and maintained by
+Javier S. Pedro <maemo@javispedro.com> on Tue, 11 Aug 2009 22:31:10 +0200.
+
+It is a dirty port to the N8x0 of DrPocketSnes, a Super Nintendo (SNES) emulator
+for the GP2X and Gizmondo, with bits from PocketSnes and SquidgeSnes.
+
+The original source can always be found at: TO_BE_WRITTEN
+The original DrPocketSnes source can be found at: 
+	http://reesy.gp32x.de/DrPocketSnes.html
+
+Copyright Holders:  Javier S. Pedro <maemo@javispedro.com>
+	Snes 9x Team (http://www.snes9x.com)
+	Scott Ramsby (PocketSnes) (http://paqpark.nuclearfallout.net/projects/pocketsnes.php)
+	Yoyofr (OpenSnes9x) (http://yoyofr.fr.st/)
+	Squidge (SquidgeSnes) (http://squidge2x.com/)
+	Notaz (SquidgeSnes) (http://notaz.atspace.com/)
+	Rlyeh (parts of gp2x sdk) (http://notaz.atspace.com/)
+	HeadOverHeels
+
+License: (snes9x license)
+ * Permission to use, copy, modify and distribute snes9x in both binary and
+ * source form, for non-commercial purposes, is hereby granted without fee,
+ * providing that this license information and copyright notice appear with
+ * all copies and any derived work.
+ *
+ * This software is provided 'as-is', without any express or implied
+ * warranty. In no event shall the authors be held liable for any damages
+ * arising from the use of this software.
+ *
+ * Snes9x is freeware for PERSONAL USE only. Commercial users should
+ * seek permission of the copyright holders first. Commercial use includes
+ * charging money for Snes9x or software derived from Snes9x.
+ *
+ * The copyright holders request that bug fixes and improvements to the code
+ * should be forwarded to them so everyone can benefit from the modifications
+ * in future versions.
+ *
+ * Super NES and Super Nintendo Entertainment System are trademarks of
+ * Nintendo Co., Limited and its subsidiary companies.

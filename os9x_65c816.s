@@ -137,14 +137,17 @@ reg_cpu_var .req R14
 .equ SRAMMask,          120
 
 .equ	APUExecuting_ofs,   122
-
-.equ	PALMOS_R9_ofs, 	    124
-.equ	PALMOS_R10_ofs, 	128
-
 @ notaz
-.equ	APU_Cycles, 	    132
+.equ	APU_Cycles, 	    124
 
 /*****************************************************************/
+
+.macro trace_asm val
+	push {r0-r5, r12, lr}
+	mov r0, #\val
+	bl print_asm_i
+	pop {r0-r5, r12, lr}
+.endm
 
 /* prepare */
 .macro		PREPARE_C_CALL
@@ -525,7 +528,7 @@ reg_cpu_var .req R14
 		SAVE_REGS
 		PREPARE_C_CALL_LIGHT
 @		BL	asm_S9xDoHBlankProcessing
-		BL	S9xDoHBlankProcessing @ let's go straight to number one
+		BL	S9xDoHBlankProcessing
 		RESTORE_C_CALL_LIGHT
 		LOAD_REGS		
 .endm
@@ -696,46 +699,46 @@ reg_cpu_var .req R14
 .macro		S9xSetWord	regValue		
 		@  in  : regValue  (0xhhll0000)
 		@  in  : rscratch=address   (0x00hhmmll)
-		STMFD	R13!,{PC} @ Push return address
 		MOV	R1,\regValue, LSR #16
+		STMFD	R13!,{PC} @ Push return address
 		B	asmS9xSetWord
 		MOV	R0,R0		
 .endm
 .macro		S9xSetWordZero	
 		@  in  : rscratch=address   (0x00hhmmll)
-		STMFD	R13!,{PC} @ Push return address
 		MOV	R1,#0
+		STMFD	R13!,{PC} @ Push return address
 		B	asmS9xSetWord
 		MOV	R0,R0		
 .endm
 .macro		S9xSetWordLow	regValue		
 		@  in  : regValue  (0x0000hhll)
 		@  in  : rscratch=address   (0x00hhmmll)
-		STMFD	R13!,{PC} @ Push return address
 		MOV	R1,\regValue
+		STMFD	R13!,{PC} @ Push return address
 		B	asmS9xSetWord
 		MOV	R0,R0		
 .endm
 .macro		S9xSetByte	regValue
 		@  in  : regValue  (0xll000000)
 		@  in  : rscratch=address   (0x00hhmmll)
-		STMFD	R13!,{PC} @ Push return address
 		MOV	R1,\regValue, LSR #24
+		STMFD	R13!,{PC} @ Push return address
 		B	asmS9xSetByte
 		MOV	R0,R0		
 .endm
 .macro		S9xSetByteZero			
 		@  in  : rscratch=address   (0x00hhmmll)
-		STMFD	R13!,{PC} @ Push return address
 		MOV	R1,#0
+		STMFD	R13!,{PC} @ Push return address
 		B	asmS9xSetByte
 		MOV	R0,R0		
 .endm
 .macro		S9xSetByteLow	regValue
 		@  in  : regValue  (0x000000ll)
 		@  in  : rscratch=address   (0x00hhmmll)
-		STMFD	R13!,{PC} @ Push return address
 		MOV	R1,\regValue
+		STMFD	R13!,{PC} @ Push return address
 		B	asmS9xSetByte
 		MOV	R0,R0
 .endm
@@ -992,8 +995,7 @@ reg_cpu_var .req R14
 		LDRSB	rscratch    , [rpc],#1
 		ADD	rscratch , rscratch , rpc
 		SUB	rscratch , rscratch, regpcbase		
-		BIC	rscratch,rscratch,#0x00FF0000
-		BIC	rscratch,rscratch,#0xFF000000
+		UXTH rscratch,rscratch
 .endm
 .macro		asmRelativeLong
 		ADD1CYCLE2MEM
@@ -1150,7 +1152,6 @@ reg_cpu_var .req R14
 		ADD		reg_s,reg_s,#2
 		MOVS		rscratch,rscratch
 .endm
-
 
 .globl asmS9xGetByte
 .globl asmS9xGetWord
@@ -1637,7 +1638,7 @@ SBPPU:
 	MOV		R0,R0,LSR #16
 		PREPARE_C_CALL
 	MOV		R12,R0
-	MOV		R0,R1
+	UXTB	R0,R1
 	MOV		R1,R12		
 	BL		S9xSetPPU		
 		RESTORE_C_CALL
@@ -1650,7 +1651,7 @@ SBCPU:
 	MOV		R0,R0,LSR #16	@ Address&0xFFFF
 		PREPARE_C_CALL
 	MOV		R12,R0
-	MOV		R0,R1
+	UXTB	R0,R1
 	MOV		R1,R12		
 	BL		S9xSetCPU		
 		RESTORE_C_CALL
@@ -1663,7 +1664,7 @@ SBDSP:
 	MOV		R0,R0,LSR #16	@ Address&0xFFFF
 		PREPARE_C_CALL
 	MOV		R12,R0
-	MOV		R0,R1
+	UXTB	R0,R1
 	MOV		R1,R12		
 	BL		S9xSetDSP		
 		RESTORE_C_CALL
@@ -1716,7 +1717,7 @@ SBC4:
 	MOV		R0,R0,LSR #16	@ Address&0xFFFF	
 		PREPARE_C_CALL
 	MOV		R12,R0
-	MOV		R0,R1
+	UXTB	R0,R1
 	MOV		R1,R12		
 	BL		S9xSetC4		
 		RESTORE_C_CALL
@@ -1847,10 +1848,11 @@ SWPPU:
 	MOV		R1,R0
 	MOV		R0,R2
 		PREPARE_C_CALL_R0R1
+	UXTB	R0,R0
 	BL		S9xSetPPU		
 	LDMFD		R13!,{R0,R1}
 	ADD		R1,R1,#1
-	MOV		R0,R0,LSR #8	
+	UXTB	R0,R0,ROR #8	
 	BIC		R1,R1,#0x10000		
 	BL		S9xSetPPU		
 		RESTORE_C_CALL
@@ -1865,10 +1867,11 @@ SWCPU:
 	MOV		R1,R0
 	MOV		R0,R2	
 		PREPARE_C_CALL_R0R1
+	UXTB 	R0,R0
 	BL		S9xSetCPU		
 	LDMFD		R13!,{R0,R1}
 	ADD		R1,R1,#1
-	MOV		R0,R0,LSR #8	
+	UXTB	R0,R0,ROR #8	@ ((R0 >> 8) & 0xFF)
 	BIC		R1,R1,#0x10000		
 	BL		S9xSetCPU		
 		RESTORE_C_CALL
@@ -1883,10 +1886,11 @@ SWDSP:
 	MOV		R1,R0
 	MOV		R0,R2
 		PREPARE_C_CALL_R0R1
+	UXTB	R0,R0
 	BL		S9xSetDSP	
 	LDMFD		R13!,{R0,R1}
 	ADD		R1,R1,#1
-	MOV		R0,R0,LSR #8	
+	UXTB	R0,R0,ROR #8	
 	BIC		R1,R1,#0x10000	
 	BL		S9xSetDSP		
 		RESTORE_C_CALL
@@ -1984,10 +1988,11 @@ SWC4:
 	MOV		R1,R0
 	MOV		R0,R2
 		PREPARE_C_CALL_R0R1
+	UXTB	R0,R0
 	BL		S9xSetC4		
 	LDMFD		R13!,{R0,R1}	
 	ADD		R1,R1,#1
-	MOV		R0,R0,LSR #8	
+	UXTB	R0,R0,ROR #8
 	BIC		R1,R1,#0x10000		
 	BL		S9xSetC4		
 		RESTORE_C_CALL
@@ -4205,7 +4210,8 @@ void asm_S9xOpcode_NMI(void)
 	BNE		1234f
 /*
 	CPU.WaitingForInterrupt = TRUE;
-	CPU.PC--;*/	
+	CPU.PC--;
+*/	
 	MOV		rscratch,#1
 	SUB		rpc,rpc,#1
 /*		
@@ -4235,7 +4241,30 @@ void asm_S9xOpcode_NMI(void)
     		SUB	rpc,rpc,#1
     		@ CPU.Flags |= DEBUG_MODE_FLAG;
 .endm
-.macro		Op42   /*Reserved Snes9X*/
+.macro		Op42   /*Reserved Snes9X: SNESAdvance SpeedHack */
+@ Explanation: this is a reserved opcode turned into special "idle"/hlt opcode.
+@ This means we should do an hblank now.
+/*-		
+	CPU.Cycles = CPU.NextEvent;	    
+*/	ldr reg_cycles, [reg_cpu_var,#NextEvent_ofs]
+@ Now execute the shadowed branch
+@ Equivalent to "asmRelative":
+	ADD1MEM
+	ldrb rscratch, [rpc], #1
+	and rscratch2, rscratch, #0xf0  @branch type
+	orr rscratch, rscratch, #0xf0	@branch dest (always negative, so sign ext)
+	sxtb rscratch, rscratch
+	add rscratch, rscratch, rpc
+	sub rscratch, rscratch, regpcbase
+	uxth rscratch, rscratch
+@ TODO: Do something with rscratch2 before BranchCheck clobbers it.
+@ Currently hardcoded to BEQ
+	BranchCheck2
+		TST		rstatus, #MASK_ZERO
+		BEQ		1111f
+                ADD 		rpc, rscratch, regpcbase @  rpc = OpAddress +PCBase
+                ADD1CYCLE
+                CPUShutdown
 .endm	
 		
 /**********************************************************************************************/
@@ -4443,37 +4472,7 @@ void asm_S9xOpcode_NMI(void)
 		ADD2MEM
 .endm
 
-/*
 
-
-CLI_OPE_REC_Nos_Layer0 
-  	nos.nos_ope_treasury_date = convert(DATETIME, @treasuryDate, 103)
-    	nos.nos_ope_accounting_date = convert(DATETIME, @accountingDate, 103)
-
-CLI_OPE_Nos_Ope_Layer0
-	n.nos_ope_treasury_date = convert(DATETIME, @LARD, 103)
-	n.nos_ope_accounting_date = convert(DATETIME, @LARD, 103)
-    	
-CLI_OPE_Nos_Layer0    	
-	nos.nos_ope_treasury_date = convert(DATETIME, @LARD, 103)
-	nos.nos_ope_accounting_date = convert(DATETIME, @LARD, 103)    	
-	
-Ecrans:
-------
-
-
-[GNV] : utilisation de la lard (laccdate) pour afficher les openings.
-   +nécessité d'avoir des valeurs dans l'opening pour date tréso=date compta=laccdate
-	
-[Accounting rec] : si laccdate pas bonne (pas = BD-1) -> message warning et pas de donnée
-sinon : 
-  +données nécessaires : opening date tréso=date compta=laccdate=BD-1
-  +données nécessaires : opening date tréso=date compta=laccdate-1
-  +données nécessaires : opening date tréso=laccdate-1 et date compta=laccdate
-   */
-
-
-	
 /****************************************************************
 	GLOBAL
 ****************************************************************/
@@ -4484,7 +4483,7 @@ sinon :
 @ void asmMainLoop(asm_cpu_var_t *asmcpuPtr);
 asmMainLoop:
 	@ save registers
-	STMFD		R13!,{R4-R11,LR}
+	STMFD		R13!,{R4-R11, LR}
 	@ init pointer to CPUvar structure
 	MOV		reg_cpu_var,R0
 	@ init registers
@@ -4557,7 +4556,6 @@ CPUFlagsIRQ_PENDING_FLAG_cleared:
 	EXEC_OP	@ Execute next opcode
 
 endmainLoop:
-
     /*Registers.PC = CPU.PC - CPU.PCBase;
     S9xPackStatus ();
     APURegisters.PC = IAPU.PC - IAPU.RAM;
@@ -4570,8 +4568,8 @@ endmainLoop:
     }	*/
 /********end*/
 	SAVE_REGS
-	LDMFD		R13!,{R4-R11,LR}
-	MOV		PC,LR
+	LDMFD		R13!,{R4-R11, LR}
+	BX LR
 .pool
 
 @ void test_opcode(struct asm_cpu_var *asm_var);

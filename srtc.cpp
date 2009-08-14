@@ -39,6 +39,7 @@
  * Nintendo Co., Limited and its subsidiary companies.
  */
 #include <string.h>
+#include <time.h>
 #include "snes9x.h"
 #include "srtc.h"
 #include "memmap.h"

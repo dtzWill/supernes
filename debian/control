@@ -1,0 +1,13 @@
+Source: drnoksnes
+Section: user/games
+Priority: extra
+Maintainer: Javier S. Pedro <maemo@javispedro.com>
+Build-Depends: debhelper (>= 5), quilt, m4, pkg-config, maemo-version,
+ libsdl1.2-dev, libx11-dev, x11proto-core-dev
+Standards-Version: 3.7.2
+
+Package: drnoksnes
+Architecture: armel
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Super Nintendo Entertainment System emulator
+ A Super NES emulator, currently developers only.

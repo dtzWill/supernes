@@ -38,17 +38,10 @@
  * Super NES and Super Nintendo Entertainment System are trademarks of
  * Nintendo Co., Limited and its subsidiary companies.
  */
-//#define MMX
 
-#if !defined(_SNESPPC) && !defined(__GIZ__) && !defined(__GP2X__)
-#include "snes9x/snes9x.h"
-#include "snes9x/port.h"
-#include "snes9x/gfx.h"
-#else
 #include "snes9x.h"
 #include "port.h"
 #include "gfx.h"
-#endif
 
 #ifdef MMX
 EXTERN_C void _2xSaILine  (uint8 *srcPtr, uint8 *deltaPtr, uint32 srcPitch, uint32 width,
@@ -170,7 +163,7 @@ void Super2xSaI(uint8 *srcPtr, uint32 srcPitch,
 #ifdef MMX_BLA  //no MMX version yet
     if (cpu_mmx && width != 512)
     {
-	for (height; height; height-=1)
+	for (; height; height--)
 	{
 	    	bP = (uint16 *) srcPtr;
         	xP = (uint16 *) deltaPtr;
@@ -186,7 +179,7 @@ void Super2xSaI(uint8 *srcPtr, uint32 srcPitch,
 #endif
         uint32 Nextline = srcPitch >> 1;
 
-		for (height; height; height-=1)
+		for (; height; height--)
 	{
 	    bP = (uint16 *) srcPtr;
 	    dP = (uint32 *) dstPtr;
@@ -334,14 +327,14 @@ void SuperEagle(uint8 *srcPtr, uint32 srcPitch,
 {
     uint32 *dP;
     uint16 *bP;
-#if !defined(_SNESPPC) && !defined(__GIZ__) && !defined(__GP2X__)
+#ifdef MMX
     uint16 *xP;
 #endif
 
 #ifdef MMX
     if (mmx_cpu && width != 512)
     {
-	for (height; height; height-=1)
+	for (; height; height--)
 	{
 		bP = (uint16 *) srcPtr;
 		xP = (uint16 *) deltaPtr;
@@ -357,7 +350,7 @@ void SuperEagle(uint8 *srcPtr, uint32 srcPitch,
 #endif
         uint32 Nextline = srcPitch >> 1;
 
-        for (height; height; height-=1)
+        for (; height; height--)
 	{
 	    bP = (uint16 *) srcPtr;
 	    dP = (uint32 *) dstPtr;
@@ -513,14 +506,14 @@ void _2xSaI(uint8 *srcPtr, uint32 srcPitch,
 {
     uint32 *dP;
     uint16 *bP;
-#if !defined(_SNESPPC) && !defined(__GIZ__) && !defined(__GP2X__)
+#ifdef MMX
     uint16 *xP;
 #endif
 
 #ifdef MMX
     if (mmx_cpu && width != 512)
     {
-	for (height; height; height-=1)
+	for (; height; height--)
 	{
 
 	    bP = (uint16 *) srcPtr;
@@ -537,7 +530,7 @@ void _2xSaI(uint8 *srcPtr, uint32 srcPitch,
 #endif
         uint32 Nextline = srcPitch >> 1;
 
-        for (height; height; height-=1)
+        for (; height; height--)
 	{
 	    bP = (uint16 *) srcPtr;
 	    dP = (uint32 *) dstPtr;

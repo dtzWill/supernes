@@ -57,7 +57,7 @@ extern "C" {
 extern void memcpy16(unsigned short *dest, unsigned short *src, int count);
 extern void memcpy16bswap(unsigned short *dest, void *src, int count);
 extern void memcpy32(uint32_t *dest, int *src, int count);
-extern void memset32(uint32_t *dest, int c, int count);
+extern void memset32(void *dest, int c, int count);
 #ifdef __cplusplus
 }
 #endif
@@ -261,7 +261,7 @@ static void DecodeBlock (Channel *ch)
 	ch->last_block = TRUE;
 	ch->loop = FALSE;
 	ch->block = ch->decoded;
-		memset32 ((uint32_t *) ch->decoded, 0, 8);
+		memset32 (ch->decoded, 0, 8);
 	return;
     }
     signed char *compressed = (signed char *) &IAPU.RAM [ch->block_pointer];
@@ -953,13 +953,13 @@ void S9xMixSamplesO (signed short *buffer, int sample_count, int sample_offset)
 
 	if (so.mute_sound)
 	{
-		memset32((uint32_t*)buffer, 0, sample_count>>1);
+		memset32(buffer, 0, sample_count>>1);
 		return;
 	}
 
-	memset32 ((uint32_t*)MixBuffer, 0, sample_count);
+	memset32 (MixBuffer, 0, sample_count);
 	if (SoundData.echo_enable)
-		memset32 ((uint32_t*)EchoBuffer, 0, sample_count);
+		memset32 (EchoBuffer, 0, sample_count);
 
 	if (so.stereo)
 		MixStereo (sample_count);

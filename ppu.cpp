@@ -717,7 +717,6 @@ void S9xSetPPU(uint8 Byte, uint16 Address)
 			case 0x2132 :
 				if (Byte != Memory.FillRAM[0x2132])
 				{
-					int redraw_needed=0;
 					int new_fixedcol;
 					//FLUSH_REDRAW ();
 					// Colour data for fixed colour addition/subtraction

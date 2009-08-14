@@ -409,13 +409,13 @@ static FreezeData SnapSA1 [] = {
 
 static void Freeze ();
 static int Unfreeze ();
-void FreezeStruct (char *name, void *base, FreezeData *fields,
+static void FreezeStruct (const char *name, void *base, FreezeData *fields,
 		   int num_fields);
-void FreezeBlock (char *name, uint8 *block, int size);
+static void FreezeBlock (const char *name, uint8 *block, int size);
 
-int UnfreezeStruct (char *name, void *base, FreezeData *fields,
+static int UnfreezeStruct (const char *name, void *base, FreezeData *fields,
 		    int num_fields);
-int UnfreezeBlock (char *name, uint8 *block, int size);
+static int UnfreezeBlock (const char *name, uint8 *block, int size);
 
 bool8 Snapshot (const char *filename)
 {
@@ -708,7 +708,7 @@ int FreezeSize (int size, int type)
     }
 }
 
-void FreezeStruct(char *name, void *base, FreezeData *fields,
+void FreezeStruct(const char *name, void *base, FreezeData *fields,
 		   int num_fields)
 {
     // Work out the size of the required block
@@ -797,7 +797,7 @@ void FreezeStruct(char *name, void *base, FreezeData *fields,
  	free(block);
 }
 
-void FreezeBlock (char *name, uint8 *block, int size)
+void FreezeBlock (const char *name, uint8 *block, int size)
 {
     char buffer [512];
     sprintf (buffer, "%s:%06d:", name, size);
@@ -805,7 +805,7 @@ void FreezeBlock (char *name, uint8 *block, int size)
     statef_write(block, size);
 }
 
-int UnfreezeStruct (char *name, void *base, FreezeData *fields,
+int UnfreezeStruct (const char *name, void *base, FreezeData *fields,
 		     int num_fields)
 {
     // Work out the size of the required block
@@ -900,7 +900,7 @@ int UnfreezeStruct (char *name, void *base, FreezeData *fields,
     return (result);
 }
 
-int UnfreezeBlock(char *name, uint8 *block, int size)
+int UnfreezeBlock(const char *name, uint8 *block, int size)
 {
     char buffer [20];
     int len = 0;
@@ -910,7 +910,7 @@ int UnfreezeBlock(char *name, uint8 *block, int size)
 	strncmp (buffer, name, 3) != 0 || buffer [3] != ':' ||
 	(len = atoi (&buffer [4])) == 0)
     {
-		printf("UnfreezeBlock err1\r\n",name);
+		printf("UnfreezeBlock err1\n");
 		return (WRONG_FORMAT);
     }
     
@@ -922,7 +922,7 @@ int UnfreezeBlock(char *name, uint8 *block, int size)
     
     if (statef_read(block, len) != len)
     {
-		printf("UnfreezeBlock err2\r\n",name);
+		printf("UnfreezeBlock err2\n");
 		return (WRONG_FORMAT);
 	}
 	

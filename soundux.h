@@ -198,11 +198,7 @@ if ((v) > 127) \
     (v) = 127
 
 static inline void S9xSetSoundMute (bool8 mute)
-{
-    //bool8 old = so.mute_sound;
-    so.mute_sound = mute;
-    //return (old);
-}
+{    so.mute_sound = mute;}
 
 static inline void S9xSetEnvRate (Channel *ch, unsigned long rate, int direction, int target, unsigned int mode)
 {

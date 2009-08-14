@@ -43,6 +43,8 @@
 
 #include "memmap.h"
 
+START_EXTERN_C
+
 struct SSA1Registers {
     uint8   PB;
     uint8   DB;
@@ -96,6 +98,8 @@ struct SSA1 {
 
 extern struct SSA1Registers SA1Registers;
 extern struct SSA1 SA1;
+
+END_EXTERN_C
 
 #ifdef USE_SA1
 

@@ -227,7 +227,7 @@ bool8_32 S9xGraphicsInit ()
 
     for (uint8 bitshift = 0; bitshift < 4; bitshift++)
     {
-	for (register char i = 0; i < 16; i++)
+	for (register int i = 0; i < 16; i++)
 	{
 	    register uint32 h = 0;
 	    register uint32 l = 0;

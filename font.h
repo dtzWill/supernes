@@ -38,7 +38,7 @@
  * Super NES and Super Nintendo Entertainment System are trademarks of
  * Nintendo Co., Limited and its subsidiary companies.
  */
-static char *font[] = {
+const char *font[] = {
 "           .      . .                    .                ..       .      .                                                     ",
 "          .#.    .#.#.    . .     ...   .#. .     .      .##.     .#.    .#.     . .       .                                .   ",
 "          .#.    .#.#.   .#.#.   .###.  .#..#.   .#.     .#.     .#.      .#.   .#.#.     .#.                              .#.  ",
@@ -95,5 +95,5 @@ static char *font[] = {
 " .          .                                                             .                                                     ",
 };
 
-static int font_width = 8;
-static int font_height = 9;
+const int font_width = 8;
+const int font_height = 9;
