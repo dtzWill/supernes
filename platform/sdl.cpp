@@ -31,6 +31,11 @@ void S9xLoadSDD1Data()
 	Settings.SDD1Pack=FALSE;
 }
 
+void S9xAutoSaveSRAM()
+{
+	Memory.SaveSRAM(S9xGetFilename(".srm"));
+}
+
 static void S9xInit() 
 {
 	if (!Memory.Init () || !S9xInitAPU())
@@ -181,7 +186,7 @@ int main(int argc, const char ** argv) {
 	S9xInit();
 	S9xReset();
 	
-	// Load rom and related files
+	// Load rom and related files: state
 	loadRom();
 	
 	// Late initialization
@@ -202,7 +207,13 @@ int main(int argc, const char ** argv) {
 	S9xAudioOutputEnable(false);
 	S9xDeinitAudioOutput();
 	S9xDeinitDisplay();
+
+	// Save state
+	Memory.SaveSRAM(S9xGetFilename(".srm"));
+
+	// Late deinitialization
 	S9xGraphicsDeinit();
+	Memory.Deinit();
 
 	SDL_Quit();
 

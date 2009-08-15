@@ -1,3 +1,9 @@
+drnoksnes (0.9.3) unstable; urgency=low
+
+  * SRAM save on exiting and every 15 minutes.
+
+ -- Javier S. Pedro <maemo@javispedro.com>  Sat, 15 Aug 2009 00:18:19 +0200
+
 drnoksnes (0.9.2) unstable; urgency=low
 
   * Fixed a hang on shutdown issue (random libgcc_s bug; now using

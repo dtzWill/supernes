@@ -175,6 +175,8 @@ static void loadDefaults()
     Settings.HacksFilter = FALSE;
 
 	Settings.HBlankStart = (256 * Settings.H_Max) / SNES_HCOUNTER_MAX;
+
+	Settings.AutoSaveDelay = 15*60; // Autosave each 15 minutes.
 }
 
 static void setRomFile(const char * path)
