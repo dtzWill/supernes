@@ -240,6 +240,7 @@ static void loadConfig(poptContext optCon, const char * file)
 	poptStuffArgs(optCon, newargv);
 
 	free(out);
+	fclose(fp);
 	/* XXX: currently leaking newargv */
 }
 

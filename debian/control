@@ -3,13 +3,15 @@ Section: user/games
 Priority: extra
 Maintainer: Javier S. Pedro <maemo@javispedro.com>
 Build-Depends: debhelper (>= 5), pkg-config, maemo-version, m4, libsdl1.2-dev,
- libx11-dev, x11proto-core-dev, libxsp-dev, libpopt-dev, zlib1g-dev
+ libx11-dev, x11proto-core-dev, libxsp-dev, libpopt-dev, zlib1g-dev, gnupg,
+ hildon-games-wrapper-dev, libosso-dev, osso-games-startup-dev, libhildonfm2-dev
 Standards-Version: 3.7.2
 
 Package: drnoksnes
 Architecture: armel
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}, osso-games-startup
 Pre-Depends: maemo-select-menu-location
 Description: Super Nintendo Entertainment System emulator
- A Super NES emulator, currently without interface but plan on adding one.
+ A Super NES emulator. It allows you to play some games designed for the SNES
+ and Super Famicom Nintendo game systems on your tablet.
 
