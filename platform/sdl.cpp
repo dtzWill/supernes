@@ -11,8 +11,10 @@
 #include "memmap.h"
 #include "soundux.h"
 #include "hacks.h"
+#include "hgw.h"
 
-#define kPollEveryNFrames	4		//Poll input only every this many frames
+#define kPollEveryNFrames		5		//Poll input only every this many frames
+#define kPollHgwEveryNFrames	10		//Poll osso only every this many frames
 
 #define TRACE printf("trace: %s:%s\n", __FILE__, __func__);
 #define DIE(format, ...) do { \
@@ -171,13 +173,27 @@ static inline void pollEvents() {
 	}
 }
 
+/** Wraps HgwPollEvents, taking care of kPollHgwEveryNFrames */
+static inline void pollHgwEvents() {
+	static int frames = 0;
+	
+	if (!hgwLaunched) return;
+	
+	if (++frames > kPollHgwEveryNFrames) {
+		HgwPollEvents();
+		frames = 0;
+	}
+}
+
 int main(int argc, const char ** argv) {	
 	// Initialise SDL
 	if (SDL_Init(0) < 0) 
 		DIE("SDL_Init: %s", SDL_GetError());
 	
 	// Configure snes9x
-	S9xLoadConfig(argc, argv);
+	HgwInit();						// Hildon-games-wrapper initialization.
+	S9xLoadConfig(argc, argv);		// Load config files and parse cmd line.
+	HgwConfig();					// Apply specific hildon-games config.
 	
 	// S9x initialization
 	S9xInitDisplay(argc, argv);
@@ -201,6 +217,7 @@ int main(int argc, const char ** argv) {
 		frameSync();			// May block, or set frameskip to true.
 		S9xMainLoop();			// Does CPU things, renders if needed.
 		pollEvents();
+		pollHgwEvents();
 	} while (!Config.quitting);
 	
 	// Deinitialization
@@ -214,6 +231,7 @@ int main(int argc, const char ** argv) {
 	// Late deinitialization
 	S9xGraphicsDeinit();
 	Memory.Deinit();
+	HgwDeinit();
 
 	SDL_Quit();
 

@@ -5,6 +5,7 @@
 
 // Configuration and command line parsing
 void S9xLoadConfig(int argc, const char ** argv);
+void S9xSetRomFile(const char * file);
 extern struct config {
 	char romFile[PATH_MAX];
 	char hacksFile[PATH_MAX];

@@ -7,6 +7,7 @@
 #include "port.h"
 #include "snes9x.h"
 #include "display.h"
+#include "hgw.h"
 
 #define DIE(format, ...) do { \
 		fprintf(stderr, "Died at %s:%d: ", __FILE__, __LINE__ ); \
@@ -36,7 +37,7 @@ static const struct poptOption optionsTable[] = {
 	{ "turbo", 't', POPT_ARG_NONE, 0, 9,
 	"Turbo mode (do not try to sleep between frames)", 0 },
 	{ "conf", 'c', POPT_ARG_STRING, 0, 10,
-	"Load extra configuration file", "FILE" },
+	"Extra configuration file to load", "FILE" },
 	{ "scancode", '\0', POPT_ARG_INT, 0, 100,
 	"Scancode to map", "CODE" },
 	{ "button", '\0', POPT_ARG_STRING, 0, 101,
@@ -179,7 +180,7 @@ static void loadDefaults()
 	Settings.AutoSaveDelay = 15*60; // Autosave each 15 minutes.
 }
 
-static void setRomFile(const char * path)
+void S9xSetRomFile(const char * path)
 {
 	char drive[1], dir[PATH_MAX], fname[PATH_MAX], ext[PATH_MAX];
 	
@@ -213,7 +214,7 @@ static void setHacks(const char * value)
 		// Hack: the user probably wants to enable hacks
 		// and use this argument as the ROM file.
 		// Wonder why popt does not support this or if there's a better way.
-		setRomFile(value);
+		S9xSetRomFile(value);
 	}
 }
 
@@ -312,7 +313,7 @@ static void parseArgs(poptContext optCon)
 	/* if there's an extra unparsed arg it's our rom file */
 	const char * extra_arg = poptGetArg(optCon);
 	if (extra_arg) 
-		setRomFile(extra_arg);
+		S9xSetRomFile(extra_arg);
 }
 
 void S9xLoadConfig(int argc, const char ** argv)
@@ -332,7 +333,9 @@ void S9xLoadConfig(int argc, const char ** argv)
 	// Command line parameters (including --conf args)
 	parseArgs(optCon);
 
-	if (!gotRomFile()) {
+	if (!gotRomFile() && !hgwLaunched) {
+		// User did not specify a ROM file, 
+		// and we're not being launched from D-Bus.
 		fprintf(stderr, "You need to specify a ROM, like this:\n");
 		poptPrintUsage(optCon, stdout, 0);
 		poptFreeContext(optCon); 

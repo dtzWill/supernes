@@ -1,12 +1,16 @@
 #!/usr/bin/make
 
-CPPFLAGS := -I. $(shell sdl-config --cflags) $(shell pkg-config --cflags x11 xsp)
-LDLIBS := -lz $(shell sdl-config --libs) $(shell pkg-config --libs x11 xsp) -lpopt
+CPPFLAGS := -I. $(shell sdl-config --cflags) $(shell pkg-config --cflags x11 xsp) -I/usr/include/hgw
+LDLIBS := -lz $(shell sdl-config --libs) $(shell pkg-config --libs x11 xsp) -lpopt -lhgw
 
 # Default CFLAGS for building in N8x0
 CFLAGS ?= -march=armv6j -mtune=arm1136jf-s -mfpu=vfp -mfloat-abi=softfp -Os -g -Wall -static-libgcc
 ASFLAGS ?= -march=armv6j -mfpu=vfp -mfloat-abi=softfp
 CXXFLAGS ?= $(CFLAGS)
+
+GAME_VERSION ?= 0.9.3
+export GAME_VERSION
+export DESTDIR
 
 # SNES stuff
 OBJS = 2xsaiwin.o apu.o c4.o c4emu.o cheats.o cheats2.o clip.o cpu.o cpuexec.o data.o
@@ -23,13 +27,14 @@ OBJS += hacks.o
 # the glue code that sticks it all together in a monstruous way
 OBJS += platform/path.o platform/statef.o platform/config.o
 OBJS += platform/sdl.o platform/sdlv.o platform/sdla.o platform/sdli.o
+OBJS += platform/hgw.o
 
 # automatic dependencies
 DEPS := $(OBJS:.o=.d)
 
-all: drnoksnes
+all: drnoksnes gui
 
-clean:
+clean: gui_clean
 	rm -f drnoksnes *.o *.d platform/*.o platform/*.d
 	rm -f build-stamp configure-stamp
 
@@ -42,6 +47,7 @@ drnoksnes: $(OBJS)
 
 install: drnoksnes
 	install drnoksnes $(DESTDIR)/usr/games
+	$(MAKE) -C gui install
 
 deps: $(DEPS)
 %.d: %.cpp
@@ -51,4 +57,10 @@ deps: $(DEPS)
 %.d: %.s
 	@touch $@
 
-.PHONY: all clean remake deps install
+gui:
+	$(MAKE) -C gui all
+	
+gui_clean:
+	$(MAKE) -C gui clean
+	
+.PHONY: all clean remake deps install gui gui_clean
