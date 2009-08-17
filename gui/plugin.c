@@ -23,6 +23,7 @@
 */
 
 #include <stdio.h>
+#include <string.h>
 #include <gtk/gtk.h>
 #include <startup_plugin.h>
 #include <gconf/gconf.h>
@@ -43,12 +44,19 @@ static GameStartupInfo gs;
 GtkWidget *menu_items[2];
 
 static StartupPluginInfo plugin_info = {
-  load_plugin,
-  unload_plugin,
-  write_config,
-  load_menu,
-  update_menu,
-  plugin_callback
+	load_plugin,
+	unload_plugin,
+	write_config,
+	load_menu,
+	update_menu,
+	plugin_callback
+};
+
+static const gchar * rom_globs[] = {
+	"*.smc",
+	"*.fig",
+	"*.sfc",
+	NULL
 };
 
 STARTUP_INIT_PLUGIN(plugin_info, gs, FALSE, TRUE)
@@ -58,25 +66,36 @@ static GtkLabel * rom_label;
 
 static gchar *
 interface_file_chooser
-(GtkWindow * parent, GtkFileChooserAction action, const gchar * extension)
+(GtkWindow * parent, GtkFileChooserAction action, const gchar ** extension)
 {
 	GtkWidget * dialog;
 	GtkFileFilter * filter;
+	const gchar * current_filename;
 	gchar * filename = NULL;
+	int i;
 
 	filter = gtk_file_filter_new();
-	gtk_file_filter_add_pattern(GTK_FILE_FILTER(filter), extension);
+	for (i = 0; extension[i]; i++) {
+		gtk_file_filter_add_pattern(filter, extension[i]);
+	}
 
 	dialog = hildon_file_chooser_dialog_new_with_properties(parent, 
 		"action", action, "local_only", TRUE, "filter", filter, NULL);
-	gtk_widget_show_all(GTK_WIDGET(dialog));
 
+	current_filename = gtk_label_get_text(rom_label);
+	if (current_filename && strlen(current_filename) > 1) {
+		// By default open showing the last selected file
+		gtk_file_chooser_set_filename(GTK_FILE_CHOOSER(dialog), 
+			current_filename);
+	}
+
+	gtk_widget_show_all(GTK_WIDGET(dialog));
 	if (gtk_dialog_run(GTK_DIALOG(dialog)) == GTK_RESPONSE_OK) {
 		filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog));
 	}
-	
+
 	gtk_widget_destroy(dialog);
-	
+
 	return filename;
 }
 
@@ -85,8 +104,8 @@ static void select_rom_callback(GtkWidget * button, gpointer data)
 	gchar * filename = interface_file_chooser(
 		GTK_WINDOW(gtk_widget_get_parent_window(button)),
 		GTK_FILE_CHOOSER_ACTION_OPEN,
-		"*.smc");
-		
+		rom_globs);
+
 	if (!filename) return;
 	
 	gtk_label_set_text(rom_label, filename);
