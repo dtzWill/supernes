@@ -38,6 +38,10 @@ static const struct poptOption optionsTable[] = {
 	"Turbo mode (do not try to sleep between frames)", 0 },
 	{ "conf", 'c', POPT_ARG_STRING, 0, 10,
 	"Extra configuration file to load", "FILE" },
+	{ "mouse", 'm', POPT_ARG_INT | POPT_ARGFLAG_OPTIONAL, 0, 11,
+	"Enable mouse on controller NUM", "NUM"},
+	{ "superscope", 'e', POPT_ARG_NONE, 0, 12,
+	"Enable SuperScope", 0},
 	{ "scancode", '\0', POPT_ARG_INT, 0, 100,
 	"Scancode to map", "CODE" },
 	{ "button", '\0', POPT_ARG_STRING, 0, 101,
@@ -148,8 +152,7 @@ static void loadDefaults()
 	Settings.Mouse = FALSE;
 	Settings.SuperScope = FALSE;
 	Settings.MultiPlayer5 = FALSE;
-	//	Settings.ControllerOption = SNES_MULTIPLAYER5;
-	Settings.ControllerOption = 0;
+	Settings.ControllerOption = SNES_JOYPAD;
 	
 	Settings.ForceTransparency = FALSE;
 	Settings.Transparency = FALSE;
@@ -162,12 +165,9 @@ static void loadDefaults()
 	Settings.ApplyCheats = FALSE;
 	Settings.TurboMode = FALSE;
 	Settings.TurboSkipFrames = 15;
-	Settings.ThreadSound = FALSE;
-	Settings.SoundSync = FALSE;
+	//Settings.ThreadSound = FALSE;
+	//Settings.SoundSync = FALSE;
 	//Settings.NoPatch = true;
-	
-    Settings.ApplyCheats = FALSE;
-    Settings.TurboMode = FALSE;
     
     Settings.ForcePAL = FALSE;
     Settings.ForceNTSC = FALSE;
@@ -250,6 +250,7 @@ static void parseArgs(poptContext optCon)
 	unsigned char scancode = 0;
 	
 	while ((rc = poptGetNextOpt(optCon)) > 0) {
+		const char * val;
 		switch (rc) {
 			case 1:
 				Config.enableAudio = false;
@@ -282,6 +283,21 @@ static void parseArgs(poptContext optCon)
 				break;
 			case 10:
 				loadConfig(optCon, poptGetOptArg(optCon));
+				break;
+			case 11:
+				val = poptGetOptArg(optCon);
+				Settings.Mouse = TRUE;
+				if (!val || atoi(val) <= 1) {
+					// Enable mouse on first controller
+					Settings.ControllerOption = SNES_MOUSE_SWAPPED;
+				} else {
+					// Enable mouse on second controller
+					Settings.ControllerOption = SNES_MOUSE;
+				}
+				break;
+			case 12:
+				Settings.SuperScope = TRUE;
+				Settings.ControllerOption = SNES_SUPERSCOPE;
 				break;
 			case 100:
 				scancode = atoi(poptGetOptArg(optCon));

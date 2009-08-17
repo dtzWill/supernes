@@ -12,8 +12,6 @@ extern struct config {
 	bool fullscreen;
 	bool xsp;
 	bool enableAudio;
-	bool enableMouse;
-	bool enableSuperScope;
 	unsigned short joypad1Mapping[256];
 	unsigned char action[256];
 	bool quitting;
