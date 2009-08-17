@@ -31,6 +31,7 @@
 #include <hildon/hildon-file-chooser-dialog.h>
 
 #include "../platform/hgw.h"
+#include "state.h"
 
 static GtkWidget * load_plugin(void);
 static void unload_plugin(void);
@@ -63,6 +64,30 @@ STARTUP_INIT_PLUGIN(plugin_info, gs, FALSE, TRUE)
 
 // Yes, I'm using the label not only to show but also save the current value.
 static GtkLabel * rom_label;
+
+static GameState cur_state = GAME_STATE_STOP;
+
+static void update_game_state()
+{
+	GameState new_state;
+	GameStateInfo info;
+	const char * rom_file = gtk_label_get_text(rom_label);
+
+	if (rom_file) {
+		game_state_fill(&info, rom_file);
+	}
+
+	if (info.has_state_file) {
+		new_state = GAME_STATE_PAUSED; // We have a freeze file
+	} else {
+		new_state = GAME_STATE_STOP;
+	}
+
+	if (cur_state != new_state) {
+		game_state_set(new_state);
+		cur_state = new_state;
+	}
+}
 
 static gchar *
 interface_file_chooser
@@ -111,6 +136,8 @@ static void select_rom_callback(GtkWidget * button, gpointer data)
 	gtk_label_set_text(rom_label, filename);
 	
 	g_free(filename);
+
+	update_game_state();
 }
 
 static GtkWidget * load_plugin(void)
@@ -136,6 +163,8 @@ static GtkWidget * load_plugin(void)
 	gtk_box_pack_start(GTK_BOX(parent_hbox), selectRomBtn, FALSE, FALSE, 0);
 	gtk_box_pack_end(GTK_BOX(parent_hbox), GTK_WIDGET(rom_label), TRUE, TRUE, 0);
 	gtk_box_pack_start(GTK_BOX(parent), parent_hbox, FALSE, FALSE, 0);
+
+	update_game_state();
 
 	return parent;
 }

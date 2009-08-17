@@ -23,11 +23,11 @@ DATA_FILES+=drnoksnes.service drnoksnes.startup.service
 
 all: drnoksnes_plugin.so data
 
-drnoksnes_plugin.so: plugin.o
+drnoksnes_plugin.so: plugin.o state.o
 	$(CC) $(LDFLAGS) $^ $(LDLIBS)-o $@
 	
 clean: 
-	rm -f noksnes_plugin.so *.o
+	rm -f drnoksnes_plugin.so *.o
 	rm -f $(DATA_FILES)
 
 %: %.m4

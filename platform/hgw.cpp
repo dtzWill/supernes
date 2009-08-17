@@ -35,27 +35,6 @@ void HgwInit()
 	}
 	
 	hgwLaunched = true;
-	HgwStartCommand cmd = hgw_context_get_start_command(hgw);
-
-	switch (cmd) {
-		default:
-		case HGW_COMM_NONE:	// called from libosso
-		case HGW_COMM_CONT:
-			Config.snapshotLoad = true;
-			Config.snapshotSave = true;
-			break;
-		case HGW_COMM_RESTART:
-			Config.snapshotLoad = false;
-			Config.snapshotSave = true;
-			break;
-		case HGW_COMM_QUIT:
-			// hum, what?
-			Config.snapshotLoad = false;
-			Config.snapshotSave = false;
-			Config.quitting = true;
-			break;
-	}
-
 	printf("Loading in HGW mode\n");
 }
 
@@ -79,7 +58,28 @@ void HgwConfig()
 	if (hgw_conf_request_string(hgw, kGConfRomFile, romFile) == HGW_ERR_NONE) {
 		S9xSetRomFile(romFile);
 	} else {
+		hgw_context_destroy(hgw, HGW_BYE_INACTIVE);
 		DIE("No Rom in Gconf!");
+	}
+
+	HgwStartCommand cmd = hgw_context_get_start_command(hgw);
+	switch (cmd) {
+		default:
+		case HGW_COMM_NONE:	// called from libosso
+		case HGW_COMM_CONT:
+			Config.snapshotLoad = true;
+			Config.snapshotSave = true;
+			break;
+		case HGW_COMM_RESTART:
+			Config.snapshotLoad = false;
+			Config.snapshotSave = true;
+			break;
+		case HGW_COMM_QUIT:
+			// hum, what?
+			Config.snapshotLoad = false;
+			Config.snapshotSave = false;
+			Config.quitting = true;
+			break;
 	}
 }
 
