@@ -7,10 +7,17 @@
 void S9xLoadConfig(int argc, const char ** argv);
 void S9xSetRomFile(const char * file);
 extern struct config {
-	char romFile[PATH_MAX];
-	char hacksFile[PATH_MAX];
+	char romFile[PATH_MAX + 1];
+	char hacksFile[PATH_MAX + 1];
+	/** Unfreeze from .frz.gz snapshot on start */
+	bool snapshotLoad;
+	/** Freeze to .frz.gz on exit */
+	bool snapshotSave;
+	/** Create fullscreen surface */
 	bool fullscreen;
+	/** Using xsp (thus take care of doubling coordinates where appropiate) */
 	bool xsp;
+	/** Audio output enabled */
 	bool enableAudio;
 	unsigned short joypad1Mapping[256];
 	unsigned char action[256];

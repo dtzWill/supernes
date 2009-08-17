@@ -42,6 +42,8 @@ static const struct poptOption optionsTable[] = {
 	"Enable mouse on controller NUM", "NUM"},
 	{ "superscope", 'e', POPT_ARG_NONE, 0, 12,
 	"Enable SuperScope", 0},
+	{ "snapshot", 'o', POPT_ARG_NONE, 0, 13,
+	"Unfreeze previous game on start and freeze game on exit", 0 },
 	{ "scancode", '\0', POPT_ARG_INT, 0, 100,
 	"Scancode to map", "CODE" },
 	{ "button", '\0', POPT_ARG_STRING, 0, 101,
@@ -298,6 +300,10 @@ static void parseArgs(poptContext optCon)
 			case 12:
 				Settings.SuperScope = TRUE;
 				Settings.ControllerOption = SNES_SUPERSCOPE;
+				break;
+			case 13:
+				Config.snapshotLoad = true;
+				Config.snapshotSave = true;
 				break;
 			case 100:
 				scancode = atoi(poptGetOptArg(optCon));

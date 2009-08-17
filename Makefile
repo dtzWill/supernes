@@ -8,7 +8,7 @@ CFLAGS ?= -march=armv6j -mtune=arm1136jf-s -mfpu=vfp -mfloat-abi=softfp -Os -g -
 ASFLAGS ?= -march=armv6j -mfpu=vfp -mfloat-abi=softfp
 CXXFLAGS ?= $(CFLAGS)
 
-GAME_VERSION ?= 0.9.3
+GAME_VERSION ?= 0.9.4
 export GAME_VERSION
 export DESTDIR
 

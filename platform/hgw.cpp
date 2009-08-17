@@ -36,16 +36,36 @@ void HgwInit()
 	
 	hgwLaunched = true;
 	HgwStartCommand cmd = hgw_context_get_start_command(hgw);
-	// TODO Handle cmd in some way other than assuming HGW_COMM_RESTART
-	
+
+	switch (cmd) {
+		default:
+		case HGW_COMM_NONE:	// called from libosso
+		case HGW_COMM_CONT:
+			Config.snapshotLoad = true;
+			Config.snapshotSave = true;
+			break;
+		case HGW_COMM_RESTART:
+			Config.snapshotLoad = false;
+			Config.snapshotSave = true;
+			break;
+		case HGW_COMM_QUIT:
+			// hum, what?
+			Config.snapshotLoad = false;
+			Config.snapshotSave = false;
+			Config.quitting = true;
+			break;
+	}
+
 	printf("Loading in HGW mode\n");
 }
 
 void HgwDeinit()
 {
 	if (!hgwLaunched) return;
-	
-	hgw_context_destroy(hgw, HGW_BYE_INACTIVE);  // TODO
+
+	hgw_context_destroy(hgw,
+		(Config.snapshotSave ? HGW_BYE_PAUSED : HGW_BYE_INACTIVE));
+
 	hgw = 0;
 }
 
@@ -81,6 +101,16 @@ void HgwPollEvents()
 						Config.quitting = true;
 						break;
 				}
+				break;
+			case HGW_MSG_TYPE_DEVSTATE:
+				switch (msg.e_val) {
+					case HGW_DEVICE_STATE_SHUTDOWN:
+						Config.quitting = true;	// try to quit gracefully
+						break;
+				}
+				break;
+			default:
+				// do nothing
 				break;
 		}
 		

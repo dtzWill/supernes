@@ -417,11 +417,6 @@ static int UnfreezeStruct (const char *name, void *base, FreezeData *fields,
 		    int num_fields);
 static int UnfreezeBlock (const char *name, uint8 *block, int size);
 
-bool8 Snapshot (const char *filename)
-{
-    return (S9xFreezeGame (filename));
-}
-
 bool8 S9xFreezeGame (const char *filename)
 {
     if(statef_open(filename, "wb"))

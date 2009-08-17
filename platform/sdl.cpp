@@ -11,6 +11,7 @@
 #include "memmap.h"
 #include "soundux.h"
 #include "hacks.h"
+#include "snapshot.h"
 #include "hgw.h"
 
 #define kPollEveryNFrames		5		//Poll input only every this many frames
@@ -68,6 +69,51 @@ static void loadRom()
 	file = S9xGetFilename(".srm");
 	printf("SRAM: %s\n", file);
 	Memory.LoadSRAM(file); 
+}
+
+static void resumeGame()
+{
+	if (!Config.snapshotLoad) return;
+
+	const char * file = S9xGetFilename(".frz.gz");
+	int result = S9xUnfreezeGame(file);
+
+	printf("Unfreeze: %s", file);
+
+	if (!result) {
+		printf(" failed");
+		FILE* fp = fopen(file, "rb");
+		if (fp) {
+			if (Config.snapshotSave) {
+				puts(", but the file exists, so I'm not going to overwrite it");
+				Config.snapshotSave = false;
+			} else {
+				puts(" (bad file?)");
+			}
+			fclose(fp);
+		} else {
+			puts(" (file does not exist)");
+		}
+	} else {
+		puts(" ok");
+	}
+}
+
+static void pauseGame()
+{
+	if (!Config.snapshotSave) return;
+
+	const char * file = S9xGetFilename(".frz.gz");
+	int result = S9xFreezeGame(file);
+
+	printf("Freeze: %s", file);
+
+	if (!result) {
+		Config.snapshotSave = false; // Serves as a flag to Hgw
+		puts(" failed");
+	} else {
+		puts(" ok");
+	}
 }
 
 /* This comes nearly straight from snes9x */
@@ -202,8 +248,9 @@ int main(int argc, const char ** argv) {
 	S9xInit();
 	S9xReset();
 	
-	// Load rom and related files: state
+	// Load rom and related files: state, unfreeze if needed
 	loadRom();
+	resumeGame();
 	
 	// Late initialization
 	sprintf(String, "DrNokSnes - %s", Memory.ROMName);
@@ -227,6 +274,7 @@ int main(int argc, const char ** argv) {
 
 	// Save state
 	Memory.SaveSRAM(S9xGetFilename(".srm"));
+	pauseGame();
 
 	// Late deinitialization
 	S9xGraphicsDeinit();
