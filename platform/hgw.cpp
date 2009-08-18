@@ -54,12 +54,22 @@ void HgwConfig()
 	
 	Config.fullscreen = true;
 	
-	char romFile[PATH_MAX];
+	char romFile[PATH_MAX + 1];
 	if (hgw_conf_request_string(hgw, kGConfRomFile, romFile) == HGW_ERR_NONE) {
 		S9xSetRomFile(romFile);
 	} else {
 		hgw_context_destroy(hgw, HGW_BYE_INACTIVE);
 		DIE("No Rom in Gconf!");
+	}
+
+	char no_audio = FALSE;
+	if (hgw_conf_request_bool(hgw, kGConfDisableAudio, &no_audio) == HGW_ERR_NONE) {
+		Config.enableAudio = no_audio ? true : false;
+	}
+
+	char turbo = FALSE;
+	if (hgw_conf_request_bool(hgw, kGConfTurboMode, &turbo) == HGW_ERR_NONE) {
+		Settings.TurboMode = turbo ? TRUE : FALSE;
 	}
 
 	HgwStartCommand cmd = hgw_context_get_start_command(hgw);

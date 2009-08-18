@@ -8,10 +8,10 @@
 extern char * current_rom_file;
 
 /* state.c */
-gchar * game_state_get_frz_file();
 void game_state_update();
 void game_state_clear();
 gboolean game_state_is_paused();
+const gchar * game_state_get_frz_file();
 
 /* save.c */
 void save_clear();

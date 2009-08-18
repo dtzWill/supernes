@@ -3,7 +3,7 @@ CPPFLAGS:=$(shell pkg-config --cflags $(PKGS))
 CFLAGS?=-g -Os -Wall
 CFLAGS+=-fpic -shared
 LDLIBS:=$(shell pkg-config --libs $(PKGS))
-LDFLAGS:=-export-dynamic -avoid-version -module -shared
+LDFLAGS:=-export-dynamic -avoid-version -module -shared -Wl,-z,defs
 
 #GAME_VERSION
 GAME_SHARE_PATH=/usr/share/games/drnoksnes/

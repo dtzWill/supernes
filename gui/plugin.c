@@ -29,7 +29,7 @@
 #include <gconf/gconf.h>
 #include <gconf/gconf-client.h>
 #include <hildon/hildon-file-chooser-dialog.h>
-#include <hildon/hildon-banner.h>
+#include <hildon/hildon-note.h>
 
 #include "../platform/hgw.h"
 #include "plugin.h"
@@ -56,8 +56,10 @@ static StartupPluginInfo plugin_info = {
 
 STARTUP_INIT_PLUGIN(plugin_info, gs, FALSE, TRUE)
 
-char * current_rom_file = 0;
-static GtkLabel * rom_label;
+gchar* current_rom_file = 0;
+static GtkLabel* rom_label;
+static GtkCheckButton* audio_check;
+static GtkCheckButton* turbo_check;
 
 static void set_rom(const char * rom_file)
 {
@@ -116,22 +118,38 @@ static GtkWidget * load_plugin(void)
 	gcc = gconf_client_get_default();
 
 	GtkWidget* parent = gtk_vbox_new(FALSE, HILDON_MARGIN_DEFAULT);
-	GtkWidget* parent_hbox = gtk_hbox_new(FALSE, HILDON_MARGIN_DEFAULT);
+	GtkWidget* rom_hbox = gtk_hbox_new(FALSE, HILDON_MARGIN_DEFAULT);
+	GtkWidget* opt_hbox = gtk_hbox_new(FALSE, HILDON_MARGIN_DEFAULT);
+
 	GtkWidget* selectRomBtn = gtk_button_new_with_label("Select ROM...");
 	rom_label = GTK_LABEL(gtk_label_new(NULL));
-	
+
+	audio_check =
+		GTK_CHECK_BUTTON(gtk_check_button_new_with_label("Enable audio"));
+	turbo_check =
+		GTK_CHECK_BUTTON(gtk_check_button_new_with_label("Turbo mode"));	
+
+
 	gtk_widget_set_size_request(GTK_WIDGET(selectRomBtn),
 								180, 50);
 
-	g_signal_connect(G_OBJECT(selectRomBtn), "clicked",
-					G_CALLBACK (select_rom_callback), NULL);
-
-	gtk_box_pack_start(GTK_BOX(parent_hbox), selectRomBtn, FALSE, FALSE, 0);
-	gtk_box_pack_end(GTK_BOX(parent_hbox), GTK_WIDGET(rom_label), TRUE, TRUE, 0);
-	gtk_box_pack_start(GTK_BOX(parent), parent_hbox, FALSE, FALSE, 0);
+	gtk_box_pack_start(GTK_BOX(rom_hbox), selectRomBtn, FALSE, FALSE, 0);
+	gtk_box_pack_end(GTK_BOX(rom_hbox), GTK_WIDGET(rom_label), TRUE, TRUE, 0);
+	gtk_box_pack_start(GTK_BOX(opt_hbox), GTK_WIDGET(audio_check), FALSE, FALSE, 0);
+	gtk_box_pack_start(GTK_BOX(opt_hbox), GTK_WIDGET(turbo_check), FALSE, FALSE, 0);
+	gtk_box_pack_start(GTK_BOX(parent), rom_hbox, FALSE, FALSE, 0);
+	gtk_box_pack_start(GTK_BOX(parent), opt_hbox, FALSE, FALSE, 0);
 
 	// Load current configuration from gconf
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(audio_check),
+		!gconf_client_get_bool(gcc, kGConfDisableAudio, NULL));
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(turbo_check),
+		gconf_client_get_bool(gcc, kGConfTurboMode, NULL));
 	set_rom(gconf_client_get_string(gcc, kGConfRomFile, NULL));
+
+	// Connect signals
+	g_signal_connect(G_OBJECT(selectRomBtn), "clicked",
+					G_CALLBACK (select_rom_callback), NULL);
 
 	return parent;
 }
@@ -149,11 +167,17 @@ static void unload_plugin(void)
 
 static void write_config(void)
 {
+	gconf_client_set_bool(gcc, kGConfDisableAudio,
+		gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(audio_check)), NULL);
+	gconf_client_set_bool(gcc, kGConfTurboMode,
+		gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(turbo_check)), NULL);
 	if (current_rom_file) {
 		gconf_client_set_string(gcc, kGConfRomFile, current_rom_file, NULL);
 	} else {
-		hildon_banner_show_information(GTK_WIDGET(get_parent_window()), NULL,
+		GtkWidget* note = hildon_note_new_information(get_parent_window(),
 			"No ROM selected");
+		gtk_dialog_run(GTK_DIALOG(note));
+		gtk_widget_destroy(note);
 	}
 }
 

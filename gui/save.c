@@ -88,11 +88,10 @@ void save_load(GtkWindow* parent)
 	gchar * uri = show_dialog(parent, GTK_FILE_CHOOSER_ACTION_OPEN);
 
 	if (uri) {
-		gchar * frz_file = game_state_get_frz_file();
+		const gchar * frz_file = game_state_get_frz_file();
 		gchar * frz_uri = gnome_vfs_get_uri_from_local_path(frz_file);
 		copy_file(uri, frz_uri);
 		g_free(frz_uri);
-		g_free(frz_file);
 	}
 	
 	if (cur_save_uri) {
@@ -104,11 +103,10 @@ void save_load(GtkWindow* parent)
 void save_save(GtkWindow* parent)
 {
 	if (cur_save_uri) {
-		gchar * frz_file = game_state_get_frz_file();
+		const gchar * frz_file = game_state_get_frz_file();
 		gchar * frz_uri = gnome_vfs_get_uri_from_local_path(frz_file);
 		copy_file(frz_uri, cur_save_uri);
 		g_free(frz_uri);
-		g_free(frz_file);
 	} else {
 		save_save_as(parent);
 	}
@@ -119,11 +117,10 @@ void save_save_as(GtkWindow* parent)
 	gchar * uri = show_dialog(parent, GTK_FILE_CHOOSER_ACTION_SAVE);
 
 	if (uri) {
-		gchar * frz_file = game_state_get_frz_file();
+		const gchar * frz_file = game_state_get_frz_file();
 		gchar * frz_uri = gnome_vfs_get_uri_from_local_path(frz_file);
 		copy_file(frz_uri, uri);
 		g_free(frz_uri);
-		g_free(frz_file);
 
 		if (cur_save_uri) {
 			g_free(cur_save_uri);

@@ -112,3 +112,8 @@ gboolean game_state_is_paused()
 	return cur_frz_file ? TRUE : FALSE;
 }
 
+const gchar * game_state_get_frz_file()
+{
+	return cur_frz_file;
+}
+

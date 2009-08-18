@@ -12,6 +12,8 @@ void HgwPollEvents();
 
 #define kGConfPath "/apps/maemo/drnoksnes/"
 #define kGConfRomFile kGConfPath "rom"
+#define kGConfDisableAudio kGConfPath "no_audio"
+#define kGConfTurboMode kGConfPath "turbo"
 
 #endif
 
