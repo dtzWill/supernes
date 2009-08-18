@@ -72,6 +72,25 @@ void HgwConfig()
 		Settings.TurboMode = turbo ? TRUE : FALSE;
 	}
 
+	int frameskip = 0;
+	if (hgw_conf_request_int(hgw, kGConfFrameskip, &frameskip) == HGW_ERR_NONE) {
+		Settings.SkipFrames = (frameskip > 0 ? frameskip : AUTO_FRAMERATE);
+	}
+
+	int speedhacks = 0;
+	if (hgw_conf_request_int(hgw, kGConfFrameskip, &speedhacks) == HGW_ERR_NONE) {
+		if (speedhacks <= 0) {
+			Settings.HacksEnabled = FALSE;
+			Settings.HacksFilter = FALSE;
+		} else if (speedhacks == 1) {
+			Settings.HacksEnabled = TRUE;
+			Settings.HacksFilter = TRUE;
+		} else {
+			Settings.HacksEnabled = TRUE;
+			Settings.HacksFilter = FALSE;
+		}
+	}
+
 	HgwStartCommand cmd = hgw_context_get_start_command(hgw);
 	switch (cmd) {
 		default:

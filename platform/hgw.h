@@ -14,6 +14,8 @@ void HgwPollEvents();
 #define kGConfRomFile kGConfPath "rom"
 #define kGConfDisableAudio kGConfPath "no_audio"
 #define kGConfTurboMode kGConfPath "turbo"
+#define kGConfFrameskip kGConfPath "frameskip"
+#define kGConfSpeedhacks kGConfPath "speedhacks"
 
 #endif
 
