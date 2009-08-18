@@ -62,6 +62,7 @@ static GtkCheckButton* audio_check;
 static GtkCheckButton* turbo_check;
 static GtkSpinButton* frameskip_spin;
 static GtkCheckButton* auto_framerate_check;
+static GtkCheckButton* trans_check;
 static GtkComboBox* speedhacks_combo;
 
 static void set_rom(const char * rom_file)
@@ -148,8 +149,10 @@ static GtkWidget * load_plugin(void)
 		GTK_CHECK_BUTTON(gtk_check_button_new_with_label("Auto"));
 	turbo_check =
 		GTK_CHECK_BUTTON(gtk_check_button_new_with_label("Turbo mode"));
-	GtkContainer* speedhacks_cont =
-		GTK_CONTAINER(gtk_alignment_new(1.0, 0.0, 0.0, 0.0));
+	GtkContainer* trans_cont =
+		GTK_CONTAINER(gtk_alignment_new(0.0, 0.0, 0.0, 0.0));
+	trans_check =
+		GTK_CHECK_BUTTON(gtk_check_button_new_with_label("Accurate graphics"));
 	speedhacks_combo =
 		GTK_COMBO_BOX(gtk_combo_box_new_text());
 
@@ -170,8 +173,9 @@ static GtkWidget * load_plugin(void)
 	gtk_box_pack_start(GTK_BOX(opt_hbox), GTK_WIDGET(auto_framerate_check), FALSE, FALSE, 0);
 	gtk_box_pack_start(GTK_BOX(opt_hbox), GTK_WIDGET(turbo_check), FALSE, FALSE, 0);
 
-	gtk_container_add(speedhacks_cont, GTK_WIDGET(speedhacks_combo));
-	gtk_box_pack_start(GTK_BOX(opt2_hbox), GTK_WIDGET(speedhacks_cont), TRUE, TRUE, 0);
+	gtk_container_add(trans_cont, GTK_WIDGET(trans_check));
+	gtk_box_pack_start(GTK_BOX(opt2_hbox), GTK_WIDGET(trans_cont), TRUE, TRUE, 0);
+	gtk_box_pack_start(GTK_BOX(opt2_hbox), GTK_WIDGET(speedhacks_combo), FALSE, FALSE, 0);
 	gtk_box_pack_start(GTK_BOX(parent), rom_hbox, FALSE, FALSE, 0);
 	gtk_box_pack_start(GTK_BOX(parent), opt_hbox, FALSE, FALSE, 0);
 	gtk_box_pack_start(GTK_BOX(parent), opt2_hbox, FALSE, FALSE, 0);
@@ -192,6 +196,9 @@ static GtkWidget * load_plugin(void)
 		gtk_spin_button_set_value(frameskip_spin, frameskip - 1);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(auto_framerate_check), FALSE);
 	}
+
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(trans_check),
+		gconf_client_get_bool(gcc, kGConfTransparency, NULL));
 
 	gtk_combo_box_set_active(speedhacks_combo,
 		gconf_client_get_int(gcc, kGConfSpeedhacks, NULL));
@@ -231,6 +238,8 @@ static void write_config(void)
 		gconf_client_set_int(gcc, kGConfFrameskip,
 			gtk_spin_button_get_value(frameskip_spin) + 1, NULL);
 	}
+	gconf_client_set_bool(gcc, kGConfTransparency,
+		gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(trans_check)), NULL);
 	gconf_client_set_int(gcc, kGConfSpeedhacks,
 		gtk_combo_box_get_active(speedhacks_combo), NULL);
 

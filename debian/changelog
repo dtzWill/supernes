@@ -4,8 +4,11 @@ drnoksnes (0.9.4) unstable; urgency=low
   * Partial support in cmdline for mouse/superscope.
   * GUI support for pause/resume.
   * GUI support for snapshots.
+  * A lot of emu options now available in GUI.
+  * Emu now installs a symlink in /usr/bin so it can be easily launched.
+  * Slightly fixed icon and graphics.
 
- -- Javier S. Pedro <maemo@javispedro.com>  Tue, 18 Aug 2009 02:40:22 +0200
+ -- Javier S. Pedro <maemo@javispedro.com>  Tue, 18 Aug 2009 23:47:28 +0200
 
 drnoksnes (0.9.3) unstable; urgency=low
 

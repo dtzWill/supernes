@@ -77,6 +77,11 @@ void HgwConfig()
 		Settings.SkipFrames = (frameskip > 0 ? frameskip : AUTO_FRAMERATE);
 	}
 
+	char transparency = FALSE;
+	if (hgw_conf_request_bool(hgw, kGConfTransparency, &transparency) == HGW_ERR_NONE) {
+		Settings.Transparency = transparency ? TRUE : FALSE;
+	}
+
 	int speedhacks = 0;
 	if (hgw_conf_request_int(hgw, kGConfFrameskip, &speedhacks) == HGW_ERR_NONE) {
 		if (speedhacks <= 0) {
