@@ -1,4 +1,4 @@
-PKGS:=gtk+-2.0 hildon-1 hildon-fm-2 gconf-2.0
+PKGS:=gtk+-2.0 hildon-1 hildon-fm-2 gconf-2.0 gnome-vfs-2.0
 CPPFLAGS:=$(shell pkg-config --cflags $(PKGS)) 
 CFLAGS?=-g -Os -Wall
 CFLAGS+=-fpic -shared
