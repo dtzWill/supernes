@@ -29,9 +29,10 @@
 #include <gconf/gconf.h>
 #include <gconf/gconf-client.h>
 #include <hildon/hildon-file-chooser-dialog.h>
+#include <hildon/hildon-banner.h>
 
 #include "../platform/hgw.h"
-#include "state.h"
+#include "plugin.h"
 
 static GtkWidget * load_plugin(void);
 static void unload_plugin(void);
@@ -53,61 +54,43 @@ static StartupPluginInfo plugin_info = {
 	plugin_callback
 };
 
-static const gchar * rom_globs[] = {
-	"*.smc",
-	"*.fig",
-	"*.sfc",
-	NULL
-};
-
 STARTUP_INIT_PLUGIN(plugin_info, gs, FALSE, TRUE)
 
-// Yes, I'm using the label not only to show but also save the current value.
+char * current_rom_file = 0;
 static GtkLabel * rom_label;
 
-static GameState cur_state = GAME_STATE_STOP;
-
-static void update_game_state()
+static void set_rom(const char * rom_file)
 {
-	GameState new_state;
-	GameStateInfo info;
-	const char * rom_file = gtk_label_get_text(rom_label);
+	if (!rom_file) return;
+	if (current_rom_file) g_free(current_rom_file);
 
-	if (rom_file) {
-		game_state_fill(&info, rom_file);
-	}
+	current_rom_file = g_strdup(rom_file);
+	gtk_label_set_text(GTK_LABEL(rom_label), rom_file);
 
-	if (info.has_state_file) {
-		new_state = GAME_STATE_PAUSED; // We have a freeze file
-	} else {
-		new_state = GAME_STATE_STOP;
-	}
-
-	if (cur_state != new_state) {
-		game_state_set(new_state);
-		cur_state = new_state;
-	}
+	game_state_update();
+	save_clear();
 }
 
-static gchar *
-interface_file_chooser
-(GtkWindow * parent, GtkFileChooserAction action, const gchar ** extension)
+static inline GtkWindow* get_parent_window() {
+	return GTK_WINDOW(gs.ui->hildon_appview);
+}
+
+static void select_rom_callback(GtkWidget * button, gpointer data)
 {
 	GtkWidget * dialog;
 	GtkFileFilter * filter;
-	const gchar * current_filename;
+	const gchar * current_filename = gtk_label_get_text(rom_label);
 	gchar * filename = NULL;
-	int i;
 
 	filter = gtk_file_filter_new();
-	for (i = 0; extension[i]; i++) {
-		gtk_file_filter_add_pattern(filter, extension[i]);
-	}
+	gtk_file_filter_add_pattern(filter, "*.smc");
+	gtk_file_filter_add_pattern(filter, "*.sfc");
+	gtk_file_filter_add_pattern(filter, "*.fig");
 
-	dialog = hildon_file_chooser_dialog_new_with_properties(parent, 
-		"action", action, "local_only", TRUE, "filter", filter, NULL);
+	dialog = hildon_file_chooser_dialog_new_with_properties(
+		get_parent_window(),
+		"action", GTK_FILE_CHOOSER_ACTION_OPEN, "filter", filter, NULL);
 
-	current_filename = gtk_label_get_text(rom_label);
 	if (current_filename && strlen(current_filename) > 1) {
 		// By default open showing the last selected file
 		gtk_file_chooser_set_filename(GTK_FILE_CHOOSER(dialog), 
@@ -121,23 +104,10 @@ interface_file_chooser
 
 	gtk_widget_destroy(dialog);
 
-	return filename;
-}
-
-static void select_rom_callback(GtkWidget * button, gpointer data)
-{
-	gchar * filename = interface_file_chooser(
-		GTK_WINDOW(gtk_widget_get_parent_window(button)),
-		GTK_FILE_CHOOSER_ACTION_OPEN,
-		rom_globs);
-
-	if (!filename) return;
-	
-	gtk_label_set_text(rom_label, filename);
-	
-	g_free(filename);
-
-	update_game_state();
+	if (filename) {
+		set_rom(filename);
+		g_free(filename);
+	}
 }
 
 static GtkWidget * load_plugin(void)
@@ -152,10 +122,6 @@ static GtkWidget * load_plugin(void)
 	
 	gtk_widget_set_size_request(GTK_WIDGET(selectRomBtn),
 								180, 50);
-								
-	gtk_label_set_text(rom_label,
-						gconf_client_get_string(gcc, kGConfRomFile, NULL));
-								
 
 	g_signal_connect(G_OBJECT(selectRomBtn), "clicked",
 					G_CALLBACK (select_rom_callback), NULL);
@@ -164,20 +130,31 @@ static GtkWidget * load_plugin(void)
 	gtk_box_pack_end(GTK_BOX(parent_hbox), GTK_WIDGET(rom_label), TRUE, TRUE, 0);
 	gtk_box_pack_start(GTK_BOX(parent), parent_hbox, FALSE, FALSE, 0);
 
-	update_game_state();
+	// Load current configuration from gconf
+	set_rom(gconf_client_get_string(gcc, kGConfRomFile, NULL));
 
 	return parent;
 }
 
 static void unload_plugin(void)
 {
+	if (current_rom_file) {
+		g_free(current_rom_file);
+		current_rom_file = 0;
+	}
+	game_state_clear();
+	save_clear();
 	g_object_unref(gcc);
 }
 
 static void write_config(void)
 {
-	gconf_client_set_string(gcc, kGConfRomFile,
-        gtk_label_get_text(GTK_LABEL(rom_label)), NULL);
+	if (current_rom_file) {
+		gconf_client_set_string(gcc, kGConfRomFile, current_rom_file, NULL);
+	} else {
+		hildon_banner_show_information(GTK_WIDGET(get_parent_window()), NULL,
+			"No ROM selected");
+	}
 }
 
 static GtkWidget **load_menu(guint *nitems)
@@ -194,6 +171,16 @@ static void update_menu(void)
 
 static void plugin_callback(GtkWidget * menu_item, gpointer data)
 {
-
+	switch ((gint) data) {
+		case 20:	// ME_GAME_OPEN
+			save_load(get_parent_window());
+			break;
+		case 21:	// ME_GAME_SAVE
+			save_save(get_parent_window());
+			break;
+		case 22:	// ME_GAME_SAVE_AS
+			save_save_as(get_parent_window());
+			break;
+	}
 }
 

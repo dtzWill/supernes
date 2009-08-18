@@ -26,69 +26,89 @@
 #include <dbus/dbus.h>
 #include <glib.h>
 
-#include "state.h"
+#include "plugin.h"
 
 #define FRZ_FILE_EXT ".frz.gz"
 
-void game_state_fill(GameStateInfo * info, const char * rom_file)
+static gchar * cur_frz_file = NULL;
+
+static gboolean rom_get_freeze_file()
 {
-	char * ext = strrchr(rom_file, '.');
+	char * ext = strrchr(current_rom_file, '.');
 	char * rom_base;
 	char * frz_file;
+	gboolean rom_exists, frz_exists;
+
+	if (cur_frz_file) g_free(cur_frz_file);
 
 	if (!ext) {
-		rom_base = g_strdup(rom_file);
+		rom_base = g_strdup(current_rom_file);
 	} else {
-		rom_base = g_strndup(rom_file, ext - rom_file);
+		rom_base = g_strndup(current_rom_file, ext - current_rom_file);
 	}
-
-	info->rom_exists = 
-		g_file_test(rom_file, G_FILE_TEST_EXISTS | G_FILE_TEST_IS_REGULAR);
+	rom_exists = g_file_test(current_rom_file,
+			G_FILE_TEST_EXISTS | G_FILE_TEST_IS_REGULAR);
 
 	frz_file = g_strconcat(rom_base, FRZ_FILE_EXT);
-	info->has_state_file =
+	frz_exists =
 		g_file_test(frz_file, G_FILE_TEST_EXISTS | G_FILE_TEST_IS_REGULAR);
 
-	g_free(frz_file);
 	g_free(rom_base);
+
+	if (rom_exists & frz_exists) {
+		cur_frz_file = frz_file;
+	} else {
+		cur_frz_file = NULL;
+		g_free(frz_file);
+	}
+
+	return rom_exists && frz_exists;
 }
 
 // More uglyness. If you know a better way to do this please tell.
-void game_state_set(GameState newState)
+void game_state_update()
 {
 	DBusError err;
 	DBusConnection* bus;
 	DBusMessage* m;
 	const char * m_name;
-	
-	switch (newState) {
-		case GAME_STATE_PAUSED:
-			m_name = "game_pause";
-			break;
-		case GAME_STATE_STOP:
-			m_name = "game_close";
-			break;
-		default:
-			return;
+	gboolean has_freeze = rom_get_freeze_file();
+
+	if (has_freeze) {
+		m_name = "game_pause";
+	} else {
+		m_name = "game_close";
 	}
-	
-	
+
 	dbus_error_init(&err);
-	
+
 	bus = dbus_bus_get(DBUS_BUS_SESSION, &err);
 	if (dbus_error_is_set(&err)) {
 		dbus_error_free(&err); 
 		return;
 	}
-	
+
 	m = dbus_message_new_method_call("com.javispedro.drnoksnes.startup",
 										"/com/javispedro/drnoksnes/startup",
 										"com.javispedro.drnoksnes.startup",
 										m_name);
-										
+
 	dbus_connection_send(bus, m, NULL);
 	dbus_connection_flush(bus);
 
 	dbus_message_unref(m);
+}
+
+void game_state_clear()
+{
+	if (cur_frz_file) {
+		g_free(cur_frz_file);
+		cur_frz_file = NULL;
+	}
+}
+
+gboolean game_state_is_paused()
+{
+	return cur_frz_file ? TRUE : FALSE;
 }
 
