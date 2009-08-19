@@ -142,13 +142,6 @@ reg_cpu_var .req R14
 
 /*****************************************************************/
 
-.macro trace_asm val
-	push {r0-r5, r12, lr}
-	mov r0, #\val
-	bl print_asm_i
-	pop {r0-r5, r12, lr}
-.endm
-
 /* prepare */
 .macro		PREPARE_C_CALL
 	STMFD	R13!,{R12,R14}	
@@ -1152,6 +1145,10 @@ reg_cpu_var .req R14
 		ADD		reg_s,reg_s,#2
 		MOVS		rscratch,rscratch
 .endm
+
+@ START OF PROGRAM CODE
+
+.text
 
 .globl asmS9xGetByte
 .globl asmS9xGetWord
@@ -4476,9 +4473,8 @@ void asm_S9xOpcode_NMI(void)
 /****************************************************************
 	GLOBAL
 ****************************************************************/
-	.globl   test_opcode
-	.globl	 asmMainLoop
-
+.global	asmMainLoop
+.type	asmMainLoop, function
 
 @ void asmMainLoop(asm_cpu_var_t *asmcpuPtr);
 asmMainLoop:
@@ -4571,6 +4567,7 @@ endmainLoop:
 	LDMFD		R13!,{R4-R11, LR}
 	BX LR
 .pool
+.size asmMainLoop, asmMainLoop-.
 
 @ void test_opcode(struct asm_cpu_var *asm_var);
 test_opcode:

@@ -3,7 +3,7 @@
 @ Generic memory routines.
 @ (c) Copyright 2007, Grazvydas "notaz" Ignotas
 
-
+.text
 .global memcpy16 @ unsigned short *dest, unsigned short *src, int count
 
 memcpy16:

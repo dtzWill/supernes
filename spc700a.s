@@ -11,7 +11,7 @@
 @ the code is released under Snes9x license. See spcgen.c or any other source file
 @ from Snes9x source tree.
 
-
+.text
   .extern IAPU
   .extern CPU @ for STOP and SLEEP
   .extern S9xAPUGetByte
@@ -20,6 +20,7 @@
   .extern S9xAPUSetByteZ
 
   .global spc700_execute @ int cycles
+  .type spc700_execute, function
   .global Spc700JumpTab
 
   opcode  .req r3

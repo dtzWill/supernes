@@ -1,4 +1,4 @@
-
+.text
 	.align 4
 	.globl  funcSMULT1616
 	.globl  funcUMULT1616
