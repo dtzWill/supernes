@@ -2206,8 +2206,8 @@ void DrawBackground (uint32 BGMode, uint32 bg, uint8 Z1, uint8 Z2)
 	    yy += (VOffset - CentreY) % 1023; \
 	else \
 	    yy += VOffset - CentreY; \
-	int BB = l->MatrixB * yy + (CentreX << 8); \
-	int DD = l->MatrixD * yy + (CentreY << 8); \
+	register int BB = l->MatrixB * yy + (CentreX << 8); \
+	register int DD = l->MatrixD * yy + (CentreY << 8); \
 \
 	for (uint32 clip = 0; clip < ClipCount; clip++) \
 	{ \
@@ -2218,8 +2218,8 @@ void DrawBackground (uint32 BGMode, uint32 bg, uint8 Z1, uint8 Z2)
 			if (Right <= Left) \
 				continue; \
 	    } \
-	    TYPE *p = (TYPE *) Screen + Left; \
-	    uint8 *d = Depth + Left; \
+	    register TYPE *p = (TYPE *) Screen + Left; \
+	    register uint8 *d = Depth + Left; \
 \
 	    if (PPU.Mode7HFlip) \
 	    { \
@@ -2252,7 +2252,7 @@ void DrawBackground (uint32 BGMode, uint32 bg, uint8 Z1, uint8 Z2)
 		    int X = ((AA + BB) >> 8) & 0x3ff; \
 		    int Y = ((CC + DD) >> 8) & 0x3ff; \
 		    uint8 *TileData = VRAM1 + (Memory.VRAM[((Y & ~7) << 5) + ((X >> 2) & ~1)] << 7); \
-		    uint32 b = *(TileData + ((Y & 7) << 4) + ((X & 7) << 1)); \
+		    uint8 b = *(TileData + ((Y & 7) << 4) + ((X & 7) << 1)); \
 		    GFX.Z1 = Mode7Depths [(b & GFX.Mode7PriorityMask) >> 7]; \
 		    if (GFX.Z1 > *d && b) \
 		    { \
@@ -2277,7 +2277,7 @@ void DrawBackground (uint32 BGMode, uint32 bg, uint8 Z1, uint8 Z2)
 		    if (((X | Y) & ~0x3ff) == 0) \
 		    { \
 				uint8 *TileData = VRAM1 + (Memory.VRAM[((Y & ~7) << 5) + ((X >> 2) & ~1)] << 7); \
-				uint32 b = *(TileData + ((Y & 7) << 4) + ((X & 7) << 1)); \
+				uint8 b = *(TileData + ((Y & 7) << 4) + ((X & 7) << 1)); \
 				GFX.Z1 = Mode7Depths [(b & GFX.Mode7PriorityMask) >> 7]; \
 				if (GFX.Z1 > *d && b) \
 				{ \
@@ -2291,7 +2291,7 @@ void DrawBackground (uint32 BGMode, uint32 bg, uint8 Z1, uint8 Z2)
 				{ \
 					X = (x + HOffset) & 7; \
 					Y = (yy + CentreY) & 7; \
-					uint32 b = *(VRAM1 + ((Y & 7) << 4) + ((X & 7) << 1)); \
+					uint8 b = *(VRAM1 + ((Y & 7) << 4) + ((X & 7) << 1)); \
 					GFX.Z1 = Mode7Depths [(b & GFX.Mode7PriorityMask) >> 7]; \
 					if (GFX.Z1 > *d && b) \
 					{ \
