@@ -17,6 +17,9 @@ DEB_BUILD_GNU_TYPE  ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
 # Determine Maemo version
 MAEMO_VERSION := $(shell cut -d"." -f1 /etc/maemo_version)
 
+# Determine app version from debian changelog
+GAME_VERSION := $(shell head -n 1 debian/changelog | sed 's/[^0-9.-]//g')
+
 CFLAGS = -Wall -g -DMAEMO -DMAEMO_VERSION=$(MAEMO_VERSION)
 LDFLAGS = -Wl,-z,defs
 CONFOPTS = 
@@ -48,7 +51,7 @@ build: build-stamp
 build-stamp: configure-stamp 
 	dh_testdir
 
-	$(MAKE) CFLAGS="$(CFLAGS)" CXXFLAGS="$(CFLAGS)"
+	$(MAKE) CFLAGS="$(CFLAGS)" CXXFLAGS="$(CFLAGS)" GAME_VERSION="$(GAME_VERSION)"
 
 	touch $@
 

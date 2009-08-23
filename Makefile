@@ -8,7 +8,7 @@ CFLAGS ?= -march=armv6j -mtune=arm1136jf-s -mfpu=vfp -mfloat-abi=softfp -O2 -g -
 ASFLAGS ?= -march=armv6j -mfpu=vfp -mfloat-abi=softfp -g
 CXXFLAGS ?= $(CFLAGS)
 
-GAME_VERSION ?= 0.9.4
+GAME_VERSION ?= $(shell head -n 1 debian/changelog | sed 's/[^0-9.-]//g')-git
 export GAME_VERSION
 export DESTDIR
 
