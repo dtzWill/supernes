@@ -24,7 +24,7 @@ CONFOPTS =
 ifneq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))
 	CFLAGS += -O0
 else ifneq (,$(findstring arm,$(DEB_BUILD_GNU_TYPE)))
-	CFLAGS += -Os
+	CFLAGS += -O2
 	ifneq (,$(findstring vfp,$(DEB_BUILD_OPTIONS)))
 		CFLAGS += -march=armv6j -mtune=arm1136jf-s -mfpu=vfp -mfloat-abi=softfp
 	endif
