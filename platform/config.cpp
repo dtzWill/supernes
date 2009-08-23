@@ -175,8 +175,8 @@ static void loadDefaults()
 	Settings.H_Max = SNES_CYCLES_PER_SCANLINE;
 	Settings.SkipFrames = AUTO_FRAMERATE;
 	Settings.Shutdown = Settings.ShutdownMaster = TRUE;
-	Settings.FrameTimePAL = 20000;	// in usecs
-	Settings.FrameTimeNTSC = 16667;
+	Settings.FrameTimePAL = 20;	// in msecs
+	Settings.FrameTimeNTSC = 16;
 	Settings.FrameTime = Settings.FrameTimeNTSC;
 	Settings.DisableSampleCaching = FALSE;
 	Settings.DisableMasterVolume = FALSE;
