@@ -50,6 +50,8 @@
 #include <stdint.h>
 //#include "asmmemfuncs.h"
 
+#define USE_CRAZY_OPTS
+
 //misc.s
 #ifdef __cplusplus
 extern "C" {
@@ -2160,34 +2162,142 @@ void DrawBackground (uint32 BGMode, uint32 bg, uint8 Z1, uint8 Z2)
     }
 }
 
-#define RENDER_BACKGROUND_MODE7(TYPE,FUNC) \
-    CHECK_SOUND(); \
+#define RENDER_BACKGROUND_MODE7_PIXEL_NOREPEAT(FUNC,HFLIP,REPEAT,MASK,PRIOMASK) \
+	const uint8 bmask = MASK; \
+	for (int x = startx; x != endx; \
+		x += (HFLIP ? -1 : 1), AA += aa, CC += cc, p++, d++) \
+	{ \
+		int X = ((AA + BB) >> 8) & 0x3ff; \
+		int Y = ((CC + DD) >> 8) & 0x3ff; \
+		uint8 *TileData = VRAM1 + (Memory.VRAM[((Y & ~7) << 5) + ((X >> 2) & ~1)] << 7); \
+		uint8 b = *(TileData + ((Y & 7) << 4) + ((X & 7) << 1)); \
+		uint8 z = Mode7Depths [(b & PRIOMASK) >> 7]; \
+		if (z > *d && b) \
+		{ \
+			*p = (FUNC); \
+			*d = z; \
+		} \
+	}
+
+#define RENDER_BACKGROUND_MODE7_PIXEL(FUNC,HFLIP,REPEAT,MASK,PRIOMASK,CFILT) \
+	register int AABB = AA + BB; \
+	register int CCDD = CC + DD; \
+	const uint8 bmask = MASK; \
+	for (int x = startx; x != endx; \
+		x += (HFLIP ? -1 : 1), AABB += aa, CCDD += cc, p++, d++) \
+	{ \
+		register uint16 X = ((AABB) >> 8) CFILT; \
+		register uint16 Y = ((CCDD) >> 8) CFILT; \
+	\
+		if (((X | Y) & ~0x3ff) == 0) { \
+			uint8 *TileData = VRAM1 + (Memory.VRAM[((Y & ~7) << 5) + ((X >> 2) & ~1)] << 7); \
+			uint8 b = TileData[((Y & 7) << 4) + ((X & 7) << 1)]; \
+			uint8 z = Mode7Depths [(b & PRIOMASK) >> 7]; \
+			if (z > *d && b) { \
+				*p = (FUNC); \
+				*d = z; \
+			} \
+		} else if (REPEAT == 3) { \
+			X = (x + HOffset) & 7; \
+			Y = (yy + CentreY) & 7; \
+			uint8 b = *(VRAM1 + ((Y & 7) << 4) + ((X & 7) << 1)); \
+			uint8 z = Mode7Depths [(b & PRIOMASK) >> 7]; \
+			if (z > *d && b) { \
+				*p = (FUNC); \
+				*d = z; \
+			} \
+		} \
+	} \
+
+#define RENDER_BACKGROUND_MODE7_CLIP(TYPE,FUNC,HFLIP,REPEAT,DEZAEMON,MASK,PRIOMASK) \
+	for (uint32 clip = 0; clip < ClipCount; clip++) \
+	{ \
+	    if (GFX.pCurrentClip->Count [bg]) \
+	    { \
+			Left = GFX.pCurrentClip->Left [clip][bg]; \
+			Right = GFX.pCurrentClip->Right [clip][bg]; \
+			if (Right <= Left) \
+				continue; \
+	    } \
+	    register TYPE *p = (TYPE *) Screen + Left; \
+	    register uint8 *d = Depth + Left; \
 \
-    uint8 *VRAM1 = Memory.VRAM + 1; \
-    if (GFX.r2130 & 1) \
-    { \
-		if (IPPU.DirectColourMapsNeedRebuild) \
-			S9xBuildDirectColourMaps (); \
-		GFX.ScreenColors = DirectColourMaps [0]; \
-    } \
-    else \
-		GFX.ScreenColors = IPPU.ScreenColors; \
+	    if (HFLIP) \
+	    { \
+			startx = Right - 1; \
+			endx = Left - 1; \
+			aa = -l->MatrixA; \
+			cc = -l->MatrixC; \
+	    } \
+	    else \
+	    { \
+			startx = Left; \
+			endx = Right; \
+			aa = l->MatrixA; \
+			cc = l->MatrixC; \
+	    } \
+	    int xx; \
+	    if (!REPEAT) \
+			xx = startx + (HOffset - CentreX) % 1023; \
+	    else \
+			xx = startx + HOffset - CentreX; \
+	    int AA = l->MatrixA * xx; \
+	    int CC = l->MatrixC * xx; \
 \
-    int aa, cc; \
-    int dir; \
-    int startx, endx; \
-    uint32 Left = 0; \
-    uint32 Right = 256; \
-    uint32 ClipCount = GFX.pCurrentClip->Count [bg]; \
-\
-    if (!ClipCount) \
-	ClipCount = 1; \
-\
-    Screen += GFX.StartY * GFX.Pitch; \
-    uint8 *Depth = GFX.DB + GFX.StartY * GFX.PPL; \
-    struct SLineMatrixData *l = &LineMatrixData [GFX.StartY]; \
-\
-    for (uint32 Line = GFX.StartY; Line <= GFX.EndY; Line++, Screen += GFX.Pitch, Depth += GFX.PPL, l++) \
+	    if (!REPEAT) \
+	    { \
+			RENDER_BACKGROUND_MODE7_PIXEL_NOREPEAT(FUNC,HFLIP,REPEAT,MASK,PRIOMASK) \
+	    } else if (DEZAEMON) { \
+			RENDER_BACKGROUND_MODE7_PIXEL(FUNC,HFLIP,REPEAT,MASK,PRIOMASK,& 0x7ff) \
+		} else { \
+			RENDER_BACKGROUND_MODE7_PIXEL(FUNC,HFLIP,REPEAT,MASK,PRIOMASK,) \
+	    } \
+	} \
+
+#ifdef USE_CRAZY_OPTS
+
+#define RENDER_BACKGROUND_MODE7_CLIP_CHOOSE_MASK(TYPE,FUNC,HFLIP,REPEAT,DEZAEMON) \
+	if (GFX.Mode7PriorityMask) { \
+		RENDER_BACKGROUND_MODE7_CLIP(TYPE,FUNC,HFLIP,REPEAT,DEZAEMON,0x7f,0x80) \
+	} else { \
+		RENDER_BACKGROUND_MODE7_CLIP(TYPE,FUNC,HFLIP,REPEAT,DEZAEMON,0xff,0x00) \
+	}
+
+#define RENDER_BACKGROUND_MODE7_CLIP_CHOOSE_REPEAT_DEZAEMON(TYPE,FUNC,HFLIP) \
+	if (Settings.Dezaemon && PPU.Mode7Repeat) { \
+		switch (PPU.Mode7Repeat) { \
+			case 1: RENDER_BACKGROUND_MODE7_CLIP_CHOOSE_MASK(TYPE,FUNC,HFLIP,1,1); break; \
+			case 2: RENDER_BACKGROUND_MODE7_CLIP_CHOOSE_MASK(TYPE,FUNC,HFLIP,2,1); break; \
+			case 3: RENDER_BACKGROUND_MODE7_CLIP_CHOOSE_MASK(TYPE,FUNC,HFLIP,3,1); break; \
+		} \
+	} else { \
+		switch (PPU.Mode7Repeat) { \
+			case 0: RENDER_BACKGROUND_MODE7_CLIP_CHOOSE_MASK(TYPE,FUNC,HFLIP,0,0); break; \
+			case 1: RENDER_BACKGROUND_MODE7_CLIP_CHOOSE_MASK(TYPE,FUNC,HFLIP,1,0); break; \
+			case 2: RENDER_BACKGROUND_MODE7_CLIP_CHOOSE_MASK(TYPE,FUNC,HFLIP,2,0); break; \
+			case 3: RENDER_BACKGROUND_MODE7_CLIP_CHOOSE_MASK(TYPE,FUNC,HFLIP,3,0); break; \
+		} \
+	}
+
+#define RENDER_BACKGROUND_MODE7_CLIP_CHOOSE_HFLIP(TYPE,FUNC) \
+	if (PPU.Mode7HFlip) { \
+		RENDER_BACKGROUND_MODE7_CLIP_CHOOSE_REPEAT_DEZAEMON(TYPE,FUNC,1); \
+	} else { \
+		RENDER_BACKGROUND_MODE7_CLIP_CHOOSE_REPEAT_DEZAEMON(TYPE,FUNC,0); \
+	}
+
+#define RENDER_BACKGROUND_MODE7_CLIP_CHOOSE(TYPE,FUNC) \
+	RENDER_BACKGROUND_MODE7_CLIP_CHOOSE_HFLIP(TYPE,FUNC)
+
+#else
+
+#define RENDER_BACKGROUND_MODE7_CLIP_CHOOSE(TYPE,FUNC) \
+	RENDER_BACKGROUND_MODE7_CLIP(TYPE,FUNC,PPU.Mode7HFlip,PPU.Mode7Repeat,Settings.Dezaemon,GFX.Mode7Mask,GFX.Mode7PriorityMask)
+
+#endif
+
+#define RENDER_BACKGROUND_MODE7_LINE(TYPE,FUNC) \
+	for (uint32 Line = GFX.StartY; Line <= GFX.EndY; Line++, Screen += GFX.Pitch, Depth += GFX.PPL, l++) \
     { \
 	int yy; \
 \
@@ -2206,157 +2316,93 @@ void DrawBackground (uint32 BGMode, uint32 bg, uint8 Z1, uint8 Z2)
 	    yy += (VOffset - CentreY) % 1023; \
 	else \
 	    yy += VOffset - CentreY; \
-	register int BB = l->MatrixB * yy + (CentreX << 8); \
-	register int DD = l->MatrixD * yy + (CentreY << 8); \
+	int BB = l->MatrixB * yy + (CentreX << 8); \
+	int DD = l->MatrixD * yy + (CentreY << 8); \
 \
-	for (uint32 clip = 0; clip < ClipCount; clip++) \
-	{ \
-	    if (GFX.pCurrentClip->Count [bg]) \
-	    { \
-			Left = GFX.pCurrentClip->Left [clip][bg]; \
-			Right = GFX.pCurrentClip->Right [clip][bg]; \
-			if (Right <= Left) \
-				continue; \
-	    } \
-	    register TYPE *p = (TYPE *) Screen + Left; \
-	    register uint8 *d = Depth + Left; \
-\
-	    if (PPU.Mode7HFlip) \
-	    { \
-			startx = Right - 1; \
-			endx = Left - 1; \
-			dir = -1; \
-			aa = -l->MatrixA; \
-			cc = -l->MatrixC; \
-	    } \
-	    else \
-	    { \
-			startx = Left; \
-			endx = Right; \
-			dir = 1; \
-			aa = l->MatrixA; \
-			cc = l->MatrixC; \
-	    } \
-	    int xx; \
-	    if (PPU.Mode7Repeat == 0) \
-			xx = startx + (HOffset - CentreX) % 1023; \
-	    else \
-			xx = startx + HOffset - CentreX; \
-	    int AA = l->MatrixA * xx; \
-	    int CC = l->MatrixC * xx; \
-\
-	    if (!PPU.Mode7Repeat) \
-	    { \
-		for (int x = startx; x != endx; x += dir, AA += aa, CC += cc, p++, d++) \
-		{ \
-		    int X = ((AA + BB) >> 8) & 0x3ff; \
-		    int Y = ((CC + DD) >> 8) & 0x3ff; \
-		    uint8 *TileData = VRAM1 + (Memory.VRAM[((Y & ~7) << 5) + ((X >> 2) & ~1)] << 7); \
-		    uint8 b = *(TileData + ((Y & 7) << 4) + ((X & 7) << 1)); \
-		    GFX.Z1 = Mode7Depths [(b & GFX.Mode7PriorityMask) >> 7]; \
-		    if (GFX.Z1 > *d && b) \
-		    { \
-				*p = (FUNC); \
-				*d = GFX.Z1; \
-		    } \
-		} \
-	    } \
-	    else \
-	    { \
-		for (int x = startx; x != endx; x += dir, AA += aa, CC += cc, p++, d++) \
-		{ \
-		    int X = ((AA + BB) >> 8); \
-		    int Y = ((CC + DD) >> 8); \
-\
-		    if (Settings.Dezaemon && PPU.Mode7Repeat == 2) \
-		    { \
-				X &= 0x7ff; \
-				Y &= 0x7ff; \
-		    } \
-\
-		    if (((X | Y) & ~0x3ff) == 0) \
-		    { \
-				uint8 *TileData = VRAM1 + (Memory.VRAM[((Y & ~7) << 5) + ((X >> 2) & ~1)] << 7); \
-				uint8 b = *(TileData + ((Y & 7) << 4) + ((X & 7) << 1)); \
-				GFX.Z1 = Mode7Depths [(b & GFX.Mode7PriorityMask) >> 7]; \
-				if (GFX.Z1 > *d && b) \
-				{ \
-					*p = (FUNC); \
-					*d = GFX.Z1; \
-				} \
-		    } \
-		    else \
-		    { \
-				if (PPU.Mode7Repeat == 3) \
-				{ \
-					X = (x + HOffset) & 7; \
-					Y = (yy + CentreY) & 7; \
-					uint8 b = *(VRAM1 + ((Y & 7) << 4) + ((X & 7) << 1)); \
-					GFX.Z1 = Mode7Depths [(b & GFX.Mode7PriorityMask) >> 7]; \
-					if (GFX.Z1 > *d && b) \
-					{ \
-						*p = (FUNC); \
-						*d = GFX.Z1; \
-					} \
-				} \
-		    } \
-		} \
-	    } \
-	} \
+	RENDER_BACKGROUND_MODE7_CLIP_CHOOSE(TYPE,FUNC) \
     }
+
+#define RENDER_BACKGROUND_MODE7(TYPE,FUNC) \
+    CHECK_SOUND(); \
+\
+    uint8 * const VRAM1 = Memory.VRAM + 1; \
+    if (GFX.r2130 & 1) \
+    { \
+		if (IPPU.DirectColourMapsNeedRebuild) \
+			S9xBuildDirectColourMaps (); \
+		GFX.ScreenColors = DirectColourMaps [0]; \
+    } \
+    else \
+		GFX.ScreenColors = IPPU.ScreenColors; \
+\
+    int aa, cc; \
+    int startx, endx; \
+    uint32 Left = 0; \
+    uint32 Right = 256; \
+    uint32 ClipCount = GFX.pCurrentClip->Count [bg]; \
+\
+    if (!ClipCount) \
+	ClipCount = 1; \
+\
+    Screen += GFX.StartY * GFX.Pitch; \
+    uint8 *Depth = GFX.DB + GFX.StartY * GFX.PPL; \
+    struct SLineMatrixData *l = &LineMatrixData [GFX.StartY]; \
+    RENDER_BACKGROUND_MODE7_LINE(TYPE,FUNC) \
+\
+
 
 void DrawBGMode7Background (uint8 *Screen, int bg)
 {
-    RENDER_BACKGROUND_MODE7 (uint8, (uint8) (b & GFX.Mode7Mask))
+    RENDER_BACKGROUND_MODE7 (uint8, (uint8) (b & bmask))
 }
 
 void DrawBGMode7Background16 (uint8 *Screen, int bg)
 {
-    RENDER_BACKGROUND_MODE7 (uint16, GFX.ScreenColors [b & GFX.Mode7Mask]);
+    RENDER_BACKGROUND_MODE7 (uint16, GFX.ScreenColors [b & bmask]);
 }
 
 void DrawBGMode7Background16Add (uint8 *Screen, int bg)
 {
     RENDER_BACKGROUND_MODE7 (uint16, *(d + GFX.DepthDelta) ?
 					(*(d + GFX.DepthDelta) != 1 ?
-					    COLOR_ADD (GFX.ScreenColors [b & GFX.Mode7Mask],
+					    COLOR_ADD (GFX.ScreenColors [b & bmask],
 						       p [GFX.Delta]) :
-					    COLOR_ADD (GFX.ScreenColors [b & GFX.Mode7Mask],
+					    COLOR_ADD (GFX.ScreenColors [b & bmask],
 						       GFX.FixedColour)) :
-					 GFX.ScreenColors [b & GFX.Mode7Mask]);
+					 GFX.ScreenColors [b & bmask]);
 }
 
 void DrawBGMode7Background16Add1_2 (uint8 *Screen, int bg)
 {
     RENDER_BACKGROUND_MODE7 (uint16, *(d + GFX.DepthDelta) ?
 					(*(d + GFX.DepthDelta) != 1 ?
-					    COLOR_ADD1_2 (GFX.ScreenColors [b & GFX.Mode7Mask],
+					    COLOR_ADD1_2 (GFX.ScreenColors [b & bmask],
 						       p [GFX.Delta]) :
-					    COLOR_ADD (GFX.ScreenColors [b & GFX.Mode7Mask],
+					    COLOR_ADD (GFX.ScreenColors [b & bmask],
 						       GFX.FixedColour)) :
-					 GFX.ScreenColors [b & GFX.Mode7Mask]);
+					 GFX.ScreenColors [b & bmask]);
 }
 
 void DrawBGMode7Background16Sub (uint8 *Screen, int bg)
 {
     RENDER_BACKGROUND_MODE7 (uint16, *(d + GFX.DepthDelta) ?
 					(*(d + GFX.DepthDelta) != 1 ?
-					    COLOR_SUB (GFX.ScreenColors [b & GFX.Mode7Mask],
+					    COLOR_SUB (GFX.ScreenColors [b & bmask],
 						       p [GFX.Delta]) :
-					    COLOR_SUB (GFX.ScreenColors [b & GFX.Mode7Mask],
+					    COLOR_SUB (GFX.ScreenColors [b & bmask],
 						       GFX.FixedColour)) :
-					 GFX.ScreenColors [b & GFX.Mode7Mask]);
+					 GFX.ScreenColors [b & bmask]);
 }
 
 void DrawBGMode7Background16Sub1_2 (uint8 *Screen, int bg)
 {
     RENDER_BACKGROUND_MODE7 (uint16, *(d + GFX.DepthDelta) ?
 					(*(d + GFX.DepthDelta) != 1 ?
-					    COLOR_SUB1_2 (GFX.ScreenColors [b & GFX.Mode7Mask],
+					    COLOR_SUB1_2 (GFX.ScreenColors [b & bmask],
 						       p [GFX.Delta]) :
-					    COLOR_SUB (GFX.ScreenColors [b & GFX.Mode7Mask],
+					    COLOR_SUB (GFX.ScreenColors [b & bmask],
 						       GFX.FixedColour)) :
-					 GFX.ScreenColors [b & GFX.Mode7Mask]);
+					 GFX.ScreenColors [b & bmask]);
 }
 
 #define RENDER_BACKGROUND_MODE7_i(TYPE,FUNC,COLORFUNC) \
