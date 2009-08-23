@@ -383,6 +383,7 @@ void S9xMessage (int type, int number, const char *message);
 void S9xLoadSDD1Data ();
 END_EXTERN_C
 
+START_EXTERN_C
 enum {
     PAUSE_NETPLAY_CONNECT = (1 << 0),
     PAUSE_TOGGLE_FULL_SCREEN = (1 << 1),
@@ -395,5 +396,26 @@ enum {
 };
 void S9xSetPause (uint32 mask);
 void S9xClearPause (uint32 mask);
+END_EXTERN_C
+
+START_EXTERN_C
+enum FileTypes {
+	FILE_ROM = 0,
+	FILE_SRAM,
+	/** The default freeze filename (base.frz.gz) */
+	FILE_FREEZE,
+	FILE_CHT,
+	FILE_IPS,
+	FILE_SCREENSHOT,
+	FILE_SDD1_DAT
+};
+/** This routine allows to get path to files whose name depends on the basename
+ *  of the current ROM.
+ *  Note that FILE_FREEZE is currently not implemented here.
+ *  @param file see enum FileTypes.
+ *  @return wanted filepath. Do not free the returned string.
+ */
+const char *S9xGetFilename(enum FileTypes file);
+END_EXTERN_C
 
 #endif

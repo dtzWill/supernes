@@ -15,7 +15,7 @@
 #include "hgw.h"
 
 #define kPollEveryNFrames		5		//Poll input only every this many frames
-#define kPollHgwEveryNFrames	10		//Poll osso only every this many frames
+#define kPollHgwEveryNFrames	10		//Poll dbus only every this many frames
 
 #define TRACE printf("trace: %s:%s\n", __FILE__, __func__);
 #define DIE(format, ...) do { \
@@ -36,7 +36,7 @@ void S9xLoadSDD1Data()
 
 void S9xAutoSaveSRAM()
 {
-	Memory.SaveSRAM(S9xGetFilename(".srm"));
+	Memory.SaveSRAM(S9xGetFilename(FILE_SRAM));
 }
 
 static void S9xInit() 
@@ -59,14 +59,14 @@ static void S9xInit()
 
 static void loadRom()
 {
-	const char * file = S9xGetFilename(".smc");
+	const char * file = S9xGetFilename(FILE_ROM);
 
 	printf("ROM: %s\n", file);
 
 	if (!Memory.LoadROM(file))
 		DIE("Loading ROM failed");
 	
-	file = S9xGetFilename(".srm");
+	file = S9xGetFilename(FILE_SRAM);
 	printf("SRAM: %s\n", file);
 	Memory.LoadSRAM(file); 
 }
@@ -75,7 +75,7 @@ static void resumeGame()
 {
 	if (!Config.snapshotLoad) return;
 
-	const char * file = S9xGetFilename(".frz.gz");
+	const char * file = S9xGetFilename(FILE_FREEZE);
 	int result = S9xUnfreezeGame(file);
 
 	printf("Unfreeze: %s", file);
@@ -103,7 +103,7 @@ static void pauseGame()
 {
 	if (!Config.snapshotSave) return;
 
-	const char * file = S9xGetFilename(".frz.gz");
+	const char * file = S9xGetFilename(FILE_FREEZE);
 	int result = S9xFreezeGame(file);
 
 	printf("Freeze: %s", file);
@@ -235,23 +235,23 @@ int main(int argc, const char ** argv) {
 	// Initialise SDL
 	if (SDL_Init(0) < 0) 
 		DIE("SDL_Init: %s", SDL_GetError());
-	
+
 	// Configure snes9x
 	HgwInit();						// Hildon-games-wrapper initialization.
 	S9xLoadConfig(argc, argv);		// Load config files and parse cmd line.
 	HgwConfig();					// Apply specific hildon-games config.
-	
+
 	// S9x initialization
 	S9xInitDisplay(argc, argv);
 	S9xInitAudioOutput();
 	S9xInitInputDevices();
 	S9xInit();
 	S9xReset();
-	
+
 	// Load rom and related files: state, unfreeze if needed
 	loadRom();
 	resumeGame();
-	
+
 	// Late initialization
 	sprintf(String, "DrNokSnes - %s", Memory.ROMName);
 	S9xSetTitle(String);
@@ -273,12 +273,13 @@ int main(int argc, const char ** argv) {
 	S9xDeinitDisplay();
 
 	// Save state
-	Memory.SaveSRAM(S9xGetFilename(".srm"));
+	Memory.SaveSRAM(S9xGetFilename(FILE_SRAM));
 	pauseGame();
 
 	// Late deinitialization
 	S9xGraphicsDeinit();
 	Memory.Deinit();
+	S9xUnloadConfig();
 	HgwDeinit();
 
 	SDL_Quit();
@@ -290,7 +291,7 @@ void S9xDoAction(unsigned char action)
 {
 	if (action & kActionQuit) 
 		Config.quitting = true;
-		
+
 	if (action & kActionToggleFullscreen)
 		S9xVideoToggleFullscreen();
 }

@@ -2,26 +2,23 @@
 
 #include "port.h"
 
-void _makepath (char *path, const char *drive, const char *dir,
+void PathMake(char *path, const char *drive, const char *dir,
 	const char *fname, const char *ext)
 {
-	if (dir && *dir)
-	{
+	if (dir && *dir) {
 		strcpy (path, dir);
 		strcat (path, "/");
+	} else {
+		*path = 0;
 	}
-	else
-	*path = 0;
 	strcat (path, fname);
-	if (ext && *ext)
-	{
+	if (ext && *ext) {
 		strcat (path, ".");
 		strcat (path, ext);
 	}
 }
 
-void _splitpath (const char *path, char *drive, char *dir, char *fname,
-	char *ext)
+void PathSplit(const char *path, char *drive, char *dir, char *fname, char *ext)
 {
 	*drive = 0;
 
@@ -59,4 +56,15 @@ void _splitpath (const char *path, char *drive, char *dir, char *fname,
 		else
 			strcpy (ext, "");
 	}
-} 
+}
+
+const char * PathBasename(const char * path)
+{
+	const char * p = strrchr (path, '/');
+
+	if (p)
+		return p + 1;
+
+	return path;
+}
+

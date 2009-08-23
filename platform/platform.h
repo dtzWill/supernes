@@ -1,14 +1,13 @@
-#ifndef _PLATFORM_SDL_H_
-#define _PLATFORM_SDL_H_
+#ifndef _PLATFORM_H_
+#define _PLATFORM_H_
 
 #include "port.h"
 
 // Configuration and command line parsing
 void S9xLoadConfig(int argc, const char ** argv);
+void S9xUnloadConfig();
 void S9xSetRomFile(const char * file);
 extern struct config {
-	char romFile[PATH_MAX + 1];
-	char hacksFile[PATH_MAX + 1];
 	/** Unfreeze from .frz.gz snapshot on start */
 	bool snapshotLoad;
 	/** Freeze to .frz.gz on exit */
@@ -19,8 +18,12 @@ extern struct config {
 	bool xsp;
 	/** Audio output enabled */
 	bool enableAudio;
+	/** Speedhacks file to use */
+	char * hacksFile;
+	/** Current scancode->joypad mapping */
 	unsigned short joypad1Mapping[256];
 	unsigned char action[256];
+	/** If true, next time the main loop is entered application will close */
 	bool quitting;
 } Config;
 
@@ -39,8 +42,5 @@ void S9xAudioOutputEnable(bool enable);
 #define	kActionToggleFullscreen		(1U << 1)
 
 void S9xDoAction(unsigned char action);
-
-// Path things
-const char * S9xFiletitle (const char * f);
 
 #endif

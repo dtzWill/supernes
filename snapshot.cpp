@@ -563,7 +563,7 @@ static int Unfreeze()
 	}
 	
     if (strcasecmp (rom_filename, Memory.ROMFilename) != 0 &&
-	strcasecmp (S9xBasename (rom_filename), S9xBasename (Memory.ROMFilename)) != 0)
+	strcasecmp (PathBasename(rom_filename), PathBasename(Memory.ROMFilename)) != 0)
     {
 		S9xMessage (S9X_WARNING, S9X_FREEZE_ROM_NAME,
 		    "Current loaded ROM image doesn't match that required by freeze-game file.");

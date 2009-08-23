@@ -82,22 +82,22 @@ typedef int8_t			int8_32;
 typedef int16_t			int16_32;
 
 //Defines for Extern C
-#define EXTERN_C extern "C"
 #ifdef __cplusplus
+#define EXTERN_C extern "C"
 #define START_EXTERN_C EXTERN_C {
 #define END_EXTERN_C }
 #else
+#define EXTERN_C extern
 #define START_EXTERN_C
 #define END_EXTERN_C
 #endif
 
 //Path Defines
-#undef  _MAX_PATH
 #define _MAX_DIR PATH_MAX
 #define _MAX_DRIVE 1
-#define _MAX_FNAME PATH_MAX
-#define _MAX_EXT PATH_MAX
-#define _MAX_PATH (PATH_MAX)
+#define _MAX_FNAME NAME_MAX
+#define _MAX_EXT NAME_MAX
+#define _MAX_PATH PATH_MAX
 
 //True/False Defines
 #define TRUE 1
@@ -128,14 +128,12 @@ typedef int16_t			int16_32;
 #endif
 
 START_EXTERN_C
-
-void S9xGenerateSound ();
-
-void _makepath (char *path, const char *drive, const char *dir,
-		const char *fname, const char *ext);
-void _splitpath (const char *path, char *drive, char *dir, char *fname,
-		 char *ext);
-
+// Path functions
+void PathMake(char *path, const char *drive, const char *dir,
+	const char *fname, const char *ext);
+void PathSplit(const char *path, char *drive, char *dir, char *fname, char *ext);
+/** A simplified basename function returning a pointer inside the same string */
+const char * PathBasename(const char * path);
 END_EXTERN_C
 
 #endif

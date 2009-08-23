@@ -339,17 +339,8 @@ bool8_32 CMemory::LoadROM (const char *filename)
 
     CalculatedSize = 0;
 again:
-#ifndef _SNESPPC
-    _splitpath (filename, drive, dir, name, ext);
-    _makepath (fname, drive, dir, name, ext);
-#else
-	strcpy(fname, filename);
-//	strupr(fname);
-#endif
-
-#ifdef __WIN32__
-    memmove (&ext [0], &ext[1], 4);
-#endif
+    PathSplit(filename, drive, dir, name, ext);
+    PathMake(fname, drive, dir, name, ext);
 
     int32 TotalFileSize = 0;
 
@@ -393,15 +384,9 @@ again:
 	    if (ptr - ROM < MAX_ROM_SIZE + 0x200 &&
 		(isdigit (ext [0]) && ext [1] == 0 && ext [0] < '9'))
 	    {
-		more = TRUE;
-		ext [0]++;
-#ifdef __WIN32__
-                memmove (&ext [1], &ext [0], 4);
-                ext [0] = '.';
-#endif
-#ifndef _SNESPPC
-		_makepath (fname, drive, dir, name, ext);
-#endif
+			more = TRUE;
+			ext [0]++;
+			PathMake(fname, drive, dir, name, ext);
 		}
 	    else
 	    if (ptr - ROM < MAX_ROM_SIZE + 0x200 &&
@@ -410,18 +395,12 @@ again:
 		 isdigit (name [2]) && isdigit (name [3]) && isdigit (name [4]) &&
 		 isdigit (name [5]) && isalpha (name [len - 1])))
 	    {
-		more = TRUE;
-		name [len - 1]++;
-#ifdef __WIN32__
-                memmove (&ext [1], &ext [0], 4);
-                ext [0] = '.';
-#endif
-#ifndef _SNESPPC
-		_makepath (fname, drive, dir, name, ext);
-#endif
+			more = TRUE;
+			name [len - 1]++;
+			PathMake(fname, drive, dir, name, ext);
 		}
 	    else
-		more = FALSE;
+			more = FALSE;
 	} while (more && (ROMFile = OPEN_STREAM (fname, "rb")) != NULL);
     }
 
@@ -657,7 +636,7 @@ again:
     FreeSDD1Data ();
     InitROM (Tales);
 	
-    S9xLoadCheatFile (S9xGetFilename(".cht"));
+    S9xLoadCheatFile (S9xGetFilename(FILE_CHT));
     S9xInitCheatData ();
     S9xApplyCheats ();
 
@@ -2599,7 +2578,7 @@ void CMemory::CheckForIPSPatch (const char *rom_filename, bool8_32 header,
     FILE  *patch_file  = NULL;
     long  offset = header ? 512 : 0;
 
-    if (!(patch_file = fopen(S9xGetFilename (".ips"), "rb"))) return;
+    if (!(patch_file = fopen(S9xGetFilename(FILE_IPS), "rb"))) return;
 
     if (fread (fname, 1, 5, patch_file) != 5 || strncmp (fname, "PATCH", 5) != 0)
     {

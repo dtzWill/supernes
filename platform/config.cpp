@@ -17,7 +17,14 @@
 
 struct config Config;
 
-static const struct poptOption optionsTable[] = {
+/** Path to current rom file, with extension. */
+static char * romFile;
+/** Path to rom file, without extension.
+ *  Used as a simple optimization to S9xGetFilename
+ */
+static char * basePath;
+
+static struct poptOption commonOptionsTable[] = {
 	{ "disable-audio", 'a', POPT_ARG_NONE, 0, 1,
 	"disable emulation and output of audio", 0 },
 	{ "display-framerate", 'r', POPT_ARG_NONE, 0, 2,
@@ -44,6 +51,12 @@ static const struct poptOption optionsTable[] = {
 	"Enable SuperScope", 0},
 	{ "snapshot", 'o', POPT_ARG_NONE, 0, 13,
 	"Unfreeze previous game on start and freeze game on exit", 0 },
+	{ "audio-rate", 'u', POPT_ARG_INT, 0, 14,
+	"Audio output rate", "HZ" },
+	POPT_TABLEEND
+};
+
+static struct poptOption configOptionsTable[] = {
 	{ "scancode", '\0', POPT_ARG_INT, 0, 100,
 	"Scancode to map", "CODE" },
 	{ "button", '\0', POPT_ARG_STRING, 0, 101,
@@ -52,6 +65,14 @@ static const struct poptOption optionsTable[] = {
 	"Emulator action to do (fullscreen, quit, ...)", "action" },
 	{ "hacks-file", '\0', POPT_ARG_STRING, 0, 200,
 	"Path to snesadvance.dat file", "FILE" },
+	POPT_TABLEEND
+};
+
+static struct poptOption optionsTable[] = {
+	{ 0, '\0', POPT_ARG_INCLUDE_TABLE, commonOptionsTable, 0,
+	"Common options", 0 },
+	{ 0, '\0', POPT_ARG_INCLUDE_TABLE, configOptionsTable, 0,
+	"Configuration file options", 0 },
 	POPT_AUTOHELP
 	POPT_TABLEEND
 };
@@ -96,33 +117,37 @@ static unsigned char actionNameToBit(const char *s) {
 	}
 }
 
-const char * S9xFiletitle(const char * f)
-{
-	if (!f) return 0;
-	
-	const char * p = strrchr (f, '.');
-
-	if (p)
-		return p + 1;
-
-	return f;
-}
-
-const char * S9xBasename(const char * f)
-{
-	const char * p = strrchr (f, '/');
-
-	if (p)
-		return p + 1;
-
-	return f;
-}
-
-const char * S9xGetFilename(const char * ext)
+const char * S9xGetFilename(FileTypes file)
 {
 	static char filename [PATH_MAX + 1];
-	sprintf(filename, "%s%s", Config.romFile, ext);
+	const char * ext;
+	switch (file) {
+		case FILE_ROM:
+			return romFile;
+		case FILE_SRAM:
+			ext = "srm";
+			break;
+		case FILE_FREEZE:
+			ext = "frz.gz";
+			break;
+		case FILE_CHT:
+			ext = "cht";
+			break;
+		case FILE_IPS:
+			ext = "ips";
+			break;
+		case FILE_SCREENSHOT:
+			ext = "png";
+			break;
+		case FILE_SDD1_DAT:
+			ext = "dat";
+			break;
+		default:
+			ext = "???";
+			break;
+	}
 
+	snprintf(filename, PATH_MAX, "%s.%s", basePath, ext);
 	return filename;
 }
 
@@ -131,10 +156,14 @@ static void loadDefaults()
 	ZeroMemory(&Settings, sizeof(Settings));
 	ZeroMemory(&Config, sizeof(Config)); 
 	
+	romFile = 0;
+	basePath = 0;
+
 	Config.quitting = false;
 	Config.enableAudio = true;
 	Config.fullscreen = false;
 	Config.xsp = false;
+	Config.hacksFile = 0;
 
 	Settings.JoystickEnabled = FALSE;
 	Settings.SoundPlaybackRate = 22050;
@@ -167,9 +196,6 @@ static void loadDefaults()
 	Settings.ApplyCheats = FALSE;
 	Settings.TurboMode = FALSE;
 	Settings.TurboSkipFrames = 15;
-	//Settings.ThreadSound = FALSE;
-	//Settings.SoundSync = FALSE;
-	//Settings.NoPatch = true;
     
     Settings.ForcePAL = FALSE;
     Settings.ForceNTSC = FALSE;
@@ -184,15 +210,24 @@ static void loadDefaults()
 
 void S9xSetRomFile(const char * path)
 {
-	char drive[1], dir[PATH_MAX], fname[PATH_MAX], ext[PATH_MAX];
-	
-	_splitpath (path, drive, dir, fname, ext);
-	sprintf(Config.romFile, "%s%s%s", dir, strlen(dir) > 0 ? "/" : "", fname);
+	if (romFile) {
+		free(romFile);
+		free(basePath);
+	}
+
+	romFile = strndup(path, PATH_MAX);
+	basePath = strdup(romFile);
+
+	// Truncate base path at the last '.' char
+	char * c = strrchr(basePath, '.');
+	if (c) {
+		*c = '\0';
+	}
 }
 
 static bool gotRomFile() 
 {
-	return Config.romFile[0] != '\0';
+	return romFile ? true : false;
 }
 
 static void setHacks(const char * value)
@@ -305,6 +340,9 @@ static void parseArgs(poptContext optCon)
 				Config.snapshotLoad = true;
 				Config.snapshotSave = true;
 				break;
+			case 14:
+				Settings.SoundPlaybackRate = atoi(poptGetOptArg(optCon));
+				break;
 			case 100:
 				scancode = atoi(poptGetOptArg(optCon));
 				break;
@@ -317,7 +355,8 @@ static void parseArgs(poptContext optCon)
 					actionNameToBit(poptGetOptArg(optCon));
 				break;
 			case 200:
-				strcpy(Config.hacksFile, poptGetOptArg(optCon));
+				free(Config.hacksFile);
+				Config.hacksFile = strdup(poptGetOptArg(optCon));
 				break;
 			default:
 				DIE("Invalid popt argument (this is a bug): %d", rc);
@@ -366,5 +405,21 @@ void S9xLoadConfig(int argc, const char ** argv)
 	}
 
 	poptFreeContext(optCon);
+}
+
+void S9xUnloadConfig()
+{
+	if (romFile) {
+		free(romFile);
+		romFile = 0;
+	}
+	if (basePath) {
+		free(basePath);
+		basePath = 0;
+	}
+	if (Config.hacksFile) {
+		free(Config.hacksFile);
+		Config.hacksFile = 0;
+	}
 }
 

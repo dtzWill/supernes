@@ -65,22 +65,10 @@ void S9xToggleSoundChannel (int channel);
 void S9xSetInfoString (const char *string);
 int S9xMinCommandLineArgs ();
 void S9xNextController ();
-bool8_32 S9xLoadROMImage (const char *string);
-const char *S9xSelectFilename (const char *def, const char *dir,
-			       const char *ext, const char *title);
 
-const char *S9xChooseFilename (bool8_32 read_only);
 bool8_32 S9xOpenSnapshotFile (const char *base, bool8_32 read_only, STREAM *file);
 void S9xCloseSnapshotFile (STREAM file);
 
-const char *S9xBasename (const char *filename);
-
-int S9xFStrcmp (FILE *, const char *);
-const char *S9xGetHomeDirectory ();
-const char *S9xGetSnapshotDirectory ();
-const char *S9xGetROMDirectory ();
-const char *S9xGetSRAMFilename ();
-const char *S9xGetFilename (const char *extension);
 END_EXTERN_C
 
 #endif
