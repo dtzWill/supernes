@@ -19,4 +19,7 @@ void save_load(GtkWindow* parent);
 void save_save(GtkWindow* parent);
 void save_save_as(GtkWindow* parent);
 
+/* controls.c */
+void controls_dialog(GtkWindow* parent);
+
 #endif

@@ -41,9 +41,9 @@ static GtkWidget ** load_menu(guint *);
 static void update_menu(void);
 static void plugin_callback(GtkWidget * menu_item, gpointer data);
 
-GConfClient *gcc = NULL;
+GConfClient * gcc = NULL;
 static GameStartupInfo gs;
-GtkWidget *menu_items[2];
+static GtkWidget * menu_items[1];
 
 static StartupPluginInfo plugin_info = {
 	load_plugin,
@@ -114,6 +114,11 @@ static void select_rom_callback(GtkWidget * button, gpointer data)
 		set_rom(filename);
 		g_free(filename);
 	}
+}
+
+static void controls_item_callback(GtkWidget * button, gpointer data)
+{
+	controls_dialog(get_parent_window());
 }
 
 static void auto_framerate_callback(GtkWidget * button, gpointer data)
@@ -255,14 +260,26 @@ static void write_config(void)
 
 static GtkWidget **load_menu(guint *nitems)
 {
-	*nitems = 0;
+	menu_items[0] = gtk_menu_item_new_with_label("Settings");
+	*nitems = 1;
+
+	GtkMenu* settings_menu = GTK_MENU(gtk_menu_new());
+	GtkMenuItem* controls_item =
+		GTK_MENU_ITEM(gtk_menu_item_new_with_label("Controls..."));
 	
-	return NULL;
+	gtk_menu_item_set_submenu(GTK_MENU_ITEM(menu_items[0]),
+		GTK_WIDGET(settings_menu));
+	gtk_menu_append(GTK_MENU(settings_menu), GTK_WIDGET(controls_item));
+
+	g_signal_connect(G_OBJECT(controls_item), "activate",
+					G_CALLBACK(controls_item_callback), NULL);
+
+	return menu_items;
 }
 
 static void update_menu(void)
 {
-
+	// Nothing to update in the current menu
 }
 
 static void plugin_callback(GtkWidget * menu_item, gpointer data)
