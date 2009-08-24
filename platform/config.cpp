@@ -53,6 +53,8 @@ static struct poptOption commonOptionsTable[] = {
 	"Unfreeze previous game on start and freeze game on exit", 0 },
 	{ "audio-rate", 'u', POPT_ARG_INT, 0, 14,
 	"Audio output rate", "HZ" },
+	{ "audio-buffer-size", 'b', POPT_ARG_INT, 0, 15,
+	"Audio output buffer size", "SAMPLES" },
 	POPT_TABLEEND
 };
 
@@ -168,7 +170,7 @@ static void loadDefaults()
 	Settings.JoystickEnabled = FALSE;
 	Settings.SoundPlaybackRate = 22050;
 	Settings.Stereo = TRUE;
-	Settings.SoundBufferSize = 0;
+	Settings.SoundBufferSize = 512; // in samples
 	Settings.CyclesPercentage = 100;
 	Settings.DisableSoundEcho = FALSE;
 	Settings.APUEnabled = FALSE;
@@ -342,6 +344,9 @@ static void parseArgs(poptContext optCon)
 				break;
 			case 14:
 				Settings.SoundPlaybackRate = atoi(poptGetOptArg(optCon));
+				break;
+			case 15:
+				Settings.SoundBufferSize = atoi(poptGetOptArg(optCon));
 				break;
 			case 100:
 				scancode = atoi(poptGetOptArg(optCon));
