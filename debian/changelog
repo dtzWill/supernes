@@ -11,8 +11,11 @@ drnoksnes (0.9.4) unstable; urgency=low
   * Fixed bug with non-.smc roms in frontend.
   * Switched to SDL GetTicks/Delay functions instead of gettimeofday/usleep.
   * GUI now allows to set simple button/key mappings.
+  * Better audio quality when using ESD backend.
+  * Configurable audio rate & audio buffer size (cmd line or config file).
+  * Fixed crash when missing config file.
 
- -- Javier S. Pedro <maemo@javispedro.com>  Tue, 25 Aug 2009 18:12:39 +0200
+ -- Javier S. Pedro <maemo@javispedro.com>  Tue, 25 Aug 2009 19:26:11 +0200
 
 drnoksnes (0.9.3) unstable; urgency=low
 

@@ -225,7 +225,7 @@ int main(int argc, const char ** argv) {
 	// Late initialization
 	sprintf(String, "DrNokSnes - %s", Memory.ROMName);
 	S9xSetTitle(String);
-	S9xHacksLoadFile(Config.hacksFile[0] ? Config.hacksFile : 0);
+	S9xHacksLoadFile(Config.hacksFile);
 	if (!S9xGraphicsInit())
          DIE("S9xGraphicsInit failed");
 	S9xAudioOutputEnable(true);
