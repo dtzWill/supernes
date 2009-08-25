@@ -118,6 +118,7 @@ static void select_rom_callback(GtkWidget * button, gpointer data)
 
 static void controls_item_callback(GtkWidget * button, gpointer data)
 {
+	controls_setup();
 	controls_dialog(get_parent_window());
 }
 
@@ -256,6 +257,8 @@ static void write_config(void)
 		gtk_dialog_run(GTK_DIALOG(note));
 		gtk_widget_destroy(note);
 	}
+
+	controls_setup();
 }
 
 static GtkWidget **load_menu(guint *nitems)

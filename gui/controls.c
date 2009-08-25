@@ -29,9 +29,11 @@
 
 static GtkDialog* dialog;
 static GtkComboBox* combo;
+static GtkLabel* none_label;
 static GtkScrolledWindow* keys_scroll;
 static GtkListStore* keys_store;
 static GtkTreeView* keys_list;
+static GtkLabel* ts_label;
 
 enum
 {
@@ -43,34 +45,48 @@ enum
 typedef struct ButtonEntry {
 	const char * name;
 	const char * gconf_key;
-	int scancode;
+	unsigned char scancode;
+	unsigned char default_scancode;
 } ButtonEntry;
-#define BUTTON_INITIALIZER(name)	{ name, kGConfKeysPath name, 0 }
-#define BUTTON_LAST					{ 0 }
+#define BUTTON_INITIALIZER(desc, name, default) \
+	{ desc, kGConfKeysPath "/" name, 0, default }
+#define BUTTON_LAST	\
+	{ 0 }
 static const ButtonEntry buttons[] = {
-	BUTTON_INITIALIZER("A"),
-	BUTTON_INITIALIZER("B"),
-	BUTTON_INITIALIZER("X"),
-	BUTTON_INITIALIZER("Y"),
-	BUTTON_INITIALIZER("L"),
-	BUTTON_INITIALIZER("R"),
-	BUTTON_INITIALIZER("Start"),
-	BUTTON_INITIALIZER("Select"),
-	BUTTON_INITIALIZER("Up"),
-	BUTTON_INITIALIZER("Down"),
-	BUTTON_INITIALIZER("Left"),
-	BUTTON_INITIALIZER("Right"),
+	BUTTON_INITIALIZER("A", "a", 48),
+	BUTTON_INITIALIZER("B", "b", 20),
+	BUTTON_INITIALIZER("X", "x", 32),
+	BUTTON_INITIALIZER("Y", "y", 45),
+	BUTTON_INITIALIZER("L", "l", 24),
+	BUTTON_INITIALIZER("R", "r", 22),
+	BUTTON_INITIALIZER("Start", "start", 65),
+	BUTTON_INITIALIZER("Select", "select", 135),
+	BUTTON_INITIALIZER("Up", "up", 111),
+	BUTTON_INITIALIZER("Down", "down", 116),
+	BUTTON_INITIALIZER("Left", "left", 113),
+	BUTTON_INITIALIZER("Right", "right", 114),
+	BUTTON_INITIALIZER("Return to launcher", "quit", 9),
+	BUTTON_INITIALIZER("Fullscreen", "fullscreen", 72),
 	BUTTON_LAST
 };
 
 static void show_widgets()
 {
 	gtk_widget_show_all(GTK_WIDGET(combo));
+	gtk_widget_hide_all(GTK_WIDGET(none_label));
 	gtk_widget_hide_all(GTK_WIDGET(keys_scroll));
+	gtk_widget_hide_all(GTK_WIDGET(ts_label));
 	switch (gtk_combo_box_get_active(combo)) {
+		case 0:
+			gtk_widget_show_all(GTK_WIDGET(none_label));
+			g_debug("Showing label\n");
+			break;
 		case 1:
 			gtk_widget_show_all(GTK_WIDGET(keys_scroll));
-		break;
+			break;
+		case 2:
+			gtk_widget_show_all(GTK_WIDGET(ts_label));
+			break;
 	}
 }
 
@@ -83,8 +99,8 @@ static gboolean load_key_config(GtkTreeModel *model, GtkTreePath *path,
 		BUTTONENTRY_COLUMN, &button_entry,
 		-1);
 
-	button_entry->scancode =
-		gconf_client_get_int(gcc, button_entry->gconf_key, NULL);
+	int scancode = gconf_client_get_int(gcc, button_entry->gconf_key, NULL);
+	button_entry->scancode = scancode;
 	gtk_tree_model_row_changed(GTK_TREE_MODEL(keys_store), path, iter);
 
 	return FALSE;
@@ -102,16 +118,11 @@ static void load_config()
 
 	gtk_combo_box_set_active(combo, gconf_value_get_int(mapping));
 
+	gconf_client_preload(gcc, kGConfKeysPath, GCONF_CLIENT_PRELOAD_ONELEVEL, NULL);
 	gtk_tree_model_foreach(GTK_TREE_MODEL(keys_store), load_key_config, NULL);
 
 	show_widgets();
 	gconf_value_free(mapping);
-}
-
-static void write_config()
-{
-	gconf_client_set_int(gcc, kGConfMapping,
-		gtk_combo_box_get_active(combo), NULL);
 }
 
 static void
@@ -154,8 +165,9 @@ cb_key_edited(GtkCellRendererText *cell, const char *path_string,
 		BUTTONENTRY_COLUMN, &button_entry,
 		-1);
 
-    g_debug("Setting scancode for button %s to %u\n",
+	g_debug("Setting scancode for button %s to %u\n",
 		button_entry->name, scancode);
+	gconf_client_set_int(gcc, button_entry->gconf_key, scancode, NULL);
 
 	button_entry->scancode = scancode;
 	gtk_tree_model_row_changed(GTK_TREE_MODEL(keys_store), path, &iter);
@@ -177,18 +189,43 @@ cb_key_cleared(GtkCellRendererText *cell, const char *path_string,
 		BUTTONENTRY_COLUMN, &button_entry,
 		-1);
 
+	g_debug("Clearing scancode for button %s\n", button_entry->name);
+	gconf_client_unset(gcc, button_entry->gconf_key, NULL);
+
 	button_entry->scancode = 0;
 }
 
 static void cb_combo_changed(GtkComboBox * widget, gpointer data)
 {
 	show_widgets();
+	gconf_client_set_int(gcc, kGConfMapping,
+		gtk_combo_box_get_active(combo), NULL);
 }
 
 static void cb_dialog_response(GtkWidget * button, gpointer data)
 {
-	write_config();
 	gtk_widget_destroy(GTK_WIDGET(dialog));
+}
+
+void controls_setup()
+{
+	GConfValue* mapping = gconf_client_get(gcc, kGConfMapping, NULL);
+
+	if (!mapping) {
+		// Key not set; setup defaults
+		int i;
+		for (i = 0; buttons[i].name; i++) {
+			gconf_client_set_int(gcc,
+				buttons[i].gconf_key, buttons[i].default_scancode, NULL);
+		}
+
+		g_debug("Loading default key mappings\n");
+
+		gconf_client_set_int(gcc, kGConfMapping, 1, NULL);
+	} else {
+		// If this is set, consider defaults loaded.
+		gconf_value_free(mapping);
+	}
 }
 
 void controls_dialog(GtkWindow* parent)
@@ -202,7 +239,11 @@ void controls_dialog(GtkWindow* parent)
 	gtk_combo_box_append_text(combo, "Use physical keys");
 	gtk_combo_box_append_text(combo, "Use touchscreen");
 
+	none_label = GTK_LABEL(gtk_label_new("Check documentation for details."));
+
 	keys_scroll = GTK_SCROLLED_WINDOW(gtk_scrolled_window_new(NULL, NULL));
+	gtk_scrolled_window_set_policy(keys_scroll,
+		GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
 	keys_store = GTK_LIST_STORE(gtk_list_store_new(N_COLUMNS,
 		G_TYPE_STRING, G_TYPE_POINTER));
 	keys_list = GTK_TREE_VIEW(
@@ -236,11 +277,15 @@ void controls_dialog(GtkWindow* parent)
 			-1);
 	}
 
+	ts_label = GTK_LABEL(gtk_label_new("Not implemented."));
+
 	gtk_window_resize(GTK_WINDOW(dialog), 600, 340);
 	gtk_box_pack_start(GTK_BOX(dialog->vbox), GTK_WIDGET(combo),
 		FALSE, FALSE, HILDON_MARGIN_HALF);
 	gtk_container_add(GTK_CONTAINER(keys_scroll), GTK_WIDGET(keys_list));
+	gtk_box_pack_start_defaults(GTK_BOX(dialog->vbox), GTK_WIDGET(none_label));
 	gtk_box_pack_start_defaults(GTK_BOX(dialog->vbox), GTK_WIDGET(keys_scroll));
+	gtk_box_pack_start_defaults(GTK_BOX(dialog->vbox), GTK_WIDGET(ts_label));
 
 	load_config();
 

@@ -16,6 +16,8 @@
 bool hgwLaunched;
 static HgwContext *hgw;
 
+static void parseGConfKeyMappings();
+
 void HgwInit()
 {
 	// hildon-games-wrapper sets this env variable for itself.
@@ -96,6 +98,15 @@ void HgwConfig()
 		}
 	}
 
+	int mappings = 0;
+	if (hgw_conf_request_int(hgw, kGConfMapping, &mappings) == HGW_ERR_NONE) {
+		switch (mappings) {
+			case 1:
+				parseGConfKeyMappings();
+				break;
+		}
+	}
+
 	HgwStartCommand cmd = hgw_context_get_start_command(hgw);
 	switch (cmd) {
 		default:
@@ -152,4 +163,56 @@ void HgwPollEvents()
 	}
 }
 
+// For now, please keep this in sync with ../gui/controls.c
+typedef struct ButtonEntry {
+	char * gconf_key;
+	unsigned long mask;
+	bool is_action;
+} ButtonEntry;
+#define BUTTON_INITIALIZER(button, name) \
+	{ kGConfKeysPath "/" name, SNES_##button##_MASK, false }
+#define ACTION_INITIALIZER(action, name) \
+	{ kGConfKeysPath "/" name, kAction##action, true }
+#define BUTTON_LAST	\
+	{ 0 }
+static const ButtonEntry buttons[] = {
+	BUTTON_INITIALIZER(A, "a"),
+	BUTTON_INITIALIZER(B, "b"),
+	BUTTON_INITIALIZER(X, "x"),
+	BUTTON_INITIALIZER(Y, "y"),
+	BUTTON_INITIALIZER(TL, "l"),
+	BUTTON_INITIALIZER(TR, "r"),
+	BUTTON_INITIALIZER(START, "start"),
+	BUTTON_INITIALIZER(SELECT, "select"),
+	BUTTON_INITIALIZER(UP, "up"),
+	BUTTON_INITIALIZER(DOWN, "down"),
+	BUTTON_INITIALIZER(LEFT, "left"),
+	BUTTON_INITIALIZER(RIGHT, "right"),
+	ACTION_INITIALIZER(Quit, "quit"),
+	ACTION_INITIALIZER(ToggleFullscreen, "fullscreen"),
+	BUTTON_LAST
+};
+
+static void parseGConfKeyMappings()
+{
+	// Discard any other mapping
+	ZeroMemory(Config.joypad1Mapping, sizeof(Config.joypad1Mapping));
+	ZeroMemory(Config.action, sizeof(Config.action));
+
+	printf("Hgw: Using gconf key mappings\n");
+
+	int i, scancode;
+	for (i = 0; buttons[i].gconf_key; i++) {
+		if (hgw_conf_request_int(hgw, buttons[i].gconf_key, &scancode) == HGW_ERR_NONE) {
+			if (scancode < 0) scancode = 0;
+			else if (scancode > 255) scancode = 0;
+
+			if (buttons[i].is_action) {
+				Config.action[scancode] = buttons[i].mask;
+			} else {
+				Config.joypad1Mapping[scancode] = buttons[i].mask;
+			}
+		}
+	}
+}
 
