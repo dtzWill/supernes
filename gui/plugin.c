@@ -235,7 +235,7 @@ static void write_config(void)
 {
 	// Write settings to GConf
 	gconf_client_set_bool(gcc, kGConfDisableAudio,
-		gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(audio_check)), NULL);
+		!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(audio_check)), NULL);
 	gconf_client_set_bool(gcc, kGConfTurboMode,
 		gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(turbo_check)), NULL);
 	if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(auto_framerate_check))) {
@@ -268,7 +268,7 @@ static GtkWidget **load_menu(guint *nitems)
 
 	GtkMenu* settings_menu = GTK_MENU(gtk_menu_new());
 	GtkMenuItem* controls_item =
-		GTK_MENU_ITEM(gtk_menu_item_new_with_label("Controls..."));
+		GTK_MENU_ITEM(gtk_menu_item_new_with_label("Controls…"));
 	
 	gtk_menu_item_set_submenu(GTK_MENU_ITEM(menu_items[0]),
 		GTK_WIDGET(settings_menu));

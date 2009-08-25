@@ -9,7 +9,7 @@
 
 #define CELL_RENDERER_TEXT_PATH "cell-renderer-key-text"
 
-#define TOOLTIP_TEXT _("New accelerator...")
+#define TOOLTIP_TEXT _("Press key or…")
 
 static void             cell_renderer_key_finalize      (GObject             *object);
 static void             cell_renderer_key_init          (CellRendererKey *cell_key);
@@ -236,8 +236,8 @@ cell_renderer_key_get_size (GtkCellRenderer *cell,
   CellRendererKey *key = (CellRendererKey *) cell;
   GtkRequisition requisition;
 
-  if (key->sizing_label == NULL)
-    key->sizing_label = gtk_label_new (TOOLTIP_TEXT);
+  if (!key->sizing_label)
+    key->sizing_label = gtk_label_new(TOOLTIP_TEXT);
 
   gtk_widget_size_request (key->sizing_label, &requisition);
   (* GTK_CELL_RENDERER_CLASS (parent_class)->get_size) (cell, widget, cell_area, x_offset, y_offset, width, height);
@@ -255,40 +255,46 @@ grab_key_callback (GtkWidget    *widget,
                    void         *data)
 {
   char *path;
-  gboolean edited;
-  gboolean cleared;
-  
   CellRendererKey* key = CELL_RENDERER_KEY(data);
-
-  edited = FALSE;
-  cleared = FALSE;
-
   guint scancode = event->hardware_keycode;
-  edited = TRUE;
- out:
+
   gdk_keyboard_ungrab (event->time);
   gdk_pointer_ungrab (event->time);
-  
+
   path = g_strdup (g_object_get_data (G_OBJECT (key->edit_widget), CELL_RENDERER_TEXT_PATH));
 
   gtk_cell_editable_editing_done(GTK_CELL_EDITABLE (key->edit_widget));
   gtk_cell_editable_remove_widget(GTK_CELL_EDITABLE (key->edit_widget));
   key->edit_widget = NULL;
   key->grab_widget = NULL;
-  
-  if (edited)
-    {
-      cell_renderer_key_set_scancode(key, scancode);
-      g_signal_emit_by_name (G_OBJECT(key), "accel_edited", path, scancode);
-    }
-  else if (cleared)
-    {
-      cell_renderer_key_set_scancode(key, 0);
-      g_signal_emit_by_name (G_OBJECT(key), "accel_cleared", path);
-    }
+
+  cell_renderer_key_set_scancode(key, scancode);
+  g_signal_emit_by_name (G_OBJECT(key), "accel_edited", path, scancode);
 
   g_free (path);
   return TRUE;
+}
+
+static void
+clear_key_callback(GtkButton *widget, gpointer data)
+{
+  char *path;
+  CellRendererKey* key = CELL_RENDERER_KEY(data);
+
+  gdk_keyboard_ungrab(GDK_CURRENT_TIME);
+  gdk_pointer_ungrab(GDK_CURRENT_TIME);
+
+  path = g_strdup (g_object_get_data (G_OBJECT (key->edit_widget), CELL_RENDERER_TEXT_PATH));
+
+  gtk_cell_editable_editing_done(GTK_CELL_EDITABLE (key->edit_widget));
+  gtk_cell_editable_remove_widget(GTK_CELL_EDITABLE (key->edit_widget));
+  key->edit_widget = NULL;
+  key->grab_widget = NULL;
+
+  cell_renderer_key_set_scancode(key, 0);
+  g_signal_emit_by_name (G_OBJECT(key), "accel_cleared", path);
+
+  g_free (path);
 }
 
 static void
@@ -340,7 +346,7 @@ pointless_eventbox_subclass_get_type (void)
         (GInterfaceInitFunc) pointless_eventbox_cell_editable_init,
         NULL, NULL };
 
-      eventbox_type = g_type_register_static (GTK_TYPE_EVENT_BOX, "EggCellEditableEventBox", &eventbox_info, 0);
+      eventbox_type = g_type_register_static (GTK_TYPE_EVENT_BOX, "CellEditableEventBox", &eventbox_info, 0);
       
       g_type_add_interface_static (eventbox_type,
 				   GTK_TYPE_CELL_EDITABLE,
@@ -361,7 +367,9 @@ cell_renderer_key_start_editing (GtkCellRenderer      *cell,
 {
   GtkCellRendererText *celltext;
   CellRendererKey *key;
+  GtkWidget *hbox;
   GtkWidget *label;
+  GtkWidget *clear_button;
   GtkWidget *eventbox;
   
   celltext = GTK_CELL_RENDERER_TEXT (cell);
@@ -377,7 +385,7 @@ cell_renderer_key_start_editing (GtkCellRenderer      *cell,
                          gdk_event_get_time (event)) != GDK_GRAB_SUCCESS)
     return NULL;
 
-  if (gdk_pointer_grab (widget->window, FALSE,
+  if (gdk_pointer_grab (widget->window, TRUE,
                         GDK_BUTTON_PRESS_MASK,
                         NULL, NULL,
                         gdk_event_get_time (event)) != GDK_GRAB_SUCCESS)
@@ -388,38 +396,47 @@ cell_renderer_key_start_editing (GtkCellRenderer      *cell,
   
   key->grab_widget = widget;
 
-  g_signal_connect (G_OBJECT (widget), "key_press_event",
+  g_signal_connect(G_OBJECT (widget), "key_press_event",
                     G_CALLBACK (grab_key_callback), key);
 
-  eventbox = g_object_new (pointless_eventbox_subclass_get_type (),
-                           NULL);
+  eventbox = g_object_new(pointless_eventbox_subclass_get_type(), NULL);
   key->edit_widget = eventbox;
   g_object_add_weak_pointer (G_OBJECT (key->edit_widget),
                              (void**) &key->edit_widget);
-  
-  label = gtk_label_new (NULL);
-  //gtk_misc_set_alignment (GTK_MISC (label), 0.0, 0.0);
-  
-  gtk_widget_modify_bg (eventbox, GTK_STATE_NORMAL,
+
+
+  hbox = gtk_hbox_new(FALSE, 2);
+
+  label = gtk_label_new(TOOLTIP_TEXT);
+  gtk_label_set_single_line_mode(GTK_LABEL(label), TRUE);
+  gtk_misc_set_alignment(GTK_MISC(label), 0.0, 0.0);
+
+  clear_button = gtk_button_new_from_stock(GTK_STOCK_DELETE);
+  g_signal_connect(G_OBJECT(clear_button), "clicked",
+                    G_CALLBACK(clear_key_callback), key);
+
+  gtk_widget_modify_bg(eventbox, GTK_STATE_NORMAL,
                         &widget->style->bg[GTK_STATE_SELECTED]);
 
-  gtk_widget_modify_fg (label, GTK_STATE_NORMAL,
+  gtk_widget_modify_fg(label, GTK_STATE_NORMAL,
                         &widget->style->fg[GTK_STATE_SELECTED]);
-  
-  gtk_label_set_text (GTK_LABEL (label),
-		  TOOLTIP_TEXT);
 
-  gtk_container_add (GTK_CONTAINER (eventbox), label);
-  
-  g_object_set_data_full (G_OBJECT (key->edit_widget), CELL_RENDERER_TEXT_PATH,
+  gtk_box_pack_start_defaults(GTK_BOX(hbox), label);
+  gtk_box_pack_start(GTK_BOX(hbox), clear_button, FALSE, FALSE, 0);
+  gtk_container_add(GTK_CONTAINER(eventbox), hbox);
+  gtk_container_set_border_width(GTK_CONTAINER(eventbox), 0);
+  gtk_widget_set_size_request(GTK_WIDGET(eventbox),
+    cell_area->width, cell_area->height);
+
+  g_object_set_data_full(G_OBJECT(eventbox), CELL_RENDERER_TEXT_PATH,
                           g_strdup (path), g_free);
-  
-  gtk_widget_show_all (key->edit_widget);
 
-  g_signal_connect (G_OBJECT (key->edit_widget), "unrealize",
+  gtk_widget_show_all(eventbox);
+
+  g_signal_connect (G_OBJECT(eventbox), "unrealize",
                     G_CALLBACK (ungrab_stuff), key);
-  
-  return GTK_CELL_EDITABLE (key->edit_widget);
+
+  return GTK_CELL_EDITABLE(eventbox);
 }
 
 void cell_renderer_key_set_scancode (CellRendererKey *key, gint scancode)
@@ -458,7 +475,7 @@ void cell_renderer_key_set_scancode (CellRendererKey *key, gint scancode)
 
 gint cell_renderer_keys_get_scancode(CellRendererKey *key)
 {
-  g_return_if_fail (IS_CELL_RENDERER_KEY(key));
+  g_return_val_if_fail(IS_CELL_RENDERER_KEY(key), -1);
   return key->scancode;
 }
 

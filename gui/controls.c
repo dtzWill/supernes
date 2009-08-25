@@ -52,7 +52,7 @@ typedef struct ButtonEntry {
 	{ desc, kGConfKeysPath "/" name, 0, default }
 #define BUTTON_LAST	\
 	{ 0 }
-static const ButtonEntry buttons[] = {
+static ButtonEntry buttons[] = {
 	BUTTON_INITIALIZER("A", "a", 48),
 	BUTTON_INITIALIZER("B", "b", 20),
 	BUTTON_INITIALIZER("X", "x", 32),
@@ -101,6 +101,7 @@ static gboolean load_key_config(GtkTreeModel *model, GtkTreePath *path,
 
 	int scancode = gconf_client_get_int(gcc, button_entry->gconf_key, NULL);
 	button_entry->scancode = scancode;
+
 	gtk_tree_model_row_changed(GTK_TREE_MODEL(keys_store), path, iter);
 
 	return FALSE;
@@ -263,7 +264,7 @@ void controls_dialog(GtkWindow* parent)
 	column = gtk_tree_view_column_new_with_attributes("Key", renderer, NULL);
 	gtk_tree_view_column_set_cell_data_func(column, renderer, accel_set_func, NULL, NULL);
 	gtk_tree_view_column_set_resizable(column, FALSE);
-	gtk_tree_view_column_set_min_width(column, 200);
+	gtk_tree_view_column_set_min_width(column, 240);
 	gtk_tree_view_append_column(keys_list, column);
 	gtk_tree_view_set_headers_visible(keys_list, TRUE);
 

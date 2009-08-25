@@ -66,7 +66,7 @@ void HgwConfig()
 
 	char no_audio = FALSE;
 	if (hgw_conf_request_bool(hgw, kGConfDisableAudio, &no_audio) == HGW_ERR_NONE) {
-		Config.enableAudio = no_audio ? true : false;
+		Config.enableAudio = no_audio ? false : true;
 	}
 
 	char turbo = FALSE;
