@@ -199,6 +199,9 @@ static void parseGConfKeyMappings()
 	ZeroMemory(Config.joypad1Mapping, sizeof(Config.joypad1Mapping));
 	ZeroMemory(Config.action, sizeof(Config.action));
 
+	// If the user does not map fullscreen or quit
+	bool quit_mapped = false;
+
 	printf("Hgw: Using gconf key mappings\n");
 
 	int i, scancode;
@@ -209,9 +212,34 @@ static void parseGConfKeyMappings()
 
 			if (buttons[i].is_action) {
 				Config.action[scancode] = buttons[i].mask;
+				if (buttons[i].mask & (kActionQuit | kActionToggleFullscreen)) {
+					quit_mapped = true;
+				}
 			} else {
 				Config.joypad1Mapping[scancode] = buttons[i].mask;
 			}
+		}
+	}
+
+	// Safeguards
+	if (!quit_mapped) {
+		// Newbie user won't know how to quit game.
+		if (!Config.joypad1Mapping[72] && !Config.action[72]) {
+			// Fullscreen key is not mapped, map
+			Config.action[72] = kActionQuit;
+			quit_mapped = true;
+		}
+		if (!quit_mapped && !Config.joypad1Mapping[9] && !Config.action[9]) {
+			// Escape key is not mapped, map
+			// But only if we couldn't map quit to fullscreen. Some people
+			// actually want Quit not to be mapped.
+			Config.action[9] = kActionQuit;
+			quit_mapped = true;
+		}
+		if (!quit_mapped) {
+			// Force mapping of fullscreen to Quit if can't map anywhere else.
+			Config.joypad1Mapping[72] = 0;
+			Config.action[72] = kActionQuit;
 		}
 	}
 }
