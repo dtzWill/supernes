@@ -3,8 +3,11 @@
 
 #include <glib.h>
 #include <gtk/gtk.h>
+#include <gconf/gconf.h>
+#include <gconf/gconf-client.h>
 
 /* plugin.c */
+extern GConfClient * gcc;
 extern char * current_rom_file;
 
 /* state.c */
