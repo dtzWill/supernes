@@ -107,7 +107,7 @@ typedef int16_t			int16_32;
 #define ASM_SPC700		1
 //#define SUPER_FX		1
 #define CPU_SHUTDOWN	1
-#define NETPLAY_SUPPORT	1
+//#define NETPLAY_SUPPORT	1
 
 //Misc Items
 #define VAR_CYCLES
