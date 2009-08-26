@@ -207,8 +207,7 @@ static void parseGConfKeyMappings()
 	int i, scancode;
 	for (i = 0; buttons[i].gconf_key; i++) {
 		if (hgw_conf_request_int(hgw, buttons[i].gconf_key, &scancode) == HGW_ERR_NONE) {
-			if (scancode < 0) scancode = 0;
-			else if (scancode > 255) scancode = 0;
+			if (scancode <= 0 || scancode > 255) continue;
 
 			if (buttons[i].is_action) {
 				Config.action[scancode] = buttons[i].mask;

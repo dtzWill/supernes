@@ -70,8 +70,11 @@ static GtkComboBox* speedhacks_combo;
 
 static void set_rom(const char * rom_file)
 {
-	if (!rom_file) return;
 	if (current_rom_file) g_free(current_rom_file);
+	if (!rom_file) {
+		current_rom_file = NULL;
+		return;
+	}
 
 	gchar * utf8_filename = g_filename_display_name(rom_file);
 
@@ -265,8 +268,6 @@ static void write_config(void)
 
 	if (current_rom_file) {
 		gconf_client_set_string(gcc, kGConfRomFile, current_rom_file, NULL);
-	} else {
-		gconf_client_unset(gcc, kGConfRomFile, NULL);
 	}
 
 	controls_setup();

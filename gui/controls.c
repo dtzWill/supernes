@@ -79,7 +79,6 @@ static void show_widgets()
 	switch (gtk_combo_box_get_active(combo)) {
 		case 0:
 			gtk_widget_show_all(GTK_WIDGET(none_label));
-			g_debug("Showing label\n");
 			break;
 		case 1:
 			gtk_widget_show_all(GTK_WIDGET(keys_scroll));
@@ -191,7 +190,8 @@ cb_key_cleared(GtkCellRendererText *cell, const char *path_string,
 		-1);
 
 	g_debug("Clearing scancode for button %s\n", button_entry->name);
-	gconf_client_unset(gcc, button_entry->gconf_key, NULL);
+	gconf_client_set_int(gcc, button_entry->gconf_key, 0, NULL);
+		// prefer 0 value over unset key.
 
 	button_entry->scancode = 0;
 }
