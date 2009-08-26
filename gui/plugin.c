@@ -57,6 +57,8 @@ static StartupPluginInfo plugin_info = {
 STARTUP_INIT_PLUGIN(plugin_info, gs, FALSE, TRUE)
 
 gchar* current_rom_file = 0;
+gboolean current_rom_file_exists = FALSE;
+
 static GtkLabel* rom_label;
 static GtkCheckButton* audio_check;
 static GtkCheckButton* turbo_check;
@@ -70,8 +72,15 @@ static void set_rom(const char * rom_file)
 	if (!rom_file) return;
 	if (current_rom_file) g_free(current_rom_file);
 
+	gchar * utf8_filename = g_filename_display_name(rom_file);
+
 	current_rom_file = g_strdup(rom_file);
-	gtk_label_set_text(GTK_LABEL(rom_label), rom_file); // TODO UTF-8
+	gtk_label_set_text(GTK_LABEL(rom_label), utf8_filename);
+
+	g_free(utf8_filename);
+
+	current_rom_file_exists = g_file_test(current_rom_file,
+		G_FILE_TEST_EXISTS | G_FILE_TEST_IS_REGULAR);
 
 	game_state_update();
 	save_clear();
@@ -85,7 +94,6 @@ static void select_rom_callback(GtkWidget * button, gpointer data)
 {
 	GtkWidget * dialog;
 	GtkFileFilter * filter;
-	const gchar * current_filename = gtk_label_get_text(rom_label);
 	gchar * filename = NULL;
 
 	filter = gtk_file_filter_new();
@@ -95,12 +103,17 @@ static void select_rom_callback(GtkWidget * button, gpointer data)
 
 	dialog = hildon_file_chooser_dialog_new_with_properties(
 		get_parent_window(),
-		"action", GTK_FILE_CHOOSER_ACTION_OPEN, "filter", filter, NULL);
+		"action", GTK_FILE_CHOOSER_ACTION_OPEN,
+		"local-only", TRUE,
+		"filter", filter,
+		NULL);
+	hildon_file_chooser_dialog_set_show_upnp(HILDON_FILE_CHOOSER_DIALOG(dialog),
+		FALSE);
 
-	if (current_filename && strlen(current_filename) > 1) {
+	if (current_rom_file_exists) {
 		// By default open showing the last selected file
 		gtk_file_chooser_set_filename(GTK_FILE_CHOOSER(dialog), 
-			current_filename);
+			current_rom_file);
 	}
 
 	gtk_widget_show_all(GTK_WIDGET(dialog));
@@ -252,10 +265,7 @@ static void write_config(void)
 	if (current_rom_file) {
 		gconf_client_set_string(gcc, kGConfRomFile, current_rom_file, NULL);
 	} else {
-		GtkWidget* note = hildon_note_new_information(get_parent_window(),
-			"No ROM selected");
-		gtk_dialog_run(GTK_DIALOG(note));
-		gtk_widget_destroy(note);
+		gconf_client_unset(gcc, kGConfRomFile, NULL);
 	}
 
 	controls_setup();
@@ -296,6 +306,23 @@ static void plugin_callback(GtkWidget * menu_item, gpointer data)
 			break;
 		case 22:	// ME_GAME_SAVE_AS
 			save_save_as(get_parent_window());
+			break;
+		case 30:	// MA_GAME_PLAYING_START
+			if (!menu_item) {
+				// Avoid duplicate message
+				break;
+			}
+			if (!current_rom_file) {
+				GtkWidget* note = hildon_note_new_information(get_parent_window(),
+					"No ROM selected");
+				gtk_dialog_run(GTK_DIALOG(note));
+				gtk_widget_destroy(note);
+			} else if (!current_rom_file_exists) {
+				GtkWidget* note = hildon_note_new_information(get_parent_window(),
+					"ROM file does not exist");
+				gtk_dialog_run(GTK_DIALOG(note));
+				gtk_widget_destroy(note);
+			}
 			break;
 	}
 }

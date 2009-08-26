@@ -9,6 +9,7 @@
 /* plugin.c */
 extern GConfClient * gcc;
 extern char * current_rom_file;
+extern gboolean current_rom_file_exists;
 
 /* state.c */
 void game_state_update();

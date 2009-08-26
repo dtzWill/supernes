@@ -30,39 +30,54 @@
 
 #define FRZ_FILE_EXT ".frz.gz"
 
+/** Caches the freeze file of the current loaded rom, or NULL if it does not
+ *  have any.
+ *  It is updated from the game_state_update() and game_state_clear() functions.
+ */
 static gchar * cur_frz_file = NULL;
 
+/** Updates cur_frz_file.
+ *  @return TRUE if cur_frz_file is now not NULL (so a freeze file is present).
+ */
 static gboolean rom_get_freeze_file()
 {
-	char * ext = strrchr(current_rom_file, '.');
+	char * ext;
 	char * rom_base;
 	char * frz_file;
-	gboolean rom_exists, frz_exists;
+	gboolean frz_exists;
 
 	if (cur_frz_file) g_free(cur_frz_file);
 
+	if (!current_rom_file_exists) {
+		cur_frz_file = NULL;
+		return FALSE;
+	}
+
+	ext = strrchr(current_rom_file, '.');
 	if (!ext) {
 		rom_base = g_strdup(current_rom_file);
 	} else {
 		rom_base = g_strndup(current_rom_file, ext - current_rom_file);
 	}
-	rom_exists = g_file_test(current_rom_file,
-			G_FILE_TEST_EXISTS | G_FILE_TEST_IS_REGULAR);
 
-	frz_file = g_strconcat(rom_base, FRZ_FILE_EXT);
-	frz_exists =
-		g_file_test(frz_file, G_FILE_TEST_EXISTS | G_FILE_TEST_IS_REGULAR);
+	if (current_rom_file_exists) {
+		frz_file = g_strconcat(rom_base, FRZ_FILE_EXT);
+		frz_exists =
+			g_file_test(frz_file, G_FILE_TEST_EXISTS | G_FILE_TEST_IS_REGULAR);
+
+		if (frz_exists) {
+			cur_frz_file = frz_file;
+		} else {
+			cur_frz_file = NULL;
+			g_free(frz_file);
+		}
+	} else {
+		cur_frz_file = NULL;
+	}
 
 	g_free(rom_base);
 
-	if (rom_exists & frz_exists) {
-		cur_frz_file = frz_file;
-	} else {
-		cur_frz_file = NULL;
-		g_free(frz_file);
-	}
-
-	return rom_exists && frz_exists;
+	return cur_frz_file ? TRUE : FALSE;
 }
 
 // More uglyness. If you know a better way to do this please tell.
