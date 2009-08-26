@@ -52,7 +52,10 @@
 #include "soundux.h"
 #include "cheats.h"
 #include "sa1.h"
-// #include "netplay.h" // XXX ?
+
+#ifdef NETPLAY_SUPPORT
+#include "netplay.h"
+#endif
 
 START_EXTERN_C
 char String[513];

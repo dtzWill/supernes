@@ -192,6 +192,8 @@ struct SNPServer
 
 #define NP_MAX_ACTION_LEN 200
 
+START_EXTERN_C
+
 struct SNetPlay
 {
     volatile uint8  MySequenceNum;
@@ -222,7 +224,9 @@ struct SNetPlay
     char   WarningMsg [NP_MAX_ACTION_LEN];
 };
 
-extern "C" struct SNetPlay NetPlay;
+extern struct SNetPlay NetPlay;
+
+END_EXTERN_C
 
 //
 // NETPLAY_CLIENT_HELLO message format:

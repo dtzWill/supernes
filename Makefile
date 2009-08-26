@@ -14,7 +14,7 @@ export DESTDIR
 
 # SNES stuff
 OBJS = 2xsaiwin.o apu.o c4.o c4emu.o cheats.o cheats2.o clip.o cpu.o cpuexec.o data.o
-OBJS += dma.o dsp1.o fxemu.o fxinst.o gfx.o globals.o loadzip.o memmap.o ppu.o
+OBJS += dma.o dsp1.o fxemu.o fxinst.o gfx.o globals.o loadzip.o memmap.o netplay.o ppu.o
 OBJS += sdd1.o sdd1emu.o snapshot.o soundux.o spc700.o srtc.o tile.o
 # ASM CPU Core, ripped from Yoyo's OpenSnes9X
 OBJS += os9x_asm_cpu.o os9x_65c816.o spc700a.o
