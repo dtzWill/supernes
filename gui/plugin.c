@@ -30,6 +30,7 @@
 #include <gconf/gconf-client.h>
 #include <hildon/hildon-file-chooser-dialog.h>
 #include <hildon/hildon-note.h>
+#include <hildon/hildon-defines.h>
 
 #include "../platform/hgw.h"
 #include "plugin.h"

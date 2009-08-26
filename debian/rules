@@ -34,8 +34,7 @@ else ifneq (,$(findstring arm,$(DEB_BUILD_GNU_TYPE)))
 	# Fixes hang while exiting on Diablo.
 	CFLAGS += -static-libgcc
 else # x86
-	echo "This package does not build in x86"
-	exit 1
+	crash
 endif
 
 configure: configure-stamp

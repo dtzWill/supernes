@@ -8,7 +8,7 @@ LDFLAGS:=-export-dynamic -avoid-version -module -shared -Wl,-z,defs
 #GAME_VERSION
 GAME_SHARE_PATH=/usr/share/games/drnoksnes/
 GAME_PLUGIN_PATH=/usr/lib/drnoksnes_plugin.so
-GAME_CONF_PATH=/usr/share/games/drnoksnes/drnoksnes.conf
+GAME_CONF_PATH=$(GAME_SHARE_PATH)/drnoksnes.conf
 GAME_BIN_PATH=/usr/games/drnoksnes
 GAME_GAME_PATH=/usr/games/wrapper/games/drnoksnes.game
 GAME_BANNER_PATH=/usr/share/pixmaps/osso-games-startup-drnoksnes.png
@@ -38,7 +38,7 @@ clean:
 data: $(DATA_FILES)
 	
 install: all
-	mkdir -p $(DESTDIR)$(GAME_SHARE_PATH)
+	install -d $(DESTDIR)$(GAME_SHARE_PATH)
 	install drnoksnes_plugin.so $(DESTDIR)$(GAME_PLUGIN_PATH)
 	install -m 0644 drnoksnes.conf $(DESTDIR)$(GAME_CONF_PATH)
 	install -m 0644 drnoksnes.desktop $(DESTDIR)/usr/share/applications/hildon/
