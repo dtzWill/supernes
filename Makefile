@@ -1,6 +1,6 @@
 #!/usr/bin/make
 
-CPPFLAGS := -I. -Iplatform $(shell sdl-config --cflags) $(shell pkg-config --cflags x11 xsp) -I/usr/include/hgw
+CPPFLAGS := -I. $(shell sdl-config --cflags) $(shell pkg-config --cflags x11 xsp) -I/usr/include/hgw
 LDLIBS := -lz $(shell sdl-config --libs) $(shell pkg-config --libs x11 xsp) -lpopt -lhgw
 
 # Default CFLAGS for building in N8x0
