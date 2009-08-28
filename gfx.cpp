@@ -1502,7 +1502,8 @@ void DrawBackgroundMode5 (uint32 /* BGMODE */, uint32 bg, uint8 Z1, uint8 Z2)
 		Count = 8 - Offset;
 		if (Count > Width)
 		    Count = Width;
-		s -= (Offset>>1);
+		if (s) // XXX: Workaround for underflow (Secret of MANA)
+			s -= (Offset>>1);
 		Tile = READ_2BYTES (t);
 		GFX.Z1 = GFX.Z2 = depths [(Tile & 0x2000) >> 13];
 

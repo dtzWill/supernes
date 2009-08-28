@@ -105,40 +105,46 @@ static void freeVideoSurface()
 static void setupVideoSurface()
 {
 	// Real surface area.
-	unsigned realWidth = IMAGE_WIDTH;
-	unsigned realHeight = IMAGE_HEIGHT;
+	unsigned gameWidth = IMAGE_WIDTH;
+	unsigned gameHeight = IMAGE_HEIGHT;
 	// SDL Window/Surface size (bigger, so we can get mouse events there).
-	unsigned srfWidth, srfHeight;
+	unsigned winWidth, winHeight;
 
 #ifdef MAEMO
 	if ((Config.fullscreen && !gotScreenSize) ||
 		(!Config.fullscreen && !gotWindowSize)) {
 		// Do a first try, in order to get window/screen size
-		screen = SDL_SetVideoMode(realWidth, realHeight, 16,
+		screen = SDL_SetVideoMode(gameWidth, gameHeight, 16,
 			SDL_SWSURFACE | SDL_RESIZABLE |
 			(Config.fullscreen ? SDL_FULLSCREEN : 0));
 		if (!screen) DIE("SDL_SetVideoMode: %s", SDL_GetError());
 		calculateScreenSize();
 	}
 	if (Config.fullscreen) {
-		srfWidth = screenSize.w;
-		srfHeight = screenSize.h;
+		winWidth = screenSize.w;
+		winHeight = screenSize.h;
 	} else {
-		srfWidth = windowSize.w;
-		srfHeight = windowSize.h;
+		winWidth = windowSize.w;
+		winHeight = windowSize.h;
 	}
 	
-	// By now, just assume xsp == fullscreen. This has to change.
-	Config.xsp = Config.fullscreen;
-	if (!Config.xsp) {
+	// So, can we enable Xsp?
+	if (gameWidth * 2 < winWidth && gameHeight * 2 < winHeight) {
+		Config.xsp = true;
+	} else  {
+		Config.xsp = false;
 		setDoubling(false); // Before switching video modes; avoids flicker.
 	}
 #else
-	srfWidth = realWidth;
-	srfHeight = realHeight;
+	winWidth = gameWidth;
+	winHeight = gameHeight;
 #endif
 
-	screen = SDL_SetVideoMode(srfWidth, srfHeight,
+	// Safeguard
+	if (gameHeight > winHeight || gameWidth > winWidth)
+		DIE("Video is larger than window size!");
+
+	screen = SDL_SetVideoMode(winWidth, winHeight,
 								Settings.SixteenBit ? 16 : 8,
 								SDL_SWSURFACE |
 								(Config.fullscreen ? SDL_FULLSCREEN : 0));
@@ -156,15 +162,15 @@ static void setupVideoSurface()
 #ifdef MAEMO
 	if (Config.xsp) {
 		setDoubling(true);
-		centerRectangle(renderArea, srfWidth, srfHeight,
-			realWidth * 2, realHeight * 2);
+		centerRectangle(renderArea, winWidth, winHeight,
+			gameWidth * 2, gameHeight * 2);
 		renderArea.w /= 2;
 		renderArea.h /= 2;
 	} else {
-		centerRectangle(renderArea, srfWidth, srfHeight, realWidth, realHeight);
+		centerRectangle(renderArea, winWidth, winHeight, gameWidth, gameHeight);
 	}
 #else
-	centerRectangle(renderArea, srfWidth, srfHeight, realWidth, realHeight);
+	centerRectangle(renderArea, winWidth, winHeight, gameWidth, gameHeight);
 #endif
 	
 	GFX.Screen = ((uint8*) screen->pixels)
@@ -179,7 +185,7 @@ static void setupVideoSurface()
 	GFX.PPLx2 = GFX.Pitch;
 
 	printf("Video: %dx%d (%dx%d output), %hu bits per pixel, %s %s\n",
-		realWidth, realHeight,
+		gameWidth, gameHeight,
 		screen->w, screen->h, screen->format->BitsPerPixel,
 		Config.fullscreen ? "fullscreen" : "windowed",
 		Config.xsp ? "with pixel doubling" : "");
@@ -246,13 +252,8 @@ bool8_32 S9xDeinitUpdate (int width, int height, bool8_32 sixteenBit)
 {
 	if(SDL_MUSTLOCK(screen)) SDL_UnlockSurface(screen);
 
-	if (Config.xsp) {	
-		width *= 2;
-		height *= 2;
-	}
-
 	SDL_UpdateRects(screen, 1, &renderArea);
-	
+
 	return TRUE;
 }
 
