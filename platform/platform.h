@@ -20,6 +20,8 @@ extern struct config {
 	bool enableAudio;
 	/** Speedhacks file to use */
 	char * hacksFile;
+	/** Enable touchscreen controls */
+	bool touchscreenInput;
 	/** Current scancode->joypad mapping */
 	unsigned short joypad1Mapping[256];
 	unsigned char action[256];
@@ -35,6 +37,11 @@ void S9xVideoOutputFocus(bool hasFocus);
 void S9xInitAudioOutput();
 void S9xDeinitAudioOutput();
 void S9xAudioOutputEnable(bool enable);
+
+// Input devices
+EXTERN_C void S9xInitInputDevices();
+void S9xDeinitInputDevices();
+void S9xInputFullscreenChanged();
 
 // Input actions
 #define kActionNone						0

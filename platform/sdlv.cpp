@@ -20,12 +20,59 @@
 
 static SDL_Surface *screen;
 
+static SDL_Rect windowSize, screenSize;
+static bool gotWindowSize, gotScreenSize;
+
+/** Inside the surface, where are we drawing */
+static SDL_Rect renderArea;
+
+#ifdef MAEMO
 static void setDoubling(bool enable)
 {
 	SDL_SysWMinfo wminfo;
 	SDL_VERSION(&wminfo.version);
 	if ( SDL_GetWMInfo(&wminfo) ) {
-		XSPSetPixelDoubling(wminfo.info.x11.display, 0, enable ? 1 : 0);
+		Display *dpy = wminfo.info.x11.display;
+		XSPSetPixelDoubling(dpy, 0, enable ? 1 : 0);
+		XFlush(dpy);
+	}
+}
+#endif
+
+static void centerRectangle(SDL_Rect& result, int areaW, int areaH, int w, int h)
+{
+	result.x = areaW / 2 - w / 2;
+	result.w = w;
+	result.y = areaH / 2 - h / 2;
+	result.h = h;
+}
+
+static void calculateScreenSize()
+{
+	SDL_SysWMinfo wminfo;
+	SDL_VERSION(&wminfo.version);
+
+	if ( SDL_GetWMInfo(&wminfo) ) {
+		Display *dpy = wminfo.info.x11.display;
+		Window w;
+		SDL_Rect* size;
+		XWindowAttributes xwa;
+
+		if (Config.fullscreen) {
+			w =  wminfo.info.x11.fswindow;
+			size = &screenSize;
+			gotScreenSize = true;
+		} else {
+			w =  wminfo.info.x11.wmwindow;
+			size = &windowSize;
+			gotWindowSize = true;
+		}
+
+		XGetWindowAttributes(dpy, w, &xwa);
+		size->x = xwa.x;
+		size->y = xwa.y;
+		size->w = xwa.width;
+		size->h = xwa.height;
 	}
 }
 
@@ -57,44 +104,84 @@ static void freeVideoSurface()
 
 static void setupVideoSurface()
 {
-	int w = IMAGE_WIDTH;
-	int h = IMAGE_HEIGHT;
+	// Real surface area.
+	unsigned realWidth = IMAGE_WIDTH;
+	unsigned realHeight = IMAGE_HEIGHT;
+	// SDL Window/Surface size (bigger, so we can get mouse events there).
+	unsigned srfWidth, srfHeight;
+
+#ifdef MAEMO
+	if ((Config.fullscreen && !gotScreenSize) ||
+		(!Config.fullscreen && !gotWindowSize)) {
+		// Do a first try, in order to get window/screen size
+		screen = SDL_SetVideoMode(realWidth, realHeight, 16,
+			SDL_SWSURFACE | SDL_RESIZABLE |
+			(Config.fullscreen ? SDL_FULLSCREEN : 0));
+		if (!screen) DIE("SDL_SetVideoMode: %s", SDL_GetError());
+		calculateScreenSize();
+	}
+	if (Config.fullscreen) {
+		srfWidth = screenSize.w;
+		srfHeight = screenSize.h;
+	} else {
+		srfWidth = windowSize.w;
+		srfHeight = windowSize.h;
+	}
 	
 	// By now, just assume xsp == fullscreen. This has to change.
 	Config.xsp = Config.fullscreen;
-	if (Config.xsp) {
-		w *= 2;
-		h *= 2;
-	} else {
-		setDoubling(false); // Before switching video modes
+	if (!Config.xsp) {
+		setDoubling(false); // Before switching video modes; avoids flicker.
 	}
+#else
+	srfWidth = realWidth;
+	srfHeight = realHeight;
+#endif
 
-	screen = SDL_SetVideoMode(w, h,
+	screen = SDL_SetVideoMode(srfWidth, srfHeight,
 								Settings.SixteenBit ? 16 : 8,
 								SDL_SWSURFACE |
 								(Config.fullscreen ? SDL_FULLSCREEN : 0));
-
 	if (!screen)
 		DIE("SDL_SetVideoMode: %s", SDL_GetError());
 	
 	SDL_ShowCursor(SDL_DISABLE);
 
-	if (Config.xsp) setDoubling(true);
-	
+	// We get pitch surface values from SDL
 	GFX.RealPitch = GFX.Pitch = screen->pitch;
+	GFX.ZPitch = realWidth; // The ZBuffer is independent of SDL surface size.
+	GFX.PixSize = screen->format->BitsPerPixel / 8;
+
+	// Ok, calculate renderArea
+#ifdef MAEMO
+	if (Config.xsp) {
+		setDoubling(true);
+		centerRectangle(renderArea, srfWidth, srfHeight,
+			realWidth * 2, realHeight * 2);
+		renderArea.w /= 2;
+		renderArea.h /= 2;
+	} else {
+		centerRectangle(renderArea, srfWidth, srfHeight, realWidth, realHeight);
+	}
+#else
+	centerRectangle(renderArea, srfWidth, srfHeight, realWidth, realHeight);
+#endif
 	
-	GFX.Screen = (uint8*) screen->pixels;
-	GFX.SubScreen = (uint8 *) malloc(GFX.RealPitch * IMAGE_HEIGHT);
-	GFX.ZBuffer =  (uint8 *) malloc(GFX.RealPitch * IMAGE_HEIGHT);
-	GFX.SubZBuffer = (uint8 *) malloc(GFX.RealPitch * IMAGE_HEIGHT);
+	GFX.Screen = ((uint8*) screen->pixels)
+		+ (renderArea.x * GFX.PixSize)
+		+ (renderArea.y * GFX.Pitch);
+	GFX.SubScreen = (uint8 *) malloc(GFX.Pitch * IMAGE_HEIGHT);
+	GFX.ZBuffer =  (uint8 *) malloc(GFX.Pitch * IMAGE_HEIGHT);
+	GFX.SubZBuffer = (uint8 *) malloc(GFX.Pitch * IMAGE_HEIGHT);
 	
 	GFX.Delta = (GFX.SubScreen - GFX.Screen) >> 1;
 	GFX.PPL = GFX.Pitch >> 1;
 	GFX.PPLx2 = GFX.Pitch;
-	GFX.ZPitch = GFX.Pitch >> 1;
-	
-	printf("Video: %dx%d, %hu bits per pixel, %s %s\n", screen->w, screen->h,
-		screen->format->BitsPerPixel,
+	GFX.ZPitch = GFX.Pitch >> 1; // TODO
+
+	printf("Video: %dx%d (%dx%d output), %hu bits per pixel, %s %s\n",
+		realWidth, realHeight,
+		screen->w, screen->h, screen->format->BitsPerPixel,
 		Config.fullscreen ? "fullscreen" : "windowed",
 		Config.xsp ? "with pixel doubling" : "");
 }
@@ -103,7 +190,7 @@ void S9xInitDisplay(int argc, const char ** argv)
 {	
 	if (SDL_InitSubSystem(SDL_INIT_VIDEO) < 0) 
 		DIE("SDL_InitSubSystem(VIDEO): %s", SDL_GetError());
-	
+
 	setupVideoSurface();
 }
 
@@ -165,7 +252,7 @@ bool8_32 S9xDeinitUpdate (int width, int height, bool8_32 sixteenBit)
 		height *= 2;
 	}
 
-	SDL_UpdateRect(screen, 0, 0, width, height);
+	SDL_UpdateRects(screen, 1, &renderArea);
 	
 	return TRUE;
 }

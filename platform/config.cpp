@@ -28,45 +28,47 @@ static struct poptOption commonOptionsTable[] = {
 	{ "disable-audio", 'a', POPT_ARG_NONE, 0, 1,
 	"disable emulation and output of audio", 0 },
 	{ "display-framerate", 'r', POPT_ARG_NONE, 0, 2,
-	"Show frames per second counter in lower left corner", 0 },
+	"show frames per second counter in lower left corner", 0 },
 	{ "skip-frames", 's', POPT_ARG_INT, 0, 3,
-	"Render only 1 in every N frames", "NUM" },
+	"render only 1 in every N frames", "NUM" },
 	{ "fullscreen", 'f', POPT_ARG_NONE, 0, 4,
-	"Start in fullscreen mode", 0 },
+	"start in fullscreen mode", 0 },
 	{ "transparency", 'y', POPT_ARG_NONE, 0, 5,
-	"Enable transparency effects (slower)", 0 },
+	"enable transparency effects (slower)", 0 },
 	{ "hacks", 'h', POPT_ARG_STRING | POPT_ARGFLAG_OPTIONAL, 0, 6,
-	"Enable hacks (yes, speed-only, no)", "option" },
+	"enable hacks (yes, speed-only, no)", "option" },
 	{ "pal", 'p', POPT_ARG_NONE, 0, 7,
-	"Run in PAL mode", 0 },
+	"run in PAL mode", 0 },
 	{ "ntsc", 'n', POPT_ARG_NONE, 0, 8,
-	"Run in NTSC mode", 0 },
+	"run in NTSC mode", 0 },
 	{ "turbo", 't', POPT_ARG_NONE, 0, 9,
-	"Turbo mode (do not try to sleep between frames)", 0 },
+	"turbo mode (do not try to sleep between frames)", 0 },
 	{ "conf", 'c', POPT_ARG_STRING, 0, 10,
-	"Extra configuration file to load", "FILE" },
+	"extra configuration file to load", "FILE" },
 	{ "mouse", 'm', POPT_ARG_INT | POPT_ARGFLAG_OPTIONAL, 0, 11,
-	"Enable mouse on controller NUM", "NUM"},
+	"enable mouse on controller NUM", "NUM"},
 	{ "superscope", 'e', POPT_ARG_NONE, 0, 12,
-	"Enable SuperScope", 0},
+	"enable SuperScope", 0},
 	{ "snapshot", 'o', POPT_ARG_NONE, 0, 13,
-	"Unfreeze previous game on start and freeze game on exit", 0 },
+	"unfreeze previous game on start and freeze game on exit", 0 },
 	{ "audio-rate", 'u', POPT_ARG_INT, 0, 14,
-	"Audio output rate", "HZ" },
+	"audio output rate", "HZ" },
 	{ "audio-buffer-size", 'b', POPT_ARG_INT, 0, 15,
-	"Audio output buffer size", "SAMPLES" },
+	"audio output buffer size", "SAMPLES" },
+	{ "touchscreen", 'd', POPT_ARG_NONE, 0, 16,
+	"enable touchscreen controls", 0 },
 	POPT_TABLEEND
 };
 
 static struct poptOption configOptionsTable[] = {
 	{ "scancode", '\0', POPT_ARG_INT, 0, 100,
-	"Scancode to map", "CODE" },
+	"scancode to map", "CODE" },
 	{ "button", '\0', POPT_ARG_STRING, 0, 101,
 	"SNES Button to press (A, B, X, Y, L, R, Up, Down, Left, Right)", "name" },
 	{ "action", '\0', POPT_ARG_STRING, 0, 102,
-	"Emulator action to do (fullscreen, quit, ...)", "action" },
+	"emulator action to do (fullscreen, quit, ...)", "action" },
 	{ "hacks-file", '\0', POPT_ARG_STRING, 0, 200,
-	"Path to snesadvance.dat file", "FILE" },
+	"path to snesadvance.dat file", "FILE" },
 	POPT_TABLEEND
 };
 
@@ -166,6 +168,7 @@ static void loadDefaults()
 	Config.fullscreen = false;
 	Config.xsp = false;
 	Config.hacksFile = 0;
+	Config.touchscreenInput = false;
 
 	Settings.JoystickEnabled = FALSE;
 	Settings.SoundPlaybackRate = 22050;
@@ -347,6 +350,9 @@ static void parseArgs(poptContext optCon)
 				break;
 			case 15:
 				Settings.SoundBufferSize = atoi(poptGetOptArg(optCon));
+				break;
+			case 16:
+				Config.touchscreenInput = true;
 				break;
 			case 100:
 				scancode = atoi(poptGetOptArg(optCon));

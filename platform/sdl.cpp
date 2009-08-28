@@ -239,6 +239,7 @@ int main(int argc, const char ** argv) {
 	
 	// Deinitialization
 	S9xAudioOutputEnable(false);
+	S9xDeinitInputDevices();
 	S9xDeinitAudioOutput();
 	S9xDeinitDisplay();
 
@@ -262,7 +263,9 @@ void S9xDoAction(unsigned char action)
 	if (action & kActionQuit) 
 		Config.quitting = true;
 
-	if (action & kActionToggleFullscreen)
+	if (action & kActionToggleFullscreen) {
 		S9xVideoToggleFullscreen();
+		S9xInputFullscreenChanged();
+	}
 }
 

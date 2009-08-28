@@ -12,7 +12,6 @@
 	} while (0);
 
 
-
 bool hgwLaunched;
 static HgwContext *hgw;
 
@@ -210,12 +209,12 @@ static void parseGConfKeyMappings()
 			if (scancode <= 0 || scancode > 255) continue;
 
 			if (buttons[i].is_action) {
-				Config.action[scancode] = buttons[i].mask;
+				Config.action[scancode] |= buttons[i].mask;
 				if (buttons[i].mask & (kActionQuit | kActionToggleFullscreen)) {
 					quit_mapped = true;
 				}
 			} else {
-				Config.joypad1Mapping[scancode] = buttons[i].mask;
+				Config.joypad1Mapping[scancode] |= buttons[i].mask;
 			}
 		}
 	}

@@ -4,7 +4,7 @@ CPPFLAGS := -I. $(shell sdl-config --cflags) $(shell pkg-config --cflags x11 xsp
 LDLIBS := -lz $(shell sdl-config --libs) $(shell pkg-config --libs x11 xsp) -lpopt -lhgw
 
 # Default CFLAGS for building in N8x0
-CFLAGS ?= -march=armv6j -mtune=arm1136jf-s -mfpu=vfp -mfloat-abi=softfp -O2 -g -Wall -static-libgcc
+CFLAGS ?= -DMAEMO -DMAEMO_VERSION=4 -march=armv6j -mtune=arm1136jf-s -mfpu=vfp -mfloat-abi=softfp -O2 -g -Wall -static-libgcc
 ASFLAGS ?= -march=armv6j -mfpu=vfp -mfloat-abi=softfp -g
 CXXFLAGS ?= $(CFLAGS)
 

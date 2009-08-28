@@ -120,3 +120,13 @@ void S9xInitInputDevices()
 	}
 }
 
+void S9xDeinitInputDevices()
+{
+
+}
+
+void S9xInputFullscreenChanged()
+{
+
+}
+
