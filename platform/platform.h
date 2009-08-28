@@ -31,6 +31,7 @@ extern struct config {
 
 // Video
 void S9xVideoToggleFullscreen();
+void S9xVideoGetWindowSize(unsigned int * w, unsigned int * h);
 void S9xVideoOutputFocus(bool hasFocus);
 
 // Audio output
@@ -41,7 +42,7 @@ void S9xAudioOutputEnable(bool enable);
 // Input devices
 EXTERN_C void S9xInitInputDevices();
 void S9xDeinitInputDevices();
-void S9xInputFullscreenChanged();
+void S9xInputScreenChanged();
 
 // Input actions
 #define kActionNone						0

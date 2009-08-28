@@ -219,6 +219,17 @@ void S9xVideoOutputFocus(bool hasFocus)
 	} 
 }
 
+void S9xVideoGetWindowSize(unsigned int* w, unsigned int* h)
+{
+	if (Config.fullscreen) {
+		*w = screenSize.w;
+		*h = screenSize.h;
+	} else {
+		*w = windowSize.w;
+		*h = windowSize.h;
+	}
+}
+
 // This is here for completeness, but palette mode is useless on N8x0
 void S9xSetPalette ()
 {

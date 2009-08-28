@@ -265,7 +265,7 @@ void S9xDoAction(unsigned char action)
 
 	if (action & kActionToggleFullscreen) {
 		S9xVideoToggleFullscreen();
-		S9xInputFullscreenChanged();
+		S9xInputScreenChanged();
 	}
 }
 
