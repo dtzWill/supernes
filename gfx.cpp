@@ -47,22 +47,10 @@
 #include "gfx.h"
 #include "apu.h"
 #include "cheats.h"
-#include <stdint.h>
-//#include "asmmemfuncs.h"
+#include "tile.h"
+#include "misc.h"
 
 #define USE_CRAZY_OPTS
-
-//misc.s
-#ifdef __cplusplus
-extern "C" {
-#endif
-extern void memcpy16(unsigned short *dest, unsigned short *src, int count);
-extern void memcpy16bswap(unsigned short *dest, void *src, int count);
-extern void memcpy32(uint32_t *dest, uint32_t *src, int count);
-extern void memset32(uint32_t *dest, int c, int count);
-#ifdef __cplusplus
-}
-#endif
 
 #define M7 19
 #define M8 19
@@ -113,109 +101,6 @@ extern uint8  Mode7Depths [2];
 (GFX.r2131 & 0x3f)
 
 #define BLACK BUILD_PIXEL(0,0,0)
-
-void DrawTile (uint32 Tile, uint32 Offset, uint32 StartLine,
-	       uint32 LineCount, struct SGFX * gfx);
-void DrawClippedTile (uint32 Tile, uint32 Offset,
-		      uint32 StartPixel, uint32 Width,
-		      uint32 StartLine, uint32 LineCount, struct SGFX * gfx);
-void DrawTilex2 (uint32 Tile, uint32 Offset, uint32 StartLine,
-		 uint32 LineCount, struct SGFX * gfx);
-void DrawClippedTilex2 (uint32 Tile, uint32 Offset,
-			uint32 StartPixel, uint32 Width,
-			uint32 StartLine, uint32 LineCount, struct SGFX * gfx);
-void DrawTilex2x2 (uint32 Tile, uint32 Offset, uint32 StartLine,
-	       uint32 LineCount, struct SGFX * gfx);
-void DrawClippedTilex2x2 (uint32 Tile, uint32 Offset,
-			  uint32 StartPixel, uint32 Width,
-			  uint32 StartLine, uint32 LineCount, struct SGFX * gfx);
-void DrawLargePixel (uint32 Tile, uint32 Offset,
-		     uint32 StartPixel, uint32 Pixels,
-		     uint32 StartLine, uint32 LineCount, struct SGFX * gfx);
-
-void DrawTile16 (uint32 Tile, uint32 Offset, uint32 StartLine,
-	         uint32 LineCount, struct SGFX * gfx);
-void DrawClippedTile16 (uint32 Tile, uint32 Offset,
-		        uint32 StartPixel, uint32 Width,
-		        uint32 StartLine, uint32 LineCount, struct SGFX * gfx);
-void DrawTile16x2 (uint32 Tile, uint32 Offset, uint32 StartLine,
-		   uint32 LineCount, struct SGFX * gfx);
-void DrawClippedTile16x2 (uint32 Tile, uint32 Offset,
-			  uint32 StartPixel, uint32 Width,
-			  uint32 StartLine, uint32 LineCount, struct SGFX * gfx);
-void DrawTile16x2x2 (uint32 Tile, uint32 Offset, uint32 StartLine,
-		     uint32 LineCount, struct SGFX * gfx);
-void DrawClippedTile16x2x2 (uint32 Tile, uint32 Offset,
-			    uint32 StartPixel, uint32 Width,
-			    uint32 StartLine, uint32 LineCount, struct SGFX * gfx);
-void DrawLargePixel16 (uint32 Tile, uint32 Offset,
-		       uint32 StartPixel, uint32 Pixels,
-		       uint32 StartLine, uint32 LineCount, struct SGFX * gfx);
-
-void DrawTile16Add (uint32 Tile, uint32 Offset, uint32 StartLine,
-		    uint32 LineCount, struct SGFX * gfx);
-
-void DrawClippedTile16Add (uint32 Tile, uint32 Offset,
-			   uint32 StartPixel, uint32 Width,
-			   uint32 StartLine, uint32 LineCount, struct SGFX * gfx);
-
-void DrawTile16Add1_2 (uint32 Tile, uint32 Offset, uint32 StartLine,
-		       uint32 LineCount, struct SGFX * gfx);
-
-void DrawClippedTile16Add1_2 (uint32 Tile, uint32 Offset,
-			      uint32 StartPixel, uint32 Width,
-			      uint32 StartLine, uint32 LineCount, struct SGFX * gfx);
-
-void DrawTile16FixedAdd1_2 (uint32 Tile, uint32 Offset, uint32 StartLine,
-			    uint32 LineCount, struct SGFX * gfx);
-
-void DrawClippedTile16FixedAdd1_2 (uint32 Tile, uint32 Offset,
-				   uint32 StartPixel, uint32 Width,
-				   uint32 StartLine, uint32 LineCount, struct SGFX * gfx);
-
-void DrawTile16Sub (uint32 Tile, uint32 Offset, uint32 StartLine,
-		    uint32 LineCount, struct SGFX * gfx);
-
-void DrawClippedTile16Sub (uint32 Tile, uint32 Offset,
-			   uint32 StartPixel, uint32 Width,
-			   uint32 StartLine, uint32 LineCount, struct SGFX * gfx);
-
-void DrawTile16Sub1_2 (uint32 Tile, uint32 Offset, uint32 StartLine,
-		       uint32 LineCount, struct SGFX * gfx);
-
-void DrawClippedTile16Sub1_2 (uint32 Tile, uint32 Offset,
-			      uint32 StartPixel, uint32 Width,
-			      uint32 StartLine, uint32 LineCount, struct SGFX * gfx);
-
-void DrawTile16FixedSub1_2 (uint32 Tile, uint32 Offset, uint32 StartLine,
-			    uint32 LineCount, struct SGFX * gfx);
-
-void DrawClippedTile16FixedSub1_2 (uint32 Tile, uint32 Offset,
-				   uint32 StartPixel, uint32 Width,
-				   uint32 StartLine, uint32 LineCount, struct SGFX * gfx);
-
-void DrawLargePixel16Add (uint32 Tile, uint32 Offset,
-			  uint32 StartPixel, uint32 Pixels,
-			  uint32 StartLine, uint32 LineCount, struct SGFX * gfx);
-
-void DrawLargePixel16Add1_2 (uint32 Tile, uint32 Offset,
-			     uint32 StartPixel, uint32 Pixels,
-			     uint32 StartLine, uint32 LineCount, struct SGFX * gfx);
-
-void DrawLargePixel16Sub (uint32 Tile, uint32 Offset,
-			  uint32 StartPixel, uint32 Pixels,
-			  uint32 StartLine, uint32 LineCount, struct SGFX * gfx);
-
-void DrawLargePixel16Sub1_2 (uint32 Tile, uint32 Offset,
-			     uint32 StartPixel, uint32 Pixels,
-			     uint32 StartLine, uint32 LineCount, struct SGFX * gfx);
-
-void DrawHiResClippedTile16 (uint32 Tile, uint32 Offset,
-			uint32 StartPixel, uint32 Width,
-			uint32 StartLine, uint32 LineCount, struct SGFX * gfx);
-
-void DrawHiResTile16 (uint32 Tile, uint32 Offset,
-			uint32 StartLine, uint32 LineCount, struct SGFX * gfx);
 
 bool8_32 S9xGraphicsInit ()
 {
@@ -317,14 +202,8 @@ bool8_32 S9xGraphicsInit ()
 	PixelOdd <<= 2;
     }
 
-    GFX.RealPitch = GFX.Pitch2 = GFX.Pitch;
-    GFX.ZPitch = GFX.Pitch;
-    if (Settings.SixteenBit)
-	GFX.ZPitch >>= 1;
-    GFX.Delta = (GFX.SubScreen - GFX.Screen) >> 1;
-    GFX.DepthDelta = GFX.SubZBuffer - GFX.ZBuffer;
-    //GFX.InfoStringTimeout = 0;
-    //GFX.InfoString = NULL;
+    GFX.InfoStringTimeout = 0;
+    GFX.InfoString = NULL;
 
     PPU.BG_Forced = 0;
     IPPU.OBJChanged = TRUE;
@@ -573,9 +452,6 @@ void S9xStartScreenRefresh ()
 	IPPU.DoubleWidthPixels = FALSE;
 	GFX.Pitch2 = GFX.Pitch = GFX.RealPitch;
 	GFX.PPL = GFX.PPLx2 >> 1;
-	GFX.ZPitch = GFX.RealPitch;
-	if (Settings.SixteenBit)
-		    GFX.ZPitch >>= 1;
 	PPU.RecomputeClipWindows = TRUE;
 	GFX.DepthDelta = GFX.SubZBuffer - GFX.ZBuffer;
 	GFX.Delta = (GFX.SubScreen - GFX.Screen) >> 1;
@@ -964,7 +840,7 @@ void DrawOBJS (bool8_32 OnMain = FALSE, uint8 D = 0)
 			    if (W > Width)
 				W = Width;
 			    (*DrawClippedTilePtr) (Tile, O, Offset, W,
-						   TileLine, LineCount, &GFX);
+						   TileLine, LineCount);
 			    
 			    if (W >= Width)
 				continue;
@@ -988,12 +864,12 @@ void DrawOBJS (bool8_32 OnMain = FALSE, uint8 D = 0)
 		    for (int X = 0; X < Middle; X++, O += 8 * GFX.PixSize,
 			 Tile += TileInc)
 		    {
-			(*DrawTilePtr) (Tile, O, TileLine, LineCount, &GFX);
+			(*DrawTilePtr) (Tile, O, TileLine, LineCount);
 		    }
 		    if (Offset)
 		    {
 			(*DrawClippedTilePtr) (Tile, O, 0, Offset,
-					       TileLine, LineCount, &GFX);
+					       TileLine, LineCount);
 		    }
 		}
 	    }
@@ -1141,13 +1017,13 @@ void DrawBackgroundMosaic (uint32 BGMode, uint32 bg, uint8 Z1, uint8 Z2)
 			    {
 				(*DrawLargePixelPtr) (Tile + 17 - (Quot & 1), s,
 						      HPos & 7, PixWidth,
-						      VirtAlign, Lines, &GFX);
+						      VirtAlign, Lines);
 			    }
 			    else
 			    {
 				(*DrawLargePixelPtr) (Tile + 1 - (Quot & 1), s,
 						      HPos & 7, PixWidth,
-						      VirtAlign, Lines, &GFX);
+						      VirtAlign, Lines);
 			    }
 			}
 			else
@@ -1157,13 +1033,13 @@ void DrawBackgroundMosaic (uint32 BGMode, uint32 bg, uint8 Z1, uint8 Z2)
 			    {
 				(*DrawLargePixelPtr) (Tile + 17 - (Quot & 1), s,
 						      HPos & 7, PixWidth,
-						      VirtAlign, Lines, &GFX);
+						      VirtAlign, Lines);
 			    }
 			    else
 			    {
 				(*DrawLargePixelPtr) (Tile + 1 - (Quot & 1), s,
 						      HPos & 7, PixWidth,
-						      VirtAlign, Lines, &GFX);
+						      VirtAlign, Lines);
 			    }
 			}
 		    }
@@ -1177,13 +1053,13 @@ void DrawBackgroundMosaic (uint32 BGMode, uint32 bg, uint8 Z1, uint8 Z2)
 			    {
 				(*DrawLargePixelPtr) (Tile + 16 + (Quot & 1), s,
 						      HPos & 7, PixWidth,
-						      VirtAlign, Lines, &GFX);
+						      VirtAlign, Lines);
 			    }
 			    else
 			    {
 				(*DrawLargePixelPtr) (Tile + (Quot & 1), s,
 						      HPos & 7, PixWidth,
-						      VirtAlign, Lines, &GFX);
+						      VirtAlign, Lines);
 			    }
 			}
 			else
@@ -1193,20 +1069,20 @@ void DrawBackgroundMosaic (uint32 BGMode, uint32 bg, uint8 Z1, uint8 Z2)
 			    {
 				(*DrawLargePixelPtr) (Tile + 16 + (Quot & 1), s,
 						      HPos & 7, PixWidth,
-						      VirtAlign, Lines, &GFX);
+						      VirtAlign, Lines);
 			    }
 			    else
 			    {
 				(*DrawLargePixelPtr) (Tile + (Quot & 1), s,
 						      HPos & 7, PixWidth,
-						      VirtAlign, Lines, &GFX);
+						      VirtAlign, Lines);
 			    }
 			}
 		    }
 		}
 		else
 		    (*DrawLargePixelPtr) (Tile, s, HPos & 7, PixWidth,
-					  VirtAlign, Lines, &GFX);
+					  VirtAlign, Lines);
 	    }
 	}
     }
@@ -1451,14 +1327,14 @@ void DrawBackgroundOffset (uint32 BGMode, uint32 bg, uint8 Z1, uint8 Z2)
 		GFX.Z1 = GFX.Z2 = depths [(Tile & 0x2000) >> 13];
 
 		if (BG.TileSize == 8)
-		    (*DrawClippedTilePtr) (Tile, s, Offset, Count, VirtAlign, Lines, &GFX);
+		    (*DrawClippedTilePtr) (Tile, s, Offset, Count, VirtAlign, Lines);
 		else
 		{
 		    if (!(Tile & (V_FLIP | H_FLIP)))
 		    {
 			// Normal, unflipped
 			(*DrawClippedTilePtr) (Tile + t1 + (Quot & 1),
-					       s, Offset, Count, VirtAlign, Lines, &GFX);
+					       s, Offset, Count, VirtAlign, Lines);
 		    }
 		    else
 		    if (Tile & H_FLIP)
@@ -1467,20 +1343,20 @@ void DrawBackgroundOffset (uint32 BGMode, uint32 bg, uint8 Z1, uint8 Z2)
 			{
 			    // H & V flip
 			    (*DrawClippedTilePtr) (Tile + t2 + 1 - (Quot & 1),
-						   s, Offset, Count, VirtAlign, Lines, &GFX);
+						   s, Offset, Count, VirtAlign, Lines);
 			}
 			else
 			{
 			    // H flip only
 			    (*DrawClippedTilePtr) (Tile + t1 + 1 - (Quot & 1),
-						   s, Offset, Count, VirtAlign, Lines, &GFX);
+						   s, Offset, Count, VirtAlign, Lines);
 			}
 		    }
 		    else
 		    {
 			// V flip only
 			(*DrawClippedTilePtr) (Tile + t2 + (Quot & 1),
-					       s, Offset, Count, VirtAlign, Lines, &GFX);
+					       s, Offset, Count, VirtAlign, Lines);
 		    }
 		}
 
@@ -1636,13 +1512,13 @@ void DrawBackgroundMode5 (uint32 /* BGMODE */, uint32 bg, uint8 Z1, uint8 Z2)
 		    {
 			// Normal, unflipped
 			(*DrawHiResClippedTilePtr) (Tile + (Quot & 1),
-						    s, Offset, Count, VirtAlign, Lines, &GFX);
+						    s, Offset, Count, VirtAlign, Lines);
 		    }
 		    else
 		    {
 			// H flip
 			(*DrawHiResClippedTilePtr) (Tile + 1 - (Quot & 1),
-						    s, Offset, Count, VirtAlign, Lines, &GFX);
+						    s, Offset, Count, VirtAlign, Lines);
 		    }
 		}
 		else
@@ -1651,7 +1527,7 @@ void DrawBackgroundMode5 (uint32 /* BGMODE */, uint32 bg, uint8 Z1, uint8 Z2)
 		    {
 			// Normal, unflipped
 			(*DrawHiResClippedTilePtr) (Tile + t1 + (Quot & 1),
-						    s, Offset, Count, VirtAlign, Lines, &GFX);
+						    s, Offset, Count, VirtAlign, Lines);
 		    }
 		    else
 		    if (Tile & H_FLIP)
@@ -1660,20 +1536,20 @@ void DrawBackgroundMode5 (uint32 /* BGMODE */, uint32 bg, uint8 Z1, uint8 Z2)
 			{
 			    // H & V flip
 			    (*DrawHiResClippedTilePtr) (Tile + t2 + 1 - (Quot & 1),
-							s, Offset, Count, VirtAlign, Lines, &GFX);
+							s, Offset, Count, VirtAlign, Lines);
 			}
 			else
 			{
 			    // H flip only
 			    (*DrawHiResClippedTilePtr) (Tile + t1 + 1 - (Quot & 1),
-							s, Offset, Count, VirtAlign, Lines, &GFX);
+							s, Offset, Count, VirtAlign, Lines);
 			}
 		    }
 		    else
 		    {
 			// V flip only
 			(*DrawHiResClippedTilePtr) (Tile + t2 + (Quot & 1),
-						    s, Offset, Count, VirtAlign, Lines, &GFX);
+						    s, Offset, Count, VirtAlign, Lines);
 		    }
 		}
 
@@ -1700,13 +1576,13 @@ void DrawBackgroundMode5 (uint32 /* BGMODE */, uint32 bg, uint8 Z1, uint8 Z2)
 		    {
 			// Normal, unflipped
 			(*DrawHiResTilePtr) (Tile + (Quot & 1),
-					     s, VirtAlign, Lines, &GFX);
+					     s, VirtAlign, Lines);
 		    }
 		    else
 		    {
 			// H flip
 			(*DrawHiResTilePtr) (Tile + 1 - (Quot & 1),
-					    s, VirtAlign, Lines, &GFX);
+					    s, VirtAlign, Lines);
 		    }
 		}
 		else
@@ -1715,7 +1591,7 @@ void DrawBackgroundMode5 (uint32 /* BGMODE */, uint32 bg, uint8 Z1, uint8 Z2)
 		    {
 			// Normal, unflipped
 			(*DrawHiResTilePtr) (Tile + t1 + (Quot & 1),
-					     s, VirtAlign, Lines, &GFX);
+					     s, VirtAlign, Lines);
 		    }
 		    else
 		    if (Tile & H_FLIP)
@@ -1724,20 +1600,20 @@ void DrawBackgroundMode5 (uint32 /* BGMODE */, uint32 bg, uint8 Z1, uint8 Z2)
 			{
 			    // H & V flip
 			    (*DrawHiResTilePtr) (Tile + t2 + 1 - (Quot & 1),
-						 s, VirtAlign, Lines, &GFX);
+						 s, VirtAlign, Lines);
 			}
 			else
 			{
 			    // H flip only
 			    (*DrawHiResTilePtr) (Tile + t1 + 1 - (Quot & 1),
-						 s, VirtAlign, Lines, &GFX);
+						 s, VirtAlign, Lines);
 			}
 		    }
 		    else
 		    {
 			// V flip only
 			(*DrawHiResTilePtr) (Tile + t2 + (Quot & 1),
-					     s, VirtAlign, Lines, &GFX);
+					     s, VirtAlign, Lines);
 		    }
 		}
 
@@ -1760,13 +1636,13 @@ void DrawBackgroundMode5 (uint32 /* BGMODE */, uint32 bg, uint8 Z1, uint8 Z2)
 		    {
 			// Normal, unflipped
 			(*DrawHiResClippedTilePtr) (Tile + (Quot & 1),
-						    s, 0, Count, VirtAlign, Lines, &GFX);
+						    s, 0, Count, VirtAlign, Lines);
 		    }
 		    else
 		    {
 			// H flip
 			(*DrawHiResClippedTilePtr) (Tile + 1 - (Quot & 1),
-						    s, 0, Count, VirtAlign, Lines, &GFX);
+						    s, 0, Count, VirtAlign, Lines);
 		    }
 		}
 		else
@@ -1775,7 +1651,7 @@ void DrawBackgroundMode5 (uint32 /* BGMODE */, uint32 bg, uint8 Z1, uint8 Z2)
 		    {
 			// Normal, unflipped
 			(*DrawHiResClippedTilePtr) (Tile + t1 + (Quot & 1),
-						    s, 0, Count, VirtAlign, Lines, &GFX);
+						    s, 0, Count, VirtAlign, Lines);
 		    }
 		    else
 		    if (Tile & H_FLIP)
@@ -1784,20 +1660,20 @@ void DrawBackgroundMode5 (uint32 /* BGMODE */, uint32 bg, uint8 Z1, uint8 Z2)
 			{
 			    // H & V flip
 			    (*DrawHiResClippedTilePtr) (Tile + t2 + 1 - (Quot & 1),
-							s, 0, Count, VirtAlign, Lines, &GFX);
+							s, 0, Count, VirtAlign, Lines);
 			}
 			else
 			{
 			    // H flip only
 			    (*DrawHiResClippedTilePtr) (Tile + t1 + 1 - (Quot & 1),
-							s, 0, Count, VirtAlign, Lines, &GFX);
+							s, 0, Count, VirtAlign, Lines);
 			}
 		    }
 		    else
 		    {
 			// V flip only
 			(*DrawHiResClippedTilePtr) (Tile + t2 + (Quot & 1),
-						    s, 0, Count, VirtAlign, Lines, &GFX);
+						    s, 0, Count, VirtAlign, Lines);
 		    }
 		}
 	    }
@@ -1992,7 +1868,7 @@ void DrawBackground (uint32 BGMode, uint32 bg, uint8 Z1, uint8 Z2)
 			if (BG.TileSize == 8)
 			{
 			    (*DrawClippedTilePtr) (Tile, s, Offset, Count, VirtAlign,
-						   Lines, &GFX);
+						   Lines);
 			}
 			else
 			{
@@ -2000,7 +1876,7 @@ void DrawBackground (uint32 BGMode, uint32 bg, uint8 Z1, uint8 Z2)
 			    {
 					// Normal, unflipped
 					(*DrawClippedTilePtr) (Tile + t1 + (Quot & 1),
-						       s, Offset, Count, VirtAlign, Lines, &GFX);
+						       s, Offset, Count, VirtAlign, Lines);
 			    }
 			    else
 			    if (Tile & H_FLIP)
@@ -2009,20 +1885,20 @@ void DrawBackground (uint32 BGMode, uint32 bg, uint8 Z1, uint8 Z2)
 				{
 				    // H & V flip
 				    (*DrawClippedTilePtr) (Tile + t2 + 1 - (Quot & 1),
-							   s, Offset, Count, VirtAlign, Lines, &GFX);
+							   s, Offset, Count, VirtAlign, Lines);
 				}
 				else
 				{
 				    // H flip only
 				    (*DrawClippedTilePtr) (Tile + t1 + 1 - (Quot & 1),
-							   s, Offset, Count, VirtAlign, Lines, &GFX);
+							   s, Offset, Count, VirtAlign, Lines);
 				}
 			    }
 			    else
 			    {
 				// V flip only
 				(*DrawClippedTilePtr) (Tile + t2 + (Quot & 1), s, 
-						       Offset, Count, VirtAlign, Lines, &GFX);
+						       Offset, Count, VirtAlign, Lines);
 			    }
 			}
 
@@ -2064,13 +1940,13 @@ void DrawBackground (uint32 BGMode, uint32 bg, uint8 Z1, uint8 Z2)
 				{
 				    // Both horzontal & vertical flip
 				    (*DrawTilePtr) (Tile + t2 + 1 - (Quot & 1), s, 
-						    VirtAlign, Lines, &GFX);
+						    VirtAlign, Lines);
 				}
 				else
 				{
 				    // Horizontal flip only
 				    (*DrawTilePtr) (Tile + t1 + 1 - (Quot & 1), s, 
-						    VirtAlign, Lines, &GFX);
+						    VirtAlign, Lines);
 				}
 			    }
 			    else
@@ -2080,19 +1956,19 @@ void DrawBackground (uint32 BGMode, uint32 bg, uint8 Z1, uint8 Z2)
 				{
 				    // Vertical flip only
 				    (*DrawTilePtr) (Tile + t2 + (Quot & 1), s,
-						    VirtAlign, Lines, &GFX);
+						    VirtAlign, Lines);
 				}
 				else
 				{
 				    // Normal unflipped
 				    (*DrawTilePtr) (Tile + t1 + (Quot & 1), s,
-						    VirtAlign, Lines, &GFX);
+						    VirtAlign, Lines);
 				}
 			    }
 			}
 			else
 			{
-			    (*DrawTilePtr) (Tile, s, VirtAlign, Lines, &GFX);
+			    (*DrawTilePtr) (Tile, s, VirtAlign, Lines);
 			}
 
 			if (BG.TileSize == 8)
@@ -2122,14 +1998,14 @@ void DrawBackground (uint32 BGMode, uint32 bg, uint8 Z1, uint8 Z2)
 
 			if (BG.TileSize == 8)
 			    (*DrawClippedTilePtr) (Tile, s, 0, Count, VirtAlign, 
-						   Lines, &GFX);
+						   Lines);
 			else
 			{
 			    if (!(Tile & (V_FLIP | H_FLIP)))
 			    {
 				// Normal, unflipped
 				(*DrawClippedTilePtr) (Tile + t1 + (Quot & 1), s, 0, 
-						       Count, VirtAlign, Lines, &GFX);
+						       Count, VirtAlign, Lines);
 			    }
 			    else
 			    if (Tile & H_FLIP)
@@ -2139,14 +2015,14 @@ void DrawBackground (uint32 BGMode, uint32 bg, uint8 Z1, uint8 Z2)
 				    // H & V flip
 				    (*DrawClippedTilePtr) (Tile + t2 + 1 - (Quot & 1),
 							   s, 0, Count, VirtAlign, 
-							   Lines, &GFX);
+							   Lines);
 				}
 				else
 				{
 				    // H flip only
 				    (*DrawClippedTilePtr) (Tile + t1 + 1 - (Quot & 1),
 							   s, 0, Count, VirtAlign,
-							   Lines, &GFX);
+							   Lines);
 				}
 			    }
 			    else
@@ -2154,7 +2030,7 @@ void DrawBackground (uint32 BGMode, uint32 bg, uint8 Z1, uint8 Z2)
 				// V flip only
 				(*DrawClippedTilePtr) (Tile + t2 + (Quot & 1),
 						       s, 0, Count, VirtAlign, 
-						       Lines, &GFX);
+						       Lines);
 			    }
 			}
 		    }
@@ -3218,10 +3094,6 @@ void S9xUpdateScreen () // ~30-50ms! (called from FLUSH_REDRAW())
 						for (register int x = 255; x >= 0; x--, p--, q -= 2)
 							*q = *(q + 1) = *p;
 				    }
-				    GFX.Pitch = GFX.Pitch2 = GFX.RealPitch;
-		                    GFX.PPL = GFX.Pitch >> 1;
-		                    GFX.PPLx2 = GFX.Pitch;
-		                    GFX.ZPitch = GFX.PPL;
 				}
 				else
 #endif

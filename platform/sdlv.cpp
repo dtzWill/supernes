@@ -149,7 +149,7 @@ static void setupVideoSurface()
 
 	// We get pitch surface values from SDL
 	GFX.RealPitch = GFX.Pitch = screen->pitch;
-	GFX.ZPitch = realWidth; // The ZBuffer is independent of SDL surface size.
+	GFX.ZPitch = GFX.Pitch / 2; // gfx & tile.cpp depend on this, unfortunately.
 	GFX.PixSize = screen->format->BitsPerPixel / 8;
 
 	// Ok, calculate renderArea
@@ -171,13 +171,12 @@ static void setupVideoSurface()
 		+ (renderArea.x * GFX.PixSize)
 		+ (renderArea.y * GFX.Pitch);
 	GFX.SubScreen = (uint8 *) malloc(GFX.Pitch * IMAGE_HEIGHT);
-	GFX.ZBuffer =  (uint8 *) malloc(GFX.Pitch * IMAGE_HEIGHT);
-	GFX.SubZBuffer = (uint8 *) malloc(GFX.Pitch * IMAGE_HEIGHT);
-	
+	GFX.ZBuffer =  (uint8 *) malloc(GFX.ZPitch * IMAGE_HEIGHT);
+	GFX.SubZBuffer = (uint8 *) malloc(GFX.ZPitch * IMAGE_HEIGHT);
+
 	GFX.Delta = (GFX.SubScreen - GFX.Screen) >> 1;
 	GFX.PPL = GFX.Pitch >> 1;
 	GFX.PPLx2 = GFX.Pitch;
-	GFX.ZPitch = GFX.Pitch >> 1; // TODO
 
 	printf("Video: %dx%d (%dx%d output), %hu bits per pixel, %s %s\n",
 		realWidth, realHeight,

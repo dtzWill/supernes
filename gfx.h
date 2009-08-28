@@ -203,13 +203,13 @@ GFX.ZERO [(((C1) | RGB_HI_BITS_MASKx2) - \
 	   ((C2) & RGB_REMOVE_LOW_BITS_MASK)) >> 1]
 
 typedef void (*NormalTileRenderer) (uint32 Tile, uint32 Offset, 
-				    uint32 StartLine, uint32 LineCount, struct SGFX * gfx);
+				    uint32 StartLine, uint32 LineCount);
 typedef void (*ClippedTileRenderer) (uint32 Tile, uint32 Offset,
 				     uint32 StartPixel, uint32 Width,
-				     uint32 StartLine, uint32 LineCount, struct SGFX * gfx);
+				     uint32 StartLine, uint32 LineCount);
 typedef void (*LargePixelRenderer) (uint32 Tile, uint32 Offset,
 				    uint32 StartPixel, uint32 Pixels,
-				    uint32 StartLine, uint32 LineCount, struct SGFX * gfx);
+				    uint32 StartLine, uint32 LineCount);
 
 START_EXTERN_C
 void S9xStartScreenRefresh ();
