@@ -6,7 +6,7 @@ LDLIBS:=$(shell pkg-config --libs $(PKGS))
 LDFLAGS:=-export-dynamic -avoid-version -module -shared -Wl,-z,defs
 
 #GAME_VERSION
-GAME_SHARE_PATH=/usr/share/games/drnoksnes/
+GAME_SHARE_PATH=/usr/share/games/drnoksnes
 GAME_PLUGIN_PATH=/usr/lib/drnoksnes_plugin.so
 GAME_CONF_PATH=$(GAME_SHARE_PATH)/drnoksnes.conf
 GAME_BIN_PATH=/usr/games/drnoksnes
