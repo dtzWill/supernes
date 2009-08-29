@@ -1,8 +1,11 @@
 drnoksnes (0.9.5) unstable; urgency=low
 
   * Icon in packaging
+  * Fixing GUI bugs and improved ROM compatibility.
+  * Touchscreen controls.
+  * Mouse/Touchscreen options in GUI.
 
- -- Javier S. Pedro <maemo@javispedro.com>  Wed, 26 Aug 2009 00:02:31 +0200
+ -- Javier S. Pedro <maemo@javispedro.com>  Sat, 29 Aug 2009 03:12:42 +0200
 
 drnoksnes (0.9.4) unstable; urgency=low
 

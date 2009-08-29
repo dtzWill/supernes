@@ -16,6 +16,7 @@ void HgwPollEvents();
 #define kGConfTurboMode kGConfPath "/" "turbo"
 #define kGConfFrameskip kGConfPath "/" "frameskip"
 #define kGConfTransparency kGConfPath "/" "transparency"
+#define kGConfDisplayFramerate kGConfPath "/" "display-framerate"
 #define kGConfSpeedhacks kGConfPath "/" "speedhacks"
 #define kGConfMapping kGConfPath "/" "mapping"
 #define kGConfKeysPath kGConfPath "/" "keys"

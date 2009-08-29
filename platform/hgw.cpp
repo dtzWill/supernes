@@ -15,6 +15,7 @@
 bool hgwLaunched;
 static HgwContext *hgw;
 
+static void createActionMappingsOnly();
 static void parseGConfKeyMappings();
 
 void HgwInit()
@@ -82,6 +83,11 @@ void HgwConfig()
 	if (hgw_conf_request_bool(hgw, kGConfTransparency, &transparency) == HGW_ERR_NONE) {
 		Settings.Transparency = transparency ? TRUE : FALSE;
 	}
+	
+	char displayFramerate = FALSE;
+	if (hgw_conf_request_bool(hgw, kGConfDisplayFramerate, &displayFramerate) == HGW_ERR_NONE) {
+		Settings.DisplayFrameRate = displayFramerate ? TRUE : FALSE;
+	}
 
 	int speedhacks = 0;
 	if (hgw_conf_request_int(hgw, kGConfFrameskip, &speedhacks) == HGW_ERR_NONE) {
@@ -100,7 +106,27 @@ void HgwConfig()
 	int mappings = 0;
 	if (hgw_conf_request_int(hgw, kGConfMapping, &mappings) == HGW_ERR_NONE) {
 		switch (mappings) {
-			case 1:
+			case 0:
+				// Do nothing, leave mappings as is.
+				break;
+			case 1: // Keys
+				parseGConfKeyMappings();
+				break;
+			case 2: // Touchscreen
+				Config.touchscreenInput = true;
+				createActionMappingsOnly();
+				break;
+			case 3: // Touchscreen + keys
+				Config.touchscreenInput = true;
+				parseGConfKeyMappings();
+				break;
+			case 4: // Mouse
+				Settings.Mouse = TRUE;
+				Settings.ControllerOption = SNES_MOUSE_SWAPPED;
+				break;
+			case 5: // Mouse + keys
+				Settings.Mouse = TRUE;
+				Settings.ControllerOption = SNES_MOUSE;
 				parseGConfKeyMappings();
 				break;
 		}
@@ -191,6 +217,17 @@ static const ButtonEntry buttons[] = {
 	ACTION_INITIALIZER(ToggleFullscreen, "fullscreen"),
 	BUTTON_LAST
 };
+
+static void createActionMappingsOnly()
+{
+	// Discard any other mapping
+	ZeroMemory(Config.joypad1Mapping, sizeof(Config.joypad1Mapping));
+	ZeroMemory(Config.action, sizeof(Config.action));
+	
+	// Map quit to fullscreen and escape
+	Config.action[72] = kActionQuit;
+	Config.action[9] = kActionQuit;
+}
 
 static void parseGConfKeyMappings()
 {
