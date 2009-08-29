@@ -83,11 +83,13 @@ void HgwConfig()
 	if (hgw_conf_request_bool(hgw, kGConfTransparency, &transparency) == HGW_ERR_NONE) {
 		Settings.Transparency = transparency ? TRUE : FALSE;
 	}
-	
+
+#if 0
 	char displayFramerate = FALSE;
 	if (hgw_conf_request_bool(hgw, kGConfDisplayFramerate, &displayFramerate) == HGW_ERR_NONE) {
 		Settings.DisplayFrameRate = displayFramerate ? TRUE : FALSE;
 	}
+#endif
 
 	int speedhacks = 0;
 	if (hgw_conf_request_int(hgw, kGConfFrameskip, &speedhacks) == HGW_ERR_NONE) {
@@ -123,6 +125,7 @@ void HgwConfig()
 			case 4: // Mouse
 				Settings.Mouse = TRUE;
 				Settings.ControllerOption = SNES_MOUSE_SWAPPED;
+				createActionMappingsOnly();
 				break;
 			case 5: // Mouse + keys
 				Settings.Mouse = TRUE;

@@ -90,13 +90,29 @@ static void processMouse(unsigned int x, unsigned int y, int pressed = 0)
 			}
 		}
 	} else if (mouse.enabled) {
-		// TODO Review this
 		mouse.x = x;
 		mouse.y = y;
+
+		if (mouse.x < GUI.RenderX) mouse.x = 0;
+		else {
+			mouse.x -= GUI.RenderX;
+			if (mouse.x > GUI.RenderW) mouse.x = GUI.RenderW;
+		}
+
+		if (mouse.y < GUI.RenderY) mouse.y = 0;
+		else {
+			mouse.y -= GUI.RenderY;
+			if (mouse.y > GUI.RenderH) mouse.y = GUI.RenderH;
+		}
+
+#ifdef MAEMO
+		// Remember RenderH, RenderW is 2x if using Xsp.
 		if (Config.xsp) {
 			mouse.x /= 2;
 			mouse.y /= 2;
 		}
+#endif
+
 		if (pressed > 0)
 			mouse.pressed = true;
 		else if (pressed < 0)
@@ -213,8 +229,8 @@ void S9xDeinitInputDevices()
 
 void S9xInputScreenChanged()
 {
-	unsigned int i = 0, w = 0, h = 0;
-	S9xVideoGetWindowSize(&w, &h);
+	unsigned int i = 0;
+	const unsigned int w = GUI.Width, h = GUI.Height;
 	for (i = 0; i < sizeof(touchbuttons)/sizeof(TouchButton); i++) {
 		touchbuttons[i].x = (unsigned)round(touchbuttons[i].fx * w);
 		touchbuttons[i].y = (unsigned)round(touchbuttons[i].fy * h);

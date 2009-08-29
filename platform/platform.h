@@ -30,8 +30,13 @@ extern struct config {
 } Config;
 
 // Video
+extern struct gui {
+	/** Size of the GUI Window */
+	unsigned short Width, Height;
+	/** Size of the rendering area, relative to window. 2x if Xsp on. */
+	unsigned short RenderX, RenderY, RenderW, RenderH;
+} GUI;
 void S9xVideoToggleFullscreen();
-void S9xVideoGetWindowSize(unsigned int * w, unsigned int * h);
 void S9xVideoOutputFocus(bool hasFocus);
 
 // Audio output

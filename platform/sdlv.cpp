@@ -18,6 +18,8 @@
 		abort(); \
 	} while (0);
 
+struct gui GUI;
+
 static SDL_Surface *screen;
 
 static SDL_Rect windowSize, screenSize;
@@ -105,10 +107,8 @@ static void freeVideoSurface()
 static void setupVideoSurface()
 {
 	// Real surface area.
-	unsigned gameWidth = IMAGE_WIDTH;
-	unsigned gameHeight = IMAGE_HEIGHT;
-	// SDL Window/Surface size (bigger, so we can get mouse events there).
-	unsigned winWidth, winHeight;
+	const unsigned gameWidth = IMAGE_WIDTH;
+	const unsigned gameHeight = IMAGE_HEIGHT;
 
 #ifdef MAEMO
 	if ((Config.fullscreen && !gotScreenSize) ||
@@ -121,30 +121,30 @@ static void setupVideoSurface()
 		calculateScreenSize();
 	}
 	if (Config.fullscreen) {
-		winWidth = screenSize.w;
-		winHeight = screenSize.h;
+		GUI.Width = screenSize.w;
+		GUI.Height = screenSize.h;
 	} else {
-		winWidth = windowSize.w;
-		winHeight = windowSize.h;
+		GUI.Width = windowSize.w;
+		GUI.Height = windowSize.h;
 	}
 	
 	// So, can we enable Xsp?
-	if (gameWidth * 2 < winWidth && gameHeight * 2 < winHeight) {
+	if (gameWidth * 2 < GUI.Width && gameHeight * 2 < GUI.Height) {
 		Config.xsp = true;
 	} else  {
 		Config.xsp = false;
 		setDoubling(false); // Before switching video modes; avoids flicker.
 	}
 #else
-	winWidth = gameWidth;
-	winHeight = gameHeight;
+	GUI.Width = gameWidth;
+	GUI.Height = gameHeight;
 #endif
 
 	// Safeguard
-	if (gameHeight > winHeight || gameWidth > winWidth)
+	if (gameHeight > GUI.Height || gameWidth > GUI.Width)
 		DIE("Video is larger than window size!");
 
-	screen = SDL_SetVideoMode(winWidth, winHeight,
+	screen = SDL_SetVideoMode(GUI.Width, GUI.Height,
 								Settings.SixteenBit ? 16 : 8,
 								SDL_SWSURFACE |
 								(Config.fullscreen ? SDL_FULLSCREEN : 0));
@@ -162,15 +162,14 @@ static void setupVideoSurface()
 #ifdef MAEMO
 	if (Config.xsp) {
 		setDoubling(true);
-		centerRectangle(renderArea, winWidth, winHeight,
+		centerRectangle(renderArea, GUI.Width, GUI.Height,
 			gameWidth * 2, gameHeight * 2);
-		renderArea.w /= 2;
-		renderArea.h /= 2;
 	} else {
-		centerRectangle(renderArea, winWidth, winHeight, gameWidth, gameHeight);
+		centerRectangle(renderArea, GUI.Width, GUI.Height,
+			gameWidth, gameHeight);
 	}
 #else
-	centerRectangle(renderArea, winWidth, winHeight, gameWidth, gameHeight);
+	centerRectangle(renderArea, GUI.Width, GUI.Height, gameWidth, gameHeight);
 #endif
 	
 	GFX.Screen = ((uint8*) screen->pixels)
@@ -183,6 +182,19 @@ static void setupVideoSurface()
 	GFX.Delta = (GFX.SubScreen - GFX.Screen) >> 1;
 	GFX.PPL = GFX.Pitch >> 1;
 	GFX.PPLx2 = GFX.Pitch;
+
+	GUI.RenderX = renderArea.x;
+	GUI.RenderY = renderArea.y;
+	GUI.RenderW = renderArea.w;
+	GUI.RenderH = renderArea.h;
+
+#ifdef MAEMO
+	if (Config.xsp) {
+		// Do not update 2x the area.
+		renderArea.w /= 2;
+		renderArea.h /= 2;
+	}
+#endif
 
 	printf("Video: %dx%d (%dx%d output), %hu bits per pixel, %s %s\n",
 		gameWidth, gameHeight,
@@ -217,17 +229,6 @@ void S9xVideoOutputFocus(bool hasFocus)
 	if (Config.xsp) {
 		setDoubling(hasFocus);
 	} 
-}
-
-void S9xVideoGetWindowSize(unsigned int* w, unsigned int* h)
-{
-	if (Config.fullscreen) {
-		*w = screenSize.w;
-		*h = screenSize.h;
-	} else {
-		*w = windowSize.w;
-		*h = windowSize.h;
-	}
 }
 
 // This is here for completeness, but palette mode is useless on N8x0

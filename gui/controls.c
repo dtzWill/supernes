@@ -80,11 +80,20 @@ static void show_widgets()
 		case 0:
 			gtk_widget_show_all(GTK_WIDGET(none_label));
 			break;
-		case 1:
+		case 1: // Keys
 			gtk_widget_show_all(GTK_WIDGET(keys_scroll));
 			break;
-		case 2:
+		case 2: // Touchscreen
 			gtk_widget_show_all(GTK_WIDGET(ts_label));
+			break;
+		case 3: // Touchscreen + keys
+			gtk_widget_show_all(GTK_WIDGET(keys_scroll));
+			break;
+		case 4: // Mouse
+			gtk_widget_show_all(GTK_WIDGET(ts_label));
+			break;
+		case 5: // Mouse + keys
+			gtk_widget_show_all(GTK_WIDGET(keys_scroll));
 			break;
 	}
 }
@@ -239,6 +248,9 @@ void controls_dialog(GtkWindow* parent)
 	gtk_combo_box_append_text(combo, "No controls/Use config file");
 	gtk_combo_box_append_text(combo, "Use physical keys");
 	gtk_combo_box_append_text(combo, "Use touchscreen");
+	gtk_combo_box_append_text(combo, "Use touchscreen + physical keys");
+	gtk_combo_box_append_text(combo, "Use SNES mouse");
+	gtk_combo_box_append_text(combo, "Use SNES mouse + physical keys");
 
 	none_label = GTK_LABEL(gtk_label_new("Check documentation for details."));
 
@@ -278,7 +290,7 @@ void controls_dialog(GtkWindow* parent)
 			-1);
 	}
 
-	ts_label = GTK_LABEL(gtk_label_new("Not implemented."));
+	ts_label = GTK_LABEL(gtk_label_new("Check layout somewhere else for now."));
 
 	gtk_window_resize(GTK_WINDOW(dialog), 600, 340);
 	gtk_box_pack_start(GTK_BOX(dialog->vbox), GTK_WIDGET(combo),
