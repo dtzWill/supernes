@@ -91,7 +91,7 @@ void HgwConfig()
 	}
 
 	int speedhacks = 0;
-	if (hgw_conf_request_int(hgw, kGConfFrameskip, &speedhacks) == HGW_ERR_NONE) {
+	if (hgw_conf_request_int(hgw, kGConfSpeedhacks, &speedhacks) == HGW_ERR_NONE) {
 		if (speedhacks <= 0) {
 			Settings.HacksEnabled = FALSE;
 			Settings.HacksFilter = FALSE;
