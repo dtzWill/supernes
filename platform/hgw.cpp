@@ -105,7 +105,10 @@ void HgwConfig()
 	}
 	if (Settings.HacksEnabled && !Config.hacksFile) {
 		// Provide a default speedhacks file
-		Config.hacksFile = asprintf("%s/snesadvance.dat", dirname(romFile));
+		if (asprintf(&Config.hacksFile, "%s/snesadvance.dat", dirname(romFile))
+				< 0) {
+			Config.hacksFile = 0; // malloc error.
+		}
 		// romFile[] is garbled from now on.
 	}
 
