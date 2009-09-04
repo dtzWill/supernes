@@ -1,3 +1,12 @@
+drnoksnes (1.0.0) unstable; urgency=low
+
+  * First stable release.
+  * Display framerate in GUI.
+  * For now, search for snesadvance.dat file in ROM dirname when
+    launched from GUI.
+
+ -- Javier S. Pedro <maemo@javispedro.com>  Fri,  4 Sep 2009 18:41:45 +0200
+
 drnoksnes (0.9.5) unstable; urgency=low
 
   * Icon in packaging

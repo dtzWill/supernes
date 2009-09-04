@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <libgen.h>
 #include <hgw/hgw.h>
 
 #include "platform.h"
@@ -84,12 +85,10 @@ void HgwConfig()
 		Settings.Transparency = transparency ? TRUE : FALSE;
 	}
 
-#if 0
 	char displayFramerate = FALSE;
 	if (hgw_conf_request_bool(hgw, kGConfDisplayFramerate, &displayFramerate) == HGW_ERR_NONE) {
 		Settings.DisplayFrameRate = displayFramerate ? TRUE : FALSE;
 	}
-#endif
 
 	int speedhacks = 0;
 	if (hgw_conf_request_int(hgw, kGConfFrameskip, &speedhacks) == HGW_ERR_NONE) {
@@ -103,6 +102,11 @@ void HgwConfig()
 			Settings.HacksEnabled = TRUE;
 			Settings.HacksFilter = FALSE;
 		}
+	}
+	if (Settings.HacksEnabled && !Config.hacksFile) {
+		// Provide a default speedhacks file
+		Config.hacksFile = asprintf("%s/snesadvance.dat", dirname(romFile));
+		// romFile[] is garbled from now on.
 	}
 
 	int mappings = 0;
