@@ -196,9 +196,9 @@ static GtkWidget * load_plugin(void)
 	gtk_box_pack_start(GTK_BOX(opt_hbox), GTK_WIDGET(auto_framerate_check), FALSE, FALSE, 0);
 	gtk_box_pack_start(GTK_BOX(opt_hbox), GTK_WIDGET(turbo_check), FALSE, FALSE, 0);
 
-	gtk_box_pack_start(GTK_BOX(opt2_hbox), GTK_WIDGET(trans_check), TRUE, TRUE, 0);
+	gtk_box_pack_start(GTK_BOX(opt2_hbox), GTK_WIDGET(trans_check), FALSE, FALSE, 0);
 	gtk_box_pack_start(GTK_BOX(opt2_hbox), GTK_WIDGET(framerate_check), TRUE, TRUE, 0);
-	gtk_box_pack_end(GTK_BOX(opt2_hbox), GTK_WIDGET(speedhacks_combo), FALSE, FALSE, 0);
+	gtk_box_pack_start(GTK_BOX(opt2_hbox), GTK_WIDGET(speedhacks_combo), FALSE, FALSE, 0);
 	gtk_box_pack_start(GTK_BOX(parent), rom_hbox, FALSE, FALSE, 0);
 	gtk_box_pack_start(GTK_BOX(parent), opt_hbox, FALSE, FALSE, 0);
 	gtk_box_pack_start(GTK_BOX(parent), opt2_hbox, FALSE, FALSE, 0);
