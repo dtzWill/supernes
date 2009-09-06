@@ -46,7 +46,7 @@
 #include "cpuexec.h"
 #include "sa1.h"
 
-#define __memcheck__
+//#define __memcheck__
 //#define __show_io__
 extern int oppause;
 extern uint16 mem_check;
