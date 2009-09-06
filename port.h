@@ -105,7 +105,7 @@ typedef int16_t			int16_32;
 
 // Configuration defines I think I know what they're for
 #define ASM_SPC700		1
-//#define SUPER_FX		1
+#define SUPER_FX		1
 #define CPU_SHUTDOWN	1
 //#define NETPLAY_SUPPORT	1
 

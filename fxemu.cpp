@@ -44,6 +44,8 @@
 #include <string.h>
 #include <stdio.h>
 
+#include "port.h"
+
 /* The FxChip Emulator's internal variables */
 struct FxRegs_s GSU = {{0}, 0};
 
@@ -188,6 +190,10 @@ static void fx_readRegisterSpace()
     uint8 *p;
     static uint32 avHeight[] = { 128, 160, 192, 256 };
     static uint32 avMult[] = { 16, 32, 32, 64 };
+
+#ifndef SUPER_FX
+	abort(); // Tried to run SuperFX game in non SuperFX build.
+#endif
 
     GSU.vErrorCode = 0;
 
