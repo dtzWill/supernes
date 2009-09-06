@@ -108,34 +108,60 @@ typedef int16_t			int16_32;
 #define SUPER_FX		1
 #define CPU_SHUTDOWN	1
 //#define NETPLAY_SUPPORT	1
+#define ZLIB			1
+#define UNZIP_SUPPORT	1
 
 //Misc Items
 #define VAR_CYCLES
 //#define SPC700_SHUTDOWN
 #define LSB_FIRST
-#define STATIC static
-#define FASTCALL
 #define PIXEL_FORMAT RGB565
 #define CHECK_SOUND()
-#define UNZIP_SUPPORT
 #define ZeroMemory(a,b) memset((a),0,(b))
 #define PACKING __attribute__ ((packed))
 #define ALIGN_BY_ONE  __attribute__ ((aligned (1), packed))
 #define LSB_FIRST
 #undef  FAST_LSB_WORD_ACCESS
 
-#ifndef INLINE
+// Language abstractions
+#define FASTCALL
+#define STATIC static
 #define INLINE inline
-#endif
 
 START_EXTERN_C
 // Path functions
 void PathMake(char *path, const char *drive, const char *dir,
 	const char *fname, const char *ext);
 void PathSplit(const char *path, char *drive, char *dir, char *fname, char *ext);
-/** A simplified basename function returning a pointer inside the same string */
+/** A simplified basename function returning a pointer inside the src string */
 const char * PathBasename(const char * path);
 END_EXTERN_C
+
+// Stream functions, used when opening ROMs and snapshots.
+#ifdef ZLIB
+#include <zlib.h>
+#define STREAM gzFile
+#define READ_STREAM(p,l,s) gzread (s,p,l)
+#define WRITE_STREAM(p,l,s) gzwrite (s,p,l)
+#define GETS_STREAM(p,l,s) gzgets(s,p,l)
+#define GETC_STREAM(s) gzgetc(s)
+#define OPEN_STREAM(f,m) gzopen (f,m)
+#define REOPEN_STREAM(f,m) gzdopen (f,m)
+#define FIND_STREAM(f)	gztell(f)
+#define REVERT_STREAM(f,o,s)  gzseek(f,o,s)
+#define CLOSE_STREAM(s) gzclose (s)
+#else
+#define STREAM FILE *
+#define READ_STREAM(p,l,s) fread (p,1,l,s)
+#define WRITE_STREAM(p,l,s) fwrite (p,1,l,s)
+#define GETS_STREAM(p,l,s) fgets(p,l,s)
+#define GETC_STREAM(s) fgetc(s)
+#define OPEN_STREAM(f,m) fopen (f,m)
+#define REOPEN_STREAM(f,m) fdopen (f,m)
+#define FIND_STREAM(f)	ftell(f)
+#define REVERT_STREAM(f,o,s)	 fseek(f,o,s)
+#define CLOSE_STREAM(s) fclose (s)
+#endif
 
 #endif
 

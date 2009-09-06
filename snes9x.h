@@ -55,14 +55,6 @@
 
 #define ROM_NAME_LEN 23
 
-#define STREAM FILE *
-#define READ_STREAM(p,l,s) fread (p,1,l,s)
-#define WRITE_STREAM(p,l,s) fwrite (p,1,l,s)
-#define OPEN_STREAM(f,m) fopen (f,m)
-#define CLOSE_STREAM(s) fclose (s)
-#define SEEK_STREAM(p,r,s) fseek(s,p,r)
-#define FROM_CURRENT SEEK_CUR
-
 /* SNES screen width and height */
 #define SNES_WIDTH		256
 #define SNES_HEIGHT		224

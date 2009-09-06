@@ -22,12 +22,11 @@ OBJS += os9x_asm_cpu.o os9x_65c816.o spc700a.o
 OBJS += m3d_func.o misc.o
 # from open-whatever sdk
 OBJS += unzip.o ioapi.o
-# my own extensions to snes9x
+# my extensions to snes9x (speedhacks support)
 OBJS += hacks.o
 # the glue code that sticks it all together in a monstruous way
-OBJS += platform/path.o platform/statef.o platform/config.o
+OBJS += platform/path.o platform/config.o platform/hgw.o
 OBJS += platform/sdl.o platform/sdlv.o platform/sdla.o platform/sdli.o
-OBJS += platform/hgw.o
 
 # automatic dependencies
 DEPS := $(OBJS:.o=.d)
