@@ -407,7 +407,7 @@ static int UnfreezeBlock (const char *name, uint8 *block, int size);
 
 bool8 S9xFreezeGame (const char *filename)
 {
-    if(ss_st = OPEN_STREAM(filename, "wb"))
+    if (ss_st = OPEN_STREAM(filename, "wb"))
     {
 		Freeze();
 		CLOSE_STREAM(ss_st);
@@ -419,7 +419,7 @@ bool8 S9xFreezeGame (const char *filename)
 
 bool8 S9xUnfreezeGame (const char *filename)
 {
-    if(ss_st = OPEN_STREAM(filename, "rb"))
+    if (ss_st = OPEN_STREAM(filename, "rb"))
     {
 		int result;
 		if ((result = Unfreeze()) != SUCCESS)
@@ -470,10 +470,10 @@ static void Freeze ()
 	SoundData.channels [i].previous16 [1] = (int16) SoundData.channels [i].previous [1];
     }
     sprintf (buffer, "%s:%04d\n", SNAPSHOT_MAGIC, SNAPSHOT_VERSION);
-    WRITE_STREAM(ss_st, strlen (buffer), buffer);
+    WRITE_STREAM(buffer, strlen(buffer), ss_st);
     sprintf (buffer, "NAM:%06d:%s%c", strlen (Memory.ROMFilename) + 1,
 	     Memory.ROMFilename, 0);
-    WRITE_STREAM(ss_st, strlen (buffer) + 1, buffer);
+    WRITE_STREAM(buffer, strlen(buffer) + 1, ss_st);
     FreezeStruct ("CPU", &CPU, SnapCPU, COUNT (SnapCPU));
     FreezeStruct ("REG", &Registers, SnapRegisters, COUNT (SnapRegisters));
     FreezeStruct ("PPU", &PPU, SnapPPU, COUNT (SnapPPU));
@@ -521,33 +521,32 @@ static void Freeze ()
 
 static int Unfreeze()
 {
-	// notaz: overflowing the damn Symbian stack again
-    char buffer [16];
-    char rom_filename [512];
+    char buffer[16];
+    char rom_filename[1024];
     int result;
 
     int version;
-    unsigned int len = strlen (SNAPSHOT_MAGIC) + 1 + 4 + 1;
-    if (READ_STREAM(ss_st, len, buffer) != (int)len)
+    int len = strlen (SNAPSHOT_MAGIC) + 1 + 4 + 1;
+    if (READ_STREAM(buffer, len, ss_st) != len)
     {
-		printf("failed to read header\r\n");
-		return (WRONG_FORMAT);
+		printf("%s: Failed to read header\n", __func__);
+		return WRONG_FORMAT;
 	}
     if (strncmp (buffer, SNAPSHOT_MAGIC, strlen (SNAPSHOT_MAGIC)) != 0)
     {
-		printf("read header not correct\r\n");
-		return (WRONG_FORMAT);
+		printf("%s: Read header not correct\n", __func__);
+		return WRONG_FORMAT;
 	}
     if ((version = atoi (&buffer [strlen (SNAPSHOT_MAGIC) + 1])) > SNAPSHOT_VERSION)
 	{
-		printf("Wrong version\r\n");
-		return (WRONG_VERSION);
+		printf("%s: Wrong version\n", __func__);
+		return WRONG_VERSION;
 	}
-	
-    if ((result = UnfreezeBlock("NAM", (uint8 *) rom_filename, 512)) != SUCCESS)
+
+    if ((result = UnfreezeBlock("NAM", (uint8 *) rom_filename, 1024)) != SUCCESS)
 	{
-		printf("UnfreezeBlock NAM failed\r\n");
-		return (result);
+		printf("%s: UnfreezeBlock NAM failed (corrupt)\n", __func__);
+		return result;
 	}
 	
     if (strcasecmp (rom_filename, Memory.ROMFilename) != 0 &&
@@ -555,10 +554,8 @@ static int Unfreeze()
     {
 		S9xMessage (S9X_WARNING, S9X_FREEZE_ROM_NAME,
 		    "Current loaded ROM image doesn't match that required by freeze-game file.");
-		printf("filename mismatch\r\n");
     }
-    
-    
+
 
     uint32 old_flags = CPU.Flags;
 #ifdef USE_SA1
@@ -784,8 +781,8 @@ void FreezeBlock (const char *name, uint8 *block, int size)
 {
     char buffer [512];
     sprintf (buffer, "%s:%06d:", name, size);
-    WRITE_STREAM(ss_st, strlen (buffer), buffer);
-    WRITE_STREAM(ss_st, size, block);
+    WRITE_STREAM(buffer, strlen(buffer), ss_st);
+    WRITE_STREAM(block, size, ss_st);
 }
 
 int UnfreezeStruct (const char *name, void *base, FreezeData *fields,
@@ -888,13 +885,13 @@ int UnfreezeBlock(const char *name, uint8 *block, int size)
     char buffer [20];
     int len = 0;
     int rem = 0;
-    printf("UnfreezeBlock: %s\r\n",name);
-    if (READ_STREAM(ss_st, 11, buffer) != 11 ||
+
+    if (READ_STREAM(buffer, 11, ss_st) != 11 ||
 	strncmp (buffer, name, 3) != 0 || buffer [3] != ':' ||
 	(len = atoi (&buffer [4])) == 0)
     {
-		printf("UnfreezeBlock err1\n");
-		return (WRONG_FORMAT);
+		printf("%s: %s: Invalid block header\n", __func__, name);
+		return WRONG_FORMAT;
     }
     
     if (len > size)
@@ -903,16 +900,16 @@ int UnfreezeBlock(const char *name, uint8 *block, int size)
 		len = size;
     }
 
-    if (READ_STREAM(ss_st, len, block) != len)
+    if (READ_STREAM(block, len, ss_st) != len)
     {
-		printf("UnfreezeBlock err2\n");
-		return (WRONG_FORMAT);
+		printf("%s: Invalid block\n", __func__);
+		return WRONG_FORMAT;
 	}
 	
     if (rem)
     {
 		char *junk = (char*)malloc(rem);
-		READ_STREAM(ss_st, rem, junk);
+		READ_STREAM(junk, rem, ss_st);
 		free(junk);
     }
 
