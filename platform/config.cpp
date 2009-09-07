@@ -226,7 +226,16 @@ void S9xSetRomFile(const char * path)
 	// Truncate base path at the last '.' char
 	char * c = strrchr(basePath, '.');
 	if (c) {
-		*c = '\0';
+		if (strcasecmp(c, ".gz") == 0) {
+			// Ignore the .gz part when truncating
+			*c = '\0';
+			c = strrchr(basePath, '.');
+			if (c) {
+				*c = '\0';
+			}
+		} else {
+			*c = '\0';
+		}
 	}
 }
 
