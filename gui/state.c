@@ -54,6 +54,10 @@ static gboolean rom_get_freeze_file()
 	}
 
 	ext = strrchr(current_rom_file, '.');
+	if (ext && g_ascii_strcasecmp(ext, ".gz") == 0) {
+		// Ignore the .gz part in rom filename.
+		ext = g_strrstr_len(current_rom_file, ext - current_rom_file, ".");
+	}
 	if (!ext) {
 		rom_base = g_strdup(current_rom_file);
 	} else {
