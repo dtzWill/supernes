@@ -2,8 +2,9 @@ drnoksnes (1.0.2) unstable; urgency=low
 
   * Some bugs and warnings fixed.
   * About dialog.
+  * More fremantle dialog fixes.
 
- -- Javier S. Pedro <maemo@javispedro.com>  Mon,  7 Sep 2009 18:06:22 +0200
+ -- Javier S. Pedro <maemo@javispedro.com>  Mon,  7 Sep 2009 19:38:25 +0200
 
 drnoksnes (1.0.1) unstable; urgency=low
 
