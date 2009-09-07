@@ -24,6 +24,9 @@ CFLAGS = -Wall -g -DMAEMO -DMAEMO_VERSION=$(MAEMO_VERSION)
 GUI_CFLAGS := $(CFLAGS)
 LDFLAGS = -Wl,-z,defs
 
+M4=m4
+M4DEFS=-DMAEMO_MAJOR=$(MAEMO_VERSION)
+
 ifneq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))
 	CFLAGS += -O0
 else ifneq (,$(findstring arm,$(DEB_BUILD_GNU_TYPE)))
@@ -38,31 +41,27 @@ else # x86
 	crash ## Cannot build in x86
 endif
 
+debian/control: debian/control.m4
+	$(M4) $(M4DEFS) debian/control.m4 > debian/control
+
 configure: configure-stamp
 configure-stamp:
 	dh_testdir
-	# Add here commands to configure the package.
-
+	$(M4) $(M4DEFS) debian/control.m4 > debian/control
+	$(M4) $(M4DEFS) debian/drnoksnes.postinst.m4 > debian/drnoksnes.postinst
 	touch configure-stamp
 
-
 build: build-stamp
-
 build-stamp: configure-stamp 
 	dh_testdir
-
 	$(MAKE) CFLAGS="$(CFLAGS)" CXXFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" GUI_CFLAGS="$(GUI_CFLAGS)" GAME_VERSION="$(GAME_VERSION)"
-
 	touch $@
 
 clean:
 	dh_testdir
 	dh_testroot
 	rm -f build-stamp configure-stamp
-
-	# Add here commands to clean up after the build process.
 	-$(MAKE) clean
-
 	dh_clean 
 
 install: build
@@ -70,10 +69,7 @@ install: build
 	dh_testroot
 	dh_clean -k 
 	dh_installdirs
-
-	# Add here commands to install the package into debian/drnoksnes.
 	$(MAKE) DESTDIR=$(CURDIR)/debian/drnoksnes install
-
 
 # Build architecture-independent files here.
 binary-indep: build install

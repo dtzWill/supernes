@@ -1,10 +1,11 @@
 drnoksnes (1.0.1) unstable; urgency=low
 
-  * New artwork by wazd. Thanks a lot!
+  * New artwork, icons and GUI layout by wazd. Thanks a lot!
   * .gz rom support [#4503]
   * SuperFX crash fixed.
+  * Fremantle icons & packaging fixes.
 
- -- Javier S. Pedro <maemo@javispedro.com>  Mon,  7 Sep 2009 02:17:11 +0200
+ -- Javier S. Pedro <maemo@javispedro.com>  Mon,  7 Sep 2009 17:08:47 +0200
 
 drnoksnes (1.0.0) unstable; urgency=low
 

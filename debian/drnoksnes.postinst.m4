@@ -10,7 +10,7 @@ case "$1" in
 	oldversion="$2"
 	if [ -z "$oldversion" ]; then
 		gtk-update-icon-cache -f /usr/share/icons/hicolor
-		maemo-select-menu-location drnoksnes.desktop
+ifelse(eval(MAEMO_MAJOR < 5), 1, `		maemo-select-menu-location drnoksnes.desktop', `dnl')
 	fi
     ;;
 

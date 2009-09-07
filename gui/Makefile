@@ -55,6 +55,7 @@ install: all
 	install -m 0644 drnoksnes.startup.service $(DESTDIR)/usr/share/dbus-1/services/
 	install -m 0644 icons/main_26.png $(DESTDIR)/usr/share/icons/hicolor/26x26/hildon/drnoksnes.png
 	install -m 0644 icons/main_40.png $(DESTDIR)/usr/share/icons/hicolor/40x40/hildon/drnoksnes.png
+	install -m 0644 icons/main_48.png $(DESTDIR)/usr/share/icons/hicolor/48x48/hildon/drnoksnes.png
 	install -m 0644 icons/main_64.png $(DESTDIR)/usr/share/icons/hicolor/scalable/hildon/drnoksnes.png
 	install -m 0644 icons/banner.png $(DESTDIR)$(GAME_BANNER_PATH)
 	
