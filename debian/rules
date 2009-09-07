@@ -22,7 +22,6 @@ GAME_VERSION := $(shell head -n 1 debian/changelog | sed 's/[^0-9.-]//g')
 
 CFLAGS = -Wall -g -DMAEMO -DMAEMO_VERSION=$(MAEMO_VERSION)
 LDFLAGS = -Wl,-z,defs
-CONFOPTS = 
 
 ifneq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))
 	CFLAGS += -O0
@@ -34,7 +33,7 @@ else ifneq (,$(findstring arm,$(DEB_BUILD_GNU_TYPE)))
 	# Fixes hang while exiting on Diablo.
 	CFLAGS += -static-libgcc
 else # x86
-	crash
+	crash ## Cannot build in x86
 endif
 
 configure: configure-stamp
@@ -50,7 +49,7 @@ build: build-stamp
 build-stamp: configure-stamp 
 	dh_testdir
 
-	$(MAKE) CFLAGS="$(CFLAGS)" CXXFLAGS="$(CFLAGS)" GAME_VERSION="$(GAME_VERSION)"
+	$(MAKE) CFLAGS="$(CFLAGS)" CXXFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" GAME_VERSION="$(GAME_VERSION)"
 
 	touch $@
 
