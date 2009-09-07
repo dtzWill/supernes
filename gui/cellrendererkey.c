@@ -402,7 +402,7 @@ cell_renderer_key_start_editing (GtkCellRenderer      *cell,
   eventbox = g_object_new(pointless_eventbox_subclass_get_type(), NULL);
   key->edit_widget = eventbox;
   g_object_add_weak_pointer (G_OBJECT (key->edit_widget),
-                             (void**) &key->edit_widget);
+                             (gpointer*) &key->edit_widget);
 
 
   hbox = gtk_hbox_new(FALSE, 2);

@@ -61,7 +61,7 @@ static gboolean rom_get_freeze_file()
 	}
 
 	if (current_rom_file_exists) {
-		frz_file = g_strconcat(rom_base, FRZ_FILE_EXT);
+		frz_file = g_strconcat(rom_base, FRZ_FILE_EXT, NULL);
 		frz_exists =
 			g_file_test(frz_file, G_FILE_TEST_EXISTS | G_FILE_TEST_IS_REGULAR);
 

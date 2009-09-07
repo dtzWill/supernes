@@ -1,5 +1,5 @@
-PKGS:=gtk+-2.0 hildon-1 hildon-fm-2 gconf-2.0 gnome-vfs-2.0
-CPPFLAGS:=$(shell pkg-config --cflags $(PKGS)) 
+PKGS:=gtk+-2.0 hildon-1 hildon-fm-2 libhildonmime gconf-2.0 gnome-vfs-2.0
+CPPFLAGS:=$(shell pkg-config --cflags $(PKGS)) -DGAME_VERSION=$(GAME_VERSION)
 LDLIBS:=$(shell pkg-config --libs $(PKGS))
 
 ifdef GUI_CFLAGS
@@ -26,7 +26,7 @@ M4DEFS:= -DGAME_VERSION=$(GAME_VERSION) -DGAME_PLUGIN_PATH=$(GAME_PLUGIN_PATH)
 M4DEFS+= -DGAME_CONF_PATH=$(GAME_CONF_PATH) -DGAME_BIN_PATH=$(GAME_BIN_PATH)
 M4DEFS+= -DGAME_GAME_PATH=$(GAME_GAME_PATH) -DGAME_BANNER_PATH=$(GAME_BANNER_PATH)
 
-OBJS:=plugin.o state.o save.o controls.o cellrendererkey.o
+OBJS:=plugin.o state.o save.o controls.o cellrendererkey.o about.o
 
 DATA_FILES:=drnoksnes.conf drnoksnes.desktop drnoksnes.game 
 DATA_FILES+=drnoksnes.service drnoksnes.startup.service

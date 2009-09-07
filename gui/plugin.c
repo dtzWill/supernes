@@ -143,6 +143,11 @@ static void controls_item_callback(GtkWidget * button, gpointer data)
 	controls_dialog(get_parent_window());
 }
 
+static void about_item_callback(GtkWidget * button, gpointer data)
+{
+	about_dialog(get_parent_window());
+}
+
 static GtkWidget * load_plugin(void)
 {
 	int i;
@@ -274,7 +279,8 @@ static void write_config(void)
 static GtkWidget **load_menu(guint *nitems)
 {
 	menu_items[0] = gtk_menu_item_new_with_label("Settings");
-	*nitems = 1;
+	menu_items[1] = gtk_menu_item_new_with_label("About…");
+	*nitems = 2;
 
 	GtkMenu* settings_menu = GTK_MENU(gtk_menu_new());
 	GtkMenuItem* controls_item =
@@ -286,6 +292,8 @@ static GtkWidget **load_menu(guint *nitems)
 
 	g_signal_connect(G_OBJECT(controls_item), "activate",
 					G_CALLBACK(controls_item_callback), NULL);
+	g_signal_connect(G_OBJECT(menu_items[1]), "activate",
+					G_CALLBACK(about_item_callback), NULL);
 
 	return menu_items;
 }
