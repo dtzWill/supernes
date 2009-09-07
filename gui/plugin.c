@@ -33,6 +33,10 @@
 #include <hildon/hildon-defines.h>
 #include <hildon/hildon-caption.h>
 
+#if MAEMO_VERSION >= 5
+#include <hildon/hildon-gtk.h>
+#endif
+
 #include "../platform/hgw.h"
 #include "plugin.h"
 
@@ -45,7 +49,7 @@ static void plugin_callback(GtkWidget * menu_item, gpointer data);
 
 GConfClient * gcc = NULL;
 static GameStartupInfo gs;
-static GtkWidget * menu_items[1];
+static GtkWidget * menu_items[4];
 
 static StartupPluginInfo plugin_info = {
 	load_plugin,
@@ -278,6 +282,22 @@ static void write_config(void)
 
 static GtkWidget **load_menu(guint *nitems)
 {
+#if MAEMO_VERSION >= 5
+	const HildonSizeType button_size =
+		HILDON_SIZE_FINGER_HEIGHT | HILDON_SIZE_AUTO_WIDTH;
+	menu_items[0] = hildon_gtk_button_new(button_size);
+	gtk_button_set_label(GTK_BUTTON(menu_items[0]), "Placeholder");
+	menu_items[1] = hildon_gtk_button_new(button_size);
+	gtk_button_set_label(GTK_BUTTON(menu_items[1]), "Controls…");
+	menu_items[2] = hildon_gtk_button_new(button_size);
+	gtk_button_set_label(GTK_BUTTON(menu_items[2]), "About…");
+	*nitems = 3;
+
+	g_signal_connect(G_OBJECT(menu_items[1]), "clicked",
+					G_CALLBACK(controls_item_callback), NULL);
+	g_signal_connect(G_OBJECT(menu_items[2]), "clicked",
+					G_CALLBACK(about_item_callback), NULL);
+#else
 	menu_items[0] = gtk_menu_item_new_with_label("Settings");
 	menu_items[1] = gtk_menu_item_new_with_label("About…");
 	*nitems = 2;
@@ -294,6 +314,7 @@ static GtkWidget **load_menu(guint *nitems)
 					G_CALLBACK(controls_item_callback), NULL);
 	g_signal_connect(G_OBJECT(menu_items[1]), "activate",
 					G_CALLBACK(about_item_callback), NULL);
+#endif
 
 	return menu_items;
 }
