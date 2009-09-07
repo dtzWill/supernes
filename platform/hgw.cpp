@@ -234,9 +234,10 @@ static void createActionMappingsOnly()
 	ZeroMemory(Config.joypad1Mapping, sizeof(Config.joypad1Mapping));
 	ZeroMemory(Config.action, sizeof(Config.action));
 	
-	// Map quit to fullscreen and escape
+	// Map quit to fullscreen, escape and task switch.
 	Config.action[72] = kActionQuit;
 	Config.action[9] = kActionQuit;
+	Config.action[71] = kActionQuit;
 }
 
 static void parseGConfKeyMappings()
@@ -286,6 +287,11 @@ static void parseGConfKeyMappings()
 			Config.joypad1Mapping[72] = 0;
 			Config.action[72] = kActionQuit;
 		}
+	}
+
+	// If task switch key is not mapped, map it to Quit by default.
+	if (!Config.action[71] && !Config.joypad1Mapping[71]) {
+		Config.action[71] = kActionQuit;
 	}
 }
 
