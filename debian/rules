@@ -21,12 +21,14 @@ MAEMO_VERSION := $(shell cut -d"." -f1 /etc/maemo_version)
 GAME_VERSION := $(shell head -n 1 debian/changelog | sed 's/[^0-9.-]//g')
 
 CFLAGS = -Wall -g -DMAEMO -DMAEMO_VERSION=$(MAEMO_VERSION)
+GUI_CFLAGS := $(CFLAGS)
 LDFLAGS = -Wl,-z,defs
 
 ifneq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))
 	CFLAGS += -O0
 else ifneq (,$(findstring arm,$(DEB_BUILD_GNU_TYPE)))
 	CFLAGS += -O2
+	GUI_CFLAGS += -Os
 	ifneq (,$(findstring vfp,$(DEB_BUILD_OPTIONS)))
 		CFLAGS += -march=armv6j -mtune=arm1136jf-s -mfpu=vfp -mfloat-abi=softfp
 	endif
@@ -49,7 +51,7 @@ build: build-stamp
 build-stamp: configure-stamp 
 	dh_testdir
 
-	$(MAKE) CFLAGS="$(CFLAGS)" CXXFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" GAME_VERSION="$(GAME_VERSION)"
+	$(MAKE) CFLAGS="$(CFLAGS)" CXXFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" GUI_CFLAGS="$(GUI_CFLAGS)" GAME_VERSION="$(GAME_VERSION)"
 
 	touch $@
 

@@ -155,7 +155,12 @@ static GtkWidget * load_plugin(void)
 	GtkWidget* opt_hbox1 = gtk_hbox_new(FALSE, HILDON_MARGIN_DEFAULT);
 	GtkWidget* opt_hbox2 = gtk_hbox_new(FALSE, HILDON_MARGIN_DEFAULT);
 
-	GtkWidget* selectRomBtn = gtk_button_new_with_label("Select ROM...");
+	GtkWidget* select_rom_btn = gtk_button_new_with_label("Select ROM...");
+#if MAEMO_VERSION >= 5
+	hildon_gtk_widget_set_theme_size(select_rom_btn, HILDON_SIZE_FINGER_HEIGHT);
+#else
+	gtk_widget_set_size_request(GTK_WIDGET(select_rom_btn),	180, 46);
+#endif
 	rom_label = GTK_LABEL(gtk_label_new(NULL));
 
 	audio_check =
@@ -182,8 +187,6 @@ static GtkWidget * load_plugin(void)
 	gtk_box_pack_start(framerate_box, GTK_WIDGET(framerate_combo), FALSE, FALSE, 0);
 #endif
 
-	gtk_widget_set_size_request(GTK_WIDGET(selectRomBtn),
-								180, 46);
 	gtk_combo_box_append_text(framerate_combo, "Best");
 	for (i = 1; i < 10; i++) {
 		gchar buffer[20];
@@ -195,7 +198,7 @@ static GtkWidget * load_plugin(void)
 	gtk_combo_box_append_text(speedhacks_combo, "All speedhacks");
 
 
-	gtk_box_pack_start(GTK_BOX(rom_hbox), selectRomBtn, FALSE, FALSE, 0);
+	gtk_box_pack_start(GTK_BOX(rom_hbox), select_rom_btn, FALSE, FALSE, 0);
 	gtk_box_pack_start(GTK_BOX(rom_hbox), GTK_WIDGET(rom_label), TRUE, TRUE, 0);
 
 	gtk_box_pack_start(GTK_BOX(opt_hbox1), GTK_WIDGET(audio_check), FALSE, FALSE, 0);
@@ -228,7 +231,7 @@ static GtkWidget * load_plugin(void)
 	set_rom(gconf_client_get_string(gcc, kGConfRomFile, NULL));
 
 	// Connect signals
-	g_signal_connect(G_OBJECT(selectRomBtn), "clicked",
+	g_signal_connect(G_OBJECT(select_rom_btn), "clicked",
 					G_CALLBACK(select_rom_callback), NULL);
 
 	return parent;
