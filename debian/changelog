@@ -1,3 +1,10 @@
+drnoksnes (1.0.2) unstable; urgency=low
+
+  * Some bugs and warnings fixed.
+  * About dialog.
+
+ -- Javier S. Pedro <maemo@javispedro.com>  Mon,  7 Sep 2009 18:06:22 +0200
+
 drnoksnes (1.0.1) unstable; urgency=low
 
   * New artwork, icons and GUI layout by wazd. Thanks a lot!

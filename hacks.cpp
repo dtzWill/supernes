@@ -124,19 +124,24 @@ static int loadHacks(char * line)
 
 void S9xHacksLoadFile(const char * file)
 {
+	unsigned long gameCrc;
+	char * line;
+	FILE * fp;
+
 	if (!Settings.HacksEnabled) goto no_hacks;
 	if (!file) goto no_hacks;
 
 	// At this point, the ROM is already loaded.
-	FILE * fp = fopen(file, "r");
+	fp = fopen(file, "r");
 	if (!fp) {
 		fprintf(stderr, "Can't open hacks file %s: %s\n", file, strerror(errno));
 		goto no_hacks;
 	}
 
-	const unsigned long gameCrc = getGameCrc32();
-	char * line = (char*) malloc(kLineBufferSize + 1);
+	// Get current ROM CRC
+	gameCrc = getGameCrc32();
 
+	line = (char*) malloc(kLineBufferSize + 1);
 	do {
 		fgets(line, kLineBufferSize, fp);
 
@@ -145,16 +150,16 @@ void S9xHacksLoadFile(const char * file)
 		*pos = '\0';
 
 		if (gameCrc == parseCrc32(line)) {
-			// A hit! :)
+			// Hit! This line's CRC matches our current ROM CRC.
 			int res = loadHacks(pos + 1);
 			if (res > 0) {
-				printf("Hacks: searched %s for crc32 %lx, %d hacks loaded\n",
+				printf("Hacks: searched %s for crc %lx, %d hacks loaded\n",
 					file, gameCrc, res);
 			} else if (res < 0) {
-				printf("Hacks: searched %s for crc32 %lx, error parsing line\n",
+				printf("Hacks: searched %s for crc %lx, error parsing line\n",
 					file, gameCrc);
 			} else {
-				printf("Hacks: searched %s for crc32 %lx, no hacks\n",
+				printf("Hacks: searched %s for crc %lx, no hacks\n",
 					file, gameCrc);
 			}
 			goto hacks_found;
@@ -162,7 +167,7 @@ void S9xHacksLoadFile(const char * file)
 	} while (!feof(fp) && !ferror(fp));
 
 	if (ferror(fp)) {
-		fprintf(stderr, "Error reading hacks file: %s\n");
+		fprintf(stderr, "Error reading hacks file: %s\n", file);
 	}
 
 	printf("Hacks: searched %s for crc %lu; nothing found\n", file, gameCrc);

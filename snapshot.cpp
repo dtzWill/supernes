@@ -407,7 +407,7 @@ static int UnfreezeBlock (const char *name, uint8 *block, int size);
 
 bool8 S9xFreezeGame (const char *filename)
 {
-    if (ss_st = OPEN_STREAM(filename, "wb"))
+    if ((ss_st = OPEN_STREAM(filename, "wb")))
     {
 		Freeze();
 		CLOSE_STREAM(ss_st);
@@ -419,7 +419,7 @@ bool8 S9xFreezeGame (const char *filename)
 
 bool8 S9xUnfreezeGame (const char *filename)
 {
-    if (ss_st = OPEN_STREAM(filename, "rb"))
+    if ((ss_st = OPEN_STREAM(filename, "rb")))
     {
 		int result;
 		if ((result = Unfreeze()) != SUCCESS)
