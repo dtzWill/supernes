@@ -118,6 +118,5 @@ struct SRegisters{
 } PACKING;
 
 #define Registers	CPU.Regs
-//EXTERN_C struct SRegisters Registers;
 
 #endif

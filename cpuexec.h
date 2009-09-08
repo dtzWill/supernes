@@ -49,23 +49,19 @@
 	S9xDoHBlankProcessing ();
 
 struct SOpcodes {
-#ifdef __WIN32__
-	void (__cdecl *S9xOpcode)( void);
-#else
-	void (*S9xOpcode)( void);
-#endif
+	void (*S9xOpcode)();
 };
 
 struct SICPU
 {
-/*
+#if !defined(CONF_BUILD_ASM_CORE) || !CONF_BUILD_ASM_CORE
     uint8  *Speed;
     struct SOpcodes *S9xOpcodes;
     uint8  _Carry;
     uint8  _Zero;
     uint8  _Negative;
     uint8  _Overflow;
-*/
+#endif
 	bool8  CPUExecuting;
     uint32 ShiftedPB;
     uint32 ShiftedDB;
@@ -104,7 +100,7 @@ STATIC inline void CLEAR_IRQ_SOURCE (uint32 M)
 	CPU.Flags &= ~IRQ_PENDING_FLAG;
 }
 
-#if 0
+#if !CONF_BUILD_ASM_CPU
 STATIC inline void S9xUnpackStatus()
 {
     ICPU._Zero = (Registers.PL & Zero) == 0;

@@ -103,8 +103,14 @@ typedef int16_t			int16_32;
 #define TRUE 1
 #define FALSE 0
 
-// Configuration defines I think I know what they're for
+// Config -> Defines
+#if CONF_BUILD_ASM_SPC700
 #define ASM_SPC700		1
+#else
+#undef ASM_SPC700
+#endif
+
+// Configuration defines I think I know what they're for
 #define SUPER_FX		1
 #define CPU_SHUTDOWN	1
 //#define NETPLAY_SUPPORT	1

@@ -112,13 +112,15 @@ void S9xResetCPU ()
     CPU.IRQCycleCount = 0;
     S9xSetPCBase (Registers.PC);
 
+#if !CONF_BUILD_ASM_CPU
 #ifndef VAR_CYCLES
-    //ICPU.Speed = S9xE1M1X1; // unused
+    ICPU.Speed = S9xE1M1X1;
 #endif
-    //ICPU.S9xOpcodes = S9xOpcodesM1X1; // unused
-    ICPU.CPUExecuting = TRUE;
+    ICPU.S9xOpcodes = S9xOpcodesM1X1;
+    S9xUnpackStatus();
+#endif
 
-    //S9xUnpackStatus(); // not needed
+    ICPU.CPUExecuting = TRUE;
 }
 
 

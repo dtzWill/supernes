@@ -44,7 +44,6 @@
 #include "snes9x.h"
 
 #include "memmap.h"
-//#include "cpuops.h"
 #include "ppu.h"
 #include "cpuexec.h"
 #include "debug.h"
@@ -54,22 +53,25 @@
 #include "apu.h"
 #include "dma.h"
 #include "fxemu.h"
+
+#if !CONF_BUILD_ASM_CPU
+#include "cpuops.h"
+#endif
+
 #ifdef USE_SA1
 #include "sa1.h"
 #endif
 
 
+#if CONF_BUILD_ASM_CPU
 #include "os9x_asm_cpu.h"
-
-
 // for asm core:
 uint16 mem_check=0;
-
+#endif
 
 #if defined(__showframe__)
 int framecpt=0;
 #endif
-
 
 void S9xMainLoop (void)
 {	
@@ -80,8 +82,59 @@ void S9xMainLoop (void)
 	S9xMessage(0,0,stra);
 #endif	
 
-//	asm_S9xMainLoop();
+#if CONF_BUILD_ASM_CPU
 	asmMainLoop(&CPU);
+#else
+	for (;;) {
+		APU_EXECUTE(1);
+		if (CPU.Flags) {
+			if (CPU.Flags & NMI_FLAG) {
+				if (--CPU.NMICycleCount == 0) {
+					CPU.Flags &= ~NMI_FLAG;
+					if (CPU.WaitingForInterrupt) {
+						CPU.WaitingForInterrupt = FALSE;
+						CPU.PC++;
+					}
+					S9xOpcode_NMI ();
+				}
+			}
+
+			if (CPU.Flags & IRQ_PENDING_FLAG) {
+				if (CPU.IRQCycleCount == 0)	{
+					if (CPU.WaitingForInterrupt) {
+						CPU.WaitingForInterrupt = FALSE;
+						CPU.PC++;
+					}
+					if (CPU.IRQActive && !Settings.DisableIRQ) {
+						if (!CheckFlag(IRQ))
+							S9xOpcode_IRQ ();
+					} else {
+						CPU.Flags &= ~IRQ_PENDING_FLAG;
+					}
+				} else {
+					CPU.IRQCycleCount--;
+				}
+			}
+
+			if (CPU.Flags & SCAN_KEYS_FLAG)
+				break;
+		}
+
+#ifdef CPU_SHUTDOWN
+		CPU.PCAtOpcodeStart = CPU.PC;
+#endif
+		CPU.Cycles += CPU.MemSpeed;
+
+		(*ICPU.S9xOpcodes[*CPU.PC++].S9xOpcode) ();
+
+#ifdef USE_SA1
+		if (SA1.Executing)
+			S9xSA1MainLoop ();
+#endif
+
+		DO_HBLANK_CHECK ();
+	}
+#endif
 
     Registers.PC = CPU.PC - CPU.PCBase;
     //S9xPackStatus (); // not needed
