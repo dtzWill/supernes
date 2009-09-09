@@ -57,11 +57,10 @@ INLINE uint8 S9xGetByte (uint32 Address)
 	char str[64];
 	sprintf(str,"rd @ %04X",Address);
 	S9xMessage(0,0,str);
-	gp32_pause();
 #endif
 #ifdef __memcheck__
 	mem_check+=(Address>>16)+Address;
-#endif	
+#endif
 #if defined(VAR_CYCLES) || defined(CPU_SHUTDOWN)
     int block;
     uint8 *GetAddress = Memory.Map [block = (Address >> MEMMAP_SHIFT) & MEMMAP_MASK];
@@ -122,10 +121,10 @@ INLINE uint8 S9xGetByte (uint32 Address)
 	CPU.Cycles += SLOW_ONE_CYCLE;
 #endif
 	return (*(Memory.BWRAM + ((Address & 0x7fff) - 0x6000)));
-//#ifndef __GP32__
+
     case CMemory::MAP_C4:
 	return (S9xGetC4 (Address & 0xffff));
-//#endif    
+
     default:
     case CMemory::MAP_NONE:
 #ifdef VAR_CYCLES
@@ -144,7 +143,6 @@ INLINE uint16 S9xGetWord (uint32 Address)
 	char str[64];
 	sprintf(str,"rd @ %04X",Address);
 	S9xMessage(0,0,str);
-	gp32_pause();
 #endif
 #ifdef __memcheck__
 	mem_check+=(Address>>16)+Address;
@@ -228,11 +226,10 @@ INLINE uint16 S9xGetWord (uint32 Address)
 	printf ("R(W) %06x\n", Address);
 #endif
 
-//#ifndef __GP32__
     case CMemory::MAP_C4:
 	return (S9xGetC4 (Address & 0xffff) |	
 		(S9xGetC4 ((Address + 1) & 0xffff) << 8));
-//#endif    
+
     default:
     case CMemory::MAP_NONE:
 #ifdef VAR_CYCLES
@@ -251,7 +248,6 @@ INLINE void S9xSetByte (uint8 Byte, uint32 Address)
 	char str[64];
 	sprintf(str,"wr @ %04X %02X",Address,Byte);
 	S9xMessage(0,0,str);
-	gp32_pause();
 #endif
 #ifdef __memcheck__
 	mem_check+=Byte;
@@ -356,11 +352,11 @@ INLINE void S9xSetByte (uint8 Byte, uint32 Address)
 	*(Memory.SRAM + (Address & 0xffff)) = Byte;
 	SA1.Executing = !SA1.Waiting;
 	break;
-//#ifndef __GP32__
+
     case CMemory::MAP_C4:
 	S9xSetC4 (Byte, Address & 0xffff);
 	return;
-//#endif	
+
     default:
     case CMemory::MAP_NONE:
 #ifdef VAR_CYCLES    
@@ -379,7 +375,6 @@ INLINE void S9xSetWord (uint16 Word, uint32 Address)
 	char str[64];
 	sprintf(str,"wr @ %04X %04X",Address,Word);
 	S9xMessage(0,0,str);
-	gp32_pause();
 #endif
 #ifdef __memcheck__
 	mem_check+=Word;
@@ -400,7 +395,7 @@ INLINE void S9xSetWord (uint16 Word, uint32 Address)
 	CPU.Cycles += Memory.MemorySpeed [block] << 1;
 #endif
 #if defined(CPU_SHUTDOWN) && defined(USE_SA1)
-	uint8 *SetAddressSA1 += Address & 0xffff;
+	uint8 *SetAddressSA1 = SetAddress + (Address & 0xffff);
 	if (SetAddressSA1 == SA1.WaitByteAddress1 ||
 	    SetAddressSA1 == SA1.WaitByteAddress2)
 	{
@@ -494,12 +489,12 @@ INLINE void S9xSetWord (uint16 Word, uint32 Address)
 	*(Memory.SRAM + ((Address + 1) & 0xffff)) = (uint8) (Word >> 8);
 	SA1.Executing = !SA1.Waiting;
 	break;
-//#ifndef __GP32__
+
     case CMemory::MAP_C4:
 	S9xSetC4 (Word & 0xff, Address & 0xffff);
 	S9xSetC4 ((uint8) (Word >> 8), (Address + 1) & 0xffff);
 	return;
-//#endif	
+
     default:
     case CMemory::MAP_NONE:
 #ifdef VAR_CYCLES    
@@ -533,15 +528,12 @@ INLINE uint8 *GetBasePointer (uint32 Address)
 	return (Memory.BWRAM - 0x6000);
     case CMemory::MAP_HIROM_SRAM:
 	return (Memory.SRAM - 0x6000);
-//#ifndef __GP32__	
     case CMemory::MAP_C4:
 	return (Memory.C4RAM - 0x6000);
-//#endif	
     case CMemory::MAP_DEBUG:
 #ifdef DEBUGGER
 	printf ("GBP %06x\n", Address);
 #endif
-
     default:
     case CMemory::MAP_NONE:
 #ifdef DEBUGGER
@@ -572,10 +564,10 @@ INLINE uint8 *S9xGetMemPointer (uint32 Address)
 	return (Memory.BWRAM - 0x6000 + (Address & 0xffff));
     case CMemory::MAP_HIROM_SRAM:
 	return (Memory.SRAM - 0x6000 + (Address & 0xffff));
-//#ifndef __GP32__	
+
     case CMemory::MAP_C4:
 	return (Memory.C4RAM - 0x6000 + (Address & 0xffff));
-//#endif
+
     case CMemory::MAP_DEBUG:
 #ifdef DEBUGGER
 	printf ("GMP %06x\n", Address);
@@ -663,7 +655,7 @@ INLINE void S9xSetPCBase (uint32 Address)
 	CPU.PCBase = Memory.SRAM - 0x6000;
 	CPU.PC = CPU.PCBase + (Address & 0xffff);
 	return;
-//#ifndef __GP32__
+
     case CMemory::MAP_C4:
 #ifdef VAR_CYCLES
 	CPU.MemSpeed = SLOW_ONE_CYCLE;
@@ -672,7 +664,7 @@ INLINE void S9xSetPCBase (uint32 Address)
 	CPU.PCBase = Memory.C4RAM - 0x6000;
 	CPU.PC = CPU.PCBase + (Address & 0xffff);
 	return;
-//#endif
+
     case CMemory::MAP_DEBUG:
 #ifdef DEBUGGER
 	printf ("SBP %06x\n", Address);

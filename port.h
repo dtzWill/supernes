@@ -112,10 +112,12 @@ typedef int16_t			int16_32;
 
 // Configuration defines I think I know what they're for
 #define SUPER_FX		1
+#define USE_SA1			1
 #define CPU_SHUTDOWN	1
 //#define NETPLAY_SUPPORT	1
 #define ZLIB			1
 #define UNZIP_SUPPORT	1
+#define NO_INLINE_SET_GET 1
 
 //Misc Items
 #define VAR_CYCLES

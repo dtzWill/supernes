@@ -38,7 +38,11 @@
  * Super NES and Super Nintendo Entertainment System are trademarks of
  * Nintendo Co., Limited and its subsidiary companies.
  */
+
 #include "snes9x.h"
+
+#ifdef USE_SA1
+
 #include "ppu.h"
 #include "cpuexec.h"
 
@@ -900,3 +904,6 @@ void S9xSA1ReadVariableLengthData (bool8 inc, bool8 no_shift)
 	Memory.FillRAM [0x225b] = (uint8) (addr >> 16);
     }
 }
+
+#endif
+

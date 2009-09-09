@@ -38,8 +38,8 @@
  * Super NES and Super Nintendo Entertainment System are trademarks of
  * Nintendo Co., Limited and its subsidiary companies.
  */
-#ifndef _memmap_h_
-#define _memmap_h_
+#ifndef _MEMMAP_H_
+#define _MEMMAP_H_
 
 #include "snes9x.h"
 
@@ -176,24 +176,20 @@ extern uint8 *SRAM;
 extern uint8 *ROM;
 extern uint8 *RegRAM;
 void S9xDeinterleaveMode2 ();
-void S9xSaveSRAM (void);
+void S9xSaveSRAM(void);
+void S9xAutoSaveSRAM();
 END_EXTERN_C
 
-void S9xAutoSaveSRAM ();
-
 #ifdef NO_INLINE_SET_GET
-uint8 S9xGetByte (uint32 Address, struct SCPUState *);
-uint16 S9xGetWord (uint32 Address, struct SCPUState *);
-void S9xSetByte (uint8 Byte, uint32 Address, struct SCPUState * );
-void S9xSetWord (uint16 Byte, uint32 Address, struct SCPUState *);
-void S9xSetPCBase (uint32 Address, struct SCPUState *);
+uint8 S9xGetByte (uint32 Address);
+uint16 S9xGetWord (uint32 Address);
+void S9xSetByte (uint8 Byte, uint32 Address);
+void S9xSetWord (uint16 Byte, uint32 Address);
+void S9xSetPCBase (uint32 Address);
 uint8 *S9xGetMemPointer (uint32 Address);
 uint8 *GetBasePointer (uint32 Address);
 #else
-#ifndef INLINE
-#define INLINE __inline
-#endif
 #include "getset.h"
-#endif // NO_INLINE_SET_GET
+#endif
 
-#endif // _memmap_h_
+#endif // _MEMMAP_H_

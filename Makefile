@@ -28,19 +28,19 @@ endif
 # SNES stuff
 OBJS = 2xsaiwin.o apu.o c4.o c4emu.o cheats.o cheats2.o clip.o cpu.o cpuexec.o data.o
 OBJS += dma.o dsp1.o fxemu.o fxinst.o gfx.o globals.o loadzip.o memmap.o netplay.o ppu.o
-OBJS += sdd1.o sdd1emu.o snapshot.o soundux.o spc700.o srtc.o tile.o
+OBJS += sa1.o sdd1.o sdd1emu.o snapshot.o soundux.o spc700.o srtc.o tile.o
 
 ifeq ($(CONF_BUILD_ASM_CPU), 1)
 	# ASM CPU Core from yoyofr's OpenSnes9X
 	OBJS += os9x_asm_cpu.o os9x_65c816.o
 	CPPFLAGS += -DCONF_BUILD_ASM_CPU=1
 else
-	OBJS += cpuops.o
+	OBJS += cpuops.o sa1cpu.o
 endif
 
 ifeq ($(CONF_BUILD_ASM_SPC700), 1)
 	OBJS += spc700a.o
-	CPPFLAGS += -DCONF_BUILD_ASM_CPU=1
+	CPPFLAGS += -DCONF_BUILD_ASM_SPC700=1
 endif
 
 OBJS += $(CONF_BUILD_ROUTINES).o

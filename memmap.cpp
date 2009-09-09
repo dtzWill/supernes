@@ -55,6 +55,7 @@
 #include "sa1.h"
 #include "srtc.h"
 #include "sdd1.h"
+#include "dsp1.h"
 
 #ifndef ZSNES_FX
 #include "fxemu.h"
