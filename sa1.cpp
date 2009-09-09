@@ -96,10 +96,13 @@ void S9xSA1Reset ()
     SA1.PC = NULL;
     SA1.PCBase = NULL;
     S9xSA1SetPCBase (SA1Registers.PC);
-    //SA1.S9xOpcodes = S9xSA1OpcodesM1X1; // unused
 
+#if !CONF_BUILD_ASM_SA1
+    SA1.S9xOpcodes = S9xSA1OpcodesM1X1;
     S9xSA1UnpackStatus();
-    //S9xSA1FixCycles (); // unused
+    S9xSA1FixCycles ();
+#endif
+
     SA1.Executing = TRUE;
     SA1.BWRAM = Memory.SRAM;
     Memory.FillRAM [0x2225] = 0;
