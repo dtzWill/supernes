@@ -1,10 +1,8 @@
-	.DATA
+
 /****************************************************************	
 ****************************************************************/
-	.align 4
-
-    @ notaz
-	.equiv ASM_SPC700, 		1		;@ 1 = use notaz's ASM_SPC700 core
+@ notaz
+.equiv ASM_SPC700, 		1		;@ 1 = use notaz's ASM_SPC700 core
 
 /****************************************************************
 	DEFINES
@@ -37,23 +35,10 @@ rscratch9	.req R10 @ ??????
 reg_cpu_var .req R14
 
 
-
 @ not used
 @ R13	@ Pointer 32 bit on a struct.
 
 @ R15 = pc (sic!)
-
-
-/*
-.equ Carry       1
-.equ Zero        2
-.equ IRQ         4
-.equ Decimal     8
-.equ IndexFlag  16
-.equ MemoryFlag 32
-.equ Overflow   64
-.equ Negative  128
-.equ Emulation 256*/
 
 .equ STATUS_SHIFTER,		24
 .equ MASK_EMUL,		(1<<(STATUS_SHIFTER-1))
@@ -1149,6 +1134,8 @@ reg_cpu_var .req R14
 @ START OF PROGRAM CODE
 
 .text
+
+.align 4
 
 .globl asmS9xGetByte
 .globl asmS9xGetWord

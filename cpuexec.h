@@ -46,7 +46,7 @@
 
 #define DO_HBLANK_CHECK() \
     if (CPU.Cycles >= CPU.NextEvent) \
-	S9xDoHBlankProcessing ();
+		S9xDoHBlankProcessing ();
 
 struct SOpcodes {
 	void (*S9xOpcode)();

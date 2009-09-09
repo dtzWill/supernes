@@ -17,7 +17,7 @@ void asm_S9xSetPCBase(uint32 Address)
 {
 #ifdef __debug_c_setpc__
 	printf("spcb\n");
-#endif	
+#endif
 	S9xSetPCBase(Address);	
 }
 

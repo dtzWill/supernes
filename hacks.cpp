@@ -24,12 +24,18 @@ static unsigned long getGameCrc32()
 static int loadHacks(char * line)
 {
 	int count = 0;
+	bool end_of_line = false;
 	char *pos = strchr(line, '|'), *start = line;
-	// Skip: Title[start..pos]
+	// Title[start..pos]
+	*pos = '\0';
+	printf("Hacks: detected \"%s\"\n", start);
 
 	start = pos + 1;
 	pos = strchr(start, '|');
-	if (!pos) return -1;
+	if (!pos) {
+		// If there are no flags, jump directly to hacks
+		goto parse_hacks;
+	}
 	// Skip: Flags1[start..pos]
 
 	start = pos + 1;
@@ -59,8 +65,8 @@ static int loadHacks(char * line)
 	if (!pos) return 0; // No patches!
 
 	start = pos + 1;
-	bool end_of_line = false;
-	printf("Loading patches: %s", start);
+
+parse_hacks:
 	do {
 		char *end;
 		unsigned long addr;
@@ -106,10 +112,12 @@ static int loadHacks(char * line)
 			char valStr[3] = { pos[0], pos[1], '\0' };
 			unsigned char val = strtoul(valStr, 0, 16);
 
+#ifdef DEBUG
 			printf("ROM[0x%lx..0x%lx]=0x%hhx 0x%hhx 0x%hhx\n", 
 				addr + i - 1, addr + i + 1,
 				ROM[addr + i - 1], ROM[addr + i], ROM[addr + i + 1]);
 			printf("--> ROM[0x%lx]=0x%hhx\n", addr + i, val);
+#endif
 			ROM[addr + i] = val;
 
 			count++;
@@ -153,13 +161,13 @@ void S9xHacksLoadFile(const char * file)
 			// Hit! This line's CRC matches our current ROM CRC.
 			int res = loadHacks(pos + 1);
 			if (res > 0) {
-				printf("Hacks: searched %s for crc %lx, %d hacks loaded\n",
-					file, gameCrc, res);
+				printf("Hacks: searched %s for crc %lX, %d byte%s patched\n",
+					file, gameCrc, res, (res == 1 ? "" : "s"));
 			} else if (res < 0) {
-				printf("Hacks: searched %s for crc %lx, error parsing line\n",
+				printf("Hacks: searched %s for crc %lX, error parsing line\n",
 					file, gameCrc);
 			} else {
-				printf("Hacks: searched %s for crc %lx, no hacks\n",
+				printf("Hacks: searched %s for crc %lX, no hacks\n",
 					file, gameCrc);
 			}
 			goto hacks_found;
@@ -170,7 +178,7 @@ void S9xHacksLoadFile(const char * file)
 		fprintf(stderr, "Error reading hacks file: %s\n", file);
 	}
 
-	printf("Hacks: searched %s for crc %lu; nothing found\n", file, gameCrc);
+	printf("Hacks: searched %s for crc %lX; nothing found\n", file, gameCrc);
 
 hacks_found:
 	free(line);
