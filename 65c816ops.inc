@@ -3894,7 +3894,142 @@ static void OpDB ()
 // Reserved S9xOpcode
 static void Op42 ()
 {
-	// TODO: Implement (speedhacks in i386)
+#if defined(CPU_SHUTDOWN) && !defined(SA1_OPCODES)
+
+	CPU.WaitAddress = NULL;
+	if (Settings.SA1) S9xSA1ExecuteDuringSleep ();
+
+	ApuSync();#ifdef VAR_CYCLES
+	CPU.Cycles += CPU.MemSpeed;
+#endif
+
+	//relative
+	int8 b = *CPU.PC;
+	CPU.PC++;
+
+	int8 BranchOffset = ((b & 0xF) | 0xF0);
+	uint16 OpAddress = (int)(CPU.PC - CPU.PCBase) + BranchOffset;
+
+	// Assume we're going to branch
+#ifdef VAR_CYCLES
+	CPU.Cycles += ONE_CYCLE;
+#else
+	CPU.Cycles++;
+#endif
+
+	switch (b >> 4) {
+	case 0x1: //BPL
+		BranchCheck1 ();
+		if (!CheckNegative ()) {
+			CPU.PC = CPU.PCBase + OpAddress;
+#			ifdef VAR_CYCLES
+				CPU.Cycles += ONE_CYCLE;
+#			else
+				CPU.Cycles++;
+#			endif
+			CPUShutdown ();
+		}
+		return;
+	case 0x3: //BMI
+		BranchCheck1 ();
+		if (CheckNegative ()) {
+			CPU.PC = CPU.PCBase + OpAddress;
+#			ifdef VAR_CYCLES
+				CPU.Cycles += ONE_CYCLE;
+#			else
+				CPU.Cycles++;
+#			endif
+			CPUShutdown ();
+		}
+		return;
+	case 0x5: //BVC
+		BranchCheck0 ();
+		if (!CheckOverflow ()) {
+			CPU.PC = CPU.PCBase + OpAddress;
+#			ifdef VAR_CYCLES
+				CPU.Cycles += ONE_CYCLE;
+#			else
+				CPU.Cycles++;
+#			endif
+			CPUShutdown ();
+		}
+		return;
+	case 0x7: //BVS
+		BranchCheck0 ();
+		if (CheckOverflow ()) {
+				CPU.PC = CPU.PCBase + OpAddress;
+#			ifdef VAR_CYCLES
+				CPU.Cycles += ONE_CYCLE;
+#			else
+				CPU.Cycles++;
+#			endif
+			CPUShutdown ();
+			}
+		return;
+	case 0x8: //BRA
+		CPU.PC = CPU.PCBase + OpAddress;
+#		ifdef VAR_CYCLES
+			CPU.Cycles += ONE_CYCLE;
+#		else
+			CPU.Cycles++;
+#		endif
+		CPUShutdown ();
+		return;
+	case 0x9: //BCC
+		BranchCheck0 ();
+	    if (!CheckCarry ()) {
+			CPU.PC = CPU.PCBase + OpAddress;
+#			ifdef VAR_CYCLES
+				CPU.Cycles += ONE_CYCLE;
+#			else
+				CPU.Cycles++;
+#			endif
+			CPUShutdown ();
+		}
+		return;
+	case 0xB: //BCS
+		BranchCheck0 ();
+		if (CheckCarry ()) {
+			CPU.PC = CPU.PCBase + OpAddress;
+#			ifdef VAR_CYCLES
+				CPU.Cycles += ONE_CYCLE;
+#			else
+				CPU.Cycles++;
+#			endif
+			CPUShutdown ();
+		}
+		return;
+	case 0xD: //BNE
+		BranchCheck1 ();
+		if (!CheckZero ()) {
+			CPU.PC = CPU.PCBase + OpAddress;
+#			ifdef VAR_CYCLES
+			CPU.Cycles += ONE_CYCLE;
+#			else
+				CPU.Cycles++;
+#			endif
+			CPUShutdown ();
+		}
+		return;
+	case 0xF: //BEQ
+		BranchCheck2 ();
+		if (CheckZero ()) {
+			CPU.PC = CPU.PCBase + OpAddress;
+#			ifdef VAR_CYCLES
+				CPU.Cycles += ONE_CYCLE;
+#			else
+				CPU.Cycles++;
+#			endif
+			CPUShutdown ();
+			}
+		return;
+#ifdef DEBUG
+	default:
+		printf("Invalid Op42 branch type %hx\n", b >> 4);
+		return;
+	}
+#endif
+#endif
 }
 
 /**********************************************************************************************/
