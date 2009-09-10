@@ -50,8 +50,12 @@ typedef struct ButtonEntry {
 } ButtonEntry;
 #define BUTTON_INITIALIZER(desc, name, default) \
 	{ desc, kGConfKeysPath "/" name, 0, default }
+
+#define ACTION_INITIALIZER(...) BUTTON_INITIALIZER(__VA_ARGS__)
+
 #define BUTTON_LAST	\
 	{ 0 }
+
 static ButtonEntry buttons[] = {
 	BUTTON_INITIALIZER("A", "a", 48),
 	BUTTON_INITIALIZER("B", "b", 20),
@@ -65,8 +69,12 @@ static ButtonEntry buttons[] = {
 	BUTTON_INITIALIZER("Down", "down", 116),
 	BUTTON_INITIALIZER("Left", "left", 113),
 	BUTTON_INITIALIZER("Right", "right", 114),
-	BUTTON_INITIALIZER("Return to launcher", "quit", 9),
-	BUTTON_INITIALIZER("Fullscreen", "fullscreen", 72),
+	ACTION_INITIALIZER("Return to launcher", "quit", 9),
+	ACTION_INITIALIZER("Fullscreen", "fullscreen", 72),
+	ACTION_INITIALIZER("Quick Load 1", "quickload1", 0),
+	ACTION_INITIALIZER("Quick Save 1", "quicksave1", 0),
+	ACTION_INITIALIZER("Quick Load 2", "quickload2", 0),
+	ACTION_INITIALIZER("Quick Save 2", "quicksave2", 0),
 	BUTTON_LAST
 };
 
@@ -220,21 +228,35 @@ static void cb_dialog_response(GtkWidget * button, gpointer data)
 void controls_setup()
 {
 	GConfValue* mapping = gconf_client_get(gcc, kGConfMapping, NULL);
+	int i;
 
 	if (!mapping) {
 		// Key not set; setup defaults
-		int i;
 		for (i = 0; buttons[i].name; i++) {
-			gconf_client_set_int(gcc,
-				buttons[i].gconf_key, buttons[i].default_scancode, NULL);
+			gconf_client_set_int(gcc, buttons[i].gconf_key,
+				buttons[i].default_scancode, NULL);
 		}
 
 		g_debug("Loading default key mappings\n");
 
 		gconf_client_set_int(gcc, kGConfMapping, 1, NULL);
 	} else {
-		// If this is set, consider defaults loaded.
+		// If this key is set, consider defaults loaded.
 		gconf_value_free(mapping);
+
+		// We still have to check if all the keys exist
+		gconf_client_preload(gcc, kGConfKeysPath, GCONF_CLIENT_PRELOAD_ONELEVEL, NULL);
+		for (i = 0; buttons[i].name; i++) {
+			mapping = gconf_client_get(gcc, buttons[i].gconf_key, NULL);
+
+			if (!mapping) {
+				// Not set; set to default.
+				gconf_client_set_int(gcc, buttons[i].gconf_key,
+					buttons[i].default_scancode, NULL);
+			} else {
+				gconf_value_free(mapping);
+			}
+		}
 	}
 }
 

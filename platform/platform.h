@@ -53,6 +53,10 @@ void S9xInputScreenChanged();
 #define kActionNone						0
 #define kActionQuit					(1U << 0)
 #define	kActionToggleFullscreen		(1U << 1)
+#define kActionQuickLoad1			(1U << 2)
+#define kActionQuickSave1			(1U << 3)
+#define kActionQuickLoad2			(1U << 4)
+#define kActionQuickSave2			(1U << 5)
 
 void S9xDoAction(unsigned char action);
 

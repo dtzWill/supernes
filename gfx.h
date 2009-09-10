@@ -69,7 +69,7 @@ struct SGFX{
     uint8  Z1;
     uint8  Z2;
     uint32 FixedColour;
-    const char *InfoString;
+    char *InfoString;
     uint32 InfoStringTimeout;
     uint32 StartY;
     uint32 EndY;

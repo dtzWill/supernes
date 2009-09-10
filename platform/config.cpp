@@ -116,6 +116,14 @@ static unsigned char actionNameToBit(const char *s) {
 		return kActionQuit;
 	} else if (strcasecmp(s, "fullscreen") == 0) {
 		return kActionToggleFullscreen;
+	} else if (strcasecmp(s, "quickload1") == 0) {
+		return kActionQuickLoad1;
+	} else if (strcasecmp(s, "quicksave1") == 0) {
+		return kActionQuickSave1;
+	} else if (strcasecmp(s, "quickload2") == 0) {
+		return kActionQuickLoad2;
+	} else if (strcasecmp(s, "quicksave2") == 0) {
+		return kActionQuickSave2;
 	} else {
 		DIE("Bad action name: %s\n", s);
 	}
@@ -123,7 +131,7 @@ static unsigned char actionNameToBit(const char *s) {
 
 const char * S9xGetFilename(FileTypes file)
 {
-	static char filename [PATH_MAX + 1];
+	static char filename[PATH_MAX + 1];
 	const char * ext;
 	switch (file) {
 		case FILE_ROM:
@@ -152,6 +160,13 @@ const char * S9xGetFilename(FileTypes file)
 	}
 
 	snprintf(filename, PATH_MAX, "%s.%s", basePath, ext);
+	return filename;
+}
+
+const char * S9xGetQuickSaveFilename(unsigned int slot)
+{
+	static char filename[PATH_MAX + 1];
+	snprintf(filename, PATH_MAX, "%s.frz.%u.gz", basePath, slot);
 	return filename;
 }
 

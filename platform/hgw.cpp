@@ -225,6 +225,10 @@ static const ButtonEntry buttons[] = {
 	BUTTON_INITIALIZER(RIGHT, "right"),
 	ACTION_INITIALIZER(Quit, "quit"),
 	ACTION_INITIALIZER(ToggleFullscreen, "fullscreen"),
+	ACTION_INITIALIZER(QuickLoad1, "quickload1"),
+	ACTION_INITIALIZER(QuickSave1, "quicksave1"),
+	ACTION_INITIALIZER(QuickLoad2, "quickload2"),
+	ACTION_INITIALIZER(QuickSave2, "quicksave2"),
 	BUTTON_LAST
 };
 

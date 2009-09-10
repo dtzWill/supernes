@@ -62,7 +62,7 @@ void S9xProcessEvents (bool8_32 block);
 void S9xPutImage (int width, int height);
 void S9xParseDisplayArg (char **argv, int &index, int argc);
 void S9xToggleSoundChannel (int channel);
-void S9xSetInfoString (const char *string);
+void S9xSetInfoString (const char * fmt, ...);
 int S9xMinCommandLineArgs ();
 void S9xNextController ();
 

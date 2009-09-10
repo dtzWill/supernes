@@ -269,5 +269,33 @@ void S9xDoAction(unsigned char action)
 		S9xVideoToggleFullscreen();
 		S9xInputScreenChanged();
 	}
+
+	if (action & kActionQuickLoad1) {
+		const char * file = S9xGetQuickSaveFilename(1);
+		int result = S9xUnfreezeGame(file);
+		S9xSetInfoString("Load slot %u: %s", 1,
+			(result ? "done" : "failed"));
+	}
+
+	if (action & kActionQuickSave1) {
+		const char * file = S9xGetQuickSaveFilename(1);
+		int result = S9xFreezeGame(file);
+		S9xSetInfoString("Save slot %u: %s", 1,
+			(result ? "done" : "failed"));
+	}
+
+	if (action & kActionQuickLoad2) {
+		const char * file = S9xGetQuickSaveFilename(2);
+		int result = S9xUnfreezeGame(file);
+		S9xSetInfoString("Load slot %u: %s", 2,
+			(result ? "done" : "failed"));
+	}
+
+	if (action & kActionQuickSave2) {
+		const char * file = S9xGetQuickSaveFilename(2);
+		int result = S9xFreezeGame(file);
+		S9xSetInfoString("Save slot %u: %s", 2,
+			(result ? "done" : "failed"));
+	}
 }
 

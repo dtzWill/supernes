@@ -403,11 +403,15 @@ enum FileTypes {
 };
 /** This routine allows to get path to files whose name depends on the basename
  *  of the current ROM.
- *  Note that FILE_FREEZE is currently not implemented here.
  *  @param file see enum FileTypes.
  *  @return wanted filepath. Do not free the returned string.
  */
 const char *S9xGetFilename(enum FileTypes file);
+/** Returns the path to freeze file for the selected quick save slot.
+ *  @param slot slot number
+ *  @return wanted filepath. Do not free the returned string.
+ */
+const char *S9xGetQuickSaveFilename(unsigned int slot);
 END_EXTERN_C
 
 #endif

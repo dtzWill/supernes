@@ -38,6 +38,9 @@
  * Super NES and Super Nintendo Entertainment System are trademarks of
  * Nintendo Co., Limited and its subsidiary companies.
  */
+
+#include <stdarg.h>
+
 #include "snes9x.h"
 
 #include "memmap.h"
@@ -430,8 +433,10 @@ void S9xBuildDirectColourMaps ()
 
 void S9xStartScreenRefresh ()
 {
-    if (GFX.InfoStringTimeout > 0 && --GFX.InfoStringTimeout == 0)
-	GFX.InfoString = NULL;
+	if (GFX.InfoStringTimeout > 0 && --GFX.InfoStringTimeout == 0) {
+		free(GFX.InfoString);
+		GFX.InfoString = NULL;
+	}
 
     if (IPPU.RenderThisFrame)
     {
@@ -591,10 +596,19 @@ void S9xEndScreenRefresh()
     }
 }
 
-void S9xSetInfoString (const char *string)
+void S9xSetInfoString (const char * fmt, ...)
 {
-    GFX.InfoString = string;
-    GFX.InfoStringTimeout = 120;
+	va_list ap;
+	va_start(ap, fmt);
+
+	if (vasprintf(&GFX.InfoString, fmt, ap) > 0) {
+		GFX.InfoStringTimeout = 120;
+	} else {
+		GFX.InfoString = 0;
+		GFX.InfoStringTimeout = 0;
+	}
+
+    va_end(ap);
 }
 
 INLINE void SelectTileRenderer (bool8_32 normal)
