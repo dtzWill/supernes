@@ -1,32 +1,24 @@
 #!/usr/bin/make
 
-CPPFLAGS := -I. $(shell sdl-config --cflags) $(shell pkg-config --cflags x11 xsp) -I/usr/include/hgw
-LDLIBS := -lz $(shell sdl-config --libs) $(shell pkg-config --libs x11 xsp) -lpopt -lhgw
+CPPFLAGS := -I. $(shell sdl-config --cflags) $(shell pkg-config --cflags x11) -I/usr/include/hgw
+LDLIBS := -lz $(shell sdl-config --libs) $(shell pkg-config --libs x11) -lpopt -lhgw
 
-# Default CFLAGS for building in N8x0
-ARCH ?= armel
-CFLAGS ?= -DMAEMO -DMAEMO_VERSION=4 -march=armv6j -mtune=arm1136jf-s -mfpu=vfp -mfloat-abi=softfp -O2 -g -Wall -static-libgcc
-ASFLAGS ?= -march=armv6j -mfpu=vfp -mfloat-abi=softfp -g
-CXXFLAGS ?= $(CFLAGS)
+-include config.mk
 
-# Default CFLAGS for building in PC
-#ARCH := i386
-#CFLAGS := -DMAEMO -DMAEMO_VERSION=4 -O2 -g -Wall
-#ASFLAGS := -g
-#CXXFLAGS := $(CFLAGS)
-
-GAME_VERSION ?= $(shell head -n 1 debian/changelog | sed 's/[^0-9.-]//g')-git
-export GAME_VERSION
+# GUI needs this
 export DESTDIR
 
 # Configuration settings
 CONF_BUILD_ASM_CPU=0
 CONF_BUILD_ASM_SPC700=0
 CONF_BUILD_ASM_SA1=0	# Still not there
+CONF_XSP=0
 
+# Sane defaults (override if needed)
 ifeq ($(ARCH),armel)
 	CONF_BUILD_ASM_CPU=1
 	CONF_BUILD_ASM_SPC700=1
+	CONF_XSP=1
 	CONF_BUILD_MISC_ROUTINES=misc_armel
 else ifeq ($(ARCH),i386)
 	CONF_BUILD_MISC_ROUTINES=misc_i386
@@ -54,6 +46,11 @@ ifeq ($(CONF_BUILD_ASM_SA1), 1)
 	crash
 else
 	OBJS += sa1cpu.o
+endif
+
+ifeq ($(CONF_XSP), 1)
+	CPPFLAGS += -DCONF_XSP=1 $(shell pkg-config --cflags xsp)
+	LDLIBS += $(shell pkg-config --libs xsp)
 endif
 
 OBJS += $(CONF_BUILD_MISC_ROUTINES).o
@@ -96,9 +93,9 @@ deps: $(DEPS)
 
 gui:
 	$(MAKE) -C gui all
-	
+
 gui_clean:
 	$(MAKE) -C gui clean
-	
+
 .PHONY: all clean remake deps install gui gui_clean
 

@@ -13,6 +13,7 @@
 # from having to guess our platform (since we know it already)
 DEB_HOST_GNU_TYPE   ?= $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
 DEB_BUILD_GNU_TYPE  ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
+ARCH				?= $(shell dpkg-architecture -qDEB_BUILD_ARCH)
 
 # Determine Maemo version
 MAEMO_VERSION := $(shell cut -d"." -f1 /etc/maemo_version)
@@ -20,25 +21,34 @@ MAEMO_VERSION := $(shell cut -d"." -f1 /etc/maemo_version)
 # Determine app version from debian changelog
 GAME_VERSION := $(shell head -n 1 debian/changelog | sed 's/[^0-9.-]//g')
 
+# Default CFLAGS
 CFLAGS = -Wall -g -DMAEMO -DMAEMO_VERSION=$(MAEMO_VERSION)
-GUI_CFLAGS := $(CFLAGS)
+GUI_CFLAGS := -fPIC -shared $(CFLAGS)
 LDFLAGS = -Wl,-z,defs
+GUI_LDFLAGS := -export-dynamic -avoid-version -module -shared $(LDFLAGS)
+ASFLAGS = -g
 
 M4=m4
 M4DEFS=-DMAEMO_MAJOR=$(MAEMO_VERSION)
 
+# Architecture specific CFLAGS
 ifneq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))
 	CFLAGS += -O0
-else ifneq (,$(findstring arm,$(DEB_BUILD_GNU_TYPE)))
+else ifneq (,$(findstring armel,$(ARCH)))
 	CFLAGS += -O2
 	GUI_CFLAGS += -Os
 	ifneq (,$(findstring vfp,$(DEB_BUILD_OPTIONS)))
 		CFLAGS += -march=armv6j -mtune=arm1136jf-s -mfpu=vfp -mfloat-abi=softfp
+		ASFLAGS += -march=armv6j -mfpu=vfp -mfloat-abi=softfp
 	endif
-	# Fixes hang while exiting on Diablo.
+	# Fixes hang while exiting in Diablo.
 	CFLAGS += -static-libgcc
-else # x86
-	crash ## Cannot build in x86
+else ifneq (,$(findstring i386,$(ARCH)))
+	CFLAGS += -O2
+	GUI_CFLAGS += -O2
+else
+	# Don't support anything else yet
+	crash
 endif
 
 debian/control: debian/control.m4
@@ -49,12 +59,23 @@ configure-stamp:
 	dh_testdir
 	$(M4) $(M4DEFS) debian/control.m4 > debian/control
 	$(M4) $(M4DEFS) debian/drnoksnes.postinst.m4 > debian/drnoksnes.postinst
+	
+	echo ARCH="$(ARCH)" > config.mk
+	echo ASFLAGS="$(ASFLAGS)" >> config.mk
+	echo CFLAGS="$(CFLAGS)" >> config.mk
+	echo CXXFLAGS="$(CFLAGS)" >> config.mk
+	echo LDFLAGS="$(LDFLAGS)" >> config.mk
+	
+	echo CFLAGS="$(GUI_CFLAGS)" > gui/config.mk
+	echo LDFLAGS="$(GUI_LDFLAGS)" >> gui/config.mk
+	echo GAME_VERSION="$(GAME_VERSION)" >> gui/config.mk
+	
 	touch configure-stamp
 
 build: build-stamp
 build-stamp: configure-stamp 
 	dh_testdir
-	$(MAKE) CFLAGS="$(CFLAGS)" CXXFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" GUI_CFLAGS="$(GUI_CFLAGS)" GAME_VERSION="$(GAME_VERSION)"
+	$(MAKE)
 	touch $@
 
 clean:
@@ -62,6 +83,7 @@ clean:
 	dh_testroot
 	rm -f build-stamp configure-stamp
 	-$(MAKE) clean
+	rm -f config.mk gui/config.mk
 	dh_clean 
 
 install: build

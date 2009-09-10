@@ -2,16 +2,7 @@ PKGS:=gtk+-2.0 hildon-1 hildon-fm-2 libhildonmime gconf-2.0 gnome-vfs-2.0
 CPPFLAGS:=$(shell pkg-config --cflags $(PKGS)) -DGAME_VERSION=$(GAME_VERSION)
 LDLIBS:=$(shell pkg-config --libs $(PKGS))
 
-ifdef GUI_CFLAGS
-	override CFLAGS:=$(GUI_CFLAGS)
-else
-	override CFLAGS:= -g -Os -Wall -fpic -shared -DMAEMO
-endif
-ifdef GUI_LDFLAGS
-	override LDFLAGS:=$(GUI_LDFLAGS)
-else
-	override LDFLAGS:= -export-dynamic -avoid-version -module -shared -Wl,-z,defs
-endif
+-include config.mk
 
 #GAME_VERSION
 GAME_SHARE_PATH=/usr/share/games/drnoksnes

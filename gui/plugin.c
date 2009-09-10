@@ -196,7 +196,7 @@ static GtkWidget * load_plugin(void)
 	gtk_box_pack_start(framerate_box, GTK_WIDGET(framerate_combo), FALSE, FALSE, 0);
 #endif
 
-	gtk_combo_box_append_text(framerate_combo, "Best");
+	gtk_combo_box_append_text(framerate_combo, "Auto");
 	for (i = 1; i < 10; i++) {
 		gchar buffer[20];
 		sprintf(buffer, "%d-%d", 50/i, 60/i);

@@ -2,9 +2,12 @@
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
-#include <X11/extensions/Xsp.h>
 #include <SDL.h>
 #include <SDL_syswm.h>
+
+#if CONF_XSP
+#	include <X11/extensions/Xsp.h>
+#endif
 
 #include "snes9x.h"
 #include "platform.h"
@@ -28,7 +31,7 @@ static bool gotWindowSize, gotScreenSize;
 /** Inside the surface, where are we drawing */
 static SDL_Rect renderArea;
 
-#ifdef MAEMO
+#if CONF_XSP
 static void setDoubling(bool enable)
 {
 	SDL_SysWMinfo wminfo;
@@ -127,7 +130,11 @@ static void setupVideoSurface()
 		GUI.Width = windowSize.w;
 		GUI.Height = windowSize.h;
 	}
-	
+#else
+	GUI.Width = gameWidth;
+	GUI.Height = gameHeight;
+#endif
+#if CONF_XSP
 	// So, can we enable Xsp?
 	if (gameWidth * 2 < GUI.Width && gameHeight * 2 < GUI.Height) {
 		Config.xsp = true;
@@ -136,8 +143,7 @@ static void setupVideoSurface()
 		setDoubling(false); // Before switching video modes; avoids flicker.
 	}
 #else
-	GUI.Width = gameWidth;
-	GUI.Height = gameHeight;
+	Config.xsp = false;
 #endif
 
 	// Safeguard
@@ -159,7 +165,7 @@ static void setupVideoSurface()
 	GFX.PixSize = screen->format->BitsPerPixel / 8;
 
 	// Ok, calculate renderArea
-#ifdef MAEMO
+#if CONF_XSP
 	if (Config.xsp) {
 		setDoubling(true);
 		centerRectangle(renderArea, GUI.Width, GUI.Height,
@@ -188,7 +194,7 @@ static void setupVideoSurface()
 	GUI.RenderW = renderArea.w;
 	GUI.RenderH = renderArea.h;
 
-#ifdef MAEMO
+#if CONF_XSP
 	if (Config.xsp) {
 		// Do not update 2x the area.
 		renderArea.w /= 2;
@@ -226,9 +232,11 @@ void S9xVideoToggleFullscreen()
 
 void S9xVideoOutputFocus(bool hasFocus)
 {
+#if CONF_XSP
 	if (Config.xsp) {
 		setDoubling(hasFocus);
 	} 
+#endif
 }
 
 // This is here for completeness, but palette mode is useless on N8x0

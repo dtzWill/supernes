@@ -9,7 +9,7 @@ Build-Depends: debhelper (>= 5), pkg-config, maemo-version, m4, libsdl1.2-dev,
 Standards-Version: 3.7.2
 
 Package: drnoksnes
-Architecture: armel
+Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}, osso-games-startup
 ifelse(eval(MAEMO_MAJOR < 5), 1, `Pre-Depends: maemo-select-menu-location', `dnl')
 Description: Super Nintendo Entertainment System emulator
@@ -174,7 +174,7 @@ ifelse(eval(MAEMO_MAJOR < 5), 1, `dnl
 ')dnl
 
 Package: drnoksnes-dbg
-Architecture: armel
+Architecture: any
 Section: devel
 Depends: drnoksnes (= ${Source-Version})
 Description: Debug symbols for the DrNokSnes emulator
