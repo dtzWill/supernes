@@ -64,6 +64,8 @@
 #include "srtc.h"
 #include "sdd1.h"
 
+#define dprintf(...) /* disabled */
+
 extern uint8 *SRAM;
 
 #ifdef ZSNES_FX
@@ -659,10 +661,12 @@ static int Unfreeze()
     ICPU.ShiftedPB = Registers.PB << 16;
     ICPU.ShiftedDB = Registers.DB << 16;
     S9xSetPCBase (ICPU.ShiftedPB + Registers.PC);
-    
-    
-    //S9xUnpackStatus (); // not needed
-    //S9xFixCycles (); // also not needed?
+
+#if !CONF_BUILD_ASM_CPU
+    S9xUnpackStatus ();
+    S9xFixCycles ();
+#endif
+
     S9xReschedule ();
 #ifdef ZSNES_FX
     if (Settings.SuperFX)
@@ -890,7 +894,7 @@ int UnfreezeBlock(const char *name, uint8 *block, int size)
 	strncmp (buffer, name, 3) != 0 || buffer [3] != ':' ||
 	(len = atoi (&buffer [4])) == 0)
     {
-		printf("%s: %s: Invalid block header\n", __func__, name);
+		dprintf("%s: %s: Invalid block header\n", __func__, name);
 		return WRONG_FORMAT;
     }
     
@@ -902,7 +906,7 @@ int UnfreezeBlock(const char *name, uint8 *block, int size)
 
     if (READ_STREAM(block, len, ss_st) != len)
     {
-		printf("%s: Invalid block\n", __func__);
+		dprintf("%s: Invalid block\n", __func__);
 		return WRONG_FORMAT;
 	}
 	

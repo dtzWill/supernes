@@ -144,16 +144,16 @@ void S9xSA1MainLoop ()
 #endif
 		    (*SA1.S9xOpcodes [*SA1.PC++].S9xOpcode)();
 		}
+		return;
     }
-    else
 #endif
-	    for (i = 0; i < 3 && SA1.Executing; i++)
-		{
+	for (i = 0; i < 3 && SA1.Executing; i++)
+	{
 #ifdef CPU_SHUTDOWN
-			SA1.PCAtOpcodeStart = SA1.PC;
+		SA1.PCAtOpcodeStart = SA1.PC;
 #endif
-			(*SA1.S9xOpcodes [*SA1.PC++].S9xOpcode)();
-		}
+		(*SA1.S9xOpcodes [*SA1.PC++].S9xOpcode)();
+	}
 }
 
 #endif

@@ -4027,8 +4027,8 @@ static void Op42 ()
 	default:
 		printf("Invalid Op42 branch type %hx\n", b >> 4);
 		return;
-	}
 #endif
+	}
 #endif
 }
 
@@ -4260,3 +4260,4 @@ struct SOpcodes S9xOpcodesM0X1[256] =
     {OpFAX1},    {OpFB},      {OpFC},      {OpFDM0},    {OpFEM0},
     {OpFFM0}
 };
+

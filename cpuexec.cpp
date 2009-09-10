@@ -80,7 +80,7 @@ void S9xMainLoop (void)
 	char stra[64];	
 	sprintf(stra,"framecpt : %d",framecpt);
 	S9xMessage(0,0,stra);
-#endif	
+#endif
 
 #if CONF_BUILD_ASM_CPU
 	asmMainLoop(&CPU);
@@ -137,7 +137,9 @@ void S9xMainLoop (void)
 #endif
 
     Registers.PC = CPU.PC - CPU.PCBase;
-    //S9xPackStatus (); // not needed
+#if !CONF_BUILD_ASM_CPU
+    S9xPackStatus ();
+#endif
     S9xAPUPackStatus ();
     
     if (CPU.Flags & SCAN_KEYS_FLAG)
@@ -237,17 +239,6 @@ void S9xDoHBlankProcessing ()
 			CPU.Flags |= NMI_FLAG;
 			CPU.NMICycleCount = CPU.NMITriggerPoint;
 			}
-
-	#ifdef OLD_SNAPSHOT_CODE
-			if (CPU.Flags & SAVE_SNAPSHOT_FLAG)
-			{
-			CPU.Flags &= ~SAVE_SNAPSHOT_FLAG;
-			Registers.PC = CPU.PC - CPU.PCBase;
-			//S9xPackStatus (); // not needed
-			S9xAPUPackStatus ();
-			Snapshot (NULL);
-			}
-	#endif
 			}
 
 		if (CPU.V_Counter == PPU.ScreenHeight + 3)

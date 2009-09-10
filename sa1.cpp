@@ -142,8 +142,10 @@ void S9xFixSA1AfterSnapshotLoad ()
     SA1.ShiftedDB = (uint32) SA1Registers.DB << 16;
 
     S9xSA1SetPCBase (SA1.ShiftedPB + SA1Registers.PC);
+#if !CONF_BUILD_ASM_SA1
     S9xSA1UnpackStatus ();
-    //S9xSA1FixCycles (); // unused
+    S9xSA1FixCycles ();
+#endif
     SA1.VirtualBitmapFormat = (Memory.FillRAM [0x223f] & 0x80) ? 2 : 4;
     Memory.BWRAM = Memory.SRAM + (Memory.FillRAM [0x2224] & 7) * 0x2000;
     S9xSA1SetBWRAMMemMap (Memory.FillRAM [0x2225]);
