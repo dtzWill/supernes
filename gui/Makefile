@@ -1,10 +1,13 @@
 PKGS:=gtk+-2.0 hildon-1 hildon-fm-2 libhildonmime gconf-2.0 gnome-vfs-2.0
-CPPFLAGS:=$(shell pkg-config --cflags $(PKGS)) -DGAME_VERSION=$(GAME_VERSION)
+CPPFLAGS:=$(shell pkg-config --cflags $(PKGS))
 LDLIBS:=$(shell pkg-config --libs $(PKGS))
 
 -include config.mk
 
-#GAME_VERSION
+# The about dialog will use this
+CPPFLAGS+=-DGAME_VERSION=$(GAME_VERSION)
+
+# Some hardcoded paths
 GAME_SHARE_PATH=/usr/share/games/drnoksnes
 GAME_PLUGIN_PATH=/usr/lib/drnoksnes_plugin.so
 GAME_CONF_PATH=$(GAME_SHARE_PATH)/drnoksnes.conf
