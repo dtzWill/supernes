@@ -46,10 +46,6 @@
 #include "gfx.h"
 #include "tile.h"
 
-#ifdef USE_GLIDE
-#include "3d.h"
-#endif
-
 #define TILE_PREAMBLE \
     uint8 *pCache; \
 \
@@ -1494,3 +1490,4 @@ void DrawHiResClippedTile16 (uint32 Tile, uint32 Offset,
     TILE_CLIP_PREAMBLE
     RENDER_CLIPPED_TILEHI(WRITE_4PIXELSHI16, WRITE_4PIXELSHI16_FLIPPED, 4)
 }
+

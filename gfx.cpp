@@ -4003,4 +4003,6 @@ bool8_32 S9xSetRenderPixelFormat (int format)
     }
     return (FALSE);
 }
+
 #endif
+
