@@ -3,8 +3,9 @@ drnoksnes (1.1.0) unstable; urgency=low
   * Fixed graphic glitches in SuperFX games.
   * Integrated C cpu core for i386 builds.
   * SA-1 enabled for i386 using C cpu.
+  * Quick save slots.
 
- -- Javier S. Pedro <maemo@javispedro.com>  Thu, 10 Sep 2009 01:37:15 +0200
+ -- Javier S. Pedro <maemo@javispedro.com>  Fri, 11 Sep 2009 01:27:28 +0200
 
 drnoksnes (1.0.2) unstable; urgency=low
 
