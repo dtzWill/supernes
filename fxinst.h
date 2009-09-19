@@ -386,8 +386,11 @@ struct FxRegs_s
 #define CLSR USEX8(GSU.pvRegisters[GSU_CLSR])
 
 /* Execute instruction from the pipe, and fetch next byte to the pipe */
-#define FX_STEP { uint32 vOpcode = (uint32)PIPE; FETCHPIPE; \
-(*fx_ppfOpcodeTable[ (GSU.vStatusReg & 0x300) | vOpcode ])(); } \
+#define FX_STEP { \
+	uint32 vOpcode = (uint32)PIPE; \
+	FETCHPIPE; \
+	(*fx_ppfOpcodeTable[ (GSU.vStatusReg & 0x300) | vOpcode ])(); \
+} \
 
 #define FX_FUNCTION_RUN			0
 #define FX_FUNCTION_RUN_TO_BREAKPOINT	1

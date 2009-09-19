@@ -1564,16 +1564,17 @@ static void fx_sm_r15() { FX_SM(15); }
 
 static uint32 fx_run(uint32 nInstructions)
 {
-    GSU.vCounter = nInstructions;
-    READR14;
-    while(GSU.vCounter-- > 0)
-	FX_STEP;
+	GSU.vCounter = nInstructions;
+	READR14;
+	while(GSU.vCounter-- > 0) {
+		FX_STEP;
+	}
  /*
 #ifndef FX_ADDRESS_CHECK
     GSU.vPipeAdr = USEX16(R15-1) | (USEX8(GSU.vPrgBankReg)<<16);
 #endif
 */
-    return (nInstructions - GSU.vInstCount);
+	return nInstructions - GSU.vInstCount;
 }
 
 static uint32 fx_run_to_breakpoint(uint32 nInstructions)

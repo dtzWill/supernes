@@ -579,7 +579,6 @@ reg_cpu_var .req R14
 .endif
 .endm
 
-@ #include "os9x_65c816_mac_mem.h"
 .macro		S9xGetWord	
 		@  in  : rscratch (0x00hhmmll)
 		@  out : rscratch (0xhhll0000)
@@ -2865,7 +2864,7 @@ SW_not_aligned4:
 1111:
 .endm
 .macro		Op30	/*BMI*/
-		asmRelative		
+		asmRelative
 		BranchCheck0
 		TST		rstatus, #MASK_NEG
 		BEQ		1111f
@@ -3087,15 +3086,14 @@ SW_not_aligned4:
 .endm
 .macro		OpAB
 		BIC		reg_d_bank,reg_d_bank, #0xFF
-		PullBrS 	
+		PullBrS
 		ORR		reg_d_bank,reg_d_bank,rscratch, LSR #24
 		UPDATE_ZN
 		ADD2CYCLE
 .endm
-.macro		Op2B		
-		BIC		reg_d,reg_d, #0xFF000000
-		BIC		reg_d,reg_d, #0x00FF0000
-		PullWrS		
+.macro		Op2B
+		UXTH	reg_d,reg_d
+		PullWrS
 		ORR		reg_d,rscratch,reg_d
 		UPDATE_ZN
 		ADD2CYCLE

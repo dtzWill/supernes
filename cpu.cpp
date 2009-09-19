@@ -61,7 +61,7 @@
 
 extern struct FxInit_s SuperFX;
 
-void S9xResetSuperFX ()
+static void S9xResetSuperFX ()
 {
     SuperFX.vFlags = 0; //FX_FLAG_ROM_BUFFER;// | FX_FLAG_ADDRESS_CHECKING;
     FxReset (&SuperFX);
