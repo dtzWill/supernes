@@ -23,6 +23,11 @@
 #include <gtk/gtk.h>
 #include <hildon/hildon-helper.h>
 
+#if MAEMO_VERSION >= 5
+#include <hildon/hildon-gtk.h>
+#include <hildon/hildon-pannable-area.h>
+#endif
+
 #include "../platform/hgw.h"
 #include "plugin.h"
 #include "cellrendererkey.h"
@@ -30,7 +35,11 @@
 static GtkDialog* dialog;
 static GtkComboBox* combo;
 static GtkLabel* none_label;
+#if MAEMO_VERSION >= 5
+static HildonPannableArea* keys_scroll;
+#else
 static GtkScrolledWindow* keys_scroll;
+#endif
 static GtkListStore* keys_store;
 static GtkTreeView* keys_list;
 static GtkLabel* ts_label;
@@ -276,13 +285,19 @@ void controls_dialog(GtkWindow* parent)
 
 	none_label = GTK_LABEL(gtk_label_new("Check documentation for details."));
 
+	keys_store = GTK_LIST_STORE(gtk_list_store_new(N_COLUMNS,
+		G_TYPE_STRING, G_TYPE_POINTER));
+#if MAEMO_VERSION >= 5
+	keys_list = GTK_TREE_VIEW(hildon_gtk_tree_view_new_with_model(
+		HILDON_UI_MODE_EDIT, GTK_TREE_MODEL(keys_store)));
+	keys_scroll = HILDON_PANNABLE_AREA(hildon_pannable_area_new());
+#else
+	keys_list = GTK_TREE_VIEW(
+		gtk_tree_view_new_with_model(GTK_TREE_MODEL(keys_store)));
 	keys_scroll = GTK_SCROLLED_WINDOW(gtk_scrolled_window_new(NULL, NULL));
 	gtk_scrolled_window_set_policy(keys_scroll,
 		GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
-	keys_store = GTK_LIST_STORE(gtk_list_store_new(N_COLUMNS,
-		G_TYPE_STRING, G_TYPE_POINTER));
-	keys_list = GTK_TREE_VIEW(
-		gtk_tree_view_new_with_model(GTK_TREE_MODEL(keys_store)));
+#endif
 
 	GtkCellRenderer* renderer = GTK_CELL_RENDERER(gtk_cell_renderer_text_new());
 	GtkTreeViewColumn * column =
@@ -298,7 +313,11 @@ void controls_dialog(GtkWindow* parent)
 	column = gtk_tree_view_column_new_with_attributes("Key", renderer, NULL);
 	gtk_tree_view_column_set_cell_data_func(column, renderer, accel_set_func, NULL, NULL);
 	gtk_tree_view_column_set_resizable(column, FALSE);
-	gtk_tree_view_column_set_min_width(column, 240);
+#if MAEMO_VERSION >= 5
+	gtk_tree_view_column_set_min_width(column, 340);
+#else
+	gtk_tree_view_column_set_min_width(column, 250);
+#endif
 	gtk_tree_view_append_column(keys_list, column);
 	gtk_tree_view_set_headers_visible(keys_list, TRUE);
 
@@ -314,7 +333,11 @@ void controls_dialog(GtkWindow* parent)
 
 	ts_label = GTK_LABEL(gtk_label_new("Check layout somewhere else for now."));
 
+#if MAEMO_VERSION >= 5
+	gtk_window_resize(GTK_WINDOW(dialog), 800, 380);
+#else
 	gtk_window_resize(GTK_WINDOW(dialog), 600, 340);
+#endif
 	gtk_box_pack_start(GTK_BOX(dialog->vbox), GTK_WIDGET(combo),
 		FALSE, FALSE, HILDON_MARGIN_HALF);
 	gtk_container_add(GTK_CONTAINER(keys_scroll), GTK_WIDGET(keys_list));

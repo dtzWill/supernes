@@ -29,7 +29,7 @@
 #include <hildon/hildon-gtk.h>
 #define LOGO_ICON_SIZE HILDON_ICON_SIZE_LARGE
 #else
-#define LOGO_ICON_SIZE HILDON_ICON_SIZE_NOTE
+#define LOGO_ICON_SIZE GTK_ICON_SIZE_DIALOG
 #endif
 
 #include "plugin.h"

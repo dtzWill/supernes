@@ -78,6 +78,7 @@ static HildonCheckButton* display_fps_check;
 static HildonCheckButton* turbo_check;
 // speedhacks=no and accuracy=yes in fremantle
 #else
+static GtkButton* select_rom_btn;
 static GtkLabel* rom_label;
 static GtkCheckButton* audio_check;
 static GtkCheckButton* turbo_check;
@@ -188,7 +189,7 @@ static GtkWidget * load_plugin(void)
 #else
 {
 	GtkWidget* rom_hbox = gtk_hbox_new(FALSE, HILDON_MARGIN_DEFAULT);
-	GtkWidget* select_rom_btn = gtk_button_new_with_label("Select ROM...");
+	select_rom_btn = GTK_BUTTON(gtk_button_new_with_label("Select ROM..."));
 	gtk_widget_set_size_request(GTK_WIDGET(select_rom_btn),	180, 46);
 	rom_label = GTK_LABEL(gtk_label_new(NULL));
 
@@ -242,7 +243,7 @@ static GtkWidget * load_plugin(void)
 }
 #else
 {
-	GtkBox* opt_hbox1 = gtk_hbox_new(FALSE, HILDON_MARGIN_DEFAULT);
+	GtkBox* opt_hbox1 = GTK_BOX(gtk_hbox_new(FALSE, HILDON_MARGIN_DEFAULT));
 	audio_check =
 		GTK_CHECK_BUTTON(gtk_check_button_new_with_label("Audio"));
 
@@ -256,15 +257,8 @@ static GtkWidget * load_plugin(void)
 	gtk_box_pack_start(opt_hbox1, GTK_WIDGET(audio_check), FALSE, FALSE, 0);
 	gtk_box_pack_start(opt_hbox1, GTK_WIDGET(display_fps_check), TRUE, FALSE, 0);
 	gtk_box_pack_start(opt_hbox1, GTK_WIDGET(turbo_check), FALSE, FALSE, 0);
-	gtk_box_pack_start(GTK_BOX(parent), opt_hbox1, FALSE, FALSE, 0);
+	gtk_box_pack_start(GTK_BOX(parent), GTK_WIDGET(opt_hbox1), FALSE, FALSE, 0);
 }
-#endif
-
-#if 0
-	GtkBox* framerate_box = GTK_BOX(gtk_hbox_new(FALSE, HILDON_MARGIN_DEFAULT));
-	GtkWidget* framerate_label = gtk_label_new("Framerate:");
-	gtk_box_pack_start(framerate_box, framerate_label, FALSE, FALSE, 0);
-	gtk_box_pack_start(framerate_box, GTK_WIDGET(framerate_combo), FALSE, FALSE, 0);
 #endif
 
 /* Second row of widgets */
@@ -328,7 +322,7 @@ static GtkWidget * load_plugin(void)
 	// Connect signals
 	g_signal_connect(G_OBJECT(select_rom_btn), "clicked",
 					G_CALLBACK(select_rom_callback), NULL);
-printf("ui done\n");
+
 	return parent;
 }
 
