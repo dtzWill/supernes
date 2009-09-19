@@ -23,7 +23,7 @@ GAME_VERSION := $(shell head -n 1 debian/changelog | sed 's/[^0-9.-]//g')
 
 # Default CFLAGS
 CFLAGS = -Wall -g -DMAEMO -DMAEMO_VERSION=$(MAEMO_VERSION)
-GUI_CFLAGS := -fPIC -shared $(CFLAGS)
+GUI_CFLAGS := -std=c99 -fPIC -shared $(CFLAGS)
 LDFLAGS = -Wl,-z,defs
 GUI_LDFLAGS := -export-dynamic -avoid-version -module -shared $(LDFLAGS)
 ASFLAGS = -g

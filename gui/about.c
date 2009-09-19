@@ -22,7 +22,15 @@
 
 #include <gtk/gtk.h>
 #include <hildon/hildon-helper.h>
+#include <hildon/hildon-defines.h>
 #include <hildon-mime.h>
+
+#if MAEMO_VERSION >= 5
+#include <hildon/hildon-gtk.h>
+#define LOGO_ICON_SIZE HILDON_ICON_SIZE_LARGE
+#else
+#define LOGO_ICON_SIZE HILDON_ICON_SIZE_NOTE
+#endif
 
 #include "plugin.h"
 
@@ -49,7 +57,7 @@ void about_dialog(GtkWindow* parent)
 
 	GtkBox* caption_box = GTK_BOX(gtk_hbox_new(FALSE, HILDON_MARGIN_DEFAULT));
 	GtkWidget* logo = gtk_image_new_from_icon_name("drnoksnes",
-		GTK_ICON_SIZE_DIALOG);
+		LOGO_ICON_SIZE);
 	GtkWidget* label = gtk_label_new(NULL);
 	gchar * label_caption = g_strdup_printf("<b>%s</b> %s",
 		"DrNokSnes", G_STRINGIFY(GAME_VERSION));
@@ -63,6 +71,10 @@ void about_dialog(GtkWindow* parent)
 	GtkWidget* upstream_label = gtk_label_new("Many thanks to DrPocketSnes authors and contributors.");
 	GtkWidget* wazd_label = gtk_label_new("Thanks to wazd for artwork.");
 	GtkWidget* thanks_label = gtk_label_new("And, of course, thanks to all of maemo.org for their help.");
+
+#if MAEMO_VERSION >= 5
+	hildon_gtk_widget_set_theme_size(url_label, HILDON_SIZE_FINGER_HEIGHT);
+#endif
 
 	gtk_box_pack_start(caption_box, logo, FALSE, FALSE, HILDON_MARGIN_DEFAULT);
 	gtk_box_pack_start_defaults(caption_box, label);

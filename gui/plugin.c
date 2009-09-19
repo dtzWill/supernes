@@ -31,10 +31,15 @@
 #include <hildon/hildon-file-chooser-dialog.h>
 #include <hildon/hildon-note.h>
 #include <hildon/hildon-defines.h>
-#include <hildon/hildon-caption.h>
 
 #if MAEMO_VERSION >= 5
+#include <hildon/hildon-button.h>
+#include <hildon/hildon-check-button.h>
+#include <hildon/hildon-picker-button.h>
+#include <hildon/hildon-touch-selector.h>
 #include <hildon/hildon-gtk.h>
+#else
+#include <hildon/hildon-caption.h>
 #endif
 
 #include "../platform/hgw.h"
@@ -65,6 +70,14 @@ STARTUP_INIT_PLUGIN(plugin_info, gs, FALSE, TRUE)
 gchar* current_rom_file = 0;
 gboolean current_rom_file_exists = FALSE;
 
+#if MAEMO_VERSION >= 5
+static HildonButton* select_rom_btn;
+static HildonCheckButton* audio_check;
+static HildonPickerButton* framerate_picker;
+static HildonCheckButton* display_fps_check;
+static HildonCheckButton* turbo_check;
+// speedhacks=no and accuracy=yes in fremantle
+#else
 static GtkLabel* rom_label;
 static GtkCheckButton* audio_check;
 static GtkCheckButton* turbo_check;
@@ -72,6 +85,7 @@ static GtkComboBox* framerate_combo;
 static GtkCheckButton* accu_check;
 static GtkCheckButton* display_fps_check;
 static GtkComboBox* speedhacks_combo;
+#endif
 
 static void set_rom(const char * rom_file)
 {
@@ -81,11 +95,14 @@ static void set_rom(const char * rom_file)
 		return;
 	}
 
-	gchar * utf8_filename = g_filename_display_name(rom_file);
-
 	current_rom_file = g_strdup(rom_file);
-	gtk_label_set_text(GTK_LABEL(rom_label), utf8_filename);
 
+	gchar * utf8_filename = g_filename_display_basename(rom_file);
+#if MAEMO_VERSION >= 5
+	hildon_button_set_value(select_rom_btn, utf8_filename);
+#else
+	gtk_label_set_text(GTK_LABEL(rom_label), utf8_filename);
+#endif
 	g_free(utf8_filename);
 
 	current_rom_file_exists = g_file_test(current_rom_file,
@@ -154,50 +171,118 @@ static void about_item_callback(GtkWidget * button, gpointer data)
 
 static GtkWidget * load_plugin(void)
 {
-	int i;
-
 	g_type_init();
 	gcc = gconf_client_get_default();
 
 	GtkWidget* parent = gtk_vbox_new(FALSE, HILDON_MARGIN_DEFAULT);
-	GtkWidget* rom_hbox = gtk_hbox_new(FALSE, HILDON_MARGIN_DEFAULT);
-	GtkWidget* opt_hbox1 = gtk_hbox_new(FALSE, HILDON_MARGIN_DEFAULT);
-	GtkWidget* opt_hbox2 = gtk_hbox_new(FALSE, HILDON_MARGIN_DEFAULT);
 
-	GtkWidget* select_rom_btn = gtk_button_new_with_label("Select ROM...");
+
+/* Select ROM button */
 #if MAEMO_VERSION >= 5
-	hildon_gtk_widget_set_theme_size(select_rom_btn, HILDON_SIZE_FINGER_HEIGHT);
+	select_rom_btn = HILDON_BUTTON(hildon_button_new_with_text(
+		HILDON_SIZE_AUTO_WIDTH | HILDON_SIZE_FINGER_HEIGHT,
+		HILDON_BUTTON_ARRANGEMENT_HORIZONTAL,
+		"ROM",
+		NULL));
+	gtk_box_pack_start(GTK_BOX(parent), GTK_WIDGET(select_rom_btn), FALSE, FALSE, 0);
 #else
+{
+	GtkWidget* rom_hbox = gtk_hbox_new(FALSE, HILDON_MARGIN_DEFAULT);
+	GtkWidget* select_rom_btn = gtk_button_new_with_label("Select ROM...");
 	gtk_widget_set_size_request(GTK_WIDGET(select_rom_btn),	180, 46);
-#endif
 	rom_label = GTK_LABEL(gtk_label_new(NULL));
 
-	audio_check =
-		GTK_CHECK_BUTTON(gtk_check_button_new_with_label("Enable audio"));
+	gtk_box_pack_start(GTK_BOX(rom_hbox), GTK_WIDGET(select_rom_btn), FALSE, FALSE, 0);
+	gtk_box_pack_start(GTK_BOX(rom_hbox), GTK_WIDGET(rom_label), TRUE, TRUE, 0);
+	gtk_box_pack_start(GTK_BOX(parent), rom_hbox, FALSE, FALSE, 0);
+}
+#endif
 
-	framerate_combo =
-		GTK_COMBO_BOX(gtk_combo_box_new_text());
+/* First row of widgets */
+#if MAEMO_VERSION >= 5
+{
+	GtkBox* opt_hbox1 = GTK_BOX(gtk_hbox_new(FALSE, HILDON_MARGIN_DEFAULT));
+	audio_check =
+		HILDON_CHECK_BUTTON(hildon_check_button_new(HILDON_SIZE_AUTO));
+	gtk_button_set_label(GTK_BUTTON(audio_check), "Sound");
+
+	framerate_picker = HILDON_PICKER_BUTTON(hildon_picker_button_new(
+		HILDON_SIZE_AUTO, HILDON_BUTTON_ARRANGEMENT_HORIZONTAL));
+	hildon_button_set_title(HILDON_BUTTON(framerate_picker), "Target framerate");
+
+	HildonTouchSelector* framerate_sel =
+		HILDON_TOUCH_SELECTOR(hildon_touch_selector_new_text());
+	hildon_touch_selector_append_text(framerate_sel, "Auto");
+	for (int i = 1; i < 10; i++) {
+		gchar buffer[20];
+		sprintf(buffer, "%d-%d", 50/i, 60/i);
+		hildon_touch_selector_append_text(framerate_sel, buffer);
+	}
+	hildon_picker_button_set_selector(framerate_picker, framerate_sel);
+
+	GtkBox* framerate_sel_box = GTK_BOX(gtk_hbox_new(FALSE, HILDON_MARGIN_DEFAULT));
+
+	display_fps_check =
+		HILDON_CHECK_BUTTON(hildon_check_button_new(HILDON_SIZE_FINGER_HEIGHT));
+	gtk_button_set_label(GTK_BUTTON(display_fps_check),
+		"Show while in game");
+	turbo_check =
+		HILDON_CHECK_BUTTON(hildon_check_button_new(HILDON_SIZE_FINGER_HEIGHT));
+	gtk_button_set_label(GTK_BUTTON(turbo_check),
+		"Turbo mode");
+
+	gtk_box_pack_start_defaults(framerate_sel_box, GTK_WIDGET(display_fps_check));
+	gtk_box_pack_start_defaults(framerate_sel_box, GTK_WIDGET(turbo_check));
+	gtk_box_pack_start(GTK_BOX(framerate_sel), GTK_WIDGET(framerate_sel_box), FALSE, FALSE, 0);
+	gtk_widget_show_all(GTK_WIDGET(framerate_sel_box));
+
+	gtk_box_pack_start_defaults(opt_hbox1, GTK_WIDGET(audio_check));
+	gtk_box_pack_start_defaults(opt_hbox1, GTK_WIDGET(framerate_picker));
+	gtk_box_pack_start(GTK_BOX(parent), GTK_WIDGET(opt_hbox1), FALSE, FALSE, 0);
+}
+#else
+{
+	GtkBox* opt_hbox1 = gtk_hbox_new(FALSE, HILDON_MARGIN_DEFAULT);
+	audio_check =
+		GTK_CHECK_BUTTON(gtk_check_button_new_with_label("Audio"));
+
 	turbo_check =
 		GTK_CHECK_BUTTON(gtk_check_button_new_with_label("Turbo mode"));
-	accu_check =
-		GTK_CHECK_BUTTON(gtk_check_button_new_with_label("Accurate graphics"));
 	display_fps_check =
 		GTK_CHECK_BUTTON(gtk_check_button_new_with_label("Display framerate"));
 	speedhacks_combo =
 		GTK_COMBO_BOX(gtk_combo_box_new_text());
 
-#ifdef MAEMO
-	GtkWidget* framerate_box = hildon_caption_new(NULL, "Framerate:",
-		GTK_WIDGET(framerate_combo), NULL, HILDON_CAPTION_OPTIONAL);
-#else
+	gtk_box_pack_start(opt_hbox1, GTK_WIDGET(audio_check), FALSE, FALSE, 0);
+	gtk_box_pack_start(opt_hbox1, GTK_WIDGET(display_fps_check), TRUE, FALSE, 0);
+	gtk_box_pack_start(opt_hbox1, GTK_WIDGET(turbo_check), FALSE, FALSE, 0);
+	gtk_box_pack_start(GTK_BOX(parent), opt_hbox1, FALSE, FALSE, 0);
+}
+#endif
+
+#if 0
 	GtkBox* framerate_box = GTK_BOX(gtk_hbox_new(FALSE, HILDON_MARGIN_DEFAULT));
 	GtkWidget* framerate_label = gtk_label_new("Framerate:");
 	gtk_box_pack_start(framerate_box, framerate_label, FALSE, FALSE, 0);
 	gtk_box_pack_start(framerate_box, GTK_WIDGET(framerate_combo), FALSE, FALSE, 0);
 #endif
 
+/* Second row of widgets */
+#if MAEMO_VERSION >= 5
+#else
+{
+	GtkBox* opt_hbox2 = GTK_BOX(gtk_hbox_new(FALSE, HILDON_MARGIN_DEFAULT));
+
+	accu_check =
+		GTK_CHECK_BUTTON(gtk_check_button_new_with_label("Accurate graphics"));
+
+	framerate_combo =
+		GTK_COMBO_BOX(gtk_combo_box_new_text());
+	GtkWidget* framerate_box = hildon_caption_new(NULL, "Framerate:",
+		GTK_WIDGET(framerate_combo), NULL, HILDON_CAPTION_OPTIONAL);
+
 	gtk_combo_box_append_text(framerate_combo, "Auto");
-	for (i = 1; i < 10; i++) {
+	for (int i = 1; i < 10; i++) {
 		gchar buffer[20];
 		sprintf(buffer, "%d-%d", 50/i, 60/i);
 		gtk_combo_box_append_text(framerate_combo, buffer);
@@ -206,43 +291,44 @@ static GtkWidget * load_plugin(void)
 	gtk_combo_box_append_text(speedhacks_combo, "Safe hacks only");
 	gtk_combo_box_append_text(speedhacks_combo, "All speedhacks");
 
+	gtk_box_pack_start(opt_hbox2, GTK_WIDGET(accu_check), FALSE, FALSE, 0);
+	gtk_box_pack_start(opt_hbox2, GTK_WIDGET(framerate_box), TRUE, FALSE, 0);
+	gtk_box_pack_start(opt_hbox2, GTK_WIDGET(speedhacks_combo), FALSE, FALSE, 0);
+	gtk_box_pack_start(GTK_BOX(parent), GTK_WIDGET(opt_hbox2), FALSE, FALSE, 0);
+}
+#endif
 
-	gtk_box_pack_start(GTK_BOX(rom_hbox), select_rom_btn, FALSE, FALSE, 0);
-	gtk_box_pack_start(GTK_BOX(rom_hbox), GTK_WIDGET(rom_label), TRUE, TRUE, 0);
-
-	gtk_box_pack_start(GTK_BOX(opt_hbox1), GTK_WIDGET(audio_check), FALSE, FALSE, 0);
-	gtk_box_pack_start(GTK_BOX(opt_hbox1), GTK_WIDGET(display_fps_check), TRUE, FALSE, 0);
-	gtk_box_pack_start(GTK_BOX(opt_hbox1), GTK_WIDGET(turbo_check), FALSE, FALSE, 0);
-
-	gtk_box_pack_start(GTK_BOX(opt_hbox2), GTK_WIDGET(accu_check), FALSE, FALSE, 0);
-	gtk_box_pack_start(GTK_BOX(opt_hbox2), GTK_WIDGET(framerate_box), TRUE, FALSE, 0);
-	gtk_box_pack_start(GTK_BOX(opt_hbox2), GTK_WIDGET(speedhacks_combo), FALSE, FALSE, 0);
-
-	gtk_box_pack_start(GTK_BOX(parent), rom_hbox, FALSE, FALSE, 0);
-	gtk_box_pack_start(GTK_BOX(parent), opt_hbox1, FALSE, FALSE, 0);
-	gtk_box_pack_start(GTK_BOX(parent), opt_hbox2, FALSE, FALSE, 0);
-
-	// Load current configuration from GConf
+/* Load current configuration from GConf */
+#if MAEMO_VERSION >= 5
+	hildon_check_button_set_active(audio_check,
+		!gconf_client_get_bool(gcc, kGConfDisableAudio, NULL));
+	hildon_picker_button_set_active(framerate_picker,
+		gconf_client_get_int(gcc, kGConfFrameskip, NULL));
+	hildon_check_button_set_active(turbo_check,
+		gconf_client_get_bool(gcc, kGConfTurboMode, NULL));
+	hildon_check_button_set_active(display_fps_check,
+		gconf_client_get_int(gcc, kGConfDisplayFramerate, NULL));
+#else
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(audio_check),
 		!gconf_client_get_bool(gcc, kGConfDisableAudio, NULL));
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(turbo_check),
 		gconf_client_get_bool(gcc, kGConfTurboMode, NULL));
-
 	gtk_combo_box_set_active(framerate_combo,
 		gconf_client_get_int(gcc, kGConfFrameskip, NULL));
-
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(accu_check),
 		gconf_client_get_bool(gcc, kGConfTransparency, NULL));
-
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(display_fps_check),
+		gconf_client_get_int(gcc, kGConfDisplayFramerate, NULL));
 	gtk_combo_box_set_active(speedhacks_combo,
 		gconf_client_get_int(gcc, kGConfSpeedhacks, NULL));
+#endif
 
 	set_rom(gconf_client_get_string(gcc, kGConfRomFile, NULL));
 
 	// Connect signals
 	g_signal_connect(G_OBJECT(select_rom_btn), "clicked",
 					G_CALLBACK(select_rom_callback), NULL);
-
+printf("ui done\n");
 	return parent;
 }
 
@@ -259,7 +345,22 @@ static void unload_plugin(void)
 
 static void write_config(void)
 {
-	// Write settings to GConf
+/* Write current settings to gconf */
+#if MAEMO_VERSION >= 5
+	gconf_client_set_bool(gcc, kGConfDisableAudio,
+		!hildon_check_button_get_active(audio_check), NULL);
+	gconf_client_set_int(gcc, kGConfFrameskip,
+		hildon_picker_button_get_active(framerate_picker), NULL);
+	gconf_client_set_bool(gcc, kGConfDisplayFramerate,
+		hildon_check_button_get_active(display_fps_check), NULL);
+	gconf_client_set_bool(gcc, kGConfTurboMode,
+		hildon_check_button_get_active(turbo_check), NULL);
+
+	// For now, transparencies are always enabled in Fremantle
+	gconf_client_set_bool(gcc, kGConfTransparency, TRUE, NULL);
+	// Speedhacks always disabled
+	gconf_client_set_int(gcc, kGConfSpeedhacks,	FALSE, NULL);
+#else
 	gconf_client_set_bool(gcc, kGConfDisableAudio,
 		!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(audio_check)), NULL);
 	gconf_client_set_bool(gcc, kGConfTurboMode,
@@ -272,6 +373,7 @@ static void write_config(void)
 		gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(display_fps_check)), NULL);
 	gconf_client_set_int(gcc, kGConfSpeedhacks,
 		gtk_combo_box_get_active(speedhacks_combo), NULL);
+#endif
 
 	if (current_rom_file) {
 		gconf_client_set_string(gcc, kGConfRomFile, current_rom_file, NULL);

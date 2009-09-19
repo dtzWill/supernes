@@ -1,3 +1,9 @@
+drnoksnes (1.1.1) unstable; urgency=low
+
+  * New fremantle gui.
+
+ -- Javier S. Pedro <maemo@javispedro.com>  Sat, 19 Sep 2009 02:42:42 +0200
+
 drnoksnes (1.1.0) unstable; urgency=low
 
   * Fixed graphic glitches in SuperFX games.
