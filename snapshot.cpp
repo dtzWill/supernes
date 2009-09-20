@@ -646,16 +646,16 @@ static int Unfreeze()
 	S9xSetSoundMute (TRUE);
     }
 #ifdef USE_SA1
-    if ((result = UnfreezeStruct ("SA1", &SA1, SnapSA1, 
+	if ((result = UnfreezeStruct ("SA1", &SA1, SnapSA1,
 				  COUNT(SnapSA1))) == SUCCESS)
-    {
-	if ((result = UnfreezeStruct ("SAR", &SA1Registers, 
-				      SnapSA1Registers, COUNT (SnapSA1Registers))) != SUCCESS)
-	    return (result);
+	{
+		if ((result = UnfreezeStruct ("SAR", &SA1Registers,
+						SnapSA1Registers, COUNT (SnapSA1Registers))) != SUCCESS)
+			return result;
 
-	S9xFixSA1AfterSnapshotLoad ();
-	SA1.Flags |= sa1_old_flags & (TRACE_FLAG);
-    }
+		S9xFixSA1AfterSnapshotLoad ();
+		SA1.Flags |= sa1_old_flags & (TRACE_FLAG);
+	}
 #endif
     S9xFixSoundAfterSnapshotLoad ();
     ICPU.ShiftedPB = Registers.PB << 16;
