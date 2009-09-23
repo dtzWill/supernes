@@ -71,6 +71,7 @@ gchar* current_rom_file = 0;
 gboolean current_rom_file_exists = FALSE;
 
 #if MAEMO_VERSION >= 5
+static GtkBox* buttons_hbox;
 static HildonButton* select_rom_btn;
 static HildonCheckButton* audio_check;
 static HildonPickerButton* framerate_picker;
@@ -177,15 +178,28 @@ static GtkWidget * load_plugin(void)
 
 	GtkWidget* parent = gtk_vbox_new(FALSE, HILDON_MARGIN_DEFAULT);
 
-
 /* Select ROM button */
 #if MAEMO_VERSION >= 5
+// Very ugly hack ahead.
+{
+	buttons_hbox = GTK_BOX(gtk_hbox_new(FALSE, HILDON_MARGIN_DEFAULT));
+	// We can UNsafely assume gs.ui->play_button exists.
+
 	select_rom_btn = HILDON_BUTTON(hildon_button_new_with_text(
-		HILDON_SIZE_AUTO_WIDTH | HILDON_SIZE_FINGER_HEIGHT,
-		HILDON_BUTTON_ARRANGEMENT_HORIZONTAL,
+		HILDON_SIZE_AUTO_WIDTH | HILDON_SIZE_THUMB_HEIGHT,
+		HILDON_BUTTON_ARRANGEMENT_VERTICAL,
 		"ROM",
 		NULL));
-	gtk_box_pack_start(GTK_BOX(parent), GTK_WIDGET(select_rom_btn), FALSE, FALSE, 0);
+	hildon_button_set_alignment(select_rom_btn, 0.0f, 0.5f, 0.9f, 0.2f);
+	gtk_box_pack_start_defaults(buttons_hbox, GTK_WIDGET(select_rom_btn));
+
+	gtk_widget_reparent(gs.ui->play_button, GTK_WIDGET(buttons_hbox));
+	gtk_box_set_child_packing(buttons_hbox, gs.ui->play_button,
+		FALSE, FALSE, 0, GTK_PACK_START);
+
+	gtk_box_pack_start(GTK_BOX(parent), GTK_WIDGET(buttons_hbox), FALSE, FALSE, 0);
+	gtk_container_set_border_width(GTK_CONTAINER(parent), HILDON_MARGIN_HALF);
+}
 #else
 {
 	GtkWidget* rom_hbox = gtk_hbox_new(FALSE, HILDON_MARGIN_DEFAULT);
@@ -204,7 +218,8 @@ static GtkWidget * load_plugin(void)
 {
 	GtkBox* opt_hbox1 = GTK_BOX(gtk_hbox_new(FALSE, HILDON_MARGIN_DEFAULT));
 	audio_check =
-		HILDON_CHECK_BUTTON(hildon_check_button_new(HILDON_SIZE_AUTO));
+		HILDON_CHECK_BUTTON(hildon_check_button_new(
+			HILDON_SIZE_AUTO_WIDTH | HILDON_SIZE_FINGER_HEIGHT));
 	gtk_button_set_label(GTK_BUTTON(audio_check), "Sound");
 
 	framerate_picker = HILDON_PICKER_BUTTON(hildon_picker_button_new(
@@ -245,7 +260,7 @@ static GtkWidget * load_plugin(void)
 {
 	GtkBox* opt_hbox1 = GTK_BOX(gtk_hbox_new(FALSE, HILDON_MARGIN_DEFAULT));
 	audio_check =
-		GTK_CHECK_BUTTON(gtk_check_button_new_with_label("Audio"));
+		GTK_CHECK_BUTTON(gtk_check_button_new_with_label("Enable sound"));
 
 	turbo_check =
 		GTK_CHECK_BUTTON(gtk_check_button_new_with_label("Turbo mode"));
@@ -257,12 +272,13 @@ static GtkWidget * load_plugin(void)
 	gtk_box_pack_start(opt_hbox1, GTK_WIDGET(audio_check), FALSE, FALSE, 0);
 	gtk_box_pack_start(opt_hbox1, GTK_WIDGET(display_fps_check), TRUE, FALSE, 0);
 	gtk_box_pack_start(opt_hbox1, GTK_WIDGET(turbo_check), FALSE, FALSE, 0);
-	gtk_box_pack_start(GTK_BOX(parent), GTK_WIDGET(opt_hbox1), FALSE, FALSE, 0);
+	gtk_box_pack_start_defaults(GTK_BOX(parent), GTK_WIDGET(opt_hbox1));
 }
 #endif
 
 /* Second row of widgets */
 #if MAEMO_VERSION >= 5
+	// Empty
 #else
 {
 	GtkBox* opt_hbox2 = GTK_BOX(gtk_hbox_new(FALSE, HILDON_MARGIN_DEFAULT));
@@ -301,7 +317,7 @@ static GtkWidget * load_plugin(void)
 	hildon_check_button_set_active(turbo_check,
 		gconf_client_get_bool(gcc, kGConfTurboMode, NULL));
 	hildon_check_button_set_active(display_fps_check,
-		gconf_client_get_int(gcc, kGConfDisplayFramerate, NULL));
+		gconf_client_get_bool(gcc, kGConfDisplayFramerate, NULL));
 #else
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(audio_check),
 		!gconf_client_get_bool(gcc, kGConfDisableAudio, NULL));
@@ -312,7 +328,7 @@ static GtkWidget * load_plugin(void)
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(accu_check),
 		gconf_client_get_bool(gcc, kGConfTransparency, NULL));
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(display_fps_check),
-		gconf_client_get_int(gcc, kGConfDisplayFramerate, NULL));
+		gconf_client_get_bool(gcc, kGConfDisplayFramerate, NULL));
 	gtk_combo_box_set_active(speedhacks_combo,
 		gconf_client_get_int(gcc, kGConfSpeedhacks, NULL));
 #endif
@@ -420,19 +436,46 @@ static void update_menu(void)
 	// Nothing to update in the current menu
 }
 
+// From osso-games-startup
+#define MA_GAME_PLAY 1
+#define MA_GAME_RESTART 2
+#define MA_GAME_OPEN 3
+#define MA_GAME_SAVE 4
+#define MA_GAME_SAVE_AS 5
+#define MA_GAME_HELP 6
+#define MA_GAME_RECENT_1 7
+#define MA_GAME_RECENT_2 8
+#define MA_GAME_RECENT_3 9
+#define MA_GAME_RECENT_4 10
+#define MA_GAME_RECENT_5 11
+#define MA_GAME_RECENT_6 12
+#define MA_GAME_CLOSE 13
+#define MA_GAME_HIGH_SCORES 14
+#define MA_GAME_RESET 15
+#define MA_GAME_CHECKSTATE 16
+#define MA_GAME_SAVEMENU_REFERENCE 17
+#define ME_GAME_OPEN     20
+#define ME_GAME_SAVE     21
+#define ME_GAME_SAVE_AS  22
+#define MA_GAME_PLAYING_START 30
+#define MA_GAME_PLAYING 31
+
 static void plugin_callback(GtkWidget * menu_item, gpointer data)
 {
+#if MAEMO_VERSION >= 5
+	static int widgets_moved = 0;
+#endif
 	switch ((gint) data) {
-		case 20:	// ME_GAME_OPEN
+		case ME_GAME_OPEN:
 			save_load(get_parent_window());
 			break;
-		case 21:	// ME_GAME_SAVE
+		case ME_GAME_SAVE:
 			save_save(get_parent_window());
 			break;
-		case 22:	// ME_GAME_SAVE_AS
+		case ME_GAME_SAVE_AS:
 			save_save_as(get_parent_window());
 			break;
-		case 30:	// MA_GAME_PLAYING_START
+		case MA_GAME_PLAYING_START:
 			if (!menu_item) {
 				// Avoid duplicate message
 				break;
@@ -449,6 +492,50 @@ static void plugin_callback(GtkWidget * menu_item, gpointer data)
 				gtk_widget_destroy(note);
 			}
 			break;
+#if MAEMO_VERSION >= 5
+		// The above horrible hack continues here.
+		case MA_GAME_CHECKSTATE:
+			if (gs.ui->restart_button &&
+				gtk_widget_get_parent(gs.ui->restart_button)
+					 != GTK_WIDGET(buttons_hbox))
+			{
+				GtkWidget* old_parent = gtk_widget_get_parent(gs.ui->restart_button);
+				gtk_widget_reparent(gs.ui->restart_button,
+						GTK_WIDGET(buttons_hbox));
+				gtk_box_set_child_packing(buttons_hbox, gs.ui->restart_button,
+						FALSE, FALSE, 0, GTK_PACK_END);
+
+				widgets_moved++;
+				if (widgets_moved == 1) {
+					gtk_widget_set_size_request(
+						gtk_widget_get_parent(GTK_WIDGET(buttons_hbox)),
+						-1, -1);
+				} else if (widgets_moved == 2) {
+					gtk_widget_destroy(old_parent);
+				}
+			}
+			break;
+		case MA_GAME_PLAYING:
+			if (gtk_widget_get_parent(gs.ui->play_button) != GTK_WIDGET(buttons_hbox))
+			{
+				GtkWidget* old_parent = gtk_widget_get_parent(gs.ui->play_button);
+				gtk_widget_reparent(gs.ui->play_button,
+						GTK_WIDGET(buttons_hbox));
+				gtk_box_set_child_packing(buttons_hbox, gs.ui->play_button,
+						FALSE, FALSE, 0, GTK_PACK_START);
+
+				widgets_moved++;
+				if (widgets_moved == 1) {
+					gtk_widget_set_size_request(
+						gtk_widget_get_parent(GTK_WIDGET(buttons_hbox)),
+						-1, -1);
+				} else if (widgets_moved == 2) {
+					gtk_widget_destroy(old_parent);
+				}
+			}
+
+			break;
+#endif
 	}
 }
 
