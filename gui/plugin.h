@@ -24,8 +24,12 @@ void save_save(GtkWindow* parent);
 void save_save_as(GtkWindow* parent);
 
 /* controls.c */
+/** Fill in default controls */
 void controls_setup();
 void controls_dialog(GtkWindow* parent);
+
+/* advanced.c */
+void advanced_dialog(GtkWindow* parent);
 
 /* about.c */
 void about_dialog(GtkWindow* parent);

@@ -5,23 +5,19 @@ LDLIBS := -lz $(shell sdl-config --libs) $(shell pkg-config --libs x11) -lpopt -
 
 -include config.mk
 
-# GUI needs this
-export DESTDIR
-
-# Configuration settings
-CONF_BUILD_ASM_CPU=0
-CONF_BUILD_ASM_SPC700=0
-CONF_BUILD_ASM_SA1=0	# Still not there
-CONF_XSP=0
-
-# Sane defaults (override if needed)
+# Sane defaults
 ifeq ($(ARCH),armel)
-	CONF_BUILD_ASM_CPU=1
-	CONF_BUILD_ASM_SPC700=1
-	CONF_XSP=1
-	CONF_BUILD_MISC_ROUTINES=misc_armel
+	CONF_BUILD_ASM_CPU?=1
+	CONF_BUILD_ASM_SPC700?=1
+	CONF_BUILD_ASM_SA1?=0	# Still not there
+	CONF_XSP?=1
+	CONF_BUILD_MISC_ROUTINES?=misc_armel
 else ifeq ($(ARCH),i386)
-	CONF_BUILD_MISC_ROUTINES=misc_i386
+	CONF_BUILD_ASM_CPU?=0
+	CONF_BUILD_ASM_SPC700?=0
+	CONF_BUILD_ASM_SA1?=0	# Still not there
+	CONF_XSP?=0
+	CONF_BUILD_MISC_ROUTINES?=misc_i386
 endif
 
 # SNES stuff
@@ -81,7 +77,7 @@ drnoksnes: $(OBJS)
 
 install: drnoksnes
 	install drnoksnes $(DESTDIR)/usr/games
-	$(MAKE) -C gui install
+	$(MAKE) -C gui install DESTDIR="$(DESTDIR)"
 
 deps: $(DEPS)
 %.d: %.cpp

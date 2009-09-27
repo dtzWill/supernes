@@ -65,9 +65,9 @@ void HgwConfig()
 		DIE("No Rom in Gconf!");
 	}
 
-	char no_audio = FALSE;
-	if (hgw_conf_request_bool(hgw, kGConfDisableAudio, &no_audio) == HGW_ERR_NONE) {
-		Config.enableAudio = no_audio ? false : true;
+	char sound = FALSE;
+	if (hgw_conf_request_bool(hgw, kGConfSound, &sound) == HGW_ERR_NONE) {
+		Config.enableAudio = sound ? true : false;
 	}
 
 	char turbo = FALSE;
@@ -85,14 +85,15 @@ void HgwConfig()
 		Settings.Transparency = transparency ? TRUE : FALSE;
 	}
 
-	char scaler[256];
-	scaler[0] = '\0';
-	if (hgw_conf_request_string(hgw, kGConfScaler, scaler) == HGW_ERR_NONE) {
-		if (strlen(scaler) > 0) {
+#if CONF_XSP
+	char xsp = TRUE;
+	if (hgw_conf_request_bool(hgw, kGConfXSP, xsp) == HGW_ERR_NONE) {
+		if (!xsp) {
 			free(Config.scaler);
-			Config.scaler = strdup(scaler);
+			Config.scaler = strdup("2x");
 		}
 	}
+#endif
 
 	char displayFramerate = FALSE;
 	if (hgw_conf_request_bool(hgw, kGConfDisplayFramerate, &displayFramerate) == HGW_ERR_NONE) {

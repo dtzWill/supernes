@@ -61,6 +61,10 @@ configure-stamp:
 	$(M4) $(M4DEFS) debian/drnoksnes.postinst.m4 > debian/drnoksnes.postinst
 	
 	echo ARCH="$(ARCH)" > config.mk
+ifeq ($(shell expr "$(MAEMO_VERSION)" ">" 4), 1)
+	# Maemo 5 devices do not support Xsp
+	echo CONF_XSP=0 >> config.mk
+endif
 	echo ASFLAGS="$(ASFLAGS)" >> config.mk
 	echo CFLAGS="$(CFLAGS)" >> config.mk
 	echo CXXFLAGS="$(CFLAGS)" >> config.mk
@@ -68,6 +72,7 @@ configure-stamp:
 	
 	echo CFLAGS="$(GUI_CFLAGS)" > gui/config.mk
 	echo LDFLAGS="$(GUI_LDFLAGS)" >> gui/config.mk
+	echo MAEMO_VERSION="$(MAEMO_VERSION)" >> gui/config.mk
 	echo GAME_VERSION="$(GAME_VERSION)" >> gui/config.mk
 	
 	touch configure-stamp
@@ -84,14 +89,14 @@ clean:
 	rm -f build-stamp configure-stamp
 	-$(MAKE) clean
 	rm -f config.mk gui/config.mk
-	dh_clean 
+	dh_clean
 
 install: build
 	dh_testdir
 	dh_testroot
 	dh_clean -k 
 	dh_installdirs
-	$(MAKE) DESTDIR=$(CURDIR)/debian/drnoksnes install
+	$(MAKE) DESTDIR=$(CURDIR)/debian/drnoksnes GCONF_DISABLE_MAKEFILE_SCHEMA_INSTALL=1 install
 
 # Build architecture-independent files here.
 binary-indep: build install
@@ -105,6 +110,7 @@ binary-arch: build install
 #	dh_installdocs
 #	dh_installexamples
 #	dh_installman
+	dh_gconf
 	dh_link
 	dh_strip --dbg-package=drnoksnes-dbg
 	dh_compress

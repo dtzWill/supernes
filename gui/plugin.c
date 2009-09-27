@@ -73,7 +73,7 @@ gboolean current_rom_file_exists = FALSE;
 #if MAEMO_VERSION >= 5
 static GtkBox* buttons_hbox;
 static HildonButton* select_rom_btn;
-static HildonCheckButton* audio_check;
+static HildonCheckButton* sound_check;
 static HildonPickerButton* framerate_picker;
 static HildonCheckButton* display_fps_check;
 static HildonCheckButton* turbo_check;
@@ -81,7 +81,7 @@ static HildonCheckButton* turbo_check;
 #else
 static GtkButton* select_rom_btn;
 static GtkLabel* rom_label;
-static GtkCheckButton* audio_check;
+static GtkCheckButton* sound_check;
 static GtkCheckButton* turbo_check;
 static GtkComboBox* framerate_combo;
 static GtkCheckButton* accu_check;
@@ -166,6 +166,11 @@ static void controls_item_callback(GtkWidget * button, gpointer data)
 	controls_dialog(get_parent_window());
 }
 
+static void advanced_item_callback(GtkWidget * button, gpointer data)
+{
+	advanced_dialog(get_parent_window());
+}
+
 static void about_item_callback(GtkWidget * button, gpointer data)
 {
 	about_dialog(get_parent_window());
@@ -217,10 +222,10 @@ static GtkWidget * load_plugin(void)
 #if MAEMO_VERSION >= 5
 {
 	GtkBox* opt_hbox1 = GTK_BOX(gtk_hbox_new(FALSE, HILDON_MARGIN_DEFAULT));
-	audio_check =
+	sound_check =
 		HILDON_CHECK_BUTTON(hildon_check_button_new(
 			HILDON_SIZE_AUTO_WIDTH | HILDON_SIZE_FINGER_HEIGHT));
-	gtk_button_set_label(GTK_BUTTON(audio_check), "Sound");
+	gtk_button_set_label(GTK_BUTTON(sound_check), "Sound");
 
 	framerate_picker = HILDON_PICKER_BUTTON(hildon_picker_button_new(
 		HILDON_SIZE_AUTO, HILDON_BUTTON_ARRANGEMENT_HORIZONTAL));
@@ -252,14 +257,14 @@ static GtkWidget * load_plugin(void)
 	gtk_box_pack_start(GTK_BOX(framerate_sel), GTK_WIDGET(framerate_sel_box), FALSE, FALSE, 0);
 	gtk_widget_show_all(GTK_WIDGET(framerate_sel_box));
 
-	gtk_box_pack_start_defaults(opt_hbox1, GTK_WIDGET(audio_check));
+	gtk_box_pack_start_defaults(opt_hbox1, GTK_WIDGET(sound_check));
 	gtk_box_pack_start_defaults(opt_hbox1, GTK_WIDGET(framerate_picker));
 	gtk_box_pack_start(GTK_BOX(parent), GTK_WIDGET(opt_hbox1), FALSE, FALSE, 0);
 }
 #else
 {
 	GtkBox* opt_hbox1 = GTK_BOX(gtk_hbox_new(FALSE, HILDON_MARGIN_DEFAULT));
-	audio_check =
+	sound_check =
 		GTK_CHECK_BUTTON(gtk_check_button_new_with_label("Enable sound"));
 
 	turbo_check =
@@ -269,7 +274,7 @@ static GtkWidget * load_plugin(void)
 	speedhacks_combo =
 		GTK_COMBO_BOX(gtk_combo_box_new_text());
 
-	gtk_box_pack_start(opt_hbox1, GTK_WIDGET(audio_check), FALSE, FALSE, 0);
+	gtk_box_pack_start(opt_hbox1, GTK_WIDGET(sound_check), FALSE, FALSE, 0);
 	gtk_box_pack_start(opt_hbox1, GTK_WIDGET(display_fps_check), TRUE, FALSE, 0);
 	gtk_box_pack_start(opt_hbox1, GTK_WIDGET(turbo_check), FALSE, FALSE, 0);
 	gtk_box_pack_start_defaults(GTK_BOX(parent), GTK_WIDGET(opt_hbox1));
@@ -310,8 +315,8 @@ static GtkWidget * load_plugin(void)
 
 /* Load current configuration from GConf */
 #if MAEMO_VERSION >= 5
-	hildon_check_button_set_active(audio_check,
-		!gconf_client_get_bool(gcc, kGConfDisableAudio, NULL));
+	hildon_check_button_set_active(sound_check,
+		gconf_client_get_bool(gcc, kGConfSound, NULL));
 	hildon_picker_button_set_active(framerate_picker,
 		gconf_client_get_int(gcc, kGConfFrameskip, NULL));
 	hildon_check_button_set_active(turbo_check,
@@ -319,8 +324,8 @@ static GtkWidget * load_plugin(void)
 	hildon_check_button_set_active(display_fps_check,
 		gconf_client_get_bool(gcc, kGConfDisplayFramerate, NULL));
 #else
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(audio_check),
-		!gconf_client_get_bool(gcc, kGConfDisableAudio, NULL));
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(sound_check),
+		gconf_client_get_bool(gcc, kGConfSound, NULL));
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(turbo_check),
 		gconf_client_get_bool(gcc, kGConfTurboMode, NULL));
 	gtk_combo_box_set_active(framerate_combo,
@@ -357,22 +362,17 @@ static void write_config(void)
 {
 /* Write current settings to gconf */
 #if MAEMO_VERSION >= 5
-	gconf_client_set_bool(gcc, kGConfDisableAudio,
-		!hildon_check_button_get_active(audio_check), NULL);
+	gconf_client_set_bool(gcc, kGConfSound,
+		hildon_check_button_get_active(sound_check), NULL);
 	gconf_client_set_int(gcc, kGConfFrameskip,
 		hildon_picker_button_get_active(framerate_picker), NULL);
 	gconf_client_set_bool(gcc, kGConfDisplayFramerate,
 		hildon_check_button_get_active(display_fps_check), NULL);
 	gconf_client_set_bool(gcc, kGConfTurboMode,
 		hildon_check_button_get_active(turbo_check), NULL);
-
-	// For now, transparencies are always enabled in Fremantle
-	gconf_client_set_bool(gcc, kGConfTransparency, TRUE, NULL);
-	// Speedhacks always disabled
-	gconf_client_set_int(gcc, kGConfSpeedhacks,	FALSE, NULL);
 #else
-	gconf_client_set_bool(gcc, kGConfDisableAudio,
-		!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(audio_check)), NULL);
+	gconf_client_set_bool(gcc, kGConfSound,
+		gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(sound_check)), NULL);
 	gconf_client_set_bool(gcc, kGConfTurboMode,
 		gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(turbo_check)), NULL);
 	gconf_client_set_int(gcc, kGConfFrameskip,
@@ -398,13 +398,15 @@ static GtkWidget **load_menu(guint *nitems)
 	const HildonSizeType button_size =
 		HILDON_SIZE_FINGER_HEIGHT | HILDON_SIZE_AUTO_WIDTH;
 	menu_items[0] = hildon_gtk_button_new(button_size);
-	gtk_button_set_label(GTK_BUTTON(menu_items[0]), "Placeholder");
+	gtk_button_set_label(GTK_BUTTON(menu_items[0]), "Settings…");
 	menu_items[1] = hildon_gtk_button_new(button_size);
 	gtk_button_set_label(GTK_BUTTON(menu_items[1]), "Controls…");
 	menu_items[2] = hildon_gtk_button_new(button_size);
 	gtk_button_set_label(GTK_BUTTON(menu_items[2]), "About…");
 	*nitems = 3;
 
+	g_signal_connect(G_OBJECT(menu_items[0]), "clicked",
+					G_CALLBACK(advanced_item_callback), NULL);
 	g_signal_connect(G_OBJECT(menu_items[1]), "clicked",
 					G_CALLBACK(controls_item_callback), NULL);
 	g_signal_connect(G_OBJECT(menu_items[2]), "clicked",
@@ -415,15 +417,21 @@ static GtkWidget **load_menu(guint *nitems)
 	*nitems = 2;
 
 	GtkMenu* settings_menu = GTK_MENU(gtk_menu_new());
-	GtkMenuItem* controls_item =
-		GTK_MENU_ITEM(gtk_menu_item_new_with_label("Controls…"));
-	
 	gtk_menu_item_set_submenu(GTK_MENU_ITEM(menu_items[0]),
 		GTK_WIDGET(settings_menu));
+
+	GtkMenuItem* controls_item =
+		GTK_MENU_ITEM(gtk_menu_item_new_with_label("Controls…"));
 	gtk_menu_append(GTK_MENU(settings_menu), GTK_WIDGET(controls_item));
+
+	GtkMenuItem* advanced_item =
+		GTK_MENU_ITEM(gtk_menu_item_new_with_label("Advanced…"));
+	gtk_menu_append(GTK_MENU(settings_menu), GTK_WIDGET(advanced_item));
 
 	g_signal_connect(G_OBJECT(controls_item), "activate",
 					G_CALLBACK(controls_item_callback), NULL);
+	g_signal_connect(G_OBJECT(advanced_item), "activate",
+					G_CALLBACK(advanced_item_callback), NULL);
 	g_signal_connect(G_OBJECT(menu_items[1]), "activate",
 					G_CALLBACK(about_item_callback), NULL);
 #endif

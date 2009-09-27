@@ -306,7 +306,7 @@ public:
 			+ (m_area.y * pitch);
 	};
 
-	int getDrawBufferPitch() const
+	unsigned int getDrawBufferPitch() const
 	{
 		return screen->pitch;
 	};

@@ -19,11 +19,15 @@ M4:=m4
 M4DEFS:= -DGAME_VERSION=$(GAME_VERSION) -DGAME_PLUGIN_PATH=$(GAME_PLUGIN_PATH)
 M4DEFS+= -DGAME_CONF_PATH=$(GAME_CONF_PATH) -DGAME_BIN_PATH=$(GAME_BIN_PATH)
 M4DEFS+= -DGAME_GAME_PATH=$(GAME_GAME_PATH) -DGAME_BANNER_PATH=$(GAME_BANNER_PATH)
+ifdef MAEMO_VERSION
+M4DEFS+= -DMAEMO -DMAEMO_MAJOR=$(MAEMO_VERSION)
+endif
 
-OBJS:=plugin.o state.o save.o controls.o cellrendererkey.o about.o
+OBJS:=plugin.o state.o save.o controls.o cellrendererkey.o advanced.o about.o
 
 DATA_FILES:=drnoksnes.conf drnoksnes.desktop drnoksnes.game 
 DATA_FILES+=drnoksnes.service drnoksnes.startup.service
+DATA_FILES+=drnoksnes.schemas
 
 all: drnoksnes_plugin.so data
 
@@ -52,6 +56,10 @@ install: all
 	install -m 0644 icons/main_48.png $(DESTDIR)/usr/share/icons/hicolor/48x48/hildon/drnoksnes.png
 	install -m 0644 icons/main_64.png $(DESTDIR)/usr/share/icons/hicolor/scalable/hildon/drnoksnes.png
 	install -m 0644 icons/banner.png $(DESTDIR)$(GAME_BANNER_PATH)
-	
+	install -m 0644 drnoksnes.schemas $(DESTDIR)/usr/share/gconf/schemas/
+ifneq ($(GCONF_DISABLE_MAKEFILE_SCHEMA_INSTALL),1)
+	gconftool-2 --makefile-install-rule $(DESTDIR)/usr/share/gconf/schemas/drnoksnes.schemas > /dev/null
+endif
+
 .PHONY: all clean data install
 

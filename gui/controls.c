@@ -236,35 +236,21 @@ static void cb_dialog_response(GtkWidget * button, gpointer data)
 
 void controls_setup()
 {
-	GConfValue* mapping = gconf_client_get(gcc, kGConfMapping, NULL);
 	int i;
 
-	if (!mapping) {
-		// Key not set; setup defaults
-		for (i = 0; buttons[i].name; i++) {
+	// Check if all the keys exist. If not, fill them with default values.
+	// XXX Note that not filling a key will cause HGW to crash.
+
+	gconf_client_preload(gcc, kGConfKeysPath, GCONF_CLIENT_PRELOAD_ONELEVEL, NULL);
+	for (i = 0; buttons[i].name; i++) {
+		GConfValue *mapping = gconf_client_get(gcc, buttons[i].gconf_key, NULL);
+
+		if (!mapping) {
+			// Not set; set to default.
 			gconf_client_set_int(gcc, buttons[i].gconf_key,
 				buttons[i].default_scancode, NULL);
-		}
-
-		g_debug("Loading default key mappings\n");
-
-		gconf_client_set_int(gcc, kGConfMapping, 1, NULL);
-	} else {
-		// If this key is set, consider defaults loaded.
-		gconf_value_free(mapping);
-
-		// We still have to check if all the keys exist
-		gconf_client_preload(gcc, kGConfKeysPath, GCONF_CLIENT_PRELOAD_ONELEVEL, NULL);
-		for (i = 0; buttons[i].name; i++) {
-			mapping = gconf_client_get(gcc, buttons[i].gconf_key, NULL);
-
-			if (!mapping) {
-				// Not set; set to default.
-				gconf_client_set_int(gcc, buttons[i].gconf_key,
-					buttons[i].default_scancode, NULL);
-			} else {
-				gconf_value_free(mapping);
-			}
+		} else {
+			gconf_value_free(mapping);
 		}
 	}
 }
