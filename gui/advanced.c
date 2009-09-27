@@ -47,7 +47,7 @@ static void load_settings()
 	hildon_check_button_set_active(accu_check,
 		gconf_client_get_bool(gcc, kGConfTransparency, NULL));
 #else
-	gtk_toggle_button_set_active(xsp_check,
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(xsp_check),
 		gconf_client_get_bool(gcc, kGConfXSP, NULL));
 #endif
 }
@@ -78,7 +78,6 @@ void advanced_dialog(GtkWindow* parent)
 		parent, GTK_DIALOG_MODAL,
 		GTK_STOCK_OK, GTK_RESPONSE_OK,
 		GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL, NULL));
-
 
 #if MAEMO_VERSION >= 5
 	accu_check = HILDON_CHECK_BUTTON(hildon_check_button_new(

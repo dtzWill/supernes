@@ -87,7 +87,7 @@ void HgwConfig()
 
 #if CONF_XSP
 	char xsp = TRUE;
-	if (hgw_conf_request_bool(hgw, kGConfXSP, xsp) == HGW_ERR_NONE) {
+	if (hgw_conf_request_bool(hgw, kGConfXSP, &xsp) == HGW_ERR_NONE) {
 		if (!xsp) {
 			free(Config.scaler);
 			Config.scaler = strdup("2x");

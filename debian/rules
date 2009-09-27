@@ -111,6 +111,8 @@ binary-arch: build install
 #	dh_installexamples
 #	dh_installman
 	dh_gconf
+#	Fixes a nasty bug with dh_gconf & busybox
+	rm -f $(CURDIR)/debian/drnoksnes.postrm.debhelper
 	dh_link
 	dh_strip --dbg-package=drnoksnes-dbg
 	dh_compress

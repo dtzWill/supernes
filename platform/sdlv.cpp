@@ -64,7 +64,7 @@ public:
 	ScalerFactory() { };
 	virtual ~ScalerFactory() { };
 	virtual const char * getName() const = 0;
-	virtual bool canEnable(int w, int h) const = 0;
+	virtual bool canEnable(int bpp, int w, int h) const = 0;
 	virtual Scaler* instantiate(SDL_Surface* screen, int w, int h) const = 0;
 };
 
@@ -91,7 +91,7 @@ public:
 			return "none";
 		}
 
-		bool canEnable(int w, int h) const
+		bool canEnable(int bpp, int w, int h) const
 		{
 			return true;
 		}
@@ -143,6 +143,143 @@ public:
 };
 const DummyScaler::Factory DummyScaler::factory;
 
+#ifdef __arm__
+class ARMScaler : public Scaler
+{
+	SDL_Surface * m_screen;
+	SDL_Rect m_area;
+	uint8 * m_surface;
+	const int m_w, m_h, m_Bpp;
+
+	ARMScaler(SDL_Surface* screen, int w, int h)
+	: m_screen(screen), m_w(w), m_h(h),
+	 m_Bpp(m_screen->format->BitsPerPixel / 8)
+	{
+		centerRectangle(m_area, GUI.Width, GUI.Height, w * 2, h * 2);
+		m_surface = reinterpret_cast<uint8*>(malloc(w * h * m_Bpp));
+	}
+public:
+	~ARMScaler()
+	{
+		free(m_surface);
+	};
+
+	class Factory : public ScalerFactory
+	{
+		const char * getName() const
+		{
+			return "2x";
+		}
+
+		bool canEnable(int bpp, int w, int h) const
+		{
+			return bpp == 16 && w * 2 < GUI.Width && h * 2 < GUI.Height;
+		}
+
+		Scaler* instantiate(SDL_Surface* screen, int w, int h) const
+		{
+			return new ARMScaler(screen, w, h);
+		}
+	};
+
+	static const Factory factory;
+
+	const char * getName() const
+	{
+		return "software ARM 2x scaling";
+	}
+
+	uint8* getDrawBuffer() const
+	{
+		return m_surface;
+	};
+
+	unsigned int getDrawBufferPitch() const
+	{
+		return m_w * m_Bpp;
+	};
+
+	void getRenderedGUIArea(unsigned short & x, unsigned short & y,
+							unsigned short & w, unsigned short & h) const
+	{
+		x = m_area.x; y = m_area.y; w = m_area.w; h = m_area.h;
+	};
+
+	int getRatio() const
+	{
+		return 2;
+	};
+
+	void prepare() { };
+
+	void finish()
+	{
+		uint16 * src = reinterpret_cast<uint16*>(m_surface);
+		uint16 * dst = reinterpret_cast<uint16*>(
+			((uint8*) m_screen->pixels)
+			+ (m_area.x * m_Bpp)
+			+ (m_area.y * m_screen->pitch));
+		const int src_pitch = m_w;
+		const int dst_pitch = m_screen->pitch / m_Bpp;
+		int y;
+
+		for (y = 0; y < m_h*2; y++) {
+			asm volatile
+			(
+				"mov r0, %0; mov r1, %1; mov r2, %2;"
+				"stmdb r13!,{r4,r5,r6,r7,r8,r9,r10,r11,r12,r14};"
+				"1:	ldmia r1!,{r3,r4,r5,r6,r7,r8,r9,r10};"
+				"mov r14,r5,lsr #16;"
+				"mov r12,r5,lsl #16;"
+				"orr r14,r14,r14,lsl #16;"
+				"orr r12,r12,r12,lsr #16;"
+				"mov r11,r4,lsr #16;"
+				"mov r5,r4,lsl #16;"
+				"orr r11,r11,r11,lsl #16;"
+				"orr r5,r5,r5,lsr #16;"
+				"mov r4,r3,lsr #16;"
+				"mov r3,r3,lsl #16;"
+				"orr r4,r4,r4,lsl #16;"
+				"orr r3,r3,r3,lsr #16;"
+				"stmia r0!,{r3,r4,r5,r11,r12,r14};"
+				"mov r3,r6,lsl #16;"
+				"mov r4,r6,lsr #16;"
+				"orr r3,r3,r3,lsr #16;"
+				"orr r4,r4,r4,lsl #16;"
+				"mov r5,r7,lsl #16;"
+				"mov r6,r7,lsr #16;"
+				"orr r5,r5,r5,lsr #16;"
+				"orr r6,r6,r6,lsl #16;"
+				"mov r7,r8,lsl #16;"
+				"mov r8,r8,lsr #16;"
+				"orr r7,r7,r7,lsr #16;"
+				"orr r8,r8,r8,lsl #16;"
+				"mov r12,r10,lsr #16;"
+				"mov r11,r10,lsl #16;"
+				"orr r12,r12,r12,lsl #16;"
+				"orr r11,r11,r11,lsr #16;"
+				"mov r10,r9,lsr #16;"
+				"mov r9,r9,lsl #16;"
+				"orr r10,r10,r10,lsl #16;"
+				"orr r9,r9,r9,lsr #16;"
+				"stmia r0!,{r3,r4,r5,r6,r7,r8,r9,r10,r11,r12};"
+				"subs r2,r2,#16;"
+				"bhi 1b;"
+				"ldmia r13!,{r4,r5,r6,r7,r8,r9,r10,r11,r12,r14};"
+			:
+			: "r" (dst), "r" (src), "r" (m_w)
+			: "r0", "r1", "r2", "r3"
+			);
+			dst += dst_pitch;
+			if (y&1) src += src_pitch;
+		}
+
+		SDL_UpdateRects(m_screen, 1, &m_area);
+	};
+};
+const ARMScaler::Factory ARMScaler::factory;
+#endif
+
 class SWScaler : public Scaler
 {
 	SDL_Surface * m_screen;
@@ -167,10 +304,10 @@ public:
 	{
 		const char * getName() const
 		{
-			return "2x";
+			return "soft2x";
 		}
 
-		bool canEnable(int w, int h) const
+		bool canEnable(int bpp, int w, int h) const
 		{
 			return w * 2 < GUI.Width && h * 2 < GUI.Height;
 		}
@@ -279,7 +416,7 @@ public:
 			return "xsp";
 		}
 
-		bool canEnable(int w, int h) const
+		bool canEnable(int bpp, int w, int h) const
 		{
 			return w * 2 < GUI.Width && h * 2 < GUI.Height;
 		};
@@ -336,11 +473,14 @@ static const ScalerFactory* scalers[] = {
 #if CONF_XSP
 	&XSPScaler::factory,
 #endif
+#ifdef __arm__
+	&ARMScaler::factory,
+#endif
 	&SWScaler::factory,
 	&DummyScaler::factory
 };
 
-static const ScalerFactory* searchForScaler(int w, int h)
+static const ScalerFactory* searchForScaler(int bpp, int w, int h)
 {
 	const int n = sizeof(scalers) / sizeof(ScalerFactory*);
 	int i;
@@ -356,17 +496,17 @@ static const ScalerFactory* searchForScaler(int w, int h)
 		// We prefer a specific scaler
 		for (i = 0; i < n; i++) {
 			if (strcasecmp(scalers[i]->getName(), Config.scaler) == 0) {
-				if (!scalers[i]->canEnable(w, h)) {
+				if (!scalers[i]->canEnable(bpp, w, h)) {
 					DIE("Cannot use selected scaler");
 				}
 				return scalers[i];
 			}
 		}
-		DIE("Select scaler does not exist");
+		DIE("Selected scaler '%s' does not exist", Config.scaler);
 	} else {
 		// Just try them all
 		for (i = 0; i < n; i++) {
-			if (scalers[i]->canEnable(w, h)) {
+			if (scalers[i]->canEnable(bpp, w, h)) {
 				return scalers[i];
 			}
 		}
@@ -468,7 +608,8 @@ static void setupVideoSurface()
 	if (gameHeight > GUI.Height || gameWidth > GUI.Width)
 		DIE("Video is larger than window size!");
 
-	const ScalerFactory* sFactory = searchForScaler(gameWidth, gameHeight);
+	const ScalerFactory* sFactory =
+		searchForScaler(Settings.SixteenBit ? 16 : 8, gameWidth, gameHeight);
 
 	screen = SDL_SetVideoMode(GUI.Width, GUI.Height,
 								Settings.SixteenBit ? 16 : 8,
