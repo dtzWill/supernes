@@ -45,9 +45,9 @@ class Scaler
 public:
 	Scaler() { };
 	virtual ~Scaler() { };
-	
+
 	virtual const char * getName() const = 0;
-	
+
 	virtual uint8* getDrawBuffer() const = 0;
 	virtual unsigned int getDrawBufferPitch() const = 0;
 	virtual void getRenderedGUIArea(unsigned short & x, unsigned short & y,
@@ -60,7 +60,7 @@ public:
 
 class ScalerFactory
 {
-public:	
+public:
 	ScalerFactory() { };
 	virtual ~ScalerFactory() { };
 	virtual const char * getName() const = 0;
@@ -83,14 +83,14 @@ public:
 	~DummyScaler()
 	{
 	};
-	
+
 	class Factory : public ScalerFactory
 	{
 		const char * getName() const
 		{
 			return "none";
 		}
-		
+
 		bool canEnable(int w, int h) const
 		{
 			return true;
@@ -135,7 +135,7 @@ public:
 	};
 
 	void prepare() { };
-	
+
 	void finish()
 	{
 		SDL_UpdateRects(m_screen, 1, &m_area);
@@ -162,14 +162,14 @@ public:
 	{
 		free(m_surface);
 	};
-	
+
 	class Factory : public ScalerFactory
 	{
 		const char * getName() const
 		{
 			return "2x";
 		}
-		
+
 		bool canEnable(int w, int h) const
 		{
 			return w * 2 < GUI.Width && h * 2 < GUI.Height;
@@ -210,7 +210,7 @@ public:
 	};
 
 	void prepare() { };
-	
+
 	void finish()
 	{
 		uint16 * src = reinterpret_cast<uint16*>(m_surface);
@@ -242,7 +242,7 @@ class XSPScaler : public Scaler
 	SDL_Surface* m_screen;
 	SDL_Rect m_area;
 	SDL_Rect m_real_area;
-	
+
 	static void setDoubling(bool enable)
 	{
 		SDL_SysWMinfo wminfo;
@@ -271,7 +271,7 @@ public:
 	{
 		setDoubling(false);
 	};
-	
+
 	class Factory : public ScalerFactory
 	{
 		const char * getName() const
