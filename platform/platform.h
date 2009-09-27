@@ -14,8 +14,8 @@ extern struct config {
 	bool snapshotSave;
 	/** Create fullscreen surface */
 	bool fullscreen;
-	/** Using xsp (thus take care of doubling coordinates where appropiate) */
-	bool xsp;
+	/** Name of the scaler to use or NULL for default */
+	char * scaler;
 	/** Audio output enabled */
 	bool enableAudio;
 	/** Speedhacks file to use */
@@ -33,8 +33,10 @@ extern struct config {
 extern struct gui {
 	/** Size of the GUI Window */
 	unsigned short Width, Height;
-	/** Size of the rendering area, relative to window. 2x if Xsp on. */
+	/** Size of the (scaled) rendering area, relative to window. */
 	unsigned short RenderX, RenderY, RenderW, RenderH;
+	/** Scaling ratio */
+	unsigned short Scale;
 } GUI;
 void S9xVideoToggleFullscreen();
 void S9xVideoOutputFocus(bool hasFocus);

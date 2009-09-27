@@ -35,8 +35,8 @@ static struct poptOption commonOptionsTable[] = {
 	"start in fullscreen mode", 0 },
 	{ "transparency", 'y', POPT_ARG_NONE, 0, 5,
 	"enable transparency effects (slower)", 0 },
-	{ "hacks", 'h', POPT_ARG_STRING | POPT_ARGFLAG_OPTIONAL, 0, 6,
-	"enable hacks (yes, speed-only, no)", "option" },
+	{ "scaler", 'S', POPT_ARG_STRING, 0, 6,
+	"select scaler to use", 0 },
 	{ "pal", 'p', POPT_ARG_NONE, 0, 7,
 	"run in PAL mode", 0 },
 	{ "ntsc", 'n', POPT_ARG_NONE, 0, 8,
@@ -57,6 +57,12 @@ static struct poptOption commonOptionsTable[] = {
 	"audio output buffer size", "SAMPLES" },
 	{ "touchscreen", 'd', POPT_ARG_NONE, 0, 16,
 	"enable touchscreen controls", 0 },
+	{ "touchscreen-grid", 'D', POPT_ARG_NONE, 0, 17,
+	"enable touchscreen controls and show grid", 0 },
+	{ "hacks", 'h', POPT_ARG_NONE, 0, 18,
+	"enable safe subset of speedhacks", 0 },
+	{ "all-hacks", 'H', POPT_ARG_NONE, 0, 19,
+	"enable all speedhacks (may break sound)", 0 },
 	POPT_TABLEEND
 };
 
@@ -181,7 +187,7 @@ static void loadDefaults()
 	Config.quitting = false;
 	Config.enableAudio = true;
 	Config.fullscreen = false;
-	Config.xsp = false;
+	Config.scaler = 0;
 	Config.hacksFile = 0;
 	Config.touchscreenInput = false;
 
@@ -259,31 +265,6 @@ static bool gotRomFile()
 	return romFile ? true : false;
 }
 
-static void setHacks(const char * value)
-{
-	// Unconditionally enable hacks even if no argument passed
-	Settings.HacksEnabled = TRUE;
-
-	if (!value) return;
-
-	if (strcasecmp(value, "speed-only") == 0 ||
-		strcasecmp(value, "speed") == 0 ||
-		strcasecmp(value, "s") == 0) {
-			Settings.HacksFilter = TRUE;
-	} else if (strcasecmp(value, "yes") == 0 ||
-		strcasecmp(value, "y") == 0) {
-			// Do nothing
-	} else if (strcasecmp(value, "no") == 0 ||
-		strcasecmp(value, "n") == 0) {
-			Settings.HacksEnabled = FALSE;
-	} else {
-		// Hack: the user probably wants to enable hacks
-		// and use this argument as the ROM file.
-		// Wonder why popt does not support this or if there's a better way.
-		S9xSetRomFile(value);
-	}
-}
-
 static void loadConfig(poptContext optCon, const char * file)
 {
 	char * out;
@@ -335,8 +316,8 @@ static void parseArgs(poptContext optCon)
 				Settings.Transparency = TRUE;
 				break;
 			case 6:
-				Settings.HacksEnabled = TRUE;
-				setHacks(poptGetOptArg(optCon));
+				free(Config.scaler);
+				Config.scaler = strdup(poptGetOptArg(optCon));
 				break;
 			case 7:
 				Settings.ForcePAL = TRUE;
@@ -377,6 +358,18 @@ static void parseArgs(poptContext optCon)
 				break;
 			case 16:
 				Config.touchscreenInput = true;
+				break;
+			case 17:
+				Config.touchscreenInput = true;
+				// TODO  Touchscreen grid
+				break;
+			case 18:
+				Settings.HacksEnabled = TRUE;
+				Settings.HacksFilter = TRUE;
+				break;
+			case 19:
+				Settings.HacksEnabled = TRUE;
+				Settings.HacksFilter = FALSE;
 				break;
 			case 100:
 				scancode = atoi(poptGetOptArg(optCon));

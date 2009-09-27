@@ -105,13 +105,9 @@ static void processMouse(unsigned int x, unsigned int y, int pressed = 0)
 			if (mouse.y > GUI.RenderH) mouse.y = GUI.RenderH;
 		}
 
-#ifdef MAEMO
-		// Remember RenderH, RenderW is 2x if using Xsp.
-		if (Config.xsp) {
-			mouse.x /= 2;
-			mouse.y /= 2;
-		}
-#endif
+		// Take care of scaling
+		mouse.x /= GUI.Scale;
+		mouse.y /= GUI.Scale;
 
 		if (pressed > 0)
 			mouse.pressed = true;
