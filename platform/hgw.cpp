@@ -85,9 +85,23 @@ void HgwConfig()
 		Settings.Transparency = transparency ? TRUE : FALSE;
 	}
 
+	char scaler[256];
+	scaler[0] = '\0';
+	if (hgw_conf_request_string(hgw, kGConfScaler, scaler) == HGW_ERR_NONE) {
+		if (strlen(scaler) > 0) {
+			free(Config.scaler);
+			Config.scaler = strdup(scaler);
+		}
+	}
+
 	char displayFramerate = FALSE;
 	if (hgw_conf_request_bool(hgw, kGConfDisplayFramerate, &displayFramerate) == HGW_ERR_NONE) {
 		Settings.DisplayFrameRate = displayFramerate ? TRUE : FALSE;
+	}
+
+	char displayControls = FALSE;
+	if (hgw_conf_request_bool(hgw, kGConfDisplayControls, &displayControls) == HGW_ERR_NONE) {
+		Config.touchscreenShow = displayControls ? true : false;
 	}
 
 	int speedhacks = 0;

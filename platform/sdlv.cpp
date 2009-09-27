@@ -345,7 +345,14 @@ static const ScalerFactory* searchForScaler(int w, int h)
 	const int n = sizeof(scalers) / sizeof(ScalerFactory*);
 	int i;
 
-	if (Config.scaler) {
+	if (Config.scaler && strcasecmp(Config.scaler, "help") == 0 ) {
+		// List scalers
+		printf("Scalers list:\n");
+		for (i = 0; i < n; i++) {
+			printf(" %s\n", scalers[i]->getName());
+		}
+		DIE("End of scalers list");
+	} else if (Config.scaler && strcasecmp(Config.scaler, "auto") != 0 ) {
 		// We prefer a specific scaler
 		for (i = 0; i < n; i++) {
 			if (strcasecmp(scalers[i]->getName(), Config.scaler) == 0) {

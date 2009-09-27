@@ -1,8 +1,11 @@
 drnoksnes (1.1.2) unstable; urgency=low
 
   * More fixes to fremantle gui.
+  * Multiple scales support.
+  * Basic 2x software scaler.
+  * Basic drawing of onscreen controls.
 
- -- Javier S. Pedro <maemo@javispedro.com>  Mon, 21 Sep 2009 22:55:31 +0200
+ -- Javier S. Pedro <maemo@javispedro.com>  Sun, 27 Sep 2009 03:31:30 +0200
 
 drnoksnes (1.1.1) unstable; urgency=low
 
