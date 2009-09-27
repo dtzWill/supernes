@@ -190,6 +190,7 @@ static void loadDefaults()
 	Config.scaler = 0;
 	Config.hacksFile = 0;
 	Config.touchscreenInput = false;
+	Config.touchscreenShow = false;
 
 	Settings.JoystickEnabled = FALSE;
 	Settings.SoundPlaybackRate = 22050;
@@ -361,7 +362,7 @@ static void parseArgs(poptContext optCon)
 				break;
 			case 17:
 				Config.touchscreenInput = true;
-				// TODO  Touchscreen grid
+				Config.touchscreenShow = true;
 				break;
 			case 18:
 				Settings.HacksEnabled = TRUE;

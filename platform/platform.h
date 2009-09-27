@@ -22,6 +22,8 @@ extern struct config {
 	char * hacksFile;
 	/** Enable touchscreen controls */
 	bool touchscreenInput;
+	/** Display touchscreen controls grid */
+	bool touchscreenShow;
 	/** Current scancode->joypad mapping */
 	unsigned short joypad1Mapping[256];
 	unsigned char action[256];
@@ -50,6 +52,7 @@ void S9xAudioOutputEnable(bool enable);
 EXTERN_C void S9xInitInputDevices();
 void S9xDeinitInputDevices();
 void S9xInputScreenChanged();
+void S9xInputScreenDraw(int pixelSize, void * buffer, int pitch);
 
 // Input actions
 #define kActionNone						0

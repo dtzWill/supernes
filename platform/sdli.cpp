@@ -235,3 +235,47 @@ void S9xInputScreenChanged()
 	}
 }
 
+template <typename T>
+static void drawControls(T * buffer, const int pitch)
+{
+	unsigned int i = 0;
+	int x, y;
+	T* temp;
+
+	for (i = 0; i < sizeof(touchbuttons)/sizeof(TouchButton); i++) {
+		temp = buffer + touchbuttons[i].y * pitch + touchbuttons[i].x;
+		for (x = touchbuttons[i].x; x < touchbuttons[i].x2; x++) {
+			*temp = -1UL; // Black
+			temp++;
+		}
+		temp = buffer + touchbuttons[i].y2 * pitch + touchbuttons[i].x;
+		for (x = touchbuttons[i].x; x < touchbuttons[i].x2; x++) {
+			*temp = -1UL; // Black
+			temp++;
+		}
+		temp = buffer + touchbuttons[i].y * pitch + touchbuttons[i].x;
+		for (y = touchbuttons[i].y; y < touchbuttons[i].y2; y++) {
+			*temp = -1UL; // Black
+			temp+=pitch;
+		}
+		temp = buffer + touchbuttons[i].y * pitch + touchbuttons[i].x2;
+		for (y = touchbuttons[i].y; y < touchbuttons[i].y2; y++) {
+			*temp = -1UL; // Black
+			temp+=pitch;
+		}
+	}
+}
+
+void S9xInputScreenDraw(int pixelSize, void * buffer, int pitch)
+{
+	switch (pixelSize)
+	{
+		case 1:
+			drawControls(reinterpret_cast<uint8*>(buffer), pitch);
+			break;
+		case 2:
+			drawControls(reinterpret_cast<uint16*>(buffer), pitch / 2);
+			break;
+	}
+}
+

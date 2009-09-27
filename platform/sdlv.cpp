@@ -498,12 +498,25 @@ static void setupVideoSurface()
 		scaler->getName());
 }
 
+static void drawOnscreenControls()
+{
+	if (Config.touchscreenInput) {
+		S9xInputScreenChanged();
+		if (Config.touchscreenShow) {
+			S9xInputScreenDraw(Settings.SixteenBit ? 2 : 1,
+								screen->pixels, screen->pitch);
+			SDL_Flip(screen);
+		}
+	}
+}
+
 void S9xInitDisplay(int argc, const char ** argv)
 {	
 	if (SDL_InitSubSystem(SDL_INIT_VIDEO) < 0) 
 		DIE("SDL_InitSubSystem(VIDEO): %s", SDL_GetError());
 
 	setupVideoSurface();
+	drawOnscreenControls();
 }
 
 void S9xDeinitDisplay()
@@ -517,6 +530,7 @@ void S9xVideoToggleFullscreen()
 	Config.fullscreen = !Config.fullscreen;
 	freeVideoSurface();
 	setupVideoSurface();
+	drawOnscreenControls();
 }
 
 void S9xVideoOutputFocus(bool hasFocus)
