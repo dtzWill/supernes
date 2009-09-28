@@ -56,6 +56,8 @@ public:
 	virtual int getRatio() const = 0;
 	virtual void prepare() = 0;
 	virtual void finish() = 0;
+	virtual void pause() = 0;
+	virtual void resume() = 0;
 };
 
 class ScalerFactory
@@ -140,6 +142,9 @@ public:
 	{
 		SDL_UpdateRects(m_screen, 1, &m_area);
 	};
+
+	void pause() { };
+	void resume() { };
 };
 const DummyScaler::Factory DummyScaler::factory;
 
@@ -277,6 +282,9 @@ public:
 
 		SDL_UpdateRects(m_screen, 1, &m_area);
 	};
+
+	void pause() { };
+	void resume() { };
 };
 const ARMScaler::Factory ARMScaler::factory;
 #endif
@@ -371,6 +379,9 @@ public:
 
 		SDL_UpdateRects(m_screen, 1, &m_area);
 	};
+
+	void pause() { };
+	void resume() { };
 };
 const SWScaler::Factory SWScaler::factory;
 
@@ -380,6 +391,7 @@ class XSPScaler : public Scaler
 	SDL_Surface* m_screen;
 	SDL_Rect m_area;
 	SDL_Rect m_real_area;
+	bool m_should_enable, m_enabled; // Try to avoid flicker.
 
 	static void setDoubling(bool enable)
 	{
@@ -393,11 +405,10 @@ class XSPScaler : public Scaler
 	}
 
 	XSPScaler(SDL_Surface* screen, int w, int h)
-	: m_screen(screen)
+	: m_screen(screen), m_enabled(false), m_should_enable(true)
 	{
 		centerRectangle(m_area, GUI.Width, GUI.Height,
 			w * 2, h * 2);
-		setDoubling(true);
 
 		m_real_area.x = m_area.x;
 		m_real_area.y = m_area.y;
@@ -407,7 +418,7 @@ class XSPScaler : public Scaler
 public:
 	~XSPScaler()
 	{
-		setDoubling(false);
+		if (m_enabled) setDoubling(false);
 	};
 
 	class Factory : public ScalerFactory
@@ -460,11 +471,31 @@ public:
 		return 2;
 	};
 
-	void prepare() { };
+	void prepare() 
+	{
+		if (m_should_enable && !m_enabled) {
+			setDoubling(true);
+			m_enabled = true;
+		}
+	};
 
 	void finish()
 	{
 		SDL_UpdateRects(m_screen, 1, &m_real_area);
+	};
+
+	void pause()
+	{
+		m_should_enable = false;
+		if (m_enabled) {
+			setDoubling(false);
+			m_enabled = false;
+		}
+	};
+
+	void resume()
+	{
+		m_should_enable = true; // Will enable later
 	};
 };
 const XSPScaler::Factory XSPScaler::factory;
@@ -652,9 +683,11 @@ static void drawOnscreenControls()
 	if (Config.touchscreenInput) {
 		S9xInputScreenChanged();
 		if (Config.touchscreenShow) {
+			scaler->pause();
 			S9xInputScreenDraw(Settings.SixteenBit ? 2 : 1,
 								screen->pixels, screen->pitch);
 			SDL_Flip(screen);
+			scaler->resume();
 		}
 	}
 }
