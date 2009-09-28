@@ -173,7 +173,8 @@ public:
 
 		bool canEnable(int bpp, int w, int h) const
 		{
-			return bpp == 16 && w * 2 < GUI.Width && h * 2 < GUI.Height;
+			return bpp == 16 && w * 2 < GUI.Width && h * 2 < GUI.Height &&
+				w % 16 == 0 /* asm assumes w div by 16 */;
 		}
 
 		Scaler* instantiate(SDL_Surface* screen, int w, int h) const
