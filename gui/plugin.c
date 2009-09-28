@@ -277,7 +277,7 @@ static GtkWidget * load_plugin(void)
 	gtk_box_pack_start(opt_hbox1, GTK_WIDGET(sound_check), FALSE, FALSE, 0);
 	gtk_box_pack_start(opt_hbox1, GTK_WIDGET(display_fps_check), TRUE, FALSE, 0);
 	gtk_box_pack_start(opt_hbox1, GTK_WIDGET(turbo_check), FALSE, FALSE, 0);
-	gtk_box_pack_start_defaults(GTK_BOX(parent), GTK_WIDGET(opt_hbox1));
+	gtk_box_pack_start(GTK_BOX(parent), GTK_WIDGET(opt_hbox1), FALSE, FALSE, 0);
 }
 #endif
 
