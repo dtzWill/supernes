@@ -345,6 +345,7 @@ void controls_dialog(GtkWindow* parent)
 	ts_show_check = 
 	 HILDON_CHECK_BUTTON(hildon_check_button_new(
 		HILDON_SIZE_FULLSCREEN_WIDTH | HILDON_SIZE_FINGER_HEIGHT));
+	gtk_button_set_label(GTK_BUTTON(ts_show_check), "Show onscreen buttons");
 #else
 	ts_show_check =
 	 GTK_CHECK_BUTTON(gtk_check_button_new_with_label("Show onscreen buttons"));
