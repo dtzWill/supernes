@@ -26,6 +26,7 @@
 #if MAEMO_VERSION >= 5
 #include <hildon/hildon-gtk.h>
 #include <hildon/hildon-pannable-area.h>
+#include <hildon/hildon-check-button.h>
 #endif
 
 #include "../platform/hgw.h"
@@ -42,7 +43,11 @@ static GtkScrolledWindow* keys_scroll;
 #endif
 static GtkListStore* keys_store;
 static GtkTreeView* keys_list;
-static GtkLabel* ts_label;
+#if MAEMO_VERSION >= 5
+static HildonCheckButton* ts_show_check;
+#else
+static GtkCheckButton* ts_show_check;
+#endif
 
 enum
 {
@@ -92,7 +97,7 @@ static void show_widgets()
 	gtk_widget_show_all(GTK_WIDGET(combo));
 	gtk_widget_hide_all(GTK_WIDGET(none_label));
 	gtk_widget_hide_all(GTK_WIDGET(keys_scroll));
-	gtk_widget_hide_all(GTK_WIDGET(ts_label));
+	gtk_widget_hide_all(GTK_WIDGET(ts_show_check));
 	switch (gtk_combo_box_get_active(combo)) {
 		case 0:
 			gtk_widget_show_all(GTK_WIDGET(none_label));
@@ -101,13 +106,13 @@ static void show_widgets()
 			gtk_widget_show_all(GTK_WIDGET(keys_scroll));
 			break;
 		case 2: // Touchscreen
-			gtk_widget_show_all(GTK_WIDGET(ts_label));
+			gtk_widget_show_all(GTK_WIDGET(ts_show_check));
 			break;
 		case 3: // Touchscreen + keys
 			gtk_widget_show_all(GTK_WIDGET(keys_scroll));
+			gtk_widget_show_all(GTK_WIDGET(ts_show_check));
 			break;
 		case 4: // Mouse
-			gtk_widget_show_all(GTK_WIDGET(ts_label));
 			break;
 		case 5: // Mouse + keys
 			gtk_widget_show_all(GTK_WIDGET(keys_scroll));
@@ -146,6 +151,14 @@ static void load_config()
 
 	gconf_client_preload(gcc, kGConfKeysPath, GCONF_CLIENT_PRELOAD_ONELEVEL, NULL);
 	gtk_tree_model_foreach(GTK_TREE_MODEL(keys_store), load_key_config, NULL);
+
+	gboolean ts_show_active =
+		gconf_client_get_bool(gcc, kGConfDisplayControls, NULL);
+#if MAEMO_VERSION >= 5
+	hildon_check_button_set_active(ts_show_check, ts_show_active);
+#else
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(ts_show_check), ts_show_active);
+#endif	
 
 	show_widgets();
 	gconf_value_free(mapping);
@@ -220,6 +233,17 @@ cb_key_cleared(GtkCellRendererText *cell, const char *path_string,
 		// prefer 0 value over unset key.
 
 	button_entry->scancode = 0;
+}
+
+static void cb_ts_show_toggled(void * widget, gpointer data)
+{
+	gboolean active;
+#if MAEMO_VERSION >= 5
+	active = hildon_check_button_get_active(ts_show_check);
+#else
+	active = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(ts_show_check));
+#endif
+	gconf_client_set_bool(gcc, kGConfDisplayControls, active, NULL);
 }
 
 static void cb_combo_changed(GtkComboBox * widget, gpointer data)
@@ -317,7 +341,14 @@ void controls_dialog(GtkWindow* parent)
 			-1);
 	}
 
-	ts_label = GTK_LABEL(gtk_label_new("Check layout somewhere else for now."));
+#if MAEMO_VERSION >= 5
+	ts_show_check = 
+	 HILDON_CHECK_BUTTON(hildon_check_button_new(
+		HILDON_SIZE_FULLSCREEN_WIDTH | HILDON_SIZE_FINGER_HEIGHT));
+#else
+	ts_show_check =
+	 GTK_CHECK_BUTTON(gtk_check_button_new_with_label("Show onscreen buttons"));
+#endif
 
 #if MAEMO_VERSION >= 5
 	gtk_window_resize(GTK_WINDOW(dialog), 800, 380);
@@ -329,7 +360,7 @@ void controls_dialog(GtkWindow* parent)
 	gtk_container_add(GTK_CONTAINER(keys_scroll), GTK_WIDGET(keys_list));
 	gtk_box_pack_start_defaults(GTK_BOX(dialog->vbox), GTK_WIDGET(none_label));
 	gtk_box_pack_start_defaults(GTK_BOX(dialog->vbox), GTK_WIDGET(keys_scroll));
-	gtk_box_pack_start_defaults(GTK_BOX(dialog->vbox), GTK_WIDGET(ts_label));
+	gtk_box_pack_start(GTK_BOX(dialog->vbox), GTK_WIDGET(ts_show_check), FALSE, FALSE, 0);
 
 	load_config();
 
@@ -341,6 +372,8 @@ void controls_dialog(GtkWindow* parent)
 					G_CALLBACK(cb_key_edited), NULL);
 	g_signal_connect(G_OBJECT(renderer), "accel_cleared",
                     G_CALLBACK(cb_key_cleared), NULL);
+	g_signal_connect(G_OBJECT(ts_show_check), "toggled",
+					G_CALLBACK(cb_ts_show_toggled), NULL);
 
 	gtk_widget_show(GTK_WIDGET(dialog));
 }
