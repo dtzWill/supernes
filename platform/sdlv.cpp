@@ -405,7 +405,7 @@ class XSPScaler : public Scaler
 	}
 
 	XSPScaler(SDL_Surface* screen, int w, int h)
-	: m_screen(screen), m_enabled(false), m_should_enable(true)
+	: m_screen(screen), m_should_enable(true), m_enabled(false)
 	{
 		centerRectangle(m_area, GUI.Width, GUI.Height,
 			w * 2, h * 2);
