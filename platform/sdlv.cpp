@@ -600,7 +600,7 @@ static void freeVideoSurface()
 	free(GFX.ZBuffer); GFX.ZBuffer = 0;
 	free(GFX.SubZBuffer); GFX.SubZBuffer = 0;
 
-	free(scaler); scaler = 0;
+	delete scaler; scaler = 0;
 }
 
 static void setupVideoSurface()
