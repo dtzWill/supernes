@@ -528,22 +528,26 @@ static const ScalerFactory* searchForScaler(int bpp, int w, int h)
 		// We prefer a specific scaler
 		for (i = 0; i < n; i++) {
 			if (strcasecmp(scalers[i]->getName(), Config.scaler) == 0) {
-				if (!scalers[i]->canEnable(bpp, w, h)) {
-					DIE("Cannot use selected scaler");
+				if (scalers[i]->canEnable(bpp, w, h)) {
+					// Found the scaler selected by the user, and we can use it.
+					return scalers[i];
+				} else {
+					fprintf(stderr, "Selected scaler '%s' cannot be enabled\n",
+						Config.scaler);
 				}
-				return scalers[i];
 			}
 		}
-		DIE("Selected scaler '%s' does not exist", Config.scaler);
-	} else {
-		// Just try them all
-		for (i = 0; i < n; i++) {
-			if (scalers[i]->canEnable(bpp, w, h)) {
-				return scalers[i];
-			}
-		}
-		DIE("Can't use any scaler");
+		fprintf(stderr, "Selected scaler '%s' does not exist\n", Config.scaler);
 	}
+
+	// Just try them all now, in a set priority.
+	for (i = 0; i < n; i++) {
+		if (scalers[i]->canEnable(bpp, w, h)) {
+			return scalers[i];
+		}
+	}
+
+	DIE("Can't use any scaler; this shouldn't happen.");
 }
 
 static void calculateScreenSize()
