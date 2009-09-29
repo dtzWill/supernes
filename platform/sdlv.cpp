@@ -609,11 +609,6 @@ static void setupVideoSurface()
 	const unsigned gameWidth = IMAGE_WIDTH;
 	const unsigned gameHeight = IMAGE_HEIGHT;
 
-	if (scaler) {
-		delete scaler;
-		scaler = 0;
-	}
-
 #ifdef MAEMO
 	if ((Config.fullscreen && !gotScreenSize) ||
 		(!Config.fullscreen && !gotWindowSize)) {
