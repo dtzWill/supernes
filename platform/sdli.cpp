@@ -240,27 +240,28 @@ static void drawControls(T * buffer, const int pitch)
 {
 	unsigned int i = 0;
 	int x, y;
+	const T black = static_cast<T>(0xFFFFFFFFU);
 	T* temp;
 
 	for (i = 0; i < sizeof(touchbuttons)/sizeof(TouchButton); i++) {
 		temp = buffer + touchbuttons[i].y * pitch + touchbuttons[i].x;
 		for (x = touchbuttons[i].x; x < touchbuttons[i].x2; x++) {
-			*temp = -1UL; // Black
+			*temp = black; // Black
 			temp++;
 		}
 		temp = buffer + touchbuttons[i].y2 * pitch + touchbuttons[i].x;
 		for (x = touchbuttons[i].x; x < touchbuttons[i].x2; x++) {
-			*temp = -1UL; // Black
+			*temp = black; // Black
 			temp++;
 		}
 		temp = buffer + touchbuttons[i].y * pitch + touchbuttons[i].x;
 		for (y = touchbuttons[i].y; y < touchbuttons[i].y2; y++) {
-			*temp = -1UL; // Black
+			*temp = black; // Black
 			temp+=pitch;
 		}
 		temp = buffer + touchbuttons[i].y * pitch + touchbuttons[i].x2;
 		for (y = touchbuttons[i].y; y < touchbuttons[i].y2; y++) {
-			*temp = -1UL; // Black
+			*temp = black; // Black
 			temp+=pitch;
 		}
 	}
