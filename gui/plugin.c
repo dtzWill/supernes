@@ -199,6 +199,9 @@ static GtkWidget * load_plugin(void)
 	gtk_box_pack_start_defaults(buttons_hbox, GTK_WIDGET(select_rom_btn));
 
 	gtk_widget_reparent(gs.ui->play_button, GTK_WIDGET(buttons_hbox));
+	hildon_gtk_widget_set_theme_size(gs.ui->play_button,
+		HILDON_SIZE_AUTO_WIDTH | HILDON_SIZE_THUMB_HEIGHT);
+	gtk_widget_set_size_request(gs.ui->play_button, 200, -1);
 	gtk_box_set_child_packing(buttons_hbox, gs.ui->play_button,
 		FALSE, FALSE, 0, GTK_PACK_START);
 
@@ -228,7 +231,8 @@ static GtkWidget * load_plugin(void)
 	gtk_button_set_label(GTK_BUTTON(sound_check), "Sound");
 
 	framerate_picker = HILDON_PICKER_BUTTON(hildon_picker_button_new(
-		HILDON_SIZE_AUTO, HILDON_BUTTON_ARRANGEMENT_HORIZONTAL));
+		HILDON_SIZE_AUTO_WIDTH | HILDON_SIZE_FINGER_HEIGHT,
+		HILDON_BUTTON_ARRANGEMENT_HORIZONTAL));
 	hildon_button_set_title(HILDON_BUTTON(framerate_picker), "Target framerate");
 
 	HildonTouchSelector* framerate_sel =
@@ -510,6 +514,9 @@ static void plugin_callback(GtkWidget * menu_item, gpointer data)
 				GtkWidget* old_parent = gtk_widget_get_parent(gs.ui->restart_button);
 				gtk_widget_reparent(gs.ui->restart_button,
 						GTK_WIDGET(buttons_hbox));
+				hildon_gtk_widget_set_theme_size(gs.ui->restart_button,
+					HILDON_SIZE_AUTO_WIDTH | HILDON_SIZE_THUMB_HEIGHT);
+				gtk_widget_set_size_request(gs.ui->restart_button, 200, -1);
 				gtk_box_set_child_packing(buttons_hbox, gs.ui->restart_button,
 						FALSE, FALSE, 0, GTK_PACK_END);
 
@@ -529,6 +536,9 @@ static void plugin_callback(GtkWidget * menu_item, gpointer data)
 				GtkWidget* old_parent = gtk_widget_get_parent(gs.ui->play_button);
 				gtk_widget_reparent(gs.ui->play_button,
 						GTK_WIDGET(buttons_hbox));
+				hildon_gtk_widget_set_theme_size(gs.ui->play_button,
+					HILDON_SIZE_AUTO_WIDTH | HILDON_SIZE_THUMB_HEIGHT);
+				gtk_widget_set_size_request(gs.ui->play_button, 200, -1);
 				gtk_box_set_child_packing(buttons_hbox, gs.ui->play_button,
 						FALSE, FALSE, 0, GTK_PACK_START);
 

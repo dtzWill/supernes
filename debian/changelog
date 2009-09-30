@@ -1,3 +1,10 @@
+drnoksnes (1.2.1) unstable; urgency=low
+
+  * Fix theming bug in the Fremantle GUI.
+  * Fixes Xsp bug in Diablo.
+
+ -- Javier S. Pedro <maemo@javispedro.com>  Wed, 30 Sep 2009 12:15:08 +0200
+
 drnoksnes (1.2.0) unstable; urgency=low
 
   * GUI support for disabling Xsp in Diablo.
