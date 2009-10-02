@@ -89,22 +89,28 @@ static GtkCheckButton* display_fps_check;
 static GtkComboBox* speedhacks_combo;
 #endif
 
+static inline void set_rom_label(gchar * text)
+{
+#if MAEMO_VERSION >= 5
+	hildon_button_set_value(select_rom_btn, text);
+#else
+	gtk_label_set_text(GTK_LABEL(rom_label), text);
+#endif
+}
+
 static void set_rom(const char * rom_file)
 {
 	if (current_rom_file) g_free(current_rom_file);
 	if (!rom_file) {
 		current_rom_file = NULL;
+		set_rom_label("<no rom selected>");
 		return;
 	}
 
 	current_rom_file = g_strdup(rom_file);
 
 	gchar * utf8_filename = g_filename_display_basename(rom_file);
-#if MAEMO_VERSION >= 5
-	hildon_button_set_value(select_rom_btn, utf8_filename);
-#else
-	gtk_label_set_text(GTK_LABEL(rom_label), utf8_filename);
-#endif
+	set_rom_label(utf8_filename);
 	g_free(utf8_filename);
 
 	current_rom_file_exists = g_file_test(current_rom_file,
@@ -176,6 +182,18 @@ static void about_item_callback(GtkWidget * button, gpointer data)
 	about_dialog(get_parent_window());
 }
 
+#if MAEMO_VERSION >= 5
+static void found_ogs_button_callback(GtkWidget *widget, gpointer data)
+{
+	gtk_widget_reparent(widget,	GTK_WIDGET(buttons_hbox));
+	hildon_gtk_widget_set_theme_size(widget,
+		HILDON_SIZE_AUTO_WIDTH | HILDON_SIZE_THUMB_HEIGHT);
+	gtk_widget_set_size_request(widget, 200, -1);
+	gtk_box_set_child_packing(buttons_hbox, widget,
+			FALSE, FALSE, 0, GTK_PACK_START);
+}
+#endif
+
 static GtkWidget * load_plugin(void)
 {
 	g_type_init();
@@ -185,10 +203,8 @@ static GtkWidget * load_plugin(void)
 
 /* Select ROM button */
 #if MAEMO_VERSION >= 5
-// Very ugly hack ahead.
 {
 	buttons_hbox = GTK_BOX(gtk_hbox_new(FALSE, HILDON_MARGIN_DEFAULT));
-	// We can UNsafely assume gs.ui->play_button exists.
 
 	select_rom_btn = HILDON_BUTTON(hildon_button_new_with_text(
 		HILDON_SIZE_AUTO_WIDTH | HILDON_SIZE_THUMB_HEIGHT,
@@ -198,12 +214,12 @@ static GtkWidget * load_plugin(void)
 	hildon_button_set_alignment(select_rom_btn, 0.0f, 0.5f, 0.9f, 0.2f);
 	gtk_box_pack_start_defaults(buttons_hbox, GTK_WIDGET(select_rom_btn));
 
-	gtk_widget_reparent(gs.ui->play_button, GTK_WIDGET(buttons_hbox));
-	hildon_gtk_widget_set_theme_size(gs.ui->play_button,
-		HILDON_SIZE_AUTO_WIDTH | HILDON_SIZE_THUMB_HEIGHT);
-	gtk_widget_set_size_request(gs.ui->play_button, 200, -1);
-	gtk_box_set_child_packing(buttons_hbox, gs.ui->play_button,
-		FALSE, FALSE, 0, GTK_PACK_START);
+	// Ugly hacks: we move all of the osso-games-startup buttons to our container
+	GtkContainer* old_parent =
+		GTK_CONTAINER(gtk_widget_get_parent(gs.ui->play_button));
+	gtk_container_foreach(old_parent, found_ogs_button_callback, NULL);
+	// Get rid of the GtkFixed container
+	gtk_widget_destroy(old_parent);
 
 	gtk_box_pack_start(GTK_BOX(parent), GTK_WIDGET(buttons_hbox), FALSE, FALSE, 0);
 	gtk_container_set_border_width(GTK_CONTAINER(parent), HILDON_MARGIN_HALF);
@@ -474,9 +490,6 @@ static void update_menu(void)
 
 static void plugin_callback(GtkWidget * menu_item, gpointer data)
 {
-#if MAEMO_VERSION >= 5
-	static int widgets_moved = 0;
-#endif
 	switch ((gint) data) {
 		case ME_GAME_OPEN:
 			save_load(get_parent_window());
@@ -505,53 +518,14 @@ static void plugin_callback(GtkWidget * menu_item, gpointer data)
 			}
 			break;
 #if MAEMO_VERSION >= 5
-		// The above horrible hack continues here.
-		case MA_GAME_CHECKSTATE:
-			if (gs.ui->restart_button &&
-				gtk_widget_get_parent(gs.ui->restart_button)
-					 != GTK_WIDGET(buttons_hbox))
-			{
-				GtkWidget* old_parent = gtk_widget_get_parent(gs.ui->restart_button);
-				gtk_widget_reparent(gs.ui->restart_button,
-						GTK_WIDGET(buttons_hbox));
-				hildon_gtk_widget_set_theme_size(gs.ui->restart_button,
-					HILDON_SIZE_AUTO_WIDTH | HILDON_SIZE_THUMB_HEIGHT);
-				gtk_widget_set_size_request(gs.ui->restart_button, 200, -1);
-				gtk_box_set_child_packing(buttons_hbox, gs.ui->restart_button,
-						FALSE, FALSE, 0, GTK_PACK_END);
+		case MA_GAME_SAVEMENU_REFERENCE:
+			// We're misusing this event.
+			// It is always fired after GUI is built, and we like that.
 
-				widgets_moved++;
-				if (widgets_moved == 1) {
-					gtk_widget_set_size_request(
-						gtk_widget_get_parent(GTK_WIDGET(buttons_hbox)),
-						-1, -1);
-				} else if (widgets_moved == 2) {
-					gtk_widget_destroy(old_parent);
-				}
-			}
-			break;
-		case MA_GAME_PLAYING:
-			if (gtk_widget_get_parent(gs.ui->play_button) != GTK_WIDGET(buttons_hbox))
-			{
-				GtkWidget* old_parent = gtk_widget_get_parent(gs.ui->play_button);
-				gtk_widget_reparent(gs.ui->play_button,
-						GTK_WIDGET(buttons_hbox));
-				hildon_gtk_widget_set_theme_size(gs.ui->play_button,
-					HILDON_SIZE_AUTO_WIDTH | HILDON_SIZE_THUMB_HEIGHT);
-				gtk_widget_set_size_request(gs.ui->play_button, 200, -1);
-				gtk_box_set_child_packing(buttons_hbox, gs.ui->play_button,
-						FALSE, FALSE, 0, GTK_PACK_START);
-
-				widgets_moved++;
-				if (widgets_moved == 1) {
-					gtk_widget_set_size_request(
-						gtk_widget_get_parent(GTK_WIDGET(buttons_hbox)),
-						-1, -1);
-				} else if (widgets_moved == 2) {
-					gtk_widget_destroy(old_parent);
-				}
-			}
-
+			// Override size limit set by OGS
+			gtk_widget_set_size_request(
+				gtk_widget_get_parent(GTK_WIDGET(buttons_hbox)),
+				-1, -1);	
 			break;
 #endif
 	}
