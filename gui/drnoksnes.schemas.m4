@@ -59,7 +59,6 @@
       <applyto>/apps/maemo/drnoksnes/rom</applyto>
       <owner>drnoksnes</owner>
       <type>string</type>
-      <default></default>
       <locale name="C">
         <short>ROM to load</short>
         <long>

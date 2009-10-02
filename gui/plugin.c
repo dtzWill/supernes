@@ -101,7 +101,7 @@ static inline void set_rom_label(gchar * text)
 static void set_rom(const char * rom_file)
 {
 	if (current_rom_file) g_free(current_rom_file);
-	if (!rom_file) {
+	if (!rom_file || strlen(rom_file) == 0) {
 		current_rom_file = NULL;
 		set_rom_label("<no rom selected>");
 		return;
@@ -525,7 +525,7 @@ static void plugin_callback(GtkWidget * menu_item, gpointer data)
 			// Override size limit set by OGS
 			gtk_widget_set_size_request(
 				gtk_widget_get_parent(GTK_WIDGET(buttons_hbox)),
-				-1, -1);	
+				-1, -1);
 			break;
 #endif
 	}

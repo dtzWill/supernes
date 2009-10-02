@@ -54,11 +54,12 @@ void HgwDeinit()
 void HgwConfig()
 {
 	if (!hgwLaunched) return;
-	
+
 	Config.fullscreen = true;
-	
+
 	char romFile[PATH_MAX + 1];
-	if (hgw_conf_request_string(hgw, kGConfRomFile, romFile) == HGW_ERR_NONE) {
+	if (hgw_conf_request_string(hgw, kGConfRomFile, romFile) == HGW_ERR_NONE
+		&& strlen(romFile) > 0) {
 		S9xSetRomFile(romFile);
 	} else {
 		hgw_context_destroy(hgw, HGW_BYE_INACTIVE);
