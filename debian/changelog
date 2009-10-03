@@ -1,3 +1,10 @@
+drnoksnes (1.2.2) unstable; urgency=low
+
+  * Fixing bug when no ROM selected.
+  * Added a "<no rom selected>" hint in GUI. 
+
+ -- Javier S. Pedro <maemo@javispedro.com>  Fri,  2 Oct 2009 16:31:01 +0200
+
 drnoksnes (1.2.1) unstable; urgency=low
 
   * Fix theming bug in the Fremantle GUI.
