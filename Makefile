@@ -22,8 +22,8 @@ endif
 
 # SNES stuff
 OBJS = apu.o c4.o c4emu.o cheats.o cheats2.o clip.o cpu.o cpuexec.o data.o
-OBJS += dma.o dsp1.o fxemu.o fxinst.o gfx.o globals.o loadzip.o memmap.o netplay.o ppu.o
-OBJS += sa1.o sdd1.o sdd1emu.o snapshot.o soundux.o spc700.o srtc.o tile.o
+OBJS += dma.o dsp1.o font.o fxemu.o fxinst.o gfx.o globals.o loadzip.o memmap.o 
+OBJS += ppu.o sa1.o sdd1.o sdd1emu.o snapshot.o soundux.o spc700.o srtc.o tile.o
 
 ifeq ($(CONF_BUILD_ASM_CPU), 1)
 	# ASM CPU Core from yoyofr's OpenSnes9X

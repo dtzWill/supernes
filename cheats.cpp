@@ -98,7 +98,7 @@ const char *S9xGoldFingerToRaw (const char *code, uint32 &address, bool8 &sram,
 const char *S9xGameGenieToRaw (const char *code, uint32 &address, uint8 &byte)
 {
     char new_code [12];
-    
+
     if (strlen (code) != 9 || *(code + 4) != '-' || !S9xAllHex (code, 4) ||
         !S9xAllHex (code + 5, 4))
 	return ("Invalid Game Genie(tm) code - should be 'xxxx-xxxx'.");
@@ -109,7 +109,7 @@ const char *S9xGameGenieToRaw (const char *code, uint32 &address, uint8 &byte)
 
     static const char *real_hex  = "0123456789ABCDEF";
     static const char *genie_hex = "DF4709156BC8A23E";
-    
+
     for (int i = 2; i < 10; i++)
     {
 	if (islower (new_code [i]))
