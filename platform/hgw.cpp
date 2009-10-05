@@ -23,20 +23,20 @@ void HgwInit()
 {
 	// hildon-games-wrapper sets this env variable for itself.
 	char* service = getenv("HGW_EXEC_SERVICE");
-	
+
 	if (!service) {
 		// Not launched from hildon-games-wrapper
 		hgwLaunched = false;
 		return;
 	}
-	
+
 	hgw = hgw_context_init();
-	
+
 	if (!hgw) {
 		fprintf(stderr, "Error opening hgw context\n");
 		hgwLaunched = false;
 	}
-	
+
 	hgwLaunched = true;
 	printf("Loading in HGW mode\n");
 }
@@ -62,8 +62,9 @@ void HgwConfig()
 		&& strlen(romFile) > 0) {
 		S9xSetRomFile(romFile);
 	} else {
-		hgw_context_destroy(hgw, HGW_BYE_INACTIVE);
-		DIE("No Rom in Gconf!");
+		printf("Exiting gracefully because there's no ROM in Gconf\n");
+		HgwDeinit();
+		exit(0);
 	}
 
 	char sound = FALSE;
