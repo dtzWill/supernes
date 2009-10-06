@@ -51,6 +51,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <assert.h>
 
 #include "snes9x.h"
 
@@ -60,7 +61,6 @@
 
 #include "memmap.h"
 #include "unzip.h"
-#include "assert.h"
 
 bool8 LoadZip(const char* zipname,
 	      int32 *TotalFileSize,
