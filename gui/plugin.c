@@ -71,7 +71,6 @@ gchar* current_rom_file = 0;
 gboolean current_rom_file_exists = FALSE;
 
 #if MAEMO_VERSION >= 5
-static GtkBox* buttons_hbox;
 static HildonButton* select_rom_btn;
 static HildonCheckButton* sound_check;
 static HildonPickerButton* framerate_picker;
@@ -183,14 +182,14 @@ static void about_item_callback(GtkWidget * button, gpointer data)
 }
 
 #if MAEMO_VERSION >= 5
+/* Called for each of the play/restart/continue buttons */
 static void found_ogs_button_callback(GtkWidget *widget, gpointer data)
 {
-	gtk_widget_reparent(widget,	GTK_WIDGET(buttons_hbox));
 	hildon_gtk_widget_set_theme_size(widget,
 		HILDON_SIZE_AUTO_WIDTH | HILDON_SIZE_THUMB_HEIGHT);
 	gtk_widget_set_size_request(widget, 200, -1);
-	gtk_box_set_child_packing(buttons_hbox, widget,
-			FALSE, FALSE, 0, GTK_PACK_START);
+	gtk_box_set_child_packing(GTK_BOX(data), widget,
+		FALSE, FALSE, 0, GTK_PACK_START);
 }
 #endif
 
@@ -204,25 +203,23 @@ static GtkWidget * load_plugin(void)
 /* Select ROM button */
 #if MAEMO_VERSION >= 5
 {
-	buttons_hbox = GTK_BOX(gtk_hbox_new(FALSE, HILDON_MARGIN_DEFAULT));
-
 	select_rom_btn = HILDON_BUTTON(hildon_button_new_with_text(
 		HILDON_SIZE_AUTO_WIDTH | HILDON_SIZE_THUMB_HEIGHT,
 		HILDON_BUTTON_ARRANGEMENT_VERTICAL,
 		"ROM",
 		NULL));
 	hildon_button_set_alignment(select_rom_btn, 0.0f, 0.5f, 0.9f, 0.2f);
-	gtk_box_pack_start_defaults(buttons_hbox, GTK_WIDGET(select_rom_btn));
 
-	// Ugly hacks: we move all of the osso-games-startup buttons to our container
-	GtkContainer* old_parent =
-		GTK_CONTAINER(gtk_widget_get_parent(gs.ui->play_button));
-	gtk_container_foreach(old_parent, found_ogs_button_callback, NULL);
-	// Get rid of the GtkFixed container
-	gtk_widget_destroy(old_parent);
+	// Ugly hacks: resize the Osso-Games-Startup buttons
+	GtkBox* button_box =
+		GTK_BOX(gtk_widget_get_parent(gs.ui->play_button));
+	gtk_box_set_spacing(button_box, HILDON_MARGIN_DEFAULT);
+	gtk_container_foreach(GTK_CONTAINER(button_box),
+		found_ogs_button_callback, button_box);
 
-	gtk_box_pack_start(GTK_BOX(parent), GTK_WIDGET(buttons_hbox), FALSE, FALSE, 0);
-	gtk_container_set_border_width(GTK_CONTAINER(parent), HILDON_MARGIN_HALF);
+	// Ugly hacks: move the select rom button to the left.
+	gtk_box_pack_start_defaults(button_box, GTK_WIDGET(select_rom_btn));
+	gtk_box_reorder_child(button_box, GTK_WIDGET(select_rom_btn), 0);
 }
 #else
 {
@@ -517,17 +514,6 @@ static void plugin_callback(GtkWidget * menu_item, gpointer data)
 				gtk_widget_destroy(note);
 			}
 			break;
-#if MAEMO_VERSION >= 5
-		case MA_GAME_SAVEMENU_REFERENCE:
-			// We're misusing this event.
-			// It is always fired after GUI is built, and we like that.
-
-			// Override size limit set by OGS
-			gtk_widget_set_size_request(
-				gtk_widget_get_parent(GTK_WIDGET(buttons_hbox)),
-				-1, -1);
-			break;
-#endif
 	}
 }
 
