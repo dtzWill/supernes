@@ -136,6 +136,7 @@ static void select_rom_callback(GtkWidget * button, gpointer data)
 	gtk_file_filter_add_pattern(filter, "*.smc.gz");
 	gtk_file_filter_add_pattern(filter, "*.sfc.gz");
 	gtk_file_filter_add_pattern(filter, "*.fig.gz");
+	gtk_file_filter_add_pattern(filter, "*.zip");
 
 	dialog = hildon_file_chooser_dialog_new_with_properties(
 		get_parent_window(),

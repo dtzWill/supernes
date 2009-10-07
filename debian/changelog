@@ -2,8 +2,9 @@ drnoksnes (1.2.3) unstable; urgency=low
 
   * Workarounding a emulator crash on first launch.
   * Accomodating new osso-games-startup changes.
+  * Zipped rom support in GUI.
 
- -- Javier S. Pedro <maemo@javispedro.com>  Tue,  6 Oct 2009 20:19:14 +0200
+ -- Javier S. Pedro <maemo@javispedro.com>  Tue,  6 Oct 2009 23:56:12 +0200
 
 drnoksnes (1.2.2) unstable; urgency=low
 
