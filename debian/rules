@@ -120,7 +120,10 @@ binary-arch: build install
 	dh_installdeb
 	dh_shlibdeps
 	dh_gencontrol
+ifeq ($(shell expr "$(MAEMO_VERSION)" ">" 4), 1)
+#	Optify only in Maemo 5
 	maemo-optify
+endif
 	dh_md5sums
 	dh_builddeb
 
