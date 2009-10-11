@@ -1,3 +1,10 @@
+drnoksnes (1.2.4) unstable; urgency=low
+
+  * Fixing some problems with onscreen controls.
+  * Optified package.
+
+ -- Javier S. Pedro <maemo@javispedro.com>  Sun, 11 Oct 2009 14:49:41 +0200
+
 drnoksnes (1.2.3) unstable; urgency=low
 
   * Workarounding a emulator crash on first launch.
