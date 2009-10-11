@@ -532,15 +532,20 @@ static const ScalerFactory* searchForScaler(int bpp, int w, int h)
 					// Found the scaler selected by the user, and we can use it.
 					return scalers[i];
 				} else {
-					fprintf(stderr, "Selected scaler '%s' cannot be enabled\n",
+					fprintf(stderr,
+						"Selected scaler '%s' cannot be enabled in this mode\n",
 						Config.scaler);
+					break; // Fallback to another scaler.
 				}
 			}
 		}
-		fprintf(stderr, "Selected scaler '%s' does not exist\n", Config.scaler);
+		if (i == n) {
+			fprintf(stderr, "Selected scaler '%s' does not exist\n",
+				Config.scaler);
+		}
 	}
 
-	// Just try them all now, in a set priority.
+	// Just try them all now, in a buildtime set priority.
 	for (i = 0; i < n; i++) {
 		if (scalers[i]->canEnable(bpp, w, h)) {
 			return scalers[i];
@@ -683,6 +688,7 @@ static void drawOnscreenControls()
 		S9xInputScreenChanged();
 		if (Config.touchscreenShow) {
 			scaler->pause();
+			SDL_FillRect(screen, NULL, 0);
 			S9xInputScreenDraw(Settings.SixteenBit ? 2 : 1,
 								screen->pixels, screen->pitch);
 			SDL_Flip(screen);

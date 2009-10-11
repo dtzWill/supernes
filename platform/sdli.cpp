@@ -9,26 +9,31 @@ struct TouchButton {
 	unsigned short mask;
 	unsigned short x, y;
 	unsigned short x2, y2;
-	float fx, fy;
-	float fw, fh;
+	double fx, fy;
+	double fw, fh;
 };
 
 #define TOUCH_BUTTON_INITIALIZER(name, x, y, w, h) \
 	{SNES_##name##_MASK, 0, 0, 0, 0, x, y, w, h}
 
+#define kCornerButtonWidth 	(0.375)
+#define kCornerButtonHeight	(0.0833333333334)
+#define kBigButtonWidth		(0.125)
+#define kBigButtonHeight	(0.2777777777778)
+
 static TouchButton touchbuttons[] = {
-	TOUCH_BUTTON_INITIALIZER(TL, 0, 0, 0.375, 0.0833),
-	TOUCH_BUTTON_INITIALIZER(TR, 0.625, 0, 0.375, 0.0833),
-	TOUCH_BUTTON_INITIALIZER(UP, 0.125, 0.0833, 0.125, 0.2777), //2
-	TOUCH_BUTTON_INITIALIZER(LEFT, 0.0, 0.3611, 0.125, 0.2777), //3
-	TOUCH_BUTTON_INITIALIZER(RIGHT, 0.25, 0.3611, 0.125, 0.2777), //4
-	TOUCH_BUTTON_INITIALIZER(DOWN, 0.125, 0.6388, 0.125, 0.2777), //5
-	TOUCH_BUTTON_INITIALIZER(START, 0, 0.9166, 0.375, 0.0833),
-	TOUCH_BUTTON_INITIALIZER(Y, 0.75, 0.0833, 0.125, 0.2777),
-	TOUCH_BUTTON_INITIALIZER(X, 0.625, 0.3611, 0.125, 0.2777),
-	TOUCH_BUTTON_INITIALIZER(A, 0.875, 0.3611, 0.125, 0.2777),
-	TOUCH_BUTTON_INITIALIZER(B, 0.75, 0.6388, 0.125, 0.2777),
-	TOUCH_BUTTON_INITIALIZER(SELECT, 0.625, 0.9166, 0.375, 0.0833),
+	TOUCH_BUTTON_INITIALIZER(TL, 0.0, 0.0, kCornerButtonWidth, kCornerButtonHeight),
+	TOUCH_BUTTON_INITIALIZER(TR, 0.625, 0.0, kCornerButtonWidth, kCornerButtonHeight),
+	TOUCH_BUTTON_INITIALIZER(UP, kBigButtonWidth, kCornerButtonHeight, kBigButtonWidth, kBigButtonHeight),
+	TOUCH_BUTTON_INITIALIZER(LEFT, 0.0, kCornerButtonHeight + kBigButtonHeight, kBigButtonWidth, kBigButtonHeight),
+	TOUCH_BUTTON_INITIALIZER(RIGHT, 2.0 * kBigButtonWidth, kCornerButtonHeight + kBigButtonHeight, kBigButtonWidth, kBigButtonHeight),
+	TOUCH_BUTTON_INITIALIZER(DOWN, kBigButtonWidth, 1.0 - (kCornerButtonHeight + kBigButtonHeight), kBigButtonWidth, kBigButtonHeight),
+	TOUCH_BUTTON_INITIALIZER(SELECT, 0.0, 1.0 - kCornerButtonHeight, kCornerButtonWidth, kCornerButtonHeight),
+	TOUCH_BUTTON_INITIALIZER(X, 1.0 - 2.0 * kBigButtonWidth, kCornerButtonHeight, kBigButtonWidth, kBigButtonHeight),
+	TOUCH_BUTTON_INITIALIZER(Y, 1.0 - 3.0 * kBigButtonWidth, kCornerButtonHeight + kBigButtonHeight, kBigButtonWidth, kBigButtonHeight),
+	TOUCH_BUTTON_INITIALIZER(A, 1.0 - kBigButtonWidth, kCornerButtonHeight + kBigButtonHeight, kBigButtonWidth, kBigButtonHeight),
+	TOUCH_BUTTON_INITIALIZER(B, 1.0 - 2.0 * kBigButtonWidth, 1.0 - (kCornerButtonHeight + kBigButtonHeight), kBigButtonWidth, kBigButtonHeight),
+	TOUCH_BUTTON_INITIALIZER(START, 1.0 - kCornerButtonWidth, 1.0 - kCornerButtonHeight, kCornerButtonWidth, kCornerButtonHeight),
 };
 
 static TouchButton* current = 0;
@@ -44,8 +49,8 @@ static TouchButton* getButtonFor(unsigned int x, unsigned int y) {
 	unsigned int i;
 
 	for (i = 0; i < sizeof(touchbuttons)/sizeof(TouchButton); i++) {
-		if (x > touchbuttons[i].x && x < touchbuttons[i].x2 &&
-			y > touchbuttons[i].y && y < touchbuttons[i].y2) {
+		if (x >= touchbuttons[i].x && x < touchbuttons[i].x2 &&
+			y >= touchbuttons[i].y && y < touchbuttons[i].y2) {
 
 			return &touchbuttons[i];
 		}
@@ -179,8 +184,7 @@ void S9xProcessEvents(bool8_32 block)
 		SDL_WaitEvent(&event);
 		processEvent(event);
 	} else {
-		while(SDL_PollEvent(&event)) 
-		{      
+		while(SDL_PollEvent(&event)) {
 			processEvent(event);
 		}
 	}
@@ -228,10 +232,10 @@ void S9xInputScreenChanged()
 	unsigned int i = 0;
 	const unsigned int w = GUI.Width, h = GUI.Height;
 	for (i = 0; i < sizeof(touchbuttons)/sizeof(TouchButton); i++) {
-		touchbuttons[i].x = (unsigned)round(touchbuttons[i].fx * w);
-		touchbuttons[i].y = (unsigned)round(touchbuttons[i].fy * h);
-		touchbuttons[i].x2 = (unsigned)round(touchbuttons[i].x + touchbuttons[i].fw * w);
-		touchbuttons[i].y2 = (unsigned)round(touchbuttons[i].y + touchbuttons[i].fh * h);
+		touchbuttons[i].x = (unsigned int)(touchbuttons[i].fx * w);
+		touchbuttons[i].y = (unsigned int)(touchbuttons[i].fy * h);
+		touchbuttons[i].x2 = (unsigned int)(touchbuttons[i].x + touchbuttons[i].fw * w);
+		touchbuttons[i].y2 = (unsigned int)(touchbuttons[i].y + touchbuttons[i].fh * h);
 	}
 }
 
@@ -246,22 +250,22 @@ static void drawControls(T * buffer, const int pitch)
 	for (i = 0; i < sizeof(touchbuttons)/sizeof(TouchButton); i++) {
 		temp = buffer + touchbuttons[i].y * pitch + touchbuttons[i].x;
 		for (x = touchbuttons[i].x; x < touchbuttons[i].x2; x++) {
-			*temp = black; // Black
+			*temp = black;
 			temp++;
 		}
 		temp = buffer + touchbuttons[i].y2 * pitch + touchbuttons[i].x;
 		for (x = touchbuttons[i].x; x < touchbuttons[i].x2; x++) {
-			*temp = black; // Black
+			*temp = black;
 			temp++;
 		}
 		temp = buffer + touchbuttons[i].y * pitch + touchbuttons[i].x;
 		for (y = touchbuttons[i].y; y < touchbuttons[i].y2; y++) {
-			*temp = black; // Black
+			*temp = black;
 			temp+=pitch;
 		}
 		temp = buffer + touchbuttons[i].y * pitch + touchbuttons[i].x2;
 		for (y = touchbuttons[i].y; y < touchbuttons[i].y2; y++) {
-			*temp = black; // Black
+			*temp = black;
 			temp+=pitch;
 		}
 	}
