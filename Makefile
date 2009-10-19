@@ -1,11 +1,13 @@
 #!/usr/bin/make
 
-CPPFLAGS := -I. $(shell sdl-config --cflags) $(shell pkg-config --cflags x11) -I/usr/include/hgw
-LDLIBS := -lz $(shell sdl-config --libs) $(shell pkg-config --libs x11) -lpopt -lhgw
+CPPFLAGS := -I. $(shell sdl-config --cflags) $(shell pkg-config --cflags x11)
+LDLIBS := -lz $(shell sdl-config --libs) $(shell pkg-config --libs x11) -lpopt
 
 -include config.mk
 
 # Sane defaults
+CONF_GUI?=1
+CONF_HGW?=$(CONF_GUI)
 ifeq ($(ARCH),armel)
 	CONF_BUILD_ASM_CPU?=1
 	CONF_BUILD_ASM_SPC700?=1
@@ -56,15 +58,21 @@ OBJS += unzip.o ioapi.o
 # my extensions to snes9x (speedhacks support)
 OBJS += hacks.o
 # the glue code that sticks it all together in a monstruous way
-OBJS += platform/path.o platform/config.o platform/hgw.o
+OBJS += platform/path.o platform/config.o
 OBJS += platform/sdl.o platform/sdlv.o platform/sdla.o platform/sdli.o
+
+ifeq ($(CONF_HGW), 1)
+	CPPFLAGS += -DCONF_HGW=1 -I/usr/include/hgw
+	LDLIBS += -lhgw
+	OBJS += platform/hgw.o
+endif
 
 # automatic dependencies
 DEPS := $(OBJS:.o=.d)
 
-all: drnoksnes gui
+all: drnoksnes
 
-clean: gui_clean
+clean:
 	rm -f drnoksnes *.o *.d platform/*.o platform/*.d
 	rm -f build-stamp configure-stamp
 
@@ -77,7 +85,6 @@ drnoksnes: $(OBJS)
 
 install: drnoksnes
 	install drnoksnes $(DESTDIR)/usr/games
-	$(MAKE) -C gui install DESTDIR="$(DESTDIR)"
 
 deps: $(DEPS)
 %.d: %.cpp
@@ -87,11 +94,21 @@ deps: $(DEPS)
 %.d: %.s
 	@touch $@
 
+# GUI
 gui:
 	$(MAKE) -C gui all
 
 gui_clean:
 	$(MAKE) -C gui clean
+	
+gui_install:
+	$(MAKE) -C gui install DESTDIR="$(DESTDIR)"
+	
+ifeq ($(CONF_GUI), 1)
+all: gui
+clean: gui_clean
+install: gui_install
+endif
 
 .PHONY: all clean remake deps install gui gui_clean
 

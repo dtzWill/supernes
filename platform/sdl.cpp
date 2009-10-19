@@ -191,6 +191,7 @@ static inline void pollEvents() {
 	}
 }
 
+#if CONF_HGW
 /** Wraps HgwPollEvents, taking care of kPollHgwEveryNFrames */
 static inline void pollHgwEvents() {
 	static int frames = 0;
@@ -202,6 +203,7 @@ static inline void pollHgwEvents() {
 		frames = 0;
 	}
 }
+#endif
 
 int main(int argc, const char ** argv) {	
 	// Initialise SDL
@@ -209,9 +211,13 @@ int main(int argc, const char ** argv) {
 		DIE("SDL_Init: %s", SDL_GetError());
 
 	// Configure snes9x
+#if CONF_HGW
 	HgwInit();						// Hildon-games-wrapper initialization.
+#endif
 	S9xLoadConfig(argc, argv);		// Load config files and parse cmd line.
+#if CONF_HGW
 	HgwConfig();					// Apply specific hildon-games config.
+#endif
 
 	// S9x initialization
 	S9xInitDisplay(argc, argv);
@@ -236,7 +242,9 @@ int main(int argc, const char ** argv) {
 		frameSync();			// May block, or set frameskip to true.
 		S9xMainLoop();			// Does CPU things, renders if needed.
 		pollEvents();
+#if CONF_HGW
 		pollHgwEvents();
+#endif
 	} while (!Config.quitting);
 	
 	// Deinitialization
@@ -253,7 +261,9 @@ int main(int argc, const char ** argv) {
 	S9xGraphicsDeinit();
 	Memory.Deinit();
 	S9xUnloadConfig();
+#if CONF_HGW
 	HgwDeinit();
+#endif
 
 	SDL_Quit();
 

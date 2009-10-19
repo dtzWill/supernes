@@ -424,14 +424,24 @@ void S9xLoadConfig(int argc, const char ** argv)
 	// Command line parameters (including --conf args)
 	parseArgs(optCon);
 
+#if CONF_HGW
 	if (!gotRomFile() && !hgwLaunched) {
 		// User did not specify a ROM file, 
 		// and we're not being launched from D-Bus.
 		fprintf(stderr, "You need to specify a ROM, like this:\n");
 		poptPrintUsage(optCon, stdout, 0);
-		poptFreeContext(optCon); 
+		poptFreeContext(optCon);
 		exit(2);
 	}
+#else
+	if (!gotRomFile()) {
+		// User did not specify a ROM file
+		fprintf(stderr, "You need to specify a ROM, like this:\n");
+		poptPrintUsage(optCon, stdout, 0);
+		poptFreeContext(optCon);
+		exit(2);
+	}
+#endif
 
 	poptFreeContext(optCon);
 }

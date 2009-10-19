@@ -61,6 +61,8 @@ configure-stamp:
 	$(M4) $(M4DEFS) debian/drnoksnes.postinst.m4 > debian/drnoksnes.postinst
 	
 	echo ARCH="$(ARCH)" > config.mk
+	echo CONF_GUI=1 >> config.mk
+	echo CONF_HGW=1 >> config.mk
 ifeq ($(shell expr "$(MAEMO_VERSION)" ">" 4), 1)
 	# Maemo 5 devices do not support Xsp
 	echo CONF_XSP=0 >> config.mk
