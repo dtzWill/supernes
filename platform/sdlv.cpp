@@ -722,10 +722,14 @@ void S9xVideoToggleFullscreen()
 
 void S9xVideoOutputFocus(bool hasFocus)
 {
-#if 0 // TODO
-	if (Config.xsp) {
-		setDoubling(hasFocus);
-	} 
+#if MAEMO
+	if (scaler) {
+		if (hasFocus) {
+			scaler->resume();
+		} else {
+			scaler->pause();
+		}
+	}
 #endif
 }
 

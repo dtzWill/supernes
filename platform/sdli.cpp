@@ -141,6 +141,11 @@ static void processEvent(const SDL_Event& event)
 	case SDL_MOUSEMOTION:
 		processMouse(event.motion.x, event.motion.y);
 		break;
+	case SDL_ACTIVEEVENT:
+		if (event.active.state & SDL_APPINPUTFOCUS) {
+			S9xVideoOutputFocus(event.active.gain);
+		}
+		break;
 	case SDL_QUIT:
 		Config.quitting = true;
 		break;
