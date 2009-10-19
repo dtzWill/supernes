@@ -3786,18 +3786,19 @@ else \
 
 // Define an inline function to handle which BGs are being displayed
 #define DISPLAY(n) \
-(!(PPU.BG_Forced & n) && \
-(GFX.r212c & n) || \
-((GFX.r212d & n) && subadd))
+	( \
+		(!(PPU.BG_Forced & n) && (GFX.r212c & n)) || \
+		(((GFX.r212d & n) && subadd)) \
+	)
 
 		    uint8 subadd = GFX.r2131 & 0x3f;
 
 			// go through all BGS are check if they need to be displayed
-		    bool8_32 BG0 = DISPLAY(1) && !(Settings.os9x_hack & GFX_IGNORE_BG0);
-		    bool8_32 BG1 = DISPLAY(2) && !(Settings.os9x_hack & GFX_IGNORE_BG1);
-		    bool8_32 BG2 = DISPLAY(4) && !(Settings.os9x_hack & GFX_IGNORE_BG2);
-		    bool8_32 BG3 = DISPLAY(8) && !(Settings.os9x_hack & GFX_IGNORE_BG3);
-		    bool8_32 OB  = DISPLAY(16) && !(Settings.os9x_hack & GFX_IGNORE_OBJ);
+		    bool BG0 = DISPLAY(1) && !(Settings.os9x_hack & GFX_IGNORE_BG0);
+		    bool BG1 = DISPLAY(2) && !(Settings.os9x_hack & GFX_IGNORE_BG1);
+		    bool BG2 = DISPLAY(4) && !(Settings.os9x_hack & GFX_IGNORE_BG2);
+		    bool BG3 = DISPLAY(8) && !(Settings.os9x_hack & GFX_IGNORE_BG3);
+		    bool OB  = DISPLAY(16) && !(Settings.os9x_hack & GFX_IGNORE_OBJ);
 
 		    if (PPU.BGMode <= 1)
 		    {

@@ -457,12 +457,16 @@ INLINE void S9xSetWord (uint16 Word, uint32 Address)
 #endif
 	if (CPU.Memory_SRAMMask)
 	{
-	    *(Memory.SRAM + 
-	      (((Address & 0x7fff) - 0x6000 +
-		((Address & 0xf0000) >> MEMMAP_SHIFT) & CPU.Memory_SRAMMask))) = (uint8) Word;
-	    *(Memory.SRAM + 
-	      ((((Address + 1) & 0x7fff) - 0x6000 +
-		(((Address + 1) & 0xf0000) >> MEMMAP_SHIFT) & CPU.Memory_SRAMMask))) = (uint8) (Word >> 8);
+		*(Memory.SRAM +
+			((Address & 0x7fff) - 0x6000) +
+			(((Address & 0xf0000) >> MEMMAP_SHIFT) & CPU.Memory_SRAMMask)
+		) =	(uint8) Word;
+
+		*(Memory.SRAM +
+			(((Address + 1) & 0x7fff) - 0x6000) +
+			((((Address + 1) & 0xf0000) >> MEMMAP_SHIFT) & CPU.Memory_SRAMMask)
+		) = (uint8) (Word >> 8);
+
 	    CPU.SRAMModified = TRUE;
 	}
 	return;

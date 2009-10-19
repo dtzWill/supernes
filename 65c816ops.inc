@@ -2447,47 +2447,48 @@ static void Op0CM0 ()
 /* Branch Instructions *********************************************************************** */
 #ifndef SA1_OPCODES
 #define BranchCheck0()\
-    if( CPU.BranchSkip)\
+    if (CPU.BranchSkip)\
     {\
-	CPU.BranchSkip = FALSE;\
-	if (!Settings.SoundSkipMethod)\
-	    if( CPU.PC - CPU.PCBase > OpAddress)\
-	        return;\
+		CPU.BranchSkip = FALSE;\
+		if (!Settings.SoundSkipMethod)\
+			if( CPU.PC - CPU.PCBase > OpAddress)\
+			    return;\
     }
 
 #define BranchCheck1()\
-    if( CPU.BranchSkip)\
+    if (CPU.BranchSkip)\
     {\
-	CPU.BranchSkip = FALSE;\
-	if (!Settings.SoundSkipMethod) {\
-	    if( CPU.PC - CPU.PCBase > OpAddress)\
-	        return;\
-	} else \
-	if (Settings.SoundSkipMethod == 1)\
-	    return;\
-	if (Settings.SoundSkipMethod == 3)\
-	    if( CPU.PC - CPU.PCBase > OpAddress)\
-	        return;\
-	    else\
-		CPU.PC = CPU.PCBase + OpAddress;\
-    }
+		CPU.BranchSkip = FALSE;\
+		if (!Settings.SoundSkipMethod) {\
+			if( CPU.PC - CPU.PCBase > OpAddress)\
+			    return;\
+		} else if (Settings.SoundSkipMethod == 1) {\
+			return;\
+		} else if (Settings.SoundSkipMethod == 3) {\
+			if( CPU.PC - CPU.PCBase > OpAddress)\
+			    return;\
+			else\
+				CPU.PC = CPU.PCBase + OpAddress;\
+		}\
+	}
 
 #define BranchCheck2()\
-    if( CPU.BranchSkip)\
+    if (CPU.BranchSkip)\
     {\
-	CPU.BranchSkip = FALSE;\
-	if (!Settings.SoundSkipMethod) {\
-	    if( CPU.PC - CPU.PCBase > OpAddress)\
-	        return;\
-	} else \
-	if (Settings.SoundSkipMethod == 1)\
-	    CPU.PC = CPU.PCBase + OpAddress;\
-	if (Settings.SoundSkipMethod == 3)\
-	    if (CPU.PC - CPU.PCBase > OpAddress)\
-	        return;\
-	    else\
-		CPU.PC = CPU.PCBase + OpAddress;\
+		CPU.BranchSkip = FALSE;\
+		if (!Settings.SoundSkipMethod) {\
+			if( CPU.PC - CPU.PCBase > OpAddress)\
+			    return;\
+		} else if (Settings.SoundSkipMethod == 1) {\
+			CPU.PC = CPU.PCBase + OpAddress;\
+		} else if (Settings.SoundSkipMethod == 3) {\
+			if (CPU.PC - CPU.PCBase > OpAddress)\
+			    return;\
+			else\
+				CPU.PC = CPU.PCBase + OpAddress;\
+		}\
     }
+
 #else
 #define BranchCheck0()
 #define BranchCheck1()

@@ -1338,13 +1338,13 @@ uint8 S9xGetPPU(uint16 Address)
 						CPU.BranchSkip = TRUE;
 						break;
 				}
-				if (Address & 3 < 2)
+				if ((Address & 3) < 2)
 				{
 					int r = rand();
 					if (r & 2)
 					{
 						if (r & 4)
-							return (Address & 3 == 1 ? 0xaa : 0xbb);
+							return ((Address & 3) == 1 ? 0xaa : 0xbb);
 						else
 							return ((r >> 3) & 0xff);
 					}

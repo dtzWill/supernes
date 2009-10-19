@@ -453,15 +453,16 @@ static void fx_plot_8bit()
     R15++;
     CLRFLAGS;
     R1++;
-    
+
 #ifdef CHECK_LIMITS
     if(y >= GSU.vScreenHeight) return;
 #endif
-    c = (uint8)GSU.vColorReg;
-    if(GSU.vPlotOptionReg & 0x10)
-	if( !(GSU.vPlotOptionReg & 0x01) && !(c&0xf)) return;
-    else
-	if( !(GSU.vPlotOptionReg & 0x01) && !c) return;
+	c = (uint8)GSU.vColorReg;
+	if(GSU.vPlotOptionReg & 0x10) {
+		if( !(GSU.vPlotOptionReg & 0x01) && !(c&0xf)) return;
+	} else {
+		if( !(GSU.vPlotOptionReg & 0x01) && !c) return;
+	}
 
     a = GSU.apvScreen[y >> 3] + GSU.x[x >> 3] + ((y & 7) << 1);
     v = 128 >> (x&7);
