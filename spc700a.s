@@ -56,7 +56,7 @@ spc700_execute: @ int cycles
   mov   cycles,r0                   @ Cycles
   add   r0,context,#iapu_allregs_load
   ldmia r0,{opcodes,spc_pc,spc_ya,spc_p,spc_x,spc_ram}
-  mov   spc_s,spc_x,lsr #8
+  uxtb  spc_s,spc_x,ror #8
   and   spc_x,spc_x,#0xff
 
   ldrb  opcode,[spc_pc],#1          @ Fetch first opcode
@@ -89,6 +89,7 @@ Apu01:
   mov   r0,r0,lsr #8
   strb  r0,[r1,#0x100]
   sub   spc_s,spc_s,#2
+  uxtb	spc_s, spc_s
   ldr   r0,[context,#iapu_extraram]
   ldrh  r0,[r0,#0x1e]
   add   spc_pc,spc_ram,r0

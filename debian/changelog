@@ -1,3 +1,10 @@
+drnoksnes (1.2.5) unstable; urgency=low
+
+  * Can also build without Maemo deps now.
+  * Fixing a hangup on certain games.
+
+ -- Javier S. Pedro <maemo@javispedro.com>  Tue, 20 Oct 2009 00:13:03 +0200
+
 drnoksnes (1.2.4) unstable; urgency=low
 
   * Fixing some problems with onscreen controls.
