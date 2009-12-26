@@ -7,20 +7,23 @@ LDLIBS := -lz $(shell sdl-config --libs) $(shell pkg-config --libs x11) -lpopt
 
 # Sane defaults
 CONF_GUI?=1
+# Use Hildon Games Wrapper library
 CONF_HGW?=$(CONF_GUI)
 ifeq ($(ARCH),armel)
 	CONF_BUILD_ASM_CPU?=1
 	CONF_BUILD_ASM_SPC700?=1
 	CONF_BUILD_ASM_SA1?=0	# Still not there
-	CONF_XSP?=1
 	CONF_BUILD_MISC_ROUTINES?=misc_armel
 else ifeq ($(ARCH),i386)
 	CONF_BUILD_ASM_CPU?=0
 	CONF_BUILD_ASM_SPC700?=0
-	CONF_BUILD_ASM_SA1?=0	# Still not there
-	CONF_XSP?=0
+	CONF_BUILD_ASM_SA1?=0
 	CONF_BUILD_MISC_ROUTINES?=misc_i386
 endif
+# Hardware pixel doubling (in N8x0)
+CONF_XSP?=0
+# Hildon Desktop compositing (in Fremantle)
+CONF_HD?=0
 
 # SNES stuff
 OBJS = apu.o c4.o c4emu.o cheats.o cheats2.o clip.o cpu.o cpuexec.o data.o
@@ -46,9 +49,13 @@ else
 	OBJS += sa1cpu.o
 endif
 
+
 ifeq ($(CONF_XSP), 1)
 	CPPFLAGS += -DCONF_XSP=1 $(shell pkg-config --cflags xsp)
 	LDLIBS += $(shell pkg-config --libs xsp)
+endif
+ifeq ($(CONF_HD), 1)
+	CPPFLAGS += -DCONF_HD=1
 endif
 
 OBJS += $(CONF_BUILD_MISC_ROUTINES).o
@@ -60,6 +67,7 @@ OBJS += hacks.o
 # the glue code that sticks it all together in a monstruous way
 OBJS += platform/path.o platform/config.o
 OBJS += platform/sdl.o platform/sdlv.o platform/sdla.o platform/sdli.o
+OBJS += platform/sdlvscalers.o
 
 ifeq ($(CONF_HGW), 1)
 	CPPFLAGS += -DCONF_HGW=1 -I/usr/include/hgw
@@ -110,5 +118,8 @@ clean: gui_clean
 install: gui_install
 endif
 
-.PHONY: all clean remake deps install gui gui_clean
+distclean: clean
+	rm -f config.mk
+
+.PHONY: all clean remake deps install gui gui_clean distclean
 

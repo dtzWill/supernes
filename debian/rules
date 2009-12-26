@@ -65,7 +65,10 @@ configure-stamp:
 	echo CONF_HGW=1 >> config.mk
 ifeq ($(shell expr "$(MAEMO_VERSION)" ">" 4), 1)
 	# Maemo 5 devices do not support Xsp
-	echo CONF_XSP=0 >> config.mk
+	# But they support hildon compositing stuff
+	echo CONF_HD=1 >> config.mk
+else
+	echo CONF_XSP=1 >> config.mk
 endif
 	echo ASFLAGS="$(ASFLAGS)" >> config.mk
 	echo CFLAGS="$(CFLAGS)" >> config.mk
