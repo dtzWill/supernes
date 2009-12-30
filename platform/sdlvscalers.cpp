@@ -137,7 +137,7 @@ protected:
 		m_surface = reinterpret_cast<uint8*>(malloc(w * h * m_Bpp));
 	}
 public:
-	~SWScaler()
+	virtual ~SWScaler()
 	{
 		free(m_surface);
 	};
@@ -162,7 +162,7 @@ public:
 
 	static const Factory factory;
 
-	const char * getName() const
+	virtual const char * getName() const
 	{
 		return "software 2x scaling";
 	}
@@ -236,7 +236,7 @@ class ARMScaler : public Scaler
 		m_surface = reinterpret_cast<uint8*>(malloc(w * h * m_Bpp));
 	}
 public:
-	~ARMScaler()
+	virtual ~ARMScaler()
 	{
 		free(m_surface);
 	};
@@ -262,7 +262,7 @@ public:
 
 	static const Factory factory;
 
-	const char * getName() const
+	virtual const char * getName() const
 	{
 		return "software ARM 2x scaling";
 	}
@@ -843,7 +843,50 @@ public:
 	}
 };
 const HDSW::Factory HDSW::factory;
-#endif
+
+#ifdef __arm__
+class HDARM : public ARMScaler
+{
+	HDARM(SDL_Surface* screen, int w, int h)
+	: SWScaler(screen, w, h)
+	{
+		hildon_set_non_compositing(true);
+	}
+	
+public:
+	~HDARM()
+	{
+		hildon_set_non_compositing(false);
+	};
+
+	class Factory : public ScalerFactory
+	{
+		const char * getName() const
+		{
+			return "hdarm2x";
+		}
+
+		bool canEnable(int bpp, int w, int h) const
+		{
+			return Config.fullscreen; // This makes sense only in fullscreen
+		}
+
+		Scaler* instantiate(SDL_Surface* screen, int w, int h) const
+		{
+			return new HDARM(screen, w, h);
+		}
+	};
+
+	static const Factory factory;
+
+	const char * getName() const
+	{
+		return "compositor disabled and software ARM 2x scaling";
+	}
+};
+const HDSW::Factory HDSW::factory;
+#endif /* __arm__ */
+#endif /* CONF_HD */
 
 #if CONF_XSP
 class XSPScaler : public Scaler
@@ -963,24 +1006,28 @@ const XSPScaler::Factory XSPScaler::factory;
 
 static const ScalerFactory* scalers[] = {
 /* More useful scalers come first */
+#if CONF_HD && defined(__arm__)
+	&HDARM::factory,				/* non-composited arm 2x scaling */
+#endif
 #if CONF_HD
-	&HDFillScaler::factory,
-	&HDSquareScaler::factory,
+	&HDSquareScaler::factory,		/* h-d assisted square scaling */
+	&HDSW::factory,					/* non-composited soft 2x scaling */
 #endif
 #if CONF_XSP
-	&XSPScaler::factory,
+	&XSPScaler::factory,			/* n8x0 pixel doubling */
 #endif
 #ifdef __arm__
-	&ARMScaler::factory,
+	&ARMScaler::factory,			/* arm 2x scaling */
 #endif
+	&SWScaler::factory,				/* soft 2x scaling */
 #if CONF_HD
-	&HDSW::factory,
+	&HDDummy::factory,				/* non composited */
 #endif
-	&SWScaler::factory,
+	&DummyScaler::factory,			/* failsafe */
+/* The following scalers will not be automatically enabled, no matter what */
 #if CONF_HD
-	&HDDummy::factory,
+	&HDFillScaler::factory,
 #endif
-	&DummyScaler::factory,
 };
 
 /* Entry point functions */

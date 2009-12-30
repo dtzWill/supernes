@@ -80,22 +80,20 @@
         </long>
       </locale>
     </schema>
-ifelse(eval(MAEMO_MAJOR < 5), 1, `dnl
     <schema>
-     <key>/schemas/apps/maemo/drnoksnes/xsp</key>
-      <applyto>/apps/maemo/drnoksnes/xsp</applyto>
+     <key>/schemas/apps/maemo/drnoksnes/scaler</key>
+      <applyto>/apps/maemo/drnoksnes/scaler</applyto>
       <owner>drnoksnes</owner>
-      <type>bool</type>
-      <default>true</default>
+      <type>string</type>
+      <default></default>
       <locale name="C">
-        <short>Pixel doubling</short>
+        <short>Scaler</short>
         <long>
-          Enable the use of the hardware pixel doubler. Without it,
-          a slower, lower quality software scaler is used.
+          Name of the preferred scaler to use. Available scalers depend on 
+          platform. Leave empty to select best scaler available.
         </long>
       </locale>
     </schema>
-', `')dnl
     <schema>
      <key>/schemas/apps/maemo/drnoksnes/speedhacks</key>
       <applyto>/apps/maemo/drnoksnes/speedhacks</applyto>

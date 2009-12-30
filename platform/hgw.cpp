@@ -87,15 +87,12 @@ void HgwConfig()
 		Settings.Transparency = transparency ? TRUE : FALSE;
 	}
 
-#if CONF_XSP
-	char xsp = TRUE;
-	if (hgw_conf_request_bool(hgw, kGConfXSP, &xsp) == HGW_ERR_NONE) {
-		if (!xsp) {
-			free(Config.scaler);
-			Config.scaler = strdup("2x");
-		}
+	char scaler[NAME_MAX];
+	if (hgw_conf_request_bool(hgw, kGConfScaler, scaler) == HGW_ERR_NONE
+		&& strlen(scaler) > 0) {
+		free(Config.scaler);
+		Config.scaler = strdup(scaler);
 	}
-#endif
 
 	char displayFramerate = FALSE;
 	if (hgw_conf_request_bool(hgw, kGConfDisplayFramerate, &displayFramerate) == HGW_ERR_NONE) {

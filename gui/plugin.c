@@ -44,6 +44,7 @@
 
 #include "../platform/hgw.h"
 #include "plugin.h"
+#include "i18n.h"
 
 static GtkWidget * load_plugin(void);
 static void unload_plugin(void);
@@ -172,9 +173,9 @@ static void controls_item_callback(GtkWidget * button, gpointer data)
 	controls_dialog(get_parent_window());
 }
 
-static void advanced_item_callback(GtkWidget * button, gpointer data)
+static void settings_item_callback(GtkWidget * button, gpointer data)
 {
-	advanced_dialog(get_parent_window());
+	settings_dialog(get_parent_window());
 }
 
 static void about_item_callback(GtkWidget * button, gpointer data)
@@ -242,12 +243,13 @@ static GtkWidget * load_plugin(void)
 	sound_check =
 		HILDON_CHECK_BUTTON(hildon_check_button_new(
 			HILDON_SIZE_AUTO_WIDTH | HILDON_SIZE_FINGER_HEIGHT));
-	gtk_button_set_label(GTK_BUTTON(sound_check), "Sound");
+	gtk_button_set_label(GTK_BUTTON(sound_check), _("Sound"));
 
 	framerate_picker = HILDON_PICKER_BUTTON(hildon_picker_button_new(
 		HILDON_SIZE_AUTO_WIDTH | HILDON_SIZE_FINGER_HEIGHT,
 		HILDON_BUTTON_ARRANGEMENT_HORIZONTAL));
-	hildon_button_set_title(HILDON_BUTTON(framerate_picker), "Target framerate");
+	hildon_button_set_title(HILDON_BUTTON(framerate_picker),
+		_("Target framerate"));
 
 	HildonTouchSelector* framerate_sel =
 		HILDON_TOUCH_SELECTOR(hildon_touch_selector_new_text());
@@ -264,7 +266,7 @@ static GtkWidget * load_plugin(void)
 	display_fps_check =
 		HILDON_CHECK_BUTTON(hildon_check_button_new(HILDON_SIZE_FINGER_HEIGHT));
 	gtk_button_set_label(GTK_BUTTON(display_fps_check),
-		"Show while in game");
+		_("Show while in game"));
 	turbo_check =
 		HILDON_CHECK_BUTTON(hildon_check_button_new(HILDON_SIZE_FINGER_HEIGHT));
 	gtk_button_set_label(GTK_BUTTON(turbo_check),
@@ -424,7 +426,7 @@ static GtkWidget **load_menu(guint *nitems)
 	*nitems = 3;
 
 	g_signal_connect(G_OBJECT(menu_items[0]), "clicked",
-					G_CALLBACK(advanced_item_callback), NULL);
+					G_CALLBACK(settings_item_callback), NULL);
 	g_signal_connect(G_OBJECT(menu_items[1]), "clicked",
 					G_CALLBACK(controls_item_callback), NULL);
 	g_signal_connect(G_OBJECT(menu_items[2]), "clicked",
@@ -449,7 +451,7 @@ static GtkWidget **load_menu(guint *nitems)
 	g_signal_connect(G_OBJECT(controls_item), "activate",
 					G_CALLBACK(controls_item_callback), NULL);
 	g_signal_connect(G_OBJECT(advanced_item), "activate",
-					G_CALLBACK(advanced_item_callback), NULL);
+					G_CALLBACK(settings_item_callback), NULL);
 	g_signal_connect(G_OBJECT(menu_items[1]), "activate",
 					G_CALLBACK(about_item_callback), NULL);
 #endif

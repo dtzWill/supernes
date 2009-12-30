@@ -28,8 +28,8 @@ void save_save_as(GtkWindow* parent);
 void controls_setup();
 void controls_dialog(GtkWindow* parent);
 
-/* advanced.c */
-void advanced_dialog(GtkWindow* parent);
+/* settings.c */
+void settings_dialog(GtkWindow* parent);
 
 /* about.c */
 void about_dialog(GtkWindow* parent);

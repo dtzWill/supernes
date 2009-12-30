@@ -25,7 +25,6 @@ void HgwPollEvents();
 #define kGConfDisplayFramerate kGConfPath "/" "display-framerate"
 #define kGConfDisplayControls kGConfPath "/" "display-controls"
 #define kGConfSpeedhacks kGConfPath "/" "speedhacks"
-#define kGConfXSP kGConfPath "/" "xsp"
 #define kGConfMapping kGConfPath "/" "mapping"
 #define kGConfKeysPath kGConfPath "/" "keys"
 
