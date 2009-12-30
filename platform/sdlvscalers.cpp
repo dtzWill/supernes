@@ -1,12 +1,18 @@
 #include <stdio.h> 
+#include <math.h>
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <SDL.h>
 #include <SDL_syswm.h>
 
-#if CONF_XSP || CONF_HD
+#if CONF_XSP
 #	include <X11/extensions/Xsp.h>
+#endif
+#if CONF_HD
+#	include <X11/Xatom.h>
+#	include <sys/ipc.h>
+#	include <sys/shm.h>
 #endif
 
 #include "snes9x.h"
@@ -372,6 +378,15 @@ enum hdAtoms {
  	ATOM_HILDON_ANIMATION_CLIENT_MESSAGE_SCALE,
  	ATOM_HILDON_ANIMATION_CLIENT_MESSAGE_ANCHOR,
  	ATOM_HILDON_ANIMATION_CLIENT_MESSAGE_PARENT,
+ 	ATOM_HILDON_WM_WINDOW_TYPE_REMOTE_TEXTURE,
+ 	ATOM_HILDON_TEXTURE_CLIENT_MESSAGE_SHM,
+ 	ATOM_HILDON_TEXTURE_CLIENT_MESSAGE_DAMAGE,
+	ATOM_HILDON_TEXTURE_CLIENT_MESSAGE_SHOW,
+	ATOM_HILDON_TEXTURE_CLIENT_MESSAGE_POSITION,
+	ATOM_HILDON_TEXTURE_CLIENT_MESSAGE_OFFSET,
+	ATOM_HILDON_TEXTURE_CLIENT_MESSAGE_SCALE,
+	ATOM_HILDON_TEXTURE_CLIENT_MESSAGE_PARENT,
+	ATOM_HILDON_TEXTURE_CLIENT_READY,
  	ATOM_COUNT
 };
 
@@ -390,6 +405,15 @@ static const char * hdAtomNames[] = {
 	"_HILDON_ANIMATION_CLIENT_MESSAGE_SCALE",
 	"_HILDON_ANIMATION_CLIENT_MESSAGE_ANCHOR",
 	"_HILDON_ANIMATION_CLIENT_MESSAGE_PARENT",
+	"_HILDON_WM_WINDOW_TYPE_REMOTE_TEXTURE",
+	"_HILDON_TEXTURE_CLIENT_MESSAGE_SHM",
+	"_HILDON_TEXTURE_CLIENT_MESSAGE_DAMAGE",
+	"_HILDON_TEXTURE_CLIENT_MESSAGE_SHOW",
+	"_HILDON_TEXTURE_CLIENT_MESSAGE_POSITION",
+	"_HILDON_TEXTURE_CLIENT_MESSAGE_OFFSET",
+	"_HILDON_TEXTURE_CLIENT_MESSAGE_SCALE",
+	"_HILDON_TEXTURE_CLIENT_MESSAGE_PARENT",
+	"_HILDON_TEXTURE_CLIENT_READY",
 	""
 };
 
@@ -463,6 +487,281 @@ static void hildon_set_non_compositing(bool enable)
 	wminfo.info.x11.unlock_func();
 }
 
+class HDScalerBase : public Scaler
+{
+	SDL_Surface * m_screen;
+	SDL_Rect m_area;
+	const int m_w, m_h, m_Bpp;
+	const float ratio_x, ratio_y;
+
+	// SDL/X11 stuff we save for faster access.
+	SDL_SysWMinfo wminfo;
+	Display* display;
+	Window window;
+
+	// Shared memory segment info.
+	key_t shmkey;
+	int shmid;
+	void *shmaddr;
+
+private:
+	/** Sends a message to hildon-desktop.
+	  * This function comes mostly straight from libhildon.
+	  */
+	void sendMessage(Atom message_type,
+		uint32 l0, uint32 l1, uint32 l2, uint32 l3, uint32 l4)
+	{
+		XEvent event = { 0 };
+
+		event.xclient.type = ClientMessage;
+		event.xclient.window = window;
+		event.xclient.message_type = message_type;
+		event.xclient.format = 32;
+		event.xclient.data.l[0] = l0;
+		event.xclient.data.l[1] = l1;
+		event.xclient.data.l[2] = l2;
+		event.xclient.data.l[3] = l3;
+		event.xclient.data.l[4] = l4;
+
+		XSendEvent (display, window, True,
+		            StructureNotifyMask,
+		            (XEvent *)&event);
+	}
+
+	/** Sends all configuration parameters for the remote texture. */
+	void reconfigure()
+	{
+		SDL_VERSION(&wminfo.version);
+		if (!SDL_GetWMInfo(&wminfo)) {
+			DIE("Bad SDL version!");
+		}
+
+		Window parent;
+		int yoffset = 0;
+		if (Config.fullscreen) {
+			parent = wminfo.info.x11.fswindow;
+		} else {
+			parent = wminfo.info.x11.wmwindow;
+			yoffset = 60; // Hardcode the title bar size for now.
+		}
+
+		sendMessage(HDATOM(_HILDON_TEXTURE_CLIENT_MESSAGE_SHM),
+			(uint32) shmkey, m_w, m_h, m_Bpp, 0);
+		sendMessage(HDATOM(_HILDON_TEXTURE_CLIENT_MESSAGE_PARENT),
+			(uint32) parent, 0, 0, 0, 0);
+		sendMessage(HDATOM(_HILDON_TEXTURE_CLIENT_MESSAGE_POSITION),
+			m_area.x, yoffset + m_area.y, m_area.w, m_area.h, 0);
+		sendMessage(HDATOM(_HILDON_TEXTURE_CLIENT_MESSAGE_SCALE),
+			ratio_x * (1 << 16), ratio_y * (1 << 16), 0, 0, 0);
+		sendMessage(HDATOM(_HILDON_TEXTURE_CLIENT_MESSAGE_SHOW),
+			1, 255, 0, 0, 0);
+	}
+
+protected:
+	HDScalerBase(SDL_Surface* screen, int w, int h, float r_x, float r_y)
+	: m_screen(screen), m_w(w), m_h(h),
+	 m_Bpp(m_screen->format->BitsPerPixel / 8),
+	 ratio_x(r_x), ratio_y(r_y)
+	{
+		centerRectangle(m_area, GUI.Width, GUI.Height, w * r_x, h * r_y);
+
+		// What we're going to do:
+		//  - Create a new window that we're going to manage
+		//  - Set up that window as a Hildon Remote Texture
+		//  - Render to that new window, instead of the SDL window ("screen").
+		// Yet another load of uglyness, but hey.
+
+		// Barf if this is not a known SDL version.
+		SDL_VERSION(&wminfo.version);
+		if (!SDL_GetWMInfo(&wminfo)) {
+			DIE("Bad SDL version!");
+		}
+
+		// Clear the SDL screen with black, just in case it gets drawn.
+		SDL_FillRect(screen, 0, SDL_MapRGB(screen->format, 0, 0, 0));
+
+		// Get the SDL gfxdisplay (this is where events end up).
+		display = wminfo.info.x11.display;
+
+		// The parent window needs to be mapped, so we sync it.
+		XSync(display, True);
+
+		// Ensure hildon atoms are synced, and that hildon-desktop is up.
+		hildon_load_atoms(display);
+
+		// Create our alternative window.
+		const int blackColor = BlackPixel(display, DefaultScreen(display));
+		window = XCreateSimpleWindow(display, DefaultRootWindow(display),
+			0, 0, m_w, m_h, 0, blackColor, blackColor);
+		XStoreName(display, window, "DrNokSnes Video output window");
+		Atom atom = HDATOM(_HILDON_WM_WINDOW_TYPE_REMOTE_TEXTURE);
+		XChangeProperty(display, window, HDATOM(_NET_WM_WINDOW_TYPE),
+			XA_ATOM, 32, PropModeReplace,
+			(unsigned char *) &atom, 1);
+		XSelectInput(display, window, PropertyChangeMask | StructureNotifyMask);
+		XMapWindow(display, window);
+
+		// Wait for "ready" property, set up by hildon-desktop after a while
+		// For now, loop here. In the future, merge with main event loop.
+		bool ready = false;
+		while (!ready) {
+			XEvent e;
+			XNextEvent(display, &e);
+			switch(e.type) {
+				case PropertyNotify:
+					if (e.xproperty.atom ==
+					  HDATOM(_HILDON_TEXTURE_CLIENT_READY)) {
+						ready = true;
+					}
+					break;
+				default:
+					break;
+			}
+		}
+
+		// Create a shared memory segment with hildon-desktop
+		shmkey = ftok("/usr/bin/drnoksnes", 'd'); // TODO Put rom file here
+		shmid = shmget(shmkey, m_w * m_h * m_Bpp, IPC_CREAT | 0777);
+		if (shmid < 0) {
+			DIE("Failed to create shared memory");
+		}
+		shmaddr = shmat(shmid, 0, 0);
+		if (shmaddr == (void*)-1) {
+			DIE("Failed to attach shared memory");
+		}
+
+		// Send all configuration events to hildon-desktop
+		reconfigure();
+	}
+
+public:
+	virtual ~HDScalerBase()
+	{
+		// Hide, unparent and deattach the remote texture
+		sendMessage(HDATOM(_HILDON_TEXTURE_CLIENT_MESSAGE_SHOW),
+			0, 255, 0, 0, 0);
+		sendMessage(HDATOM(_HILDON_TEXTURE_CLIENT_MESSAGE_PARENT),
+			0, 0, 0, 0, 0);
+		sendMessage(HDATOM(_HILDON_TEXTURE_CLIENT_MESSAGE_SHM),
+			0, 0, 0, 0, 0);
+		XFlush(display);
+		// Destroy our managed window and shared memory segment
+		XDestroyWindow(display, window);
+		XSync(display, True);
+		shmdt(shmaddr);
+		shmctl(shmid, IPC_RMID, 0);
+	};
+
+	virtual uint8* getDrawBuffer() const
+	{
+		return reinterpret_cast<uint8*>(shmaddr);
+	};
+
+	virtual unsigned int getDrawBufferPitch() const
+	{
+		return m_w * m_Bpp;
+	};
+
+	virtual void getRenderedGUIArea(unsigned short & x, unsigned short & y,
+							unsigned short & w, unsigned short & h) const
+	{
+		x = m_area.x; y = m_area.y; w = m_area.w; h = m_area.h;
+	};
+
+	virtual int getRatio() const
+	{
+		return ratio_y; // TODO
+	};
+
+	virtual void prepare()
+	{
+
+	};
+
+	virtual void finish()
+	{
+		// Send a damage event to hildon-desktop.
+		sendMessage(HDATOM(_HILDON_TEXTURE_CLIENT_MESSAGE_DAMAGE),
+			0, 0, m_w, m_h, 0);
+		XSync(display, False);
+	};
+
+	virtual void pause() { };
+	virtual void resume() { };
+};
+
+class HDFillScaler : public HDScalerBase
+{
+	HDFillScaler(SDL_Surface* screen, int w, int h)
+	: HDScalerBase(screen, w, h,
+		GUI.Width / (float)w, GUI.Height / (float)h)
+	{
+	}
+
+public:
+	class Factory : public ScalerFactory
+	{
+		const char * getName() const
+		{
+			return "hdfill";
+		}
+
+		bool canEnable(int bpp, int w, int h) const
+		{
+			return true;
+		}
+
+		Scaler* instantiate(SDL_Surface* screen, int w, int h) const
+		{
+			return new HDFillScaler(screen, w, h-20);
+		}
+	};
+
+	static const Factory factory;
+
+	virtual const char * getName() const
+	{
+		return "hildon-desktop fill screen scaling";
+	}
+};
+const HDFillScaler::Factory HDFillScaler::factory;
+
+class HDSquareScaler : public HDScalerBase
+{
+	HDSquareScaler(SDL_Surface* screen, int w, int h, float ratio)
+	: HDScalerBase(screen, w, h, ratio, ratio)
+	{
+	}
+
+public:
+	class Factory : public ScalerFactory
+	{
+		const char * getName() const
+		{
+			return "hdsq";
+		}
+
+		bool canEnable(int bpp, int w, int h) const
+		{
+			return true;
+		}
+
+		Scaler* instantiate(SDL_Surface* screen, int w, int h) const
+		{
+			return new HDSquareScaler(screen, w, h,
+				fminf(GUI.Width / (float)w, GUI.Height / (float)h));
+		}
+	};
+
+	static const Factory factory;
+
+	virtual const char * getName() const
+	{
+		return "hildon-desktop square screen scaling";
+	}
+};
+const HDSquareScaler::Factory HDSquareScaler::factory;
+
 class HDDummy : public DummyScaler
 {
 	HDDummy(SDL_Surface* screen, int w, int h)
@@ -486,7 +785,7 @@ public:
 
 		bool canEnable(int bpp, int w, int h) const
 		{
-			return true;
+			return Config.fullscreen; // This makes sense only in fullscreen
 		}
 
 		Scaler* instantiate(SDL_Surface* screen, int w, int h) const
@@ -527,7 +826,7 @@ public:
 
 		bool canEnable(int bpp, int w, int h) const
 		{
-			return true;
+			return Config.fullscreen; // This makes sense only in fullscreen
 		}
 
 		Scaler* instantiate(SDL_Surface* screen, int w, int h) const
@@ -664,6 +963,10 @@ const XSPScaler::Factory XSPScaler::factory;
 
 static const ScalerFactory* scalers[] = {
 /* More useful scalers come first */
+#if CONF_HD
+	&HDFillScaler::factory,
+	&HDSquareScaler::factory,
+#endif
 #if CONF_XSP
 	&XSPScaler::factory,
 #endif
