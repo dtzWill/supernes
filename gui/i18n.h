@@ -1,9 +1,10 @@
 #ifndef __I18N_H__
 #define __I18N_H__
 
-#define GETTEXT_PACKAGE "drnoksnes"
-
 #if CONF_NLS
+#if !defined(GETTEXT_PACKAGE)
+#	error GETTEXT_PACKAGE not defined
+#endif
 #include <libintl.h>
 #define _(String) dgettext(GETTEXT_PACKAGE, String)
 #ifdef gettext_noop

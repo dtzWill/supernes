@@ -7,6 +7,11 @@ LDLIBS:=$(shell pkg-config --libs $(PKGS))
 # The about dialog will use this
 CPPFLAGS+=-DGAME_VERSION=$(GAME_VERSION)
 
+GETTEXT_PACKAGE:=drnoksnes_plugin
+ifeq ($(CONF_NLS), 1)
+	CPPFLAGS += -DCONF_NLS=1 -DGETTEXT_PACKAGE=\"$(GETTEXT_PACKAGE)\"
+endif
+
 # Some hardcoded paths
 GAME_SHARE_PATH=/usr/share/games/drnoksnes
 GAME_PLUGIN_PATH=/usr/lib/drnoksnes_plugin.so
@@ -23,26 +28,46 @@ ifdef MAEMO_VERSION
 M4DEFS+= -DMAEMO -DMAEMO_MAJOR=$(MAEMO_VERSION)
 endif
 
-OBJS:=plugin.o state.o save.o controls.o cellrendererkey.o advanced.o about.o
+XGETTEXT:=xgettext
+XGETTEXT_OPTS:=--default-domain=$(GETTEXT_PACKAGE) --from-code=UTF-8 \
+	--language=C --msgid-bugs-address=maemo@javispedro.com \
+	--keyword=_ --keyword=N_
+
+SRCS:=plugin.c state.c save.c controls.c cellrendererkey.c settings.c about.c
+OBJS:=$(SRCS:.c=.o)
+
+POT:=$(GETTEXT_PACKAGE).pot
+PO_FILES:=$(wildcard i18n/*.po)
+MO_FILES:=$(PO_FILES:.po=.mo)
+LANGS:=$(basename $(notdir $(PO_FILES)))
 
 DATA_FILES:=drnoksnes.conf drnoksnes.desktop drnoksnes.game 
 DATA_FILES+=drnoksnes.service drnoksnes.startup.service
 DATA_FILES+=drnoksnes.schemas
 
-all: drnoksnes_plugin.so data
+all: drnoksnes_plugin.so $(DATA_FILES) $(MO_FILES)
 
 drnoksnes_plugin.so: $(OBJS)
-	$(CC) $(LDFLAGS) $^ $(LDLIBS)-o $@
+	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
+
+$(POT): $(SRCS)
+	$(XGETTEXT) $(XGETTEXT_OPTS) -o$@ $^
+
+$(MO_FILES): %.mo: %.po
+	msgfmt -o $@ $<
+
+$(PO_FILES): %: $(POT)
+	msgmerge -U $@ $(POT)
+	@touch $@
 	
 clean: 
 	rm -f drnoksnes_plugin.so *.o
+	rm -f $(POT) $(MO_FILES)
 	rm -f $(DATA_FILES)
 
 %: %.m4
 	$(M4) $(M4DEFS) $^ > $@
 
-data: $(DATA_FILES)
-	
 install: all
 	install -d $(DESTDIR)$(GAME_SHARE_PATH)
 	install drnoksnes_plugin.so $(DESTDIR)$(GAME_PLUGIN_PATH)
@@ -60,6 +85,11 @@ install: all
 ifneq ($(GCONF_DISABLE_MAKEFILE_SCHEMA_INSTALL),1)
 	gconftool-2 --makefile-install-rule $(DESTDIR)/usr/share/gconf/schemas/drnoksnes.schemas > /dev/null
 endif
+	for lang in $(LANGS); do \
+		install -d $(DESTDIR)/usr/share/locale/$$lang/LC_MESSAGES ; \
+		install -m 0644 i18n/$$lang.mo \
+		 $(DESTDIR)/usr/share/locale/$$lang/LC_MESSAGES/$(GETTEXT_PACKAGE).mo ; \
+	done
 
-.PHONY: all clean data install
+.PHONY: all clean install
 

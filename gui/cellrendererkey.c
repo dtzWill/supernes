@@ -1,11 +1,9 @@
-#include <libintl.h>
 #include <gtk/gtk.h>
 #include <gdk/gdkx.h>
 #include <gdk/gdkkeysyms.h>
 #include "cellrendererkey.h"
 
-#define _(x) x
-#define N_(x) x
+#include "i18n.h"
 
 #define CELL_RENDERER_TEXT_PATH "cell-renderer-key-text"
 
@@ -137,8 +135,8 @@ cell_renderer_key_class_init (CellRendererKeyClass *cell_key_class)
   g_object_class_install_property (object_class,
                                    PROP_SCANCODE,
                                    g_param_spec_int ("scancode",
-                                                     _("Scancode"),
-                                                     _("Scancode"),
+                                                     "Scancode",
+                                                     "Scancode",
                                                       -1,
                                                       G_MAXINT,
                                                       -1,

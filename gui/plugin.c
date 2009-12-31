@@ -103,7 +103,7 @@ static void set_rom(const char * rom_file)
 	if (current_rom_file) g_free(current_rom_file);
 	if (!rom_file || strlen(rom_file) == 0) {
 		current_rom_file = NULL;
-		set_rom_label("<no rom selected>");
+		set_rom_label(_("<no rom selected>"));
 		return;
 	}
 
@@ -208,7 +208,7 @@ static GtkWidget * load_plugin(void)
 	select_rom_btn = HILDON_BUTTON(hildon_button_new_with_text(
 		HILDON_SIZE_AUTO_WIDTH | HILDON_SIZE_THUMB_HEIGHT,
 		HILDON_BUTTON_ARRANGEMENT_VERTICAL,
-		"ROM",
+		_("ROM"),
 		NULL));
 	hildon_button_set_alignment(select_rom_btn, 0.0f, 0.5f, 0.9f, 0.2f);
 
@@ -226,7 +226,7 @@ static GtkWidget * load_plugin(void)
 #else
 {
 	GtkWidget* rom_hbox = gtk_hbox_new(FALSE, HILDON_MARGIN_DEFAULT);
-	select_rom_btn = GTK_BUTTON(gtk_button_new_with_label("Select ROM..."));
+	select_rom_btn = GTK_BUTTON(gtk_button_new_with_label(_("Select ROM...")));
 	gtk_widget_set_size_request(GTK_WIDGET(select_rom_btn),	180, 46);
 	rom_label = GTK_LABEL(gtk_label_new(NULL));
 
@@ -270,7 +270,7 @@ static GtkWidget * load_plugin(void)
 	turbo_check =
 		HILDON_CHECK_BUTTON(hildon_check_button_new(HILDON_SIZE_FINGER_HEIGHT));
 	gtk_button_set_label(GTK_BUTTON(turbo_check),
-		"Turbo mode");
+		_("Turbo mode"));
 
 	gtk_box_pack_start_defaults(framerate_sel_box, GTK_WIDGET(display_fps_check));
 	gtk_box_pack_start_defaults(framerate_sel_box, GTK_WIDGET(turbo_check));
@@ -285,12 +285,12 @@ static GtkWidget * load_plugin(void)
 {
 	GtkBox* opt_hbox1 = GTK_BOX(gtk_hbox_new(FALSE, HILDON_MARGIN_DEFAULT));
 	sound_check =
-		GTK_CHECK_BUTTON(gtk_check_button_new_with_label("Enable sound"));
+		GTK_CHECK_BUTTON(gtk_check_button_new_with_label(_("Enable sound")));
 
 	turbo_check =
-		GTK_CHECK_BUTTON(gtk_check_button_new_with_label("Turbo mode"));
+		GTK_CHECK_BUTTON(gtk_check_button_new_with_label(_("Turbo mode")));
 	display_fps_check =
-		GTK_CHECK_BUTTON(gtk_check_button_new_with_label("Display framerate"));
+		GTK_CHECK_BUTTON(gtk_check_button_new_with_label(_("Display framerate")));
 	speedhacks_combo =
 		GTK_COMBO_BOX(gtk_combo_box_new_text());
 
@@ -309,11 +309,11 @@ static GtkWidget * load_plugin(void)
 	GtkBox* opt_hbox2 = GTK_BOX(gtk_hbox_new(FALSE, HILDON_MARGIN_DEFAULT));
 
 	accu_check =
-		GTK_CHECK_BUTTON(gtk_check_button_new_with_label("Accurate graphics"));
+		GTK_CHECK_BUTTON(gtk_check_button_new_with_label(_("Accurate graphics")));
 
 	framerate_combo =
 		GTK_COMBO_BOX(gtk_combo_box_new_text());
-	GtkWidget* framerate_box = hildon_caption_new(NULL, "Framerate:",
+	GtkWidget* framerate_box = hildon_caption_new(NULL, _("Framerate:"),
 		GTK_WIDGET(framerate_combo), NULL, HILDON_CAPTION_OPTIONAL);
 
 	gtk_combo_box_append_text(framerate_combo, "Auto");
@@ -322,9 +322,9 @@ static GtkWidget * load_plugin(void)
 		sprintf(buffer, "%d-%d", 50/i, 60/i);
 		gtk_combo_box_append_text(framerate_combo, buffer);
 	}
-	gtk_combo_box_append_text(speedhacks_combo, "No speedhacks");
-	gtk_combo_box_append_text(speedhacks_combo, "Safe hacks only");
-	gtk_combo_box_append_text(speedhacks_combo, "All speedhacks");
+	gtk_combo_box_append_text(speedhacks_combo, _("No speedhacks"));
+	gtk_combo_box_append_text(speedhacks_combo, _("Safe hacks only"));
+	gtk_combo_box_append_text(speedhacks_combo, _("All speedhacks"));
 
 	gtk_box_pack_start(opt_hbox2, GTK_WIDGET(accu_check), FALSE, FALSE, 0);
 	gtk_box_pack_start(opt_hbox2, GTK_WIDGET(framerate_box), TRUE, FALSE, 0);
@@ -418,11 +418,11 @@ static GtkWidget **load_menu(guint *nitems)
 	const HildonSizeType button_size =
 		HILDON_SIZE_FINGER_HEIGHT | HILDON_SIZE_AUTO_WIDTH;
 	menu_items[0] = hildon_gtk_button_new(button_size);
-	gtk_button_set_label(GTK_BUTTON(menu_items[0]), "Settings…");
+	gtk_button_set_label(GTK_BUTTON(menu_items[0]), _("Settings…"));
 	menu_items[1] = hildon_gtk_button_new(button_size);
-	gtk_button_set_label(GTK_BUTTON(menu_items[1]), "Controls…");
+	gtk_button_set_label(GTK_BUTTON(menu_items[1]), _("Controls…"));
 	menu_items[2] = hildon_gtk_button_new(button_size);
-	gtk_button_set_label(GTK_BUTTON(menu_items[2]), "About…");
+	gtk_button_set_label(GTK_BUTTON(menu_items[2]), _("About…"));
 	*nitems = 3;
 
 	g_signal_connect(G_OBJECT(menu_items[0]), "clicked",
@@ -432,8 +432,8 @@ static GtkWidget **load_menu(guint *nitems)
 	g_signal_connect(G_OBJECT(menu_items[2]), "clicked",
 					G_CALLBACK(about_item_callback), NULL);
 #else
-	menu_items[0] = gtk_menu_item_new_with_label("Settings");
-	menu_items[1] = gtk_menu_item_new_with_label("About…");
+	menu_items[0] = gtk_menu_item_new_with_label(_("Settings"));
+	menu_items[1] = gtk_menu_item_new_with_label(_("About…"));
 	*nitems = 2;
 
 	GtkMenu* settings_menu = GTK_MENU(gtk_menu_new());
@@ -441,11 +441,11 @@ static GtkWidget **load_menu(guint *nitems)
 		GTK_WIDGET(settings_menu));
 
 	GtkMenuItem* controls_item =
-		GTK_MENU_ITEM(gtk_menu_item_new_with_label("Controls…"));
+		GTK_MENU_ITEM(gtk_menu_item_new_with_label(_("Controls…")));
 	gtk_menu_append(GTK_MENU(settings_menu), GTK_WIDGET(controls_item));
 
 	GtkMenuItem* advanced_item =
-		GTK_MENU_ITEM(gtk_menu_item_new_with_label("Advanced…"));
+		GTK_MENU_ITEM(gtk_menu_item_new_with_label(_("Advanced…")));
 	gtk_menu_append(GTK_MENU(settings_menu), GTK_WIDGET(advanced_item));
 
 	g_signal_connect(G_OBJECT(controls_item), "activate",
@@ -507,12 +507,12 @@ static void plugin_callback(GtkWidget * menu_item, gpointer data)
 			}
 			if (!current_rom_file) {
 				GtkWidget* note = hildon_note_new_information(get_parent_window(),
-					"No ROM selected");
+					_("No ROM selected"));
 				gtk_dialog_run(GTK_DIALOG(note));
 				gtk_widget_destroy(note);
 			} else if (!current_rom_file_exists) {
 				GtkWidget* note = hildon_note_new_information(get_parent_window(),
-					"ROM file does not exist");
+					_("ROM file does not exist"));
 				gtk_dialog_run(GTK_DIALOG(note));
 				gtk_widget_destroy(note);
 			}

@@ -75,7 +75,8 @@ endif
 	echo CXXFLAGS="$(CFLAGS)" >> config.mk
 	echo LDFLAGS="$(LDFLAGS)" >> config.mk
 	
-	echo CFLAGS="$(GUI_CFLAGS)" > gui/config.mk
+	echo CONF_NLS=1 > gui/config.mk
+	echo CFLAGS="$(GUI_CFLAGS)" >> gui/config.mk
 	echo LDFLAGS="$(GUI_LDFLAGS)" >> gui/config.mk
 	echo MAEMO_VERSION="$(MAEMO_VERSION)" >> gui/config.mk
 	echo GAME_VERSION="$(GAME_VERSION)" >> gui/config.mk
@@ -125,10 +126,6 @@ binary-arch: build install
 	dh_installdeb
 	dh_shlibdeps
 	dh_gencontrol
-ifeq ($(shell expr "$(MAEMO_VERSION)" ">" 4), 1)
-#	Optify only in Maemo 5
-	maemo-optify
-endif
 	dh_md5sums
 	dh_builddeb
 

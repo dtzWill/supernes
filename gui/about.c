@@ -51,7 +51,7 @@ static void cb_url_response(GtkWidget * button, gpointer data)
 
 void about_dialog(GtkWindow* parent)
 {
-	dialog = GTK_DIALOG(gtk_dialog_new_with_buttons("About",
+	dialog = GTK_DIALOG(gtk_dialog_new_with_buttons(_("About"),
 		parent, GTK_DIALOG_MODAL,
 		GTK_STOCK_CLOSE, GTK_RESPONSE_CLOSE, NULL));
 

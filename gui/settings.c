@@ -20,6 +20,7 @@
 *
 */
 
+#include <string.h>
 #include <gtk/gtk.h>
 #include <hildon/hildon-helper.h>
 
@@ -28,6 +29,7 @@
 #include <hildon/hildon-check-button.h>
 #include <hildon/hildon-picker-button.h>
 #include <hildon/hildon-touch-selector.h>
+#include <pango/pango-attributes.h>
 #else
 #include <hildon/hildon-caption.h>
 #endif
@@ -70,7 +72,17 @@ static GtkComboBox* scaler_combo;
 
 static int find_scaler(const char * id)
 {
+	gchar* lid = g_ascii_strdown(id, -1);
 	
+	for (int i = 0; i < sizeof(scalers)/sizeof(struct scaler); i++) {
+		if (strcmp(id, scalers[i].id) == 0) {
+			g_free(lid);
+			return i;
+		}
+	}
+
+	g_free(lid);
+	return -1;
 }
 
 static void fill_scaler_list(GtkWidget* w)
@@ -87,12 +99,16 @@ static void fill_scaler_list(GtkWidget* w)
 
 static void load_settings()
 {
+	gchar* scaler_id = gconf_client_get_string(gcc, kGConfScaler, NULL);
+	int scaler_num = find_scaler(scaler_id);
+	if (scaler_num < 0) scaler_num = 0;
+
 #if MAEMO_VERSION >= 5
 	hildon_check_button_set_active(accu_check,
 		gconf_client_get_bool(gcc, kGConfTransparency, NULL));
+	hildon_picker_button_set_active(scaler_picker, scaler_num);
 #else
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(xsp_check),
-		gconf_client_get_bool(gcc, kGConfXSP, NULL));
+	gtk_combo_box_set_active(scaler_combo, scaler_num);
 #endif
 }
 
@@ -129,34 +145,53 @@ static void set_button_layout(HildonButton* button, GtkSizeGroup* sizegroup)
 
 void settings_dialog(GtkWindow* parent)
 {
-	dialog = GTK_DIALOG(gtk_dialog_new_with_buttons("Settings",
+	dialog = GTK_DIALOG(gtk_dialog_new_with_buttons(_("Settings"),
 		parent, GTK_DIALOG_MODAL,
-		GTK_STOCK_SAVE, GTK_RESPONSE_OK,
+		GTK_STOCK_OK, GTK_RESPONSE_OK,
 		GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL, NULL));
 
 #if MAEMO_VERSION >= 5
 	GtkSizeGroup * size_group = gtk_size_group_new(GTK_SIZE_GROUP_HORIZONTAL);
+	PangoAttrList *pattrlist = pango_attr_list_new();
+	PangoAttribute *attr = pango_attr_size_new(22 * PANGO_SCALE);
+	attr->start_index = 0;
+	attr->end_index = G_MAXINT;
+	pango_attr_list_insert(pattrlist, attr);
+
+	GtkLabel* separator_1 = GTK_LABEL(gtk_label_new(_("Controls")));
+	gtk_label_set_attributes(separator_1, pattrlist);
+	gtk_label_set_justify(separator_1, GTK_JUSTIFY_CENTER);
+
+	GtkLabel* separator_2 = GTK_LABEL(gtk_label_new(_("Advanced")));
+	gtk_label_set_attributes(separator_2, pattrlist);
+	gtk_label_set_justify(separator_2, GTK_JUSTIFY_CENTER);
+
 	accu_check = HILDON_CHECK_BUTTON(hildon_check_button_new(
 		HILDON_SIZE_FULLSCREEN_WIDTH | HILDON_SIZE_FINGER_HEIGHT));
-	gtk_button_set_label(GTK_BUTTON(accu_check), "Accurate graphics");
+	gtk_button_set_label(GTK_BUTTON(accu_check), _("Accurate graphics"));
 	set_button_layout(HILDON_BUTTON(accu_check), size_group);
 
 	scaler_picker = HILDON_PICKER_BUTTON(hildon_picker_button_new(
 		HILDON_SIZE_FULLSCREEN_WIDTH | HILDON_SIZE_FINGER_HEIGHT,
 		HILDON_BUTTON_ARRANGEMENT_VERTICAL));
-	hildon_button_set_title(HILDON_BUTTON(scaler_picker), "Zoom");
+	hildon_button_set_title(HILDON_BUTTON(scaler_picker), _("Zoom"));
 	set_button_layout(HILDON_BUTTON(scaler_picker), size_group);
 
 	HildonTouchSelector* scaler_sel =
 		HILDON_TOUCH_SELECTOR(hildon_touch_selector_new_text());
 	fill_scaler_list(GTK_WIDGET(scaler_sel));
 	hildon_picker_button_set_selector(scaler_picker, scaler_sel);
-	
+
+	gtk_box_pack_start(GTK_BOX(dialog->vbox), GTK_WIDGET(separator_1),
+		FALSE, FALSE, HILDON_MARGIN_DEFAULT);
+	gtk_box_pack_start(GTK_BOX(dialog->vbox), GTK_WIDGET(separator_2),
+		FALSE, FALSE, HILDON_MARGIN_DEFAULT);
 	gtk_box_pack_start(GTK_BOX(dialog->vbox), GTK_WIDGET(accu_check),
 		FALSE, FALSE, 0);
 	gtk_box_pack_start(GTK_BOX(dialog->vbox), GTK_WIDGET(scaler_picker),
 		FALSE, FALSE, 0);
 
+	pango_attr_list_unref(pattrlist);
 	g_object_unref(size_group);
 #else
 	xsp_check = GTK_CHECK_BUTTON(gtk_check_button_new());
