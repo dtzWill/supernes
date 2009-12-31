@@ -55,7 +55,7 @@ static void plugin_callback(GtkWidget * menu_item, gpointer data);
 
 GConfClient * gcc = NULL;
 static GameStartupInfo gs;
-static GtkWidget * menu_items[4];
+static GtkWidget * menu_items[2];
 
 static StartupPluginInfo plugin_info = {
 	load_plugin,
@@ -167,11 +167,13 @@ static void select_rom_callback(GtkWidget * button, gpointer data)
 	}
 }
 
+#if MAEMO_VERSION < 5
 static void controls_item_callback(GtkWidget * button, gpointer data)
 {
 	controls_setup();
 	controls_dialog(get_parent_window());
 }
+#endif
 
 static void settings_item_callback(GtkWidget * button, gpointer data)
 {
@@ -420,16 +422,12 @@ static GtkWidget **load_menu(guint *nitems)
 	menu_items[0] = hildon_gtk_button_new(button_size);
 	gtk_button_set_label(GTK_BUTTON(menu_items[0]), _("Settings…"));
 	menu_items[1] = hildon_gtk_button_new(button_size);
-	gtk_button_set_label(GTK_BUTTON(menu_items[1]), _("Controls…"));
-	menu_items[2] = hildon_gtk_button_new(button_size);
-	gtk_button_set_label(GTK_BUTTON(menu_items[2]), _("About…"));
-	*nitems = 3;
+	gtk_button_set_label(GTK_BUTTON(menu_items[1]), _("About…"));
+	*nitems = 2;
 
 	g_signal_connect(G_OBJECT(menu_items[0]), "clicked",
 					G_CALLBACK(settings_item_callback), NULL);
 	g_signal_connect(G_OBJECT(menu_items[1]), "clicked",
-					G_CALLBACK(controls_item_callback), NULL);
-	g_signal_connect(G_OBJECT(menu_items[2]), "clicked",
 					G_CALLBACK(about_item_callback), NULL);
 #else
 	menu_items[0] = gtk_menu_item_new_with_label(_("Settings"));

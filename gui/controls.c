@@ -32,6 +32,7 @@
 #include "../platform/hgw.h"
 #include "plugin.h"
 #include "cellrendererkey.h"
+#include "i18n.h"
 
 static GtkDialog* dialog;
 static GtkComboBox* combo;
@@ -281,7 +282,7 @@ void controls_setup()
 
 void controls_dialog(GtkWindow* parent)
 {
-	dialog = GTK_DIALOG(gtk_dialog_new_with_buttons("Controls",
+	dialog = GTK_DIALOG(gtk_dialog_new_with_buttons(_("Controls"),
 		parent, GTK_DIALOG_MODAL,
 		GTK_STOCK_CLOSE, GTK_RESPONSE_CLOSE, NULL));
 

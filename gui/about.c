@@ -33,6 +33,7 @@
 #endif
 
 #include "plugin.h"
+#include "i18n.h"
 
 static GtkDialog* dialog;
 
