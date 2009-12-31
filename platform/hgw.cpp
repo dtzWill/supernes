@@ -88,7 +88,7 @@ void HgwConfig()
 	}
 
 	char scaler[NAME_MAX];
-	if (hgw_conf_request_bool(hgw, kGConfScaler, scaler) == HGW_ERR_NONE
+	if (hgw_conf_request_string(hgw, kGConfScaler, scaler) == HGW_ERR_NONE
 		&& strlen(scaler) > 0) {
 		free(Config.scaler);
 		Config.scaler = strdup(scaler);

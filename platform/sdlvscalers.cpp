@@ -228,6 +228,7 @@ class ARMScaler : public Scaler
 	uint8 * m_surface;
 	const int m_w, m_h, m_Bpp;
 
+protected:
 	ARMScaler(SDL_Surface* screen, int w, int h)
 	: m_screen(screen), m_w(w), m_h(h),
 	 m_Bpp(m_screen->format->BitsPerPixel / 8)
@@ -848,7 +849,7 @@ const HDSW::Factory HDSW::factory;
 class HDARM : public ARMScaler
 {
 	HDARM(SDL_Surface* screen, int w, int h)
-	: SWScaler(screen, w, h)
+	: ARMScaler(screen, w, h)
 	{
 		hildon_set_non_compositing(true);
 	}
@@ -884,7 +885,7 @@ public:
 		return "compositor disabled and software ARM 2x scaling";
 	}
 };
-const HDSW::Factory HDSW::factory;
+const HDARM::Factory HDARM::factory;
 #endif /* __arm__ */
 #endif /* CONF_HD */
 
