@@ -14,7 +14,7 @@ public:
 	virtual void getRenderedGUIArea(unsigned short & x, unsigned short & y,
 									unsigned short & w, unsigned short & h)
 									const = 0;
-	virtual int getRatio() const = 0;
+	virtual void getRatio(float & x, float & y) const = 0;
 	virtual void prepare() = 0;
 	virtual void finish() = 0;
 	virtual void pause() = 0;

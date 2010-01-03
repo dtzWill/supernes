@@ -38,7 +38,7 @@ extern struct gui {
 	/** Size of the (scaled) rendering area, relative to window. */
 	unsigned short RenderX, RenderY, RenderW, RenderH;
 	/** Scaling ratio */
-	unsigned short Scale;
+	float ScaleX, ScaleY;
 } GUI;
 void S9xVideoToggleFullscreen();
 void S9xVideoOutputFocus(bool hasFocus);

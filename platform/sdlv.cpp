@@ -147,7 +147,7 @@ static void setupVideoSurface()
 	GFX.PPLx2 = GFX.Pitch;
 
 	scaler->getRenderedGUIArea(GUI.RenderX, GUI.RenderY, GUI.RenderW, GUI.RenderH);
-	GUI.Scale = scaler->getRatio();
+	scaler->getRatio(GUI.ScaleX, GUI.ScaleY);
 
 	printf("Video: %dx%d (%dx%d output), %hu bits per pixel, %s, %s\n",
 		gameWidth, gameHeight,

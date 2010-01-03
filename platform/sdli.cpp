@@ -111,8 +111,8 @@ static void processMouse(unsigned int x, unsigned int y, int pressed = 0)
 		}
 
 		// Take care of scaling
-		mouse.x /= GUI.Scale;
-		mouse.y /= GUI.Scale;
+		mouse.x /= GUI.ScaleX;
+		mouse.y /= GUI.ScaleY;
 
 		if (pressed > 0)
 			mouse.pressed = true;

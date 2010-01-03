@@ -101,9 +101,9 @@ public:
 		x = m_area.x; y = m_area.y; w = m_area.w; h = m_area.h;
 	};
 
-	virtual int getRatio() const
+	virtual void getRatio(float & x, float & y) const
 	{
-		return 1;
+		x = 1.0f; y = 1.0f;
 	};
 
 	virtual void prepare() { };
@@ -182,9 +182,9 @@ public:
 		x = m_area.x; y = m_area.y; w = m_area.w; h = m_area.h;
 	};
 
-	int getRatio() const
+	void getRatio(float & x, float & y) const
 	{
-		return 2;
+		x = 2.0f; y = 2.0f;
 	};
 
 	void prepare() { };
@@ -283,9 +283,9 @@ public:
 		x = m_area.x; y = m_area.y; w = m_area.w; h = m_area.h;
 	};
 
-	int getRatio() const
+	void getRatio(float & x, float & y) const
 	{
-		return 2;
+		x = 2.0f; y = 2.0f;
 	};
 
 	void prepare() { };
@@ -528,9 +528,9 @@ public:
 		x = m_area.x; y = m_area.y; w = m_area.w; h = m_area.h;
 	};
 
-	virtual int getRatio() const
+	virtual void getRatio(float & x, float & y) const
 	{
-		return ratio_y; // TODO
+		x = ratio_x; y = ratio_y;
 	};
 
 	virtual void prepare()
@@ -829,9 +829,9 @@ public:
 		x = m_area.x; y = m_area.y; w = m_area.w; h = m_area.h;
 	};
 
-	int getRatio() const
+	void getRatio(float & x, float & y) const
 	{
-		return 2;
+		x = 2.0f; y = 2.0f;
 	};
 
 	void prepare() 
