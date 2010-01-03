@@ -49,15 +49,6 @@ else
 	OBJS += sa1cpu.o
 endif
 
-
-ifeq ($(CONF_XSP), 1)
-	CPPFLAGS += -DCONF_XSP=1 $(shell pkg-config --cflags xsp)
-	LDLIBS += $(shell pkg-config --libs xsp)
-endif
-ifeq ($(CONF_HD), 1)
-	CPPFLAGS += -DCONF_HD=1
-endif
-
 OBJS += $(CONF_BUILD_MISC_ROUTINES).o
 
 # from open-whatever sdk
@@ -69,6 +60,14 @@ OBJS += platform/path.o platform/config.o
 OBJS += platform/sdl.o platform/sdlv.o platform/sdla.o platform/sdli.o
 OBJS += platform/sdlvscalers.o
 
+ifeq ($(CONF_XSP), 1)
+	CPPFLAGS += -DCONF_XSP=1 $(shell pkg-config --cflags xsp)
+	LDLIBS += $(shell pkg-config --libs xsp)
+endif
+ifeq ($(CONF_HD), 1)
+	CPPFLAGS += -DCONF_HD=1
+	OBJS += platform/sdlvhildon.o
+endif
 ifeq ($(CONF_HGW), 1)
 	CPPFLAGS += -DCONF_HGW=1 -I/usr/include/hgw
 	LDLIBS += -lhgw

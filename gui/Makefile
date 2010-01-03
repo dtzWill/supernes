@@ -1,4 +1,4 @@
-PKGS:=gtk+-2.0 hildon-1 hildon-fm-2 libhildonmime gconf-2.0 gnome-vfs-2.0
+PKGS:=gtk+-2.0 hildon-1 hildon-fm-2 libhildonmime gconf-2.0 gnome-vfs-2.0 x11
 CPPFLAGS:=$(shell pkg-config --cflags $(PKGS))
 LDLIBS:=$(shell pkg-config --libs $(PKGS))
 

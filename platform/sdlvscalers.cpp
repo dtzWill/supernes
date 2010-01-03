@@ -4,7 +4,6 @@
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <SDL.h>
-#include <SDL_syswm.h>
 
 #if CONF_XSP
 #	include <X11/extensions/Xsp.h>
@@ -364,130 +363,6 @@ const ARMScaler::Factory ARMScaler::factory;
 
 #if CONF_HD
 
-enum hdAtoms {
-	ATOM_HILDON_NON_COMPOSITED_WINDOW = 0,
-	ATOM_NET_WM_STATE,
-	ATOM_NET_WM_STATE_FULLSCREEN,
-	ATOM_NET_WM_WINDOW_TYPE,
-	ATOM_NET_WM_WINDOW_TYPE_NORMAL,
-	ATOM_NET_WM_WINDOW_TYPE_DIALOG,
-	ATOM_HILDON_WM_WINDOW_TYPE_ANIMATION_ACTOR,
-	ATOM_HILDON_ANIMATION_CLIENT_READY,
-	ATOM_HILDON_ANIMATION_CLIENT_MESSAGE_SHOW,
-	ATOM_HILDON_ANIMATION_CLIENT_MESSAGE_POSITION,
-	ATOM_HILDON_ANIMATION_CLIENT_MESSAGE_ROTATION,
-	ATOM_HILDON_ANIMATION_CLIENT_MESSAGE_SCALE,
-	ATOM_HILDON_ANIMATION_CLIENT_MESSAGE_ANCHOR,
-	ATOM_HILDON_ANIMATION_CLIENT_MESSAGE_PARENT,
-	ATOM_HILDON_WM_WINDOW_TYPE_REMOTE_TEXTURE,
-	ATOM_HILDON_TEXTURE_CLIENT_MESSAGE_SHM,
-	ATOM_HILDON_TEXTURE_CLIENT_MESSAGE_DAMAGE,
-	ATOM_HILDON_TEXTURE_CLIENT_MESSAGE_SHOW,
-	ATOM_HILDON_TEXTURE_CLIENT_MESSAGE_POSITION,
-	ATOM_HILDON_TEXTURE_CLIENT_MESSAGE_OFFSET,
-	ATOM_HILDON_TEXTURE_CLIENT_MESSAGE_SCALE,
-	ATOM_HILDON_TEXTURE_CLIENT_MESSAGE_PARENT,
-	ATOM_HILDON_TEXTURE_CLIENT_READY,
- 	ATOM_COUNT
-};
-
-static const char * hdAtomNames[] = {
-	"_HILDON_NON_COMPOSITED_WINDOW",
-	"_NET_WM_STATE",
-	"_NET_WM_STATE_FULLSCREEN",
-	"_NET_WM_WINDOW_TYPE",
-	"_NET_WM_WINDOW_TYPE_NORMAL",
-	"_NET_WM_WINDOW_TYPE_DIALOG",
-	"_HILDON_WM_WINDOW_TYPE_ANIMATION_ACTOR",
-	"_HILDON_ANIMATION_CLIENT_READY",
-	"_HILDON_ANIMATION_CLIENT_MESSAGE_SHOW",	
-	"_HILDON_ANIMATION_CLIENT_MESSAGE_POSITION",
-	"_HILDON_ANIMATION_CLIENT_MESSAGE_ROTATION",
-	"_HILDON_ANIMATION_CLIENT_MESSAGE_SCALE",
-	"_HILDON_ANIMATION_CLIENT_MESSAGE_ANCHOR",
-	"_HILDON_ANIMATION_CLIENT_MESSAGE_PARENT",
-	"_HILDON_WM_WINDOW_TYPE_REMOTE_TEXTURE",
-	"_HILDON_TEXTURE_CLIENT_MESSAGE_SHM",
-	"_HILDON_TEXTURE_CLIENT_MESSAGE_DAMAGE",
-	"_HILDON_TEXTURE_CLIENT_MESSAGE_SHOW",
-	"_HILDON_TEXTURE_CLIENT_MESSAGE_POSITION",
-	"_HILDON_TEXTURE_CLIENT_MESSAGE_OFFSET",
-	"_HILDON_TEXTURE_CLIENT_MESSAGE_SCALE",
-	"_HILDON_TEXTURE_CLIENT_MESSAGE_PARENT",
-	"_HILDON_TEXTURE_CLIENT_READY",
-	""
-};
-
-static Atom hdAtomsValues[ATOM_COUNT];
-static bool hdAtomsLoaded = false;
-
-#define HDATOM(X) hdAtomsValues[ ATOM ## X ]
-
-static void hildon_load_atoms(Display* display)
-{
-	if (hdAtomsLoaded) return;
-	
-	XInternAtoms(display, (char**)hdAtomNames, ATOM_COUNT, True, hdAtomsValues);
-	hdAtomsLoaded = true;
-	
-	if (HDATOM(_HILDON_NON_COMPOSITED_WINDOW) == None) {
-		DIE("Hildon Desktop seems not be loaded, since %s is not defined",
-			"_HILDON_NON_COMPOSITED_WINDOW");
-		return;
-	}
-}
-
-/** Enables or disables the Hildon NonCompositedWindow property */
-static void hildon_set_non_compositing(bool enable)
-{
-	SDL_SysWMinfo wminfo;
-	Display *display;
-	Window xwindow;
-	XSetWindowAttributes xattr;
-	Atom atom;
-	int one = 1;
-	
-	SDL_VERSION(&wminfo.version);
-	if (!SDL_GetWMInfo(&wminfo)) return;
-	
-	wminfo.info.x11.lock_func();
-	display = wminfo.info.x11.display;
-	xwindow = wminfo.info.x11.fswindow;
-	hildon_load_atoms(display);
-
-	if (enable) {
-		/* 
-		 * The basic idea behind this is to disable the override_redirect
-		 * window attribute, which SDL sets, and instead use _NET_WM_STATE
-		 * to tell hildon-desktop to fullscreen the app.
-		 * I am not really happy with this, which should ideally be fixed
-		 * at the libsdl level, but seems to work.
-		 * As soon as the window is managed by Hildon-Desktop again, set for it
-		 * not to be composited.
-		 */
-		XUnmapWindow(display, xwindow);
-		xattr.override_redirect = False;
-		XChangeWindowAttributes(display, xwindow, CWOverrideRedirect, &xattr);
-
-		atom = HDATOM(_NET_WM_STATE_FULLSCREEN);
-		XChangeProperty(display, xwindow, HDATOM(_NET_WM_STATE),
-			XA_ATOM, 32, PropModeReplace,
-			(unsigned char *) &atom, 1);
-
-		XChangeProperty(display, xwindow, HDATOM(_HILDON_NON_COMPOSITED_WINDOW),
-			XA_INTEGER, 32, PropModeReplace,
-			(unsigned char *) &one, 1);
-		XMapWindow(display, xwindow);
-	} else {
-		xattr.override_redirect = True;
-		XDeleteProperty(display, xwindow,
-			HDATOM(_HILDON_NON_COMPOSITED_WINDOW));
-		XChangeWindowAttributes(display, xwindow, CWOverrideRedirect, &xattr);
-	}
-
-	wminfo.info.x11.unlock_func();
-}
-
 class HDScalerBase : public Scaler
 {
 	SDL_Surface * m_screen;
@@ -496,7 +371,6 @@ class HDScalerBase : public Scaler
 	const float ratio_x, ratio_y;
 
 	// SDL/X11 stuff we save for faster access.
-	SDL_SysWMinfo wminfo;
 	Display* display;
 	Window window;
 
@@ -532,17 +406,12 @@ private:
 	/** Sends all configuration parameters for the remote texture. */
 	void reconfigure()
 	{
-		SDL_VERSION(&wminfo.version);
-		if (!SDL_GetWMInfo(&wminfo)) {
-			DIE("Bad SDL version!");
-		}
-
 		Window parent;
 		int yoffset = 0;
 		if (Config.fullscreen) {
-			parent = wminfo.info.x11.fswindow;
+			parent = WMinfo.info.x11.fswindow;
 		} else {
-			parent = wminfo.info.x11.wmwindow;
+			parent = WMinfo.info.x11.wmwindow;
 			yoffset = 60; // Hardcode the title bar size for now.
 		}
 
@@ -572,23 +441,13 @@ protected:
 		//  - Render to that new window, instead of the SDL window ("screen").
 		// Yet another load of uglyness, but hey.
 
-		// Barf if this is not a known SDL version.
-		SDL_VERSION(&wminfo.version);
-		if (!SDL_GetWMInfo(&wminfo)) {
-			DIE("Bad SDL version!");
-		}
-
 		// Clear the SDL screen with black, just in case it gets drawn.
 		SDL_FillRect(screen, 0, SDL_MapRGB(screen->format, 0, 0, 0));
 
-		// Get the SDL gfxdisplay (this is where events end up).
-		display = wminfo.info.x11.display;
+		display = WMinfo.info.x11.display;
 
 		// The parent window needs to be mapped, so we sync it.
 		XSync(display, True);
-
-		// Ensure hildon atoms are synced, and that hildon-desktop is up.
-		hildon_load_atoms(display);
 
 		// Create our alternative window.
 		const int blackColor = BlackPixel(display, DefaultScreen(display));
@@ -621,7 +480,7 @@ protected:
 		}
 
 		// Create a shared memory segment with hildon-desktop
-		shmkey = ftok("/usr/bin/drnoksnes", 'd'); // TODO Put rom file here
+		shmkey = ftok(S9xGetFilename(FILE_ROM), 'v');
 		shmid = shmget(shmkey, m_w * m_h * m_Bpp, IPC_CREAT | 0777);
 		if (shmid < 0) {
 			DIE("Failed to create shared memory");
@@ -768,13 +627,13 @@ class HDDummy : public DummyScaler
 	HDDummy(SDL_Surface* screen, int w, int h)
 	: DummyScaler(screen, w, h)
 	{
-		hildon_set_non_compositing(true);
+		hd_set_non_compositing(true);
 	}
 	
 public:
 	~HDDummy()
 	{
-		hildon_set_non_compositing(false);
+		hd_set_non_compositing(false);
 	};
 
 	class Factory : public ScalerFactory
@@ -809,13 +668,13 @@ class HDSW : public SWScaler
 	HDSW(SDL_Surface* screen, int w, int h)
 	: SWScaler(screen, w, h)
 	{
-		hildon_set_non_compositing(true);
+		hd_set_non_compositing(true);
 	}
 	
 public:
 	~HDSW()
 	{
-		hildon_set_non_compositing(false);
+		hd_set_non_compositing(false);
 	};
 
 	class Factory : public ScalerFactory

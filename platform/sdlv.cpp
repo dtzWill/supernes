@@ -176,6 +176,10 @@ void S9xInitDisplay(int argc, const char ** argv)
 	if (SDL_InitSubSystem(SDL_INIT_VIDEO) < 0) 
 		DIE("SDL_InitSubSystem(VIDEO): %s", SDL_GetError());
 
+#if CONF_HD
+	hd_setup();
+#endif
+
 	setupVideoSurface();
 	drawOnscreenControls();
 }
