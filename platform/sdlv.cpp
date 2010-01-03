@@ -113,6 +113,9 @@ static void setupVideoSurface()
 	GUI.Width = gameWidth;
 	GUI.Height = gameHeight;
 #endif
+#if CONF_EXIT_BUTTON
+	exitReset();
+#endif
 
 	// Safeguard
 	if (gameHeight > GUI.Height || gameWidth > GUI.Width)
@@ -160,14 +163,15 @@ static void drawOnscreenControls()
 {
 	if (Config.touchscreenInput) {
 		S9xInputScreenChanged();
-		if (Config.touchscreenShow) {
-			scaler->pause();
-			SDL_FillRect(screen, NULL, 0);
-			S9xInputScreenDraw(Settings.SixteenBit ? 2 : 1,
-								screen->pixels, screen->pitch);
-			SDL_Flip(screen);
-			scaler->resume();
-		}
+	}
+
+	if (Config.touchscreenShow) {
+		scaler->pause();
+		SDL_FillRect(screen, NULL, 0);
+		S9xInputScreenDraw(Settings.SixteenBit ? 2 : 1,
+							screen->pixels, screen->pitch);
+		SDL_Flip(screen);
+		scaler->resume();
 	}
 }
 
@@ -238,6 +242,15 @@ bool8_32 S9xInitUpdate ()
 bool8_32 S9xDeinitUpdate (int width, int height, bool8_32 sixteenBit)
 {
 	scaler->finish();
+
+#if CONF_EXIT_BUTTON
+	if (exitRequiresDraw()) {
+		//scaler->pause();
+		exitDraw(screen);
+		SDL_Flip(screen);
+		//scaler->resume();
+	}
+#endif
 
 	return TRUE;
 }

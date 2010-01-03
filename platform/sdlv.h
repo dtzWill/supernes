@@ -47,4 +47,10 @@ extern void hd_set_non_compositing(bool enable);
 
 #endif
 
+#if defined(MAEMO) && MAEMO_VERSION >= 5
+extern void exitReset();
+extern bool exitRequiresDraw();
+extern void exitDraw(SDL_Surface* where);
+#endif
+
 #endif

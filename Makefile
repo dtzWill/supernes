@@ -67,11 +67,17 @@ endif
 ifeq ($(CONF_HD), 1)
 	CPPFLAGS += -DCONF_HD=1
 	OBJS += platform/sdlvhildon.o
+	CONF_EXIT_BUTTON ?= 1
 endif
 ifeq ($(CONF_HGW), 1)
 	CPPFLAGS += -DCONF_HGW=1 -I/usr/include/hgw
 	LDLIBS += -lhgw
 	OBJS += platform/hgw.o
+endif
+ifeq ($(CONF_EXIT_BUTTON), 1)
+	CPPFLAGS += -DCONF_EXIT_BUTTON=1
+	LDLIBS += -lSDL_image
+	OBJS += platform/sdlvexit.o
 endif
 
 # automatic dependencies

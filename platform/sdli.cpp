@@ -68,6 +68,12 @@ static inline void press(TouchButton* b) {
 
 static void processMouse(unsigned int x, unsigned int y, int pressed = 0)
 {
+#if CONF_EXIT_BUTTON
+	/* no fullscreen escape button, we have to simulate one! */
+	if (Config.fullscreen && x > (800 - 100) && y < 50 && pressed > 0) {
+		S9xDoAction(kActionQuit);
+	}
+#endif
 	if (Config.touchscreenInput) {
 		if (pressed < 0) {
 			// Button up.
@@ -199,6 +205,8 @@ void S9xInitInputDevices()
 {
 	joypads[0] = 0;
 	joypads[1] = 0;
+	mouse.enabled = false;
+	mouse.pressed = false;
 
 	switch (Settings.ControllerOption) {
 		case SNES_JOYPAD:
