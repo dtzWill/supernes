@@ -2,6 +2,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
@@ -54,7 +55,7 @@ SDL_SysWMinfo WMinfo;
 
 static void hd_setup_stackable_window();
 
-void hd_setup()
+void hdSetup()
 {
 	SDL_VERSION(&WMinfo.version);
 	if (!SDL_GetWMInfo(&WMinfo)) {
@@ -67,12 +68,12 @@ void hd_setup()
 		XInternAtoms(display, (char**)hdAtomNames, ATOM_COUNT, True, hdAtomsValues);
 
 		if (HDATOM(_HILDON_NON_COMPOSITED_WINDOW) == None) {
-			DIE("Hildon Desktop seems not be loaded, since %s is not defined",
+			printf("Hildon Desktop seems not be loaded, since %s is not defined",
 				"_HILDON_NON_COMPOSITED_WINDOW");
 			return;
 		}
 
-		if (hgwLaunched) {
+		if (hgwLaunched || true) {
 			hd_setup_stackable_window();
 		}
 
@@ -81,46 +82,25 @@ void hd_setup()
 };
 
 /** Enables or disables the Hildon NonCompositedWindow property */
-void hd_set_non_compositing(bool enable)
+void hdSetNonCompositing(bool enable)
 {
 	Display *display;
-	Window xwindow;
-	XSetWindowAttributes xattr;
-	Atom atom;
+	Window window;
 	int one = 1;
 
 	WMinfo.info.x11.lock_func();
 	display = WMinfo.info.x11.display;
-	xwindow = WMinfo.info.x11.fswindow;
+	window = WMinfo.info.x11.fswindow;
 
 	if (enable) {
-		/* 
-		 * The basic idea behind this is to disable the override_redirect
-		 * window attribute, which SDL sets, and instead use _NET_WM_STATE
-		 * to tell hildon-desktop to fullscreen the app.
-		 * I am not really happy with this, which should ideally be fixed
-		 * at the libsdl level, but seems to work.
-		 * As soon as the window is managed by Hildon-Desktop again, set for it
-		 * not to be composited.
-		 */
-		XUnmapWindow(display, xwindow);
-		xattr.override_redirect = False;
-		XChangeWindowAttributes(display, xwindow, CWOverrideRedirect, &xattr);
-
-		atom = HDATOM(_NET_WM_STATE_FULLSCREEN);
-		XChangeProperty(display, xwindow, HDATOM(_NET_WM_STATE),
-			XA_ATOM, 32, PropModeReplace,
-			(unsigned char *) &atom, 1);
-
-		XChangeProperty(display, xwindow, HDATOM(_HILDON_NON_COMPOSITED_WINDOW),
+		XUnmapWindow(display, window);
+		XChangeProperty(display, window, HDATOM(_HILDON_NON_COMPOSITED_WINDOW),
 			XA_INTEGER, 32, PropModeReplace,
 			(unsigned char *) &one, 1);
-		XMapWindow(display, xwindow);
+		XMapWindow(display, window);
 	} else {
-		xattr.override_redirect = True;
-		XDeleteProperty(display, xwindow,
+		XDeleteProperty(display, window,
 			HDATOM(_HILDON_NON_COMPOSITED_WINDOW));
-		XChangeWindowAttributes(display, xwindow, CWOverrideRedirect, &xattr);
 	}
 
 	WMinfo.info.x11.unlock_func();
@@ -194,10 +174,13 @@ static void hd_setup_stackable_window()
 {
 	Display *display;
 	Window window;
-	Atom atom = HDATOM(_NET_WM_WINDOW_TYPE_NORMAL);
+	Atom atom;
 	XWMHints *hints;
+	XClassHint *chint;
+	XSetWindowAttributes xattr;
 	int one = 1;
 
+#if 0
 	WMinfo.info.x11.lock_func();
 	display = WMinfo.info.x11.display;
 
@@ -209,31 +192,55 @@ static void hd_setup_stackable_window()
 	}
 
 	hints = XGetWMHints(display, launcher);
-	hints->flags &= WindowGroupHint;
-
-	window = WMinfo.info.x11.wmwindow;
-	XSetTransientForHint(display, window, launcher);
-	XSetWMHints(display, window, hints);
-	XChangeProperty(display, window, HDATOM(_NET_WM_WINDOW_TYPE),
-		XA_ATOM, 32, PropModeReplace,
-		(unsigned char *) &atom, 1);
-	XChangeProperty(display, window, HDATOM(_HILDON_STACKABLE_WINDOW),
-		XA_INTEGER, 32, PropModeReplace,
-		(unsigned char *) &one, 1);
+	//hints->input = True;
+	hints->flags = (hints->flags & WindowGroupHint)/* | InputHint*/;
+	
+	chint = XAllocClassHint();
+	chint->res_name = chint->res_class = strdup("drnoksnes");
 
 	window = WMinfo.info.x11.fswindow;
 	XSetTransientForHint(display, window, launcher);
 	XSetWMHints(display, window, hints);
+	XSetClassHint(display, window, chint);
+	atom = HDATOM(_NET_WM_WINDOW_TYPE_NORMAL);
 	XChangeProperty(display, window, HDATOM(_NET_WM_WINDOW_TYPE),
+		XA_ATOM, 32, PropModeReplace,
+		(unsigned char *) &atom, 1);
+	xattr.override_redirect = False;
+	XChangeWindowAttributes(display, window, CWOverrideRedirect, &xattr);
+	atom = HDATOM(_NET_WM_STATE_FULLSCREEN);
+	XChangeProperty(display, window, HDATOM(_NET_WM_STATE),
 		XA_ATOM, 32, PropModeReplace,
 		(unsigned char *) &atom, 1);
 	XChangeProperty(display, window, HDATOM(_HILDON_STACKABLE_WINDOW),
 		XA_INTEGER, 32, PropModeReplace,
 		(unsigned char *) &one, 1);
 
+	free(chint->res_name);
+	XFree(chint);
 	XFree(hints);
 
 	WMinfo.info.x11.unlock_func();
+#endif
+}
+
+void hdSetupFullscreen(bool enable)
+{
+	Display *display = WMinfo.info.x11.display;
+	Window window = WMinfo.info.x11.wmwindow;
+
+#if 0
+	WMinfo.info.x11.lock_func();
+
+	/* So we hide the SDL nonfullscreen window when in fullscreen mode. */
+	if (enable) {
+		XUnmapWindow(display, window);
+	} else {
+		XMapWindow(display, window);
+	}
+
+	WMinfo.info.x11.unlock_func();
+#endif
 }
 
 #endif

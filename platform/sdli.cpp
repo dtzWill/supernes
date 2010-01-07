@@ -70,6 +70,7 @@ static void processMouse(unsigned int x, unsigned int y, int pressed = 0)
 {
 #if CONF_EXIT_BUTTON
 	/* no fullscreen escape button, we have to simulate one! */
+	/* TODO: don't hardcode sizes */
 	if (Config.fullscreen && x > (800 - 100) && y < 50 && pressed > 0) {
 		S9xDoAction(kActionQuit);
 	}

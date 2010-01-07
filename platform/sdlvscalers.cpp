@@ -627,13 +627,13 @@ class HDDummy : public DummyScaler
 	HDDummy(SDL_Surface* screen, int w, int h)
 	: DummyScaler(screen, w, h)
 	{
-		hd_set_non_compositing(true);
+		hdSetNonCompositing(true);
 	}
 	
 public:
 	~HDDummy()
 	{
-		hd_set_non_compositing(false);
+		hdSetNonCompositing(false);
 	};
 
 	class Factory : public ScalerFactory
@@ -668,13 +668,13 @@ class HDSW : public SWScaler
 	HDSW(SDL_Surface* screen, int w, int h)
 	: SWScaler(screen, w, h)
 	{
-		hd_set_non_compositing(true);
+		hdSetNonCompositing(true);
 	}
 	
 public:
 	~HDSW()
 	{
-		hd_set_non_compositing(false);
+		hdSetNonCompositing(false);
 	};
 
 	class Factory : public ScalerFactory
@@ -710,13 +710,13 @@ class HDARM : public ARMScaler
 	HDARM(SDL_Surface* screen, int w, int h)
 	: ARMScaler(screen, w, h)
 	{
-		hildon_set_non_compositing(true);
+		hdSetNonCompositing(true);
 	}
 	
 public:
 	~HDARM()
 	{
-		hildon_set_non_compositing(false);
+		hdSetNonCompositing(false);
 	};
 
 	class Factory : public ScalerFactory

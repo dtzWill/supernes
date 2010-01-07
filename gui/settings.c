@@ -47,21 +47,24 @@ struct scaler {
 
 static struct scaler scalers[] = {
 #if MAEMO_VERSION == 5
+#if 0
 #ifdef __arm__
-	{"hdarm2x", N_("Simple 2x zoom (fast)")},
+	{"hdarm2x", ("2x zoom")},
 #else
-	{"hdsoft2x", N_("Simple 2x zoom")},
+	{"hdsoft2x", ("2x zoom")},
 #endif /* __arm__ */
+#endif /* those above are not ready yet */
+	{"hdsq", N_("Scale to fit")},
 	{"hdfill", N_("Fill the entire screen")},
 #elif MAEMO_VERSION == 4
 #ifdef __arm__
-	{"xsp", N_("Antialiased 2x zoom (fast)")},
-	{"arm2x", N_("Simple 2x zoom")},
+	{"xsp", N_("Antialiased 2x zoom")},
+	{"arm2x", N_("2x zoom")},
 #else
-	{"soft2x", N_("Simple 2x zoom")},
+	{"soft2x", N_("2x zoom")},
 #endif /* __arm__ */
 #endif /* MAEMO_VERSION */
-	{"none", N_("Original size")},
+	{"none", N_("No zoom")},
 };
 
 static GtkDialog* dialog;

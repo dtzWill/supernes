@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: DrNokSnes 1.2.5\n"
 "Report-Msgid-Bugs-To: maemo@javispedro.com\n"
-"POT-Creation-Date: 2010-01-03 00:53+0100\n"
-"PO-Revision-Date: 2009-12-31 03:25+0100\n"
+"POT-Creation-Date: 2010-01-07 03:08+0100\n"
+"PO-Revision-Date: 2010-01-07 03:11+0100\n"
 "Last-Translator: Javier <javier@javispedro.com>\n"
 "Language-Team: Spanish <maemo@javispedro.com>\n"
 "MIME-Version: 1.0\n"
@@ -23,87 +23,95 @@ msgstr ""
 msgid "<no rom selected>"
 msgstr "<sin rom seleccionada>"
 
-#: plugin.c:233
+#: plugin.c:234
 msgid "ROM"
 msgstr "ROM"
 
-#: plugin.c:251
+#: plugin.c:252
 msgid "Select ROM..."
 msgstr "Seleccionar ROM..."
 
-#: plugin.c:268
+#: plugin.c:269
 msgid "Sound"
 msgstr "Sonido"
 
-#: plugin.c:274
+#: plugin.c:275
 msgid "Target framerate"
 msgstr "Velocidad objetivo"
 
-#: plugin.c:291
+#: plugin.c:292
 msgid "Show while in game"
 msgstr "Mostrar durante el juego"
 
-#: plugin.c:295 plugin.c:313
+#: plugin.c:296
+#: plugin.c:314
 msgid "Turbo mode"
 msgstr "Modo Turbo"
 
-#: plugin.c:310
+#: plugin.c:311
 msgid "Enable sound"
 msgstr "Activar sonido"
 
-#: plugin.c:315
+#: plugin.c:316
 msgid "Display framerate"
 msgstr "Mostrar velocidad"
 
-#: plugin.c:334 settings.c:203
+#: plugin.c:335
+#: settings.c:206
 msgid "Accurate graphics"
 msgstr "Mejores gráficos"
 
-#: plugin.c:338
+#: plugin.c:339
 msgid "Framerate:"
 msgstr "Velocidad:"
 
-#: plugin.c:347 settings.c:228
+#: plugin.c:348
+#: settings.c:231
 msgid "No speedhacks"
 msgstr "Sin speedhacks"
 
-#: plugin.c:348 settings.c:229
+#: plugin.c:349
+#: settings.c:232
 msgid "Safe hacks only"
 msgstr "Sólo hacks seguros"
 
-#: plugin.c:349 settings.c:230
+#: plugin.c:350
+#: settings.c:233
 msgid "All speedhacks"
 msgstr "Todos los hacks"
 
-#: plugin.c:448
+#: plugin.c:449
 msgid "Settings…"
 msgstr "Ajustes…"
 
-#: plugin.c:450 plugin.c:459
+#: plugin.c:451
+#: plugin.c:460
 msgid "About…"
 msgstr "Acerca de…"
 
-#: plugin.c:458 settings.c:165
+#: plugin.c:459
+#: settings.c:168
 msgid "Settings"
 msgstr "Ajustes"
 
-#: plugin.c:467
+#: plugin.c:468
 msgid "Controls…"
 msgstr "Controles…"
 
-#: plugin.c:471
+#: plugin.c:472
 msgid "Advanced…"
 msgstr "Avanzados…"
 
-#: plugin.c:533
+#: plugin.c:534
 msgid "No ROM selected"
 msgstr "Sin ROM seleccionada"
 
-#: plugin.c:538
+#: plugin.c:539
 msgid "ROM file does not exist"
 msgstr "El archivo ROM no existe"
 
-#: controls.c:285 settings.c:184
+#: controls.c:285
+#: settings.c:187
 msgid "Controls"
 msgstr "Controles"
 
@@ -111,46 +119,56 @@ msgstr "Controles"
 msgid "Press key or…"
 msgstr "Pulsa tecla o…"
 
-#: settings.c:51
-msgid "Simple 2x zoom (fast)"
-msgstr "Zoom 2X simple (rápido)"
+#: settings.c:57
+msgid "Scale to fit"
+msgstr "Ajustar a la pantalla"
 
-#: settings.c:53 settings.c:59 settings.c:61
-msgid "Simple 2x zoom"
-msgstr "Zoom 2X simple"
-
-#: settings.c:55
+#: settings.c:58
 msgid "Fill the entire screen"
 msgstr "Rellenar toda la pantalla"
 
-#: settings.c:58
-msgid "Antialiased 2x zoom (fast)"
-msgstr "Zoom 2X suavizado (rápido)"
+#: settings.c:61
+msgid "Antialiased 2x zoom"
+msgstr "Zoom 2x suavizado"
 
+#: settings.c:62
 #: settings.c:64
-msgid "Original size"
-msgstr "Tamaño original"
+msgid "2x zoom"
+msgstr "Zoom 2x"
 
-#: settings.c:191
+#: settings.c:67
+msgid "No zoom"
+msgstr "Sin zoom"
+
+#: settings.c:194
 msgid "Player 1"
 msgstr "Jugador 1"
 
-#: settings.c:191
+#: settings.c:194
 msgid "Keyboard"
 msgstr "Teclado"
 
-#: settings.c:197
+#: settings.c:200
 msgid "Advanced"
 msgstr "Avanzado"
 
-#: settings.c:210
+#: settings.c:213
 msgid "Zoom"
 msgstr "Zoom"
 
-#: settings.c:222
+#: settings.c:225
 msgid "Speedhacks"
 msgstr "Speedhacks"
 
 #: about.c:55
 msgid "About"
 msgstr "Acerca de"
+
+#, fuzzy
+#~ msgid "2x zoom "
+#~ msgstr "Zoom 2X simple"
+#~ msgid "Simple 2x zoom (fast)"
+#~ msgstr "Zoom 2X simple (rápido)"
+#~ msgid "Original size"
+#~ msgstr "Tamaño original"
+

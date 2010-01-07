@@ -133,6 +133,10 @@ static void setupVideoSurface()
 	
 	SDL_ShowCursor(SDL_DISABLE);
 
+#if CONF_HD
+	hdSetupFullscreen(Config.fullscreen);
+#endif
+
 	scaler = sFactory->instantiate(screen, gameWidth, gameHeight);
 
 	// We get pitch surface values from SDL
@@ -181,7 +185,7 @@ void S9xInitDisplay(int argc, const char ** argv)
 		DIE("SDL_InitSubSystem(VIDEO): %s", SDL_GetError());
 
 #if CONF_HD
-	hd_setup();
+	hdSetup();
 #endif
 
 	setupVideoSurface();
@@ -245,10 +249,10 @@ bool8_32 S9xDeinitUpdate (int width, int height, bool8_32 sixteenBit)
 
 #if CONF_EXIT_BUTTON
 	if (exitRequiresDraw()) {
-		//scaler->pause();
+		scaler->pause();
 		exitDraw(screen);
 		SDL_Flip(screen);
-		//scaler->resume();
+		scaler->resume();
 	}
 #endif
 

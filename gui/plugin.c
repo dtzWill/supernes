@@ -205,14 +205,15 @@ static void plugin_realized_callback(GtkWidget *widget, gpointer data)
     Atom atom;
     unsigned long val = 0;
 	GtkWidget* window = gtk_widget_get_ancestor(widget, GTK_TYPE_WINDOW);
-	printf("signal called %d %d\n", GTK_WIDGET_REALIZED(window), GTK_WIDGET_VISIBLE(window));
 
-    /* Set additional property "_HILDON_STACKABLE_WINDOW", to allow the WM to manage
-       it as a stackable window. */
+    /* Set additional property "_HILDON_STACKABLE_WINDOW", 
+    	to allow the WM to manage it as a stackable window. */
     display = gdk_drawable_get_display(window->window);
-    atom = gdk_x11_get_xatom_by_name_for_display (display, "_HILDON_STACKABLE_WINDOW");
-    XChangeProperty (GDK_DISPLAY_XDISPLAY (display), GDK_WINDOW_XID (window->window), atom,
-                     XA_INTEGER, 32, PropModeReplace,
+    atom = gdk_x11_get_xatom_by_name_for_display (display,
+    				"_HILDON_STACKABLE_WINDOW");
+    XChangeProperty(GDK_DISPLAY_XDISPLAY(display),
+    				 GDK_WINDOW_XID(window->window),
+    				 atom, XA_INTEGER, 32, PropModeReplace,
                      (unsigned char *) &val, 1);
 }
 #endif

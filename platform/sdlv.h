@@ -42,15 +42,16 @@ extern Atom hdAtomsValues[];
 
 extern SDL_SysWMinfo WMinfo;
 
-extern void hd_setup();
-extern void hd_set_non_compositing(bool enable);
+void hdSetup();
+void hdSetNonCompositing(bool enable);
+void hdSetupFullscreen(bool enable);
 
 #endif
 
 #if defined(MAEMO) && MAEMO_VERSION >= 5
-extern void exitReset();
-extern bool exitRequiresDraw();
-extern void exitDraw(SDL_Surface* where);
+void exitReset();
+bool exitRequiresDraw();
+void exitDraw(SDL_Surface* where);
 #endif
 
 #endif
