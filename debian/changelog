@@ -3,8 +3,10 @@ drnoksnes (1.2.5) unstable; urgency=low
   * Changed a lot of the build system.
   * New GUI settings layout for Fremantle.
   * (In progress) Some experiments with hildon-desktop features.
+  * New artwork by wazd.
+  * Added an ingame exit button.
 
- -- Javier S. Pedro <maemo@javispedro.com>  Thu,  7 Jan 2010 03:18:51 +0100
+ -- Javier S. Pedro <maemo@javispedro.com>  Thu,  7 Jan 2010 03:37:18 +0100
 
 drnoksnes (1.2.4) unstable; urgency=low
 
