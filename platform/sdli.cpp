@@ -4,6 +4,7 @@
 #include "platform.h"
 #include "snes9x.h"
 #include "display.h"
+#include "sdlv.h" // Dispatching video-related events
 
 struct TouchButton {
 	unsigned short mask;
@@ -132,30 +133,29 @@ static void processEvent(const SDL_Event& event)
 {
 	switch (event.type) 
 	{
-	case SDL_KEYDOWN:
-		if (Config.action[event.key.keysym.scancode]) 
-			S9xDoAction(Config.action[event.key.keysym.scancode]);
-		joypads[0] |= Config.joypad1Mapping[event.key.keysym.scancode];
-		break;
-	case SDL_KEYUP:
-		joypads[0] &= ~Config.joypad1Mapping[event.key.keysym.scancode];
-		break;
-	case SDL_MOUSEBUTTONUP:
-	case SDL_MOUSEBUTTONDOWN:
-		processMouse(event.button.x, event.button.y,
-				(event.button.state == SDL_PRESSED) ? 1 : - 1);
-		break;
-	case SDL_MOUSEMOTION:
-		processMouse(event.motion.x, event.motion.y);
-		break;
-	case SDL_ACTIVEEVENT:
-		if (event.active.state & SDL_APPINPUTFOCUS) {
-			S9xVideoOutputFocus(event.active.gain);
-		}
-		break;
-	case SDL_QUIT:
-		Config.quitting = true;
-		break;
+		case SDL_KEYDOWN:
+			if (Config.action[event.key.keysym.scancode]) 
+				S9xDoAction(Config.action[event.key.keysym.scancode]);
+			joypads[0] |= Config.joypad1Mapping[event.key.keysym.scancode];
+			break;
+		case SDL_KEYUP:
+			joypads[0] &= ~Config.joypad1Mapping[event.key.keysym.scancode];
+			break;
+		case SDL_MOUSEBUTTONUP:
+		case SDL_MOUSEBUTTONDOWN:
+			processMouse(event.button.x, event.button.y,
+					(event.button.state == SDL_PRESSED) ? 1 : - 1);
+			break;
+		case SDL_MOUSEMOTION:
+			processMouse(event.motion.x, event.motion.y);
+			break;
+		case SDL_QUIT:
+			Config.quitting = true;
+			break;
+		case SDL_ACTIVEEVENT:
+		case SDL_SYSWMEVENT:
+			processVideoEvent(event);
+			break;
 	}
 }
 

@@ -4,6 +4,9 @@
 #include "platform.h"
 #include "sdlv.h"
 
+#define BACK_BUTTON_IMG_PATH \
+	"/usr/share/icons/hicolor/scalable/hildon/general_overlay_back.png"
+
 #define DIE(format, ...) do { \
 		fprintf(stderr, "Died at %s:%d: ", __FILE__, __LINE__ ); \
 		fprintf(stderr, format "\n", ## __VA_ARGS__); \
@@ -17,11 +20,11 @@ static const unsigned long totalAnimLen = 1;
 
 static unsigned long frameCounter = 0;
 
-void exitReset()
+void ExitBtnReset()
 {
 	frameCounter = 0;
 	if (!buttonSrf) {
-		buttonSrf = IMG_Load("/usr/share/icons/hicolor/scalable/hildon/general_overlay_back.png");
+		buttonSrf = IMG_Load(BACK_BUTTON_IMG_PATH);
 	}
 
 	buttonRect.x = GUI.Width - buttonSrf->w;
@@ -30,7 +33,7 @@ void exitReset()
 	buttonRect.h = buttonSrf->h;
 }
 
-bool exitRequiresDraw()
+bool ExitBtnRequiresDraw()
 {
 	if (!Config.fullscreen) return false;
 	if (frameCounter > totalAnimLen) {
@@ -42,8 +45,9 @@ bool exitRequiresDraw()
 	
 };
 
-void exitDraw(SDL_Surface* where)
+void ExitBtnDraw(SDL_Surface* where)
 {
 	SDL_BlitSurface(buttonSrf, 0, where, &buttonRect);
+	SDL_UpdateRects(where, 1, &buttonRect);
 };
 

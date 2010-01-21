@@ -66,7 +66,7 @@ ifeq ($(CONF_XSP), 1)
 endif
 ifeq ($(CONF_HD), 1)
 	CPPFLAGS += -DCONF_HD=1
-	OBJS += platform/sdlvhildon.o
+	LDLIBS += -lSDL_haa
 	CONF_EXIT_BUTTON ?= 1
 endif
 ifeq ($(CONF_HGW), 1)

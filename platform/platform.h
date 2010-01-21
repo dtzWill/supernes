@@ -41,7 +41,6 @@ extern struct gui {
 	float ScaleX, ScaleY;
 } GUI;
 void S9xVideoToggleFullscreen();
-void S9xVideoOutputFocus(bool hasFocus);
 
 // Audio output
 void S9xInitAudioOutput();

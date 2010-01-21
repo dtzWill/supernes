@@ -11,7 +11,6 @@
 #include "gfx.h"
 #include "ppu.h"
 #include "sdlv.h"
-#include "scaler.h"
 
 #define DIE(format, ...) do { \
 		fprintf(stderr, "Died at %s:%d: ", __FILE__, __LINE__ ); \
@@ -27,7 +26,7 @@ static SDL_Rect windowSize, screenSize;
 static bool gotWindowSize, gotScreenSize;
 
 /** The current scaler object */
-static Scaler* scaler;
+Scaler* scaler;
 
 static void calculateScreenSize()
 {
@@ -114,7 +113,7 @@ static void setupVideoSurface()
 	GUI.Height = gameHeight;
 #endif
 #if CONF_EXIT_BUTTON
-	exitReset();
+	ExitBtnReset();
 #endif
 
 	// Safeguard
@@ -132,10 +131,6 @@ static void setupVideoSurface()
 		DIE("SDL_SetVideoMode: %s", SDL_GetError());
 	
 	SDL_ShowCursor(SDL_DISABLE);
-
-#if CONF_HD
-	hdSetupFullscreen(Config.fullscreen);
-#endif
 
 	scaler = sFactory->instantiate(screen, gameWidth, gameHeight);
 
@@ -184,10 +179,6 @@ void S9xInitDisplay(int argc, const char ** argv)
 	if (SDL_InitSubSystem(SDL_INIT_VIDEO) < 0) 
 		DIE("SDL_InitSubSystem(VIDEO): %s", SDL_GetError());
 
-#if CONF_HD
-	hdSetup();
-#endif
-
 	setupVideoSurface();
 	drawOnscreenControls();
 }
@@ -206,17 +197,10 @@ void S9xVideoToggleFullscreen()
 	drawOnscreenControls();
 }
 
-void S9xVideoOutputFocus(bool hasFocus)
+void processVideoEvent(const SDL_Event& event)
 {
-#if MAEMO
-	if (scaler) {
-		if (hasFocus) {
-			scaler->resume();
-		} else {
-			scaler->pause();
-		}
-	}
-#endif
+	if (scaler)
+		scaler->filter(event);
 }
 
 // This is here for completeness, but palette mode is useless on N8x0
@@ -248,10 +232,9 @@ bool8_32 S9xDeinitUpdate (int width, int height, bool8_32 sixteenBit)
 	scaler->finish();
 
 #if CONF_EXIT_BUTTON
-	if (exitRequiresDraw()) {
+	if (ExitBtnRequiresDraw()) {
 		scaler->pause();
-		exitDraw(screen);
-		SDL_Flip(screen);
+		ExitBtnDraw(screen);
 		scaler->resume();
 	}
 #endif

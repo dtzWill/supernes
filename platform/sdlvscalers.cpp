@@ -9,15 +9,12 @@
 #	include <X11/extensions/Xsp.h>
 #endif
 #if CONF_HD
-#	include <X11/Xatom.h>
-#	include <sys/ipc.h>
-#	include <sys/shm.h>
+#	include <SDL_haa.h>
 #endif
 
 #include "snes9x.h"
 #include "display.h"
 #include "platform.h"
-#include "scaler.h"
 #include "sdlv.h"
 
 #define DIE(format, ...) do { \
@@ -115,6 +112,8 @@ public:
 
 	virtual void pause() { };
 	virtual void resume() { };
+
+	virtual bool filter(const SDL_Event& event) { return false; };
 };
 const DummyScaler::Factory DummyScaler::factory;
 
@@ -214,6 +213,8 @@ public:
 
 	void pause() { };
 	void resume() { };
+
+	bool filter(const SDL_Event& event) { return false; };
 };
 const SWScaler::Factory SWScaler::factory;
 
@@ -357,203 +358,89 @@ public:
 
 	void pause() { };
 	void resume() { };
+	bool filter(const SDL_Event& event) { return false; };
 };
 const ARMScaler::Factory ARMScaler::factory;
 #endif
 
 #if CONF_HD
-
-class HDScalerBase : public Scaler
+class HAAScalerBase : public Scaler
 {
-	SDL_Surface * m_screen;
+	SDL_Surface *m_screen;
 	SDL_Rect m_area;
+	HAA_Actor *actor;
 	const int m_w, m_h, m_Bpp;
 	const float ratio_x, ratio_y;
 
-	// SDL/X11 stuff we save for faster access.
-	Display* display;
-	Window window;
-
-	// Shared memory segment info.
-	key_t shmkey;
-	int shmid;
-	void *shmaddr;
-
-private:
-	/** Sends a message to hildon-desktop.
-	  * This function comes mostly straight from libhildon.
-	  */
-	void sendMessage(Atom message_type,
-		uint32 l0, uint32 l1, uint32 l2, uint32 l3, uint32 l4)
-	{
-		XEvent event = { 0 };
-
-		event.xclient.type = ClientMessage;
-		event.xclient.window = window;
-		event.xclient.message_type = message_type;
-		event.xclient.format = 32;
-		event.xclient.data.l[0] = l0;
-		event.xclient.data.l[1] = l1;
-		event.xclient.data.l[2] = l2;
-		event.xclient.data.l[3] = l3;
-		event.xclient.data.l[4] = l4;
-
-		XSendEvent (display, window, True,
-		            StructureNotifyMask,
-		            (XEvent *)&event);
-	}
-
-	/** Sends all configuration parameters for the remote texture. */
-	void reconfigure()
-	{
-		Window parent;
-		int yoffset = 0;
-		if (Config.fullscreen) {
-			parent = WMinfo.info.x11.fswindow;
-		} else {
-			parent = WMinfo.info.x11.wmwindow;
-			yoffset = 60; // Hardcode the title bar size for now.
-		}
-
-		sendMessage(HDATOM(_HILDON_TEXTURE_CLIENT_MESSAGE_SHM),
-			(uint32) shmkey, m_w, m_h, m_Bpp, 0);
-		sendMessage(HDATOM(_HILDON_TEXTURE_CLIENT_MESSAGE_PARENT),
-			(uint32) parent, 0, 0, 0, 0);
-		sendMessage(HDATOM(_HILDON_TEXTURE_CLIENT_MESSAGE_POSITION),
-			m_area.x, yoffset + m_area.y, m_area.w, m_area.h, 0);
-		sendMessage(HDATOM(_HILDON_TEXTURE_CLIENT_MESSAGE_SCALE),
-			ratio_x * (1 << 16), ratio_y * (1 << 16), 0, 0, 0);
-		sendMessage(HDATOM(_HILDON_TEXTURE_CLIENT_MESSAGE_SHOW),
-			1, 255, 0, 0, 0);
-	}
-
 protected:
-	HDScalerBase(SDL_Surface* screen, int w, int h, float r_x, float r_y)
+	HAAScalerBase(SDL_Surface* screen, int w, int h, float r_x, float r_y)
 	: m_screen(screen), m_w(w), m_h(h),
 	 m_Bpp(m_screen->format->BitsPerPixel / 8),
 	 ratio_x(r_x), ratio_y(r_y)
 	{
 		centerRectangle(m_area, GUI.Width, GUI.Height, w * r_x, h * r_y);
 
-		// What we're going to do:
-		//  - Create a new window that we're going to manage
-		//  - Set up that window as a Hildon Remote Texture
-		//  - Render to that new window, instead of the SDL window ("screen").
-		// Yet another load of uglyness, but hey.
-
 		// Clear the SDL screen with black, just in case it gets drawn.
 		SDL_FillRect(screen, 0, SDL_MapRGB(screen->format, 0, 0, 0));
 
-		display = WMinfo.info.x11.display;
-
-		// The parent window needs to be mapped, so we sync it.
-		XSync(display, True);
-
-		// Create our alternative window.
-		const int blackColor = BlackPixel(display, DefaultScreen(display));
-		window = XCreateSimpleWindow(display, DefaultRootWindow(display),
-			0, 0, m_w, m_h, 0, blackColor, blackColor);
-		XStoreName(display, window, "DrNokSnes Video output window");
-		Atom atom = HDATOM(_HILDON_WM_WINDOW_TYPE_REMOTE_TEXTURE);
-		XChangeProperty(display, window, HDATOM(_NET_WM_WINDOW_TYPE),
-			XA_ATOM, 32, PropModeReplace,
-			(unsigned char *) &atom, 1);
-		XSelectInput(display, window, PropertyChangeMask | StructureNotifyMask);
-		XMapWindow(display, window);
-
-		// Wait for "ready" property, set up by hildon-desktop after a while
-		// For now, loop here. In the future, merge with main event loop.
-		bool ready = false;
-		while (!ready) {
-			XEvent e;
-			XNextEvent(display, &e);
-			switch(e.type) {
-				case PropertyNotify:
-					if (e.xproperty.atom ==
-					  HDATOM(_HILDON_TEXTURE_CLIENT_READY)) {
-						ready = true;
-					}
-					break;
-				default:
-					break;
-			}
-		}
-
-		// Create a shared memory segment with hildon-desktop
-		shmkey = ftok(S9xGetFilename(FILE_ROM), 'v');
-		shmid = shmget(shmkey, m_w * m_h * m_Bpp, IPC_CREAT | 0777);
-		if (shmid < 0) {
-			DIE("Failed to create shared memory");
-		}
-		shmaddr = shmat(shmid, 0, 0);
-		if (shmaddr == (void*)-1) {
-			DIE("Failed to attach shared memory");
-		}
-
-		// Send all configuration events to hildon-desktop
-		reconfigure();
+		HAA_Init(m_screen->flags & SDL_FULLSCREEN);
+		actor = HAA_CreateActor(0, m_w, m_h, m_screen->format->BitsPerPixel);
+		HAA_SetPosition(actor, m_area.x, m_area.y + 60);
+		HAA_SetScale(actor, r_x, r_y);
+		HAA_Show(actor);
 	}
 
 public:
-	virtual ~HDScalerBase()
+	virtual ~HAAScalerBase()
 	{
-		// Hide, unparent and deattach the remote texture
-		sendMessage(HDATOM(_HILDON_TEXTURE_CLIENT_MESSAGE_SHOW),
-			0, 255, 0, 0, 0);
-		sendMessage(HDATOM(_HILDON_TEXTURE_CLIENT_MESSAGE_PARENT),
-			0, 0, 0, 0, 0);
-		sendMessage(HDATOM(_HILDON_TEXTURE_CLIENT_MESSAGE_SHM),
-			0, 0, 0, 0, 0);
-		XFlush(display);
-		// Destroy our managed window and shared memory segment
-		XDestroyWindow(display, window);
-		XSync(display, True);
-		shmdt(shmaddr);
-		shmctl(shmid, IPC_RMID, 0);
+		HAA_FreeActor(actor);
+		HAA_Quit();
 	};
 
-	virtual uint8* getDrawBuffer() const
+	uint8* getDrawBuffer() const
 	{
-		return reinterpret_cast<uint8*>(shmaddr);
+		return reinterpret_cast<uint8*>(actor->surface->pixels);
 	};
 
-	virtual unsigned int getDrawBufferPitch() const
+	unsigned int getDrawBufferPitch() const
 	{
-		return m_w * m_Bpp;
+		return actor->surface->pitch;
 	};
 
-	virtual void getRenderedGUIArea(unsigned short & x, unsigned short & y,
+	void getRenderedGUIArea(unsigned short & x, unsigned short & y,
 							unsigned short & w, unsigned short & h) const
 	{
 		x = m_area.x; y = m_area.y; w = m_area.w; h = m_area.h;
 	};
 
-	virtual void getRatio(float & x, float & y) const
+	void getRatio(float & x, float & y) const
 	{
 		x = ratio_x; y = ratio_y;
 	};
 
-	virtual void prepare()
+	void prepare()
 	{
 
 	};
 
-	virtual void finish()
+	void finish()
 	{
-		// Send a damage event to hildon-desktop.
-		sendMessage(HDATOM(_HILDON_TEXTURE_CLIENT_MESSAGE_DAMAGE),
-			0, 0, m_w, m_h, 0);
-		XSync(display, False);
+		HAA_Flip(actor);
 	};
 
-	virtual void pause() { };
-	virtual void resume() { };
+	void pause() { };
+	void resume() { };
+
+	bool filter(const SDL_Event& event)
+	{
+		return HAA_FilterEvent(&event) == 0;
+	};
 };
 
-class HDFillScaler : public HDScalerBase
+class HAAFillScaler : public HAAScalerBase
 {
-	HDFillScaler(SDL_Surface* screen, int w, int h)
-	: HDScalerBase(screen, w, h,
+	HAAFillScaler(SDL_Surface* screen, int w, int h)
+	: HAAScalerBase(screen, w, h,
 		GUI.Width / (float)w, GUI.Height / (float)h)
 	{
 	}
@@ -563,7 +450,7 @@ public:
 	{
 		const char * getName() const
 		{
-			return "hdfill";
+			return "haafill";
 		}
 
 		bool canEnable(int bpp, int w, int h) const
@@ -573,23 +460,23 @@ public:
 
 		Scaler* instantiate(SDL_Surface* screen, int w, int h) const
 		{
-			return new HDFillScaler(screen, w, h-20);
+			return new HAAFillScaler(screen, w, h-20);
 		}
 	};
 
 	static const Factory factory;
 
-	virtual const char * getName() const
+	const char * getName() const
 	{
-		return "hildon-desktop fill screen scaling";
+		return "HAA fill screen scaling";
 	}
 };
-const HDFillScaler::Factory HDFillScaler::factory;
+const HAAFillScaler::Factory HAAFillScaler::factory;
 
-class HDSquareScaler : public HDScalerBase
+class HAASquareScaler : public HAAScalerBase
 {
-	HDSquareScaler(SDL_Surface* screen, int w, int h, float ratio)
-	: HDScalerBase(screen, w, h, ratio, ratio)
+	HAASquareScaler(SDL_Surface* screen, int w, int h, float ratio)
+	: HAAScalerBase(screen, w, h, ratio, ratio)
 	{
 	}
 
@@ -598,7 +485,7 @@ public:
 	{
 		const char * getName() const
 		{
-			return "hdsq";
+			return "haasq";
 		}
 
 		bool canEnable(int bpp, int w, int h) const
@@ -608,144 +495,20 @@ public:
 
 		Scaler* instantiate(SDL_Surface* screen, int w, int h) const
 		{
-			return new HDSquareScaler(screen, w, h,
+			return new HAASquareScaler(screen, w, h,
 				fminf(GUI.Width / (float)w, GUI.Height / (float)h));
 		}
 	};
 
 	static const Factory factory;
 
-	virtual const char * getName() const
-	{
-		return "hildon-desktop square screen scaling";
-	}
-};
-const HDSquareScaler::Factory HDSquareScaler::factory;
-
-class HDDummy : public DummyScaler
-{
-	HDDummy(SDL_Surface* screen, int w, int h)
-	: DummyScaler(screen, w, h)
-	{
-		hdSetNonCompositing(true);
-	}
-	
-public:
-	~HDDummy()
-	{
-		hdSetNonCompositing(false);
-	};
-
-	class Factory : public ScalerFactory
-	{
-		const char * getName() const
-		{
-			return "hddummy";
-		}
-
-		bool canEnable(int bpp, int w, int h) const
-		{
-			return Config.fullscreen; // This makes sense only in fullscreen
-		}
-
-		Scaler* instantiate(SDL_Surface* screen, int w, int h) const
-		{
-			return new HDDummy(screen, w, h);
-		}
-	};
-
-	static const Factory factory;
-
 	const char * getName() const
 	{
-		return "compositor disabled and no scaling";
+		return "HAA square screen scaling";
 	}
 };
-const HDDummy::Factory HDDummy::factory;
+const HAASquareScaler::Factory HAASquareScaler::factory;
 
-class HDSW : public SWScaler
-{
-	HDSW(SDL_Surface* screen, int w, int h)
-	: SWScaler(screen, w, h)
-	{
-		hdSetNonCompositing(true);
-	}
-	
-public:
-	~HDSW()
-	{
-		hdSetNonCompositing(false);
-	};
-
-	class Factory : public ScalerFactory
-	{
-		const char * getName() const
-		{
-			return "hdsoft2x";
-		}
-
-		bool canEnable(int bpp, int w, int h) const
-		{
-			return Config.fullscreen; // This makes sense only in fullscreen
-		}
-
-		Scaler* instantiate(SDL_Surface* screen, int w, int h) const
-		{
-			return new HDSW(screen, w, h);
-		}
-	};
-
-	static const Factory factory;
-
-	const char * getName() const
-	{
-		return "compositor disabled and software 2x scaling";
-	}
-};
-const HDSW::Factory HDSW::factory;
-
-#ifdef __arm__
-class HDARM : public ARMScaler
-{
-	HDARM(SDL_Surface* screen, int w, int h)
-	: ARMScaler(screen, w, h)
-	{
-		hdSetNonCompositing(true);
-	}
-	
-public:
-	~HDARM()
-	{
-		hdSetNonCompositing(false);
-	};
-
-	class Factory : public ScalerFactory
-	{
-		const char * getName() const
-		{
-			return "hdarm2x";
-		}
-
-		bool canEnable(int bpp, int w, int h) const
-		{
-			return Config.fullscreen; // This makes sense only in fullscreen
-		}
-
-		Scaler* instantiate(SDL_Surface* screen, int w, int h) const
-		{
-			return new HDARM(screen, w, h);
-		}
-	};
-
-	static const Factory factory;
-
-	const char * getName() const
-	{
-		return "compositor disabled and software ARM 2x scaling";
-	}
-};
-const HDARM::Factory HDARM::factory;
-#endif /* __arm__ */
 #endif /* CONF_HD */
 
 #if CONF_XSP
@@ -860,33 +623,42 @@ public:
 	{
 		m_should_enable = true; // Will enable later
 	};
+
+	bool filter(const SDL_Event& event)
+	{
+		if (event.type == SDL_ACTIVEEVENT) {
+			if (scaler && (event.active.state & SDL_APPINPUTFOCUS)) {
+				if (event.active.gain)
+					scaler->resume();
+				else
+					scaler->pause();
+
+				return true;
+			}
+		}
+
+		return false;
+	};
 };
 const XSPScaler::Factory XSPScaler::factory;
 #endif
 
 static const ScalerFactory* scalers[] = {
 /* More useful scalers come first */
-#if CONF_HD && defined(__arm__)
-	&HDARM::factory,				/* non-composited arm 2x scaling */
-#endif
-#if CONF_HD
-	&HDSquareScaler::factory,		/* h-d assisted square scaling */
-	&HDSW::factory,					/* non-composited soft 2x scaling */
-#endif
 #if CONF_XSP
 	&XSPScaler::factory,			/* n8x0 pixel doubling */
 #endif
 #ifdef __arm__
 	&ARMScaler::factory,			/* arm 2x scaling */
 #endif
-	&SWScaler::factory,				/* soft 2x scaling */
 #if CONF_HD
-	&HDDummy::factory,				/* non composited */
+	&HAASquareScaler::factory,		/* n900 animation actor scaling */
 #endif
+	&SWScaler::factory,				/* soft 2x scaling */
 	&DummyScaler::factory,			/* failsafe */
 /* The following scalers will not be automatically enabled, no matter what */
 #if CONF_HD
-	&HDFillScaler::factory,
+	&HAAFillScaler::factory,
 #endif
 };
 

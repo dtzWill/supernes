@@ -1,3 +1,9 @@
+drnoksnes (1.2.6) unstable; urgency=low
+
+  * Using SDL_haa for scaling in Fremantle now. 
+
+ -- Javier S. Pedro <maemo@javispedro.com>  Thu, 21 Jan 2010 18:44:34 +0100
+
 drnoksnes (1.2.5) unstable; urgency=low
 
   * Changed a lot of the build system.

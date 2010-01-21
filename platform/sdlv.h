@@ -3,55 +3,51 @@
 
 #include <SDL.h>
 
-extern SDL_Surface* screen;
+class Scaler
+{
+public:
+	Scaler() { };
+	virtual ~Scaler() { };
 
-#if CONF_HD
-#	include <SDL_syswm.h>
-#	include <X11/Xatom.h>
-#	define HDATOM(X) hdAtomsValues[ ATOM ## X ]
+	virtual const char * getName() const = 0;
 
-enum hdAtoms {
-	ATOM_HILDON_NON_COMPOSITED_WINDOW = 0,
-	ATOM_HILDON_STACKABLE_WINDOW,
-	ATOM_NET_WM_STATE,
-	ATOM_NET_WM_STATE_FULLSCREEN,
-	ATOM_NET_WM_WINDOW_TYPE,
-	ATOM_NET_WM_WINDOW_TYPE_NORMAL,
-	ATOM_NET_WM_WINDOW_TYPE_DIALOG,
-	ATOM_HILDON_WM_WINDOW_TYPE_ANIMATION_ACTOR,
-	ATOM_HILDON_ANIMATION_CLIENT_READY,
-	ATOM_HILDON_ANIMATION_CLIENT_MESSAGE_SHOW,
-	ATOM_HILDON_ANIMATION_CLIENT_MESSAGE_POSITION,
-	ATOM_HILDON_ANIMATION_CLIENT_MESSAGE_ROTATION,
-	ATOM_HILDON_ANIMATION_CLIENT_MESSAGE_SCALE,
-	ATOM_HILDON_ANIMATION_CLIENT_MESSAGE_ANCHOR,
-	ATOM_HILDON_ANIMATION_CLIENT_MESSAGE_PARENT,
-	ATOM_HILDON_WM_WINDOW_TYPE_REMOTE_TEXTURE,
-	ATOM_HILDON_TEXTURE_CLIENT_MESSAGE_SHM,
-	ATOM_HILDON_TEXTURE_CLIENT_MESSAGE_DAMAGE,
-	ATOM_HILDON_TEXTURE_CLIENT_MESSAGE_SHOW,
-	ATOM_HILDON_TEXTURE_CLIENT_MESSAGE_POSITION,
-	ATOM_HILDON_TEXTURE_CLIENT_MESSAGE_OFFSET,
-	ATOM_HILDON_TEXTURE_CLIENT_MESSAGE_SCALE,
-	ATOM_HILDON_TEXTURE_CLIENT_MESSAGE_PARENT,
-	ATOM_HILDON_TEXTURE_CLIENT_READY,
-	ATOM_COUNT
+	virtual uint8* getDrawBuffer() const = 0;
+	virtual unsigned int getDrawBufferPitch() const = 0;
+	virtual void getRenderedGUIArea(unsigned short& x, unsigned short& y,
+									unsigned short& w, unsigned short& h)
+									const = 0;
+	virtual void getRatio(float& x, float& y) const = 0;
+
+	virtual void prepare() = 0;
+	virtual void finish() = 0;
+	virtual void pause() = 0;
+	virtual void resume() = 0;
+	virtual bool filter(const SDL_Event& event) = 0;
 };
 
-extern Atom hdAtomsValues[];
+class ScalerFactory
+{
+public:
+	ScalerFactory() { };
+	virtual ~ScalerFactory() { };
+	virtual const char * getName() const = 0;
+	virtual bool canEnable(int bpp, int w, int h) const = 0;
+	virtual Scaler* instantiate(SDL_Surface* screen, int w, int h) const = 0;
+};
 
-extern SDL_SysWMinfo WMinfo;
+const ScalerFactory* searchForScaler(int bpp, int w, int h);
 
-void hdSetup();
-void hdSetNonCompositing(bool enable);
-void hdSetupFullscreen(bool enable);
+/** SDL screen */
+extern SDL_Surface* screen;
+/** The current scaler object */
+extern Scaler* scaler;
 
-#endif
+void processVideoEvent(const SDL_Event& event);
 
-#if defined(MAEMO) && MAEMO_VERSION >= 5
-void exitReset();
-bool exitRequiresDraw();
-void exitDraw(SDL_Surface* where);
+#if CONF_EXIT_BUTTON
+void ExitBtnReset();
+bool ExitBtnRequiresDraw();
+void ExitBtnDraw(SDL_Surface* where);
 #endif
 
 #endif
