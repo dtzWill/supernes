@@ -1,0 +1,235 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: maemo@javispedro.com\n"
+"POT-Creation-Date: 2010-01-26 20:44+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: plugin.c:106
+msgid "<no rom selected>"
+msgstr ""
+
+#: plugin.c:233
+msgid "ROM"
+msgstr ""
+
+#: plugin.c:251
+msgid "Select ROM..."
+msgstr ""
+
+#: plugin.c:268
+msgid "Sound"
+msgstr ""
+
+#: plugin.c:274
+msgid "Target framerate"
+msgstr ""
+
+#: plugin.c:291
+msgid "Show while in game"
+msgstr ""
+
+#: plugin.c:295 plugin.c:313
+msgid "Turbo mode"
+msgstr ""
+
+#: plugin.c:310
+msgid "Enable sound"
+msgstr ""
+
+#: plugin.c:315
+msgid "Display framerate"
+msgstr ""
+
+#: plugin.c:334 settings.c:224
+msgid "Accurate graphics"
+msgstr ""
+
+#: plugin.c:338
+msgid "Framerate:"
+msgstr ""
+
+#: plugin.c:347 settings.c:249
+msgid "No speedhacks"
+msgstr ""
+
+#: plugin.c:348 settings.c:250
+msgid "Safe hacks only"
+msgstr ""
+
+#: plugin.c:349 settings.c:251
+msgid "All speedhacks"
+msgstr ""
+
+#: plugin.c:446
+msgid "Settings…"
+msgstr ""
+
+#: plugin.c:448 plugin.c:457
+msgid "About…"
+msgstr ""
+
+#: plugin.c:456 settings.c:177
+msgid "Settings"
+msgstr ""
+
+#: plugin.c:465
+msgid "Controls…"
+msgstr ""
+
+#: plugin.c:469
+msgid "Advanced…"
+msgstr ""
+
+#: plugin.c:531
+msgid "No ROM selected"
+msgstr ""
+
+#: plugin.c:536
+msgid "ROM file does not exist"
+msgstr ""
+
+#: controls.c:119
+msgid "Keyboard"
+msgstr ""
+
+#: controls.c:123
+msgid "Disabled"
+msgstr ""
+
+#: controls.c:131
+#, c-format
+msgid "Player %d controls"
+msgstr ""
+
+#: controls.c:154
+msgid "Keys"
+msgstr ""
+
+#: controls.c:160
+msgid "Enable keyboard"
+msgstr ""
+
+#: controls.c:167
+msgid "Configure keys..."
+msgstr ""
+
+#: controls.c:173
+msgid "Touchscreen"
+msgstr ""
+
+#: controls.c:180
+msgid "Enable touchscreen buttons"
+msgstr ""
+
+#: controls.c:187
+msgid "Show on-screen button grid"
+msgstr ""
+
+#: controls.c:191
+msgid "Accelerometer"
+msgstr ""
+
+#: controls.c:195
+msgid "Wiimote"
+msgstr ""
+
+#: controls.c:199
+msgid "Zeemote"
+msgstr ""
+
+#: keys.c:267
+#, c-format
+msgid "Player %d keys"
+msgstr ""
+
+#: keys.c:270
+msgid "Defaults"
+msgstr ""
+
+#: settings.c:52 settings.c:59 settings.c:61
+msgid "2x zoom"
+msgstr ""
+
+#: settings.c:54
+msgid "Scale to fit"
+msgstr ""
+
+#: settings.c:55
+msgid "Fill the entire screen"
+msgstr ""
+
+#: settings.c:58
+msgid "Antialiased 2x zoom"
+msgstr ""
+
+#: settings.c:64
+msgid "No zoom"
+msgstr ""
+
+#: settings.c:196
+msgid "Controls"
+msgstr ""
+
+#: settings.c:203
+msgid "Player 1"
+msgstr ""
+
+#: settings.c:212
+msgid "Player 2"
+msgstr ""
+
+#: settings.c:218
+msgid "Advanced"
+msgstr ""
+
+#: settings.c:231
+msgid "Zoom"
+msgstr ""
+
+#: settings.c:243
+msgid "Speedhacks"
+msgstr ""
+
+#: about.c:55
+msgid "About"
+msgstr ""
+
+#: cellrendererkey.c:10
+msgid "Press key or…"
+msgstr ""
+
+#: buttons.inc:22
+msgid "Return to launcher"
+msgstr ""
+
+#: buttons.inc:23
+msgid "Fullscreen"
+msgstr ""
+
+#: buttons.inc:24
+msgid "Quick Load 1"
+msgstr ""
+
+#: buttons.inc:25
+msgid "Quick Save 1"
+msgstr ""
+
+#: buttons.inc:26
+msgid "Quick Load 2"
+msgstr ""
+
+#: buttons.inc:27
+msgid "Quick Save 2"
+msgstr ""
