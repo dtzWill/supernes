@@ -32,8 +32,10 @@ XGETTEXT:=xgettext
 XGETTEXT_OPTS:=--default-domain=$(GETTEXT_PACKAGE) --from-code=UTF-8 \
 	--language=C --msgid-bugs-address=maemo@javispedro.com \
 	--keyword=_ --keyword=N_
+EXTRA_GETTEXT_SRCS:=buttons.inc
 
-SRCS:=plugin.c state.c save.c controls.c cellrendererkey.c settings.c about.c
+SRCS:=plugin.c state.c save.c controls.c keys.c settings.c about.c \
+	 cellrendererkey.c
 OBJS:=$(SRCS:.c=.o)
 
 POT:=$(GETTEXT_PACKAGE).pot
@@ -50,7 +52,7 @@ all: drnoksnes_plugin.so $(DATA_FILES) $(MO_FILES)
 drnoksnes_plugin.so: $(OBJS)
 	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
 
-$(POT): $(SRCS)
+$(POT): $(SRCS) $(EXTRA_GETTEXT_SRCS)
 	$(XGETTEXT) $(XGETTEXT_OPTS) -o$@ $^
 
 $(MO_FILES): %.mo: %.po

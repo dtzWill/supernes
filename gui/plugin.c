@@ -42,8 +42,8 @@
 #include <hildon/hildon-caption.h>
 #endif
 
-#include "../platform/hgw.h"
 #include "plugin.h"
+#include "gconf.h"
 #include "i18n.h"
 
 static GtkWidget * load_plugin(void);
@@ -170,7 +170,6 @@ static void select_rom_callback(GtkWidget * button, gpointer data)
 #if MAEMO_VERSION < 5
 static void controls_item_callback(GtkWidget * button, gpointer data)
 {
-	controls_setup();
 	controls_dialog(get_parent_window());
 }
 #endif
@@ -436,8 +435,6 @@ static void write_config(void)
 	if (current_rom_file) {
 		gconf_client_set_string(gcc, kGConfRomFile, current_rom_file, NULL);
 	}
-
-	controls_setup();
 }
 
 static GtkWidget **load_menu(guint *nitems)

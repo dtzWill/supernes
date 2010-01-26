@@ -36,8 +36,8 @@
 #include <hildon/hildon-caption.h>
 #endif
 
-#include "../platform/hgw.h"
 #include "plugin.h"
+#include "gconf.h"
 #include "i18n.h"
 
 struct scaler {
@@ -46,14 +46,11 @@ struct scaler {
 };
 
 static struct scaler scalers[] = {
+
 #if MAEMO_VERSION == 5
-#if 0
 #ifdef __arm__
-	{"hdarm2x", ("2x zoom")},
-#else
-	{"hdsoft2x", ("2x zoom")},
+	{"arm2x", N_("2x zoom")},
 #endif /* __arm__ */
-#endif /* those above are not ready yet */
 	{"hdsq", N_("Scale to fit")},
 	{"hdfill", N_("Fill the entire screen")},
 #elif MAEMO_VERSION == 4
@@ -69,7 +66,7 @@ static struct scaler scalers[] = {
 
 static GtkDialog* dialog;
 #if MAEMO_VERSION >= 5
-static HildonButton* player1_btn;
+static HildonButton* player1_btn, * player2_btn;
 static HildonCheckButton* accu_check;
 static HildonPickerButton* scaler_picker;
 static HildonPickerButton* speedhacks_picker;
@@ -104,6 +101,18 @@ static void fill_scaler_list(GtkWidget* w)
 	}
 }
 
+void settings_update_controls(int player)
+{
+	switch (player) {
+		case 1:
+			hildon_button_set_value(player1_btn, controls_describe(1));
+			break;
+		case 2:
+			hildon_button_set_value(player2_btn, controls_describe(2));
+			break;
+	}
+}
+
 static void load_settings()
 {
 	gchar* scaler_id = gconf_client_get_string(gcc, kGConfScaler, NULL);
@@ -111,6 +120,8 @@ static void load_settings()
 	if (scaler_num < 0) scaler_num = 0;
 
 #if MAEMO_VERSION >= 5
+	settings_update_controls(1);
+	settings_update_controls(1);
 	hildon_check_button_set_active(accu_check,
 		gconf_client_get_bool(gcc, kGConfTransparency, NULL));
 	hildon_picker_button_set_active(scaler_picker, scaler_num);
@@ -149,7 +160,7 @@ static void cb_dialog_response(GtkWidget * button, gint response, gpointer data)
 #if MAEMO_VERSION >= 5
 static void controls_btn_callback(GtkWidget * button, gpointer data)
 {
-	controls_dialog(GTK_WINDOW(dialog));
+	controls_dialog(GTK_WINDOW(dialog), GPOINTER_TO_INT(data));
 }
 
 static void set_button_layout(HildonButton* button,
@@ -158,8 +169,6 @@ static void set_button_layout(HildonButton* button,
 	hildon_button_add_title_size_group(button, titles_size_group);
 	hildon_button_add_value_size_group(button, values_size_group);
 	hildon_button_set_alignment(button, 0.0, 0.5, 1.0, 0.0);
-	/*hildon_button_set_title_alignment(button, 0.0, 0.5);
-	hildon_button_set_value_alignment(button, 0.0, 0.5);*/
 }
 #endif
 
@@ -167,7 +176,7 @@ void settings_dialog(GtkWindow* parent)
 {
 	dialog = GTK_DIALOG(gtk_dialog_new_with_buttons(_("Settings"),
 		parent, GTK_DIALOG_MODAL,
-		GTK_STOCK_OK, GTK_RESPONSE_OK,
+		GTK_STOCK_SAVE, GTK_RESPONSE_OK,
 		GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL, NULL));
 
 #if MAEMO_VERSION >= 5
@@ -191,11 +200,20 @@ void settings_dialog(GtkWindow* parent)
 	player1_btn = HILDON_BUTTON(hildon_button_new_with_text(
 		HILDON_SIZE_AUTO_WIDTH | HILDON_SIZE_FINGER_HEIGHT,
 		HILDON_BUTTON_ARRANGEMENT_HORIZONTAL,
-		_("Player 1"), _("Keyboard")));
+		_("Player 1"), NULL));
 	set_button_layout(HILDON_BUTTON(player1_btn),
 		titles_size_group, values_size_group);
 	g_signal_connect(G_OBJECT(player1_btn), "clicked",
 					G_CALLBACK(controls_btn_callback), GINT_TO_POINTER(1));
+
+	player2_btn = HILDON_BUTTON(hildon_button_new_with_text(
+		HILDON_SIZE_AUTO_WIDTH | HILDON_SIZE_FINGER_HEIGHT,
+		HILDON_BUTTON_ARRANGEMENT_HORIZONTAL,
+		_("Player 2"), NULL));
+	set_button_layout(HILDON_BUTTON(player2_btn),
+		titles_size_group, values_size_group);
+	g_signal_connect(G_OBJECT(player2_btn), "clicked",
+					G_CALLBACK(controls_btn_callback), GINT_TO_POINTER(2));
 
 	GtkLabel* separator_2 = GTK_LABEL(gtk_label_new(_("Advanced")));
 	gtk_label_set_attributes(separator_2, pattrlist);
@@ -263,7 +281,7 @@ void settings_dialog(GtkWindow* parent)
 	load_settings();
 
 #if MAEMO_VERSION >= 5
-	gtk_window_resize(GTK_WINDOW(dialog), 800, 350);
+	gtk_window_resize(GTK_WINDOW(dialog), 800, 380);
 #else
 	gtk_window_resize(GTK_WINDOW(dialog), 400, 200);
 #endif

@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
+define(`choose', `dnl
+ifelse(eval(MAEMO_MAJOR < 5), 1, `$1', `$2')dnl>
+')dnl
+define(`N_', `$*')dnl
 <gconfschemafile>
   <schemalist>
     <schema>
@@ -15,20 +19,6 @@
       </locale>
     </schema>
     <schema>
-      <key>/schemas/apps/maemo/drnoksnes/display-controls</key>
-      <applyto>/apps/maemo/drnoksnes/display-controls</applyto>
-      <owner>drnoksnes</owner>
-      <type>bool</type>
-      <default>false</default>
-      <locale name="C">
-        <short>Display onscreen controls</short>
-        <long>
-          Display a grid with the onscreen controls if touchscreen controls
-          are enabled.
-        </long>
-      </locale>
-    </schema>
-    <schema>
       <key>/schemas/apps/maemo/drnoksnes/frameskip</key>
       <applyto>/apps/maemo/drnoksnes/frameskip</applyto>
       <owner>drnoksnes</owner>
@@ -38,19 +28,6 @@
         <short>Frameskip</short>
         <long>
           Skip this many frames after rendering one frame (or 0 for auto).
-        </long>
-      </locale>
-    </schema>
-    <schema>
-      <key>/schemas/apps/maemo/drnoksnes/mapping</key>
-      <applyto>/apps/maemo/drnoksnes/mapping</applyto>
-      <owner>drnoksnes</owner>
-      <type>int</type>
-      <default>1</default>
-      <locale name="C">
-        <short>Key mapping setting</short>
-        <long>
-          Set to 0 for None, 1 for Keyboard only, etc.
         </long>
       </locale>
     </schema>
@@ -134,5 +111,84 @@
         </long>
       </locale>
     </schema>
+    <schema>
+     <key>/schemas/apps/maemo/drnoksnes/player1/keyboard/enable</key>
+      <applyto>/apps/maemo/drnoksnes/player1/keyboard/enable</applyto>
+      <owner>drnoksnes</owner>
+      <type>bool</type>
+      <default>true</default>
+      <locale name="C">
+        <short>Player 1 keyboard</short>
+        <long>
+          Enable key mappings for player 1.
+        </long>
+      </locale>
+    </schema>
+dnl Player 1 keybindings
+define(`HELP', `')dnl
+define(`BUTTON', `dnl
+    <schema>
+     <key>/schemas/apps/maemo/drnoksnes/player1/keyboard/$2</key>
+      <applyto>/apps/maemo/drnoksnes/player1/keyboard/$2</applyto>
+      <owner>drnoksnes</owner>
+      <type>int</type>
+      <default>choose($4,$5)</default>
+      <locale name="C">
+        <short>$1 button</short>
+      </locale>
+    </schema>
+dnl')dnl
+define(`ACTION', `dnl
+    <schema>
+     <key>/schemas/apps/maemo/drnoksnes/player1/keyboard/$2</key>
+      <applyto>/apps/maemo/drnoksnes/player1/keyboard/$2</applyto>
+      <owner>drnoksnes</owner>
+      <type>int</type>
+      <default>choose($4,$5)</default>
+      <locale name="C">
+        <short>$1 action</short>
+      </locale>
+    </schema>
+dnl')dnl
+define(`LAST', `')dnl
+include(buttons.inc)dnl
+undefine(`HELP')dnl
+undefine(`BUTTON')dnl
+undefine(`ACTION')dnl
+undefine(`LAST')dnl
+    <schema>
+     <key>/schemas/apps/maemo/drnoksnes/player2/keyboard/enable</key>
+      <applyto>/apps/maemo/drnoksnes/player2/keyboard/enable</applyto>
+      <owner>drnoksnes</owner>
+      <type>bool</type>
+      <default>false</default>
+      <locale name="C">
+        <short>Player 2 keyboard</short>
+        <long>
+          Enable key mappings for player 2.
+        </long>
+      </locale>
+    </schema>
+dnl Player 2 keybindings
+define(`HELP', `')dnl
+define(`BUTTON', `dnl
+    <schema>
+     <key>/schemas/apps/maemo/drnoksnes/player2/keyboard/$2</key>
+      <applyto>/apps/maemo/drnoksnes/player2/keyboard/$2</applyto>
+      <owner>drnoksnes</owner>
+      <type>int</type>
+      <default>0</default>
+      <locale name="C">
+        <short>$1 button</short>
+      </locale>
+    </schema>
+dnl')dnl
+define(`ACTION', `')dnl
+define(`LAST', `')dnl
+include(buttons.inc)
+undefine(`HELP')dnl
+undefine(`BUTTON')dnl
+undefine(`ACTION')dnl
+undefine(`LAST')dnl
   </schemalist>
 </gconfschemafile>

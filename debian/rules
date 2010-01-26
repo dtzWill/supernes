@@ -35,19 +35,21 @@ M4DEFS=-DMAEMO_MAJOR=$(MAEMO_VERSION)
 ifneq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))
 	CFLAGS += -O0
 else ifneq (,$(findstring armel,$(ARCH)))
-	CFLAGS += -O2
+	CFLAGS += -O2 -ffast-math
 	GUI_CFLAGS += -Os
 	ifneq (,$(findstring vfp,$(DEB_BUILD_OPTIONS)))
 		CFLAGS += -march=armv6j -mtune=arm1136jf-s -mfpu=vfp -mfloat-abi=softfp
 		ASFLAGS += -march=armv6j -mfpu=vfp -mfloat-abi=softfp
 	endif
-	# Fixes hang while exiting in Diablo.
-	CFLAGS += -static-libgcc
+	ifeq ($(shell expr "$(MAEMO_VERSION)" "<" 5), 1)
+		# Fixes hang while exiting in Diablo.
+		CFLAGS += -static-libgcc
+	endif
 else ifneq (,$(findstring i386,$(ARCH)))
-	CFLAGS += -O2
+	CFLAGS += -O2 -ffast-math
 	GUI_CFLAGS += -O2
 else
-	# Don't support anything else yet
+	# Don't support anything else
 	crash
 endif
 

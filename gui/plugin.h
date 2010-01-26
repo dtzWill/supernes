@@ -23,13 +23,16 @@ void save_load(GtkWindow* parent);
 void save_save(GtkWindow* parent);
 void save_save_as(GtkWindow* parent);
 
-/* controls.c */
-/** Fill in default controls */
-void controls_setup();
-void controls_dialog(GtkWindow* parent);
-
 /* settings.c */
 void settings_dialog(GtkWindow* parent);
+void settings_update_controls(int player);
+
+/* controls.c */
+void controls_dialog(GtkWindow* parent, int player);
+gchar* controls_describe(int player);
+
+/* keys.c */
+void keys_dialog(GtkWindow* parent, int player);
 
 /* about.c */
 void about_dialog(GtkWindow* parent);

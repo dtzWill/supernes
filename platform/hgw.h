@@ -15,19 +15,5 @@ void HgwConfig();
 void HgwPollEvents();
 #endif
 
-#define kGConfPath "/apps/maemo/drnoksnes"
-#define kGConfRomFile kGConfPath "/" "rom"
-#define kGConfSound kGConfPath "/" "sound"
-#define kGConfTurboMode kGConfPath "/" "turbo"
-#define kGConfFrameskip kGConfPath "/" "frameskip"
-#define kGConfTransparency kGConfPath "/" "transparency"
-#define kGConfScaler kGConfPath "/" "scaler"
-#define kGConfDisplayFramerate kGConfPath "/" "display-framerate"
-#define kGConfDisplayControls kGConfPath "/" "display-controls"
-#define kGConfSpeedhacks kGConfPath "/" "speedhacks"
-#define kGConfMapping kGConfPath "/" "mapping"
-#define kGConfKeysPath kGConfPath "/" "keys"
-
-
 #endif
 

@@ -2,9 +2,15 @@
 #include <libgen.h>
 #include <hgw/hgw.h>
 
+#include "snes9x.h"
+
+#include <glib.h>
+#include <gconf/gconf.h>
+#include <gconf/gconf-client.h>
+
 #include "platform.h"
 #include "hgw.h"
-#include "snes9x.h"
+#include "../gui/gconf.h"
 
 #define DIE(format, ...) do { \
 		fprintf(stderr, "Died at %s:%d: ", __FILE__, __LINE__ ); \
@@ -12,12 +18,11 @@
 		abort(); \
 	} while (0);
 
-
 bool hgwLaunched;
 static HgwContext *hgw;
 
 static void createActionMappingsOnly();
-static void parseGConfKeyMappings();
+static void parseGConfKeyMappings(GConfClient* gcc);
 
 void HgwInit()
 {
@@ -30,6 +35,7 @@ void HgwInit()
 		return;
 	}
 
+	g_type_init();
 	hgw = hgw_context_init();
 
 	if (!hgw) {
@@ -54,6 +60,8 @@ void HgwDeinit()
 void HgwConfig()
 {
 	if (!hgwLaunched) return;
+
+	GConfClient *gcc = gconf_client_get_default();
 
 	Config.fullscreen = true;
 
@@ -99,10 +107,12 @@ void HgwConfig()
 		Settings.DisplayFrameRate = displayFramerate ? TRUE : FALSE;
 	}
 
+#if TODO
 	char displayControls = FALSE;
 	if (hgw_conf_request_bool(hgw, kGConfDisplayControls, &displayControls) == HGW_ERR_NONE) {
 		Config.touchscreenShow = displayControls ? true : false;
 	}
+#endif
 
 	int speedhacks = 0;
 	if (hgw_conf_request_int(hgw, kGConfSpeedhacks, &speedhacks) == HGW_ERR_NONE) {
@@ -123,37 +133,17 @@ void HgwConfig()
 				< 0) {
 			Config.hacksFile = 0; // malloc error.
 		}
-		// romFile[] is garbled from now on.
+		// remember that dirname garbles romFile.
 	}
 
-	int mappings = 0;
-	if (hgw_conf_request_int(hgw, kGConfMapping, &mappings) == HGW_ERR_NONE) {
-		switch (mappings) {
-			case 0:
-				// Do nothing, leave mappings as is.
-				break;
-			case 1: // Keys
-				parseGConfKeyMappings();
-				break;
-			case 2: // Touchscreen
-				Config.touchscreenInput = true;
-				createActionMappingsOnly();
-				break;
-			case 3: // Touchscreen + keys
-				Config.touchscreenInput = true;
-				parseGConfKeyMappings();
-				break;
-			case 4: // Mouse
-				Settings.Mouse = TRUE;
-				Settings.ControllerOption = SNES_MOUSE_SWAPPED;
-				createActionMappingsOnly();
-				break;
-			case 5: // Mouse + keys
-				Settings.Mouse = TRUE;
-				Settings.ControllerOption = SNES_MOUSE;
-				parseGConfKeyMappings();
-				break;
-		}
+	gchar key[kGConfPlayerPathBufferLen];
+	gchar *relKey = key + sprintf(key, kGConfPlayerPath, 1);
+
+	strcpy(relKey, kGConfPlayerKeyboardEnable);
+	if (gconf_client_get_bool(gcc, key, NULL)) {
+		parseGConfKeyMappings(gcc);
+	} else {
+		createActionMappingsOnly();
 	}
 
 	HgwStartCommand cmd = hgw_context_get_start_command(hgw);
@@ -175,6 +165,8 @@ void HgwConfig()
 			Config.quitting = true;
 			break;
 	}
+
+	g_object_unref(G_OBJECT(gcc));
 }
 
 void HgwPollEvents()
@@ -214,7 +206,7 @@ void HgwPollEvents()
 
 // For now, please keep this in sync with ../gui/controls.c
 typedef struct ButtonEntry {
-	char * gconf_key;
+	const char * gconf_key;
 	unsigned long mask;
 	bool is_action;
 } ButtonEntry;
@@ -224,67 +216,67 @@ typedef struct ButtonEntry {
 	{ kGConfKeysPath "/" name, kAction##action, true }
 #define BUTTON_LAST	\
 	{ 0 }
+
 static const ButtonEntry buttons[] = {
-	BUTTON_INITIALIZER(A, "a"),
-	BUTTON_INITIALIZER(B, "b"),
-	BUTTON_INITIALIZER(X, "x"),
-	BUTTON_INITIALIZER(Y, "y"),
-	BUTTON_INITIALIZER(TL, "l"),
-	BUTTON_INITIALIZER(TR, "r"),
-	BUTTON_INITIALIZER(START, "start"),
-	BUTTON_INITIALIZER(SELECT, "select"),
-	BUTTON_INITIALIZER(UP, "up"),
-	BUTTON_INITIALIZER(DOWN, "down"),
-	BUTTON_INITIALIZER(LEFT, "left"),
-	BUTTON_INITIALIZER(RIGHT, "right"),
-	ACTION_INITIALIZER(Quit, "quit"),
-	ACTION_INITIALIZER(ToggleFullscreen, "fullscreen"),
-	ACTION_INITIALIZER(QuickLoad1, "quickload1"),
-	ACTION_INITIALIZER(QuickSave1, "quicksave1"),
-	ACTION_INITIALIZER(QuickLoad2, "quickload2"),
-	ACTION_INITIALIZER(QuickSave2, "quicksave2"),
-	BUTTON_LAST
+#define HELP(...)
+#define P(x) SNES_##x##_MASK
+#define A(x) kAction##x
+#define BUTTON(description, slug, actions, d, f) \
+	{ G_STRINGIFY(slug), actions, false },
+#define ACTION(description, slug, actions, d, f) \
+	{ G_STRINGIFY(slug), actions, true },
+#define LAST \
+	{ 0 }
+#include "../gui/buttons.inc"
+#undef HELP
+#undef P
+#undef A
+#undef BUTTON
+#undef ACTION
+#undef LAST
 };
 
 static void createActionMappingsOnly()
 {
-	// Discard any other mapping
-	ZeroMemory(Config.joypad1Mapping, sizeof(Config.joypad1Mapping));
-	ZeroMemory(Config.action, sizeof(Config.action));
-	
 	// Map quit to fullscreen, escape and task switch.
 	Config.action[72] = kActionQuit;
 	Config.action[9] = kActionQuit;
 	Config.action[71] = kActionQuit;
 }
 
-static void parseGConfKeyMappings()
+static void parseGConfKeyMappings(GConfClient* gcc)
 {
-	// Discard any other mapping
-	ZeroMemory(Config.joypad1Mapping, sizeof(Config.joypad1Mapping));
-	ZeroMemory(Config.action, sizeof(Config.action));
+	// Build player 1 keyboard gconf key relative path
+	gchar key[kGConfPlayerPathBufferLen];
+	gchar *relKey = key + sprintf(key,
+		kGConfPlayerPath kGConfPlayerKeyboardPath "/", 1);
 
 	// If the user does not map fullscreen or quit
 	bool quit_mapped = false;
 
 	printf("Hgw: Using gconf key mappings\n");
+	// Thus ignoring config file key mappings
+	ZeroMemory(Config.joypad1Mapping, sizeof(Config.joypad1Mapping));
+	ZeroMemory(Config.action, sizeof(Config.action));
 
 	int i, scancode;
 	for (i = 0; buttons[i].gconf_key; i++) {
-		if (hgw_conf_request_int(hgw, buttons[i].gconf_key, &scancode) == HGW_ERR_NONE) {
-			if (scancode <= 0 || scancode > 255) continue;
+		strcpy(relKey, buttons[i].gconf_key);
+		scancode = gconf_client_get_int(gcc, key, NULL);
 
-			if (buttons[i].is_action) {
-				Config.action[scancode] |= buttons[i].mask;
-				if (buttons[i].mask & (kActionQuit | kActionToggleFullscreen)) {
-					quit_mapped = true;
-				}
-			} else {
-				Config.joypad1Mapping[scancode] |= buttons[i].mask;
+		if (scancode <= 0 || scancode > 255) continue;
+
+		if (buttons[i].is_action) {
+			Config.action[scancode] |= buttons[i].mask;
+			if (buttons[i].mask & (kActionQuit | kActionToggleFullscreen)) {
+				quit_mapped = true;
 			}
+		} else {
+			Config.joypad1Mapping[scancode] |= buttons[i].mask;
 		}
 	}
 
+#if MAEMO && !CONF_EXIT_BUTTON
 	// Safeguards
 	if (!quit_mapped) {
 		// Newbie user won't know how to quit game.
@@ -311,5 +303,6 @@ static void parseGConfKeyMappings()
 	if (!Config.action[71] && !Config.joypad1Mapping[71]) {
 		Config.action[71] = kActionQuit;
 	}
+#endif
 }
 

@@ -24,11 +24,12 @@ extern struct config {
 	bool touchscreenInput;
 	/** Display touchscreen controls grid */
 	bool touchscreenShow;
-	/** Current scancode->joypad mapping */
-	unsigned short joypad1Mapping[256];
-	unsigned char action[256];
 	/** If true, next time the main loop is entered application will close */
 	bool quitting;
+	/** Current scancode->joypad mapping */
+	unsigned short joypad1Mapping[256];
+	unsigned short joypad2Mapping[256];
+	unsigned char action[256];
 } Config;
 
 // Video

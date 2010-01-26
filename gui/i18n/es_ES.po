@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: DrNokSnes 1.2.5\n"
 "Report-Msgid-Bugs-To: maemo@javispedro.com\n"
-"POT-Creation-Date: 2010-01-07 03:08+0100\n"
+"POT-Creation-Date: 2010-01-23 20:44+0100\n"
 "PO-Revision-Date: 2010-01-07 03:11+0100\n"
 "Last-Translator: Javier <javier@javispedro.com>\n"
 "Language-Team: Spanish <maemo@javispedro.com>\n"
@@ -23,140 +23,187 @@ msgstr ""
 msgid "<no rom selected>"
 msgstr "<sin rom seleccionada>"
 
-#: plugin.c:234
+#: plugin.c:233
 msgid "ROM"
 msgstr "ROM"
 
-#: plugin.c:252
+#: plugin.c:251
 msgid "Select ROM..."
 msgstr "Seleccionar ROM..."
 
-#: plugin.c:269
+#: plugin.c:268
 msgid "Sound"
 msgstr "Sonido"
 
-#: plugin.c:275
+#: plugin.c:274
 msgid "Target framerate"
 msgstr "Velocidad objetivo"
 
-#: plugin.c:292
+#: plugin.c:291
 msgid "Show while in game"
 msgstr "Mostrar durante el juego"
 
-#: plugin.c:296
-#: plugin.c:314
+#: plugin.c:295 plugin.c:313
 msgid "Turbo mode"
 msgstr "Modo Turbo"
 
-#: plugin.c:311
+#: plugin.c:310
 msgid "Enable sound"
 msgstr "Activar sonido"
 
-#: plugin.c:316
+#: plugin.c:315
 msgid "Display framerate"
 msgstr "Mostrar velocidad"
 
-#: plugin.c:335
-#: settings.c:206
+#: plugin.c:334 settings.c:224
 msgid "Accurate graphics"
 msgstr "Mejores gráficos"
 
-#: plugin.c:339
+#: plugin.c:338
 msgid "Framerate:"
 msgstr "Velocidad:"
 
-#: plugin.c:348
-#: settings.c:231
+#: plugin.c:347 settings.c:249
 msgid "No speedhacks"
 msgstr "Sin speedhacks"
 
-#: plugin.c:349
-#: settings.c:232
+#: plugin.c:348 settings.c:250
 msgid "Safe hacks only"
 msgstr "Sólo hacks seguros"
 
-#: plugin.c:350
-#: settings.c:233
+#: plugin.c:349 settings.c:251
 msgid "All speedhacks"
 msgstr "Todos los hacks"
 
-#: plugin.c:449
+#: plugin.c:446
 msgid "Settings…"
 msgstr "Ajustes…"
 
-#: plugin.c:451
-#: plugin.c:460
+#: plugin.c:448 plugin.c:457
 msgid "About…"
 msgstr "Acerca de…"
 
-#: plugin.c:459
-#: settings.c:168
+#: plugin.c:456 settings.c:177
 msgid "Settings"
 msgstr "Ajustes"
 
-#: plugin.c:468
+#: plugin.c:465
 msgid "Controls…"
 msgstr "Controles…"
 
-#: plugin.c:472
+#: plugin.c:469
 msgid "Advanced…"
 msgstr "Avanzados…"
 
-#: plugin.c:534
+#: plugin.c:531
 msgid "No ROM selected"
 msgstr "Sin ROM seleccionada"
 
-#: plugin.c:539
+#: plugin.c:536
 msgid "ROM file does not exist"
 msgstr "El archivo ROM no existe"
 
-#: controls.c:285
-#: settings.c:187
-msgid "Controls"
-msgstr "Controles"
-
-#: cellrendererkey.c:10
-msgid "Press key or…"
-msgstr "Pulsa tecla o…"
-
-#: settings.c:57
-msgid "Scale to fit"
-msgstr "Ajustar a la pantalla"
-
-#: settings.c:58
-msgid "Fill the entire screen"
-msgstr "Rellenar toda la pantalla"
-
-#: settings.c:61
-msgid "Antialiased 2x zoom"
-msgstr "Zoom 2x suavizado"
-
-#: settings.c:62
-#: settings.c:64
-msgid "2x zoom"
-msgstr "Zoom 2x"
-
-#: settings.c:67
-msgid "No zoom"
-msgstr "Sin zoom"
-
-#: settings.c:194
-msgid "Player 1"
-msgstr "Jugador 1"
-
-#: settings.c:194
+#: controls.c:119
 msgid "Keyboard"
 msgstr "Teclado"
 
-#: settings.c:200
+#: controls.c:123
+msgid "Disabled"
+msgstr ""
+
+#: controls.c:131
+#, c-format
+msgid "Player %d controls"
+msgstr ""
+
+#: controls.c:154
+msgid "Keys"
+msgstr ""
+
+#: controls.c:160
+#, fuzzy
+msgid "Enable keyboard"
+msgstr "Activar sonido"
+
+#: controls.c:167
+msgid "Configure keys..."
+msgstr ""
+
+#: controls.c:173
+msgid "Touchscreen"
+msgstr ""
+
+#: controls.c:180
+msgid "Enable touchscreen buttons"
+msgstr ""
+
+#: controls.c:187
+msgid "Show on-screen button grid"
+msgstr ""
+
+#: controls.c:191
+msgid "Accelerometer"
+msgstr ""
+
+#: controls.c:195
+msgid "Wiimote"
+msgstr ""
+
+#: controls.c:199
+msgid "Zeemote"
+msgstr ""
+
+#: keys.c:267
+#, fuzzy, c-format
+msgid "Player %d keys"
+msgstr "Jugador 1"
+
+#: keys.c:270
+msgid "Defaults"
+msgstr ""
+
+#: settings.c:52 settings.c:59 settings.c:61
+msgid "2x zoom"
+msgstr "Zoom 2x"
+
+#: settings.c:54
+msgid "Scale to fit"
+msgstr "Ajustar a la pantalla"
+
+#: settings.c:55
+msgid "Fill the entire screen"
+msgstr "Rellenar toda la pantalla"
+
+#: settings.c:58
+msgid "Antialiased 2x zoom"
+msgstr "Zoom 2x suavizado"
+
+#: settings.c:64
+msgid "No zoom"
+msgstr "Sin zoom"
+
+#: settings.c:196
+msgid "Controls"
+msgstr "Controles"
+
+#: settings.c:203
+msgid "Player 1"
+msgstr "Jugador 1"
+
+#: settings.c:212
+#, fuzzy
+msgid "Player 2"
+msgstr "Jugador 1"
+
+#: settings.c:218
 msgid "Advanced"
 msgstr "Avanzado"
 
-#: settings.c:213
+#: settings.c:231
 msgid "Zoom"
 msgstr "Zoom"
 
-#: settings.c:225
+#: settings.c:243
 msgid "Speedhacks"
 msgstr "Speedhacks"
 
@@ -164,11 +211,44 @@ msgstr "Speedhacks"
 msgid "About"
 msgstr "Acerca de"
 
+#: cellrendererkey.c:10
+msgid "Press key or…"
+msgstr "Pulsa tecla o…"
+
+#: buttons.inc:22
+msgid "Return to launcher"
+msgstr ""
+
+#: buttons.inc:23
+msgid "Fullscreen"
+msgstr ""
+
+#: buttons.inc:24
+msgid "Quick Load 1"
+msgstr ""
+
+#: buttons.inc:25
+msgid "Quick Save 1"
+msgstr ""
+
+#: buttons.inc:26
+msgid "Quick Load 2"
+msgstr ""
+
+#: buttons.inc:27
+msgid "Quick Save 2"
+msgstr ""
+
+#, fuzzy
+#~ msgid "Enable"
+#~ msgstr "Activar sonido"
+
 #, fuzzy
 #~ msgid "2x zoom "
 #~ msgstr "Zoom 2X simple"
+
 #~ msgid "Simple 2x zoom (fast)"
 #~ msgstr "Zoom 2X simple (rápido)"
+
 #~ msgid "Original size"
 #~ msgstr "Tamaño original"
-

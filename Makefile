@@ -70,8 +70,8 @@ ifeq ($(CONF_HD), 1)
 	CONF_EXIT_BUTTON ?= 1
 endif
 ifeq ($(CONF_HGW), 1)
-	CPPFLAGS += -DCONF_HGW=1 -I/usr/include/hgw
-	LDLIBS += -lhgw
+	CPPFLAGS += -DCONF_HGW=1 -I/usr/include/hgw $(shell pkg-config --cflags gconf-2.0)
+	LDLIBS += -lhgw $(shell pkg-config --libs gconf-2.0)
 	OBJS += platform/hgw.o
 endif
 ifeq ($(CONF_EXIT_BUTTON), 1)
