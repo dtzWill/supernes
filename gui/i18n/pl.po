@@ -1,0 +1,246 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: drnoksnes\n"
+"Report-Msgid-Bugs-To: maemo@javispedro.com\n"
+"POT-Creation-Date: 2010-01-26 20:44+0100\n"
+"PO-Revision-Date: 2010-01-28 00:42+0100\n"
+"Last-Translator: Tomasz Dominikowski <dominikowski@gmail.com>\n"
+"Language-Team: Polish <dominikowski@gmail.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: Polish\n"
+"X-Poedit-Country: Poland\n"
+
+#: plugin.c:106
+msgid "<no rom selected>"
+msgstr "<nie wybrano pliku rom>"
+
+#: plugin.c:233
+msgid "ROM"
+msgstr "ROM"
+
+#: plugin.c:251
+msgid "Select ROM..."
+msgstr "Wybierz ROM..."
+
+#: plugin.c:268
+msgid "Sound"
+msgstr "Dźwięk"
+
+#: plugin.c:274
+msgid "Target framerate"
+msgstr "Docel. liczba kl./s"
+
+#: plugin.c:291
+msgid "Show while in game"
+msgstr "Wyświetlaj podczas gry"
+
+#: plugin.c:295
+#: plugin.c:313
+msgid "Turbo mode"
+msgstr "Tryb Turbo"
+
+#: plugin.c:310
+msgid "Enable sound"
+msgstr "Włącz dźwięk"
+
+#: plugin.c:315
+msgid "Display framerate"
+msgstr "Wyświetlaj liczbę klatek/s"
+
+#: plugin.c:334
+#: settings.c:224
+msgid "Accurate graphics"
+msgstr "Dokładna grafika"
+
+#: plugin.c:338
+msgid "Framerate:"
+msgstr "Klatek/s:"
+
+#: plugin.c:347
+#: settings.c:249
+msgid "No speedhacks"
+msgstr "Bez sztuczek z prędkością"
+
+#: plugin.c:348
+#: settings.c:250
+msgid "Safe hacks only"
+msgstr "Tylko bezpieczne sztuczki"
+
+#: plugin.c:349
+#: settings.c:251
+msgid "All speedhacks"
+msgstr "Wszystkie sztuczki z prędkością"
+
+#: plugin.c:446
+msgid "Settings…"
+msgstr "Ustawienia..."
+
+#: plugin.c:448
+#: plugin.c:457
+msgid "About…"
+msgstr "O programie..."
+
+#: plugin.c:456
+#: settings.c:177
+msgid "Settings"
+msgstr "Ustawienia"
+
+#: plugin.c:465
+msgid "Controls…"
+msgstr "Sterowanie..."
+
+#: plugin.c:469
+msgid "Advanced…"
+msgstr "Zaawansowane..."
+
+#: plugin.c:531
+msgid "No ROM selected"
+msgstr "Nie wybrano pliku ROM"
+
+#: plugin.c:536
+msgid "ROM file does not exist"
+msgstr "Plik ROM nie istnieje"
+
+#: controls.c:119
+msgid "Keyboard"
+msgstr "Klawiatura"
+
+#: controls.c:123
+msgid "Disabled"
+msgstr "Wyłączone"
+
+#: controls.c:131
+#, c-format
+msgid "Player %d controls"
+msgstr "Gracz %d steruje"
+
+#: controls.c:154
+msgid "Keys"
+msgstr "Klawisze"
+
+#: controls.c:160
+msgid "Enable keyboard"
+msgstr "Włącz klawiaturę"
+
+#: controls.c:167
+msgid "Configure keys..."
+msgstr "Skonfiguruj klawisze..."
+
+#: controls.c:173
+msgid "Touchscreen"
+msgstr "Ekran dotykowy"
+
+#: controls.c:180
+msgid "Enable touchscreen buttons"
+msgstr "Włącz przyciski ekranu dotyk."
+
+#: controls.c:187
+msgid "Show on-screen button grid"
+msgstr "Wyświetlaj siatkę ekranową"
+
+#: controls.c:191
+msgid "Accelerometer"
+msgstr "Akcelerometr"
+
+#: controls.c:195
+msgid "Wiimote"
+msgstr "Wiimote"
+
+#: controls.c:199
+msgid "Zeemote"
+msgstr "Zeemote"
+
+#: keys.c:267
+#, c-format
+msgid "Player %d keys"
+msgstr "Klawisze gracza %d"
+
+#: keys.c:270
+msgid "Defaults"
+msgstr "Domyślne"
+
+#: settings.c:52
+#: settings.c:59
+#: settings.c:61
+msgid "2x zoom"
+msgstr "2x przybliżenie"
+
+#: settings.c:54
+msgid "Scale to fit"
+msgstr "Dopasowanie"
+
+#: settings.c:55
+msgid "Fill the entire screen"
+msgstr "Wypełnienie ekranu"
+
+#: settings.c:58
+msgid "Antialiased 2x zoom"
+msgstr "Wygładzane 2x przybliżenie"
+
+#: settings.c:64
+msgid "No zoom"
+msgstr "Bez przybliżenia"
+
+#: settings.c:196
+msgid "Controls"
+msgstr "Sterowanie"
+
+#: settings.c:203
+msgid "Player 1"
+msgstr "Gracz 1"
+
+#: settings.c:212
+msgid "Player 2"
+msgstr "Gracz 2"
+
+#: settings.c:218
+msgid "Advanced"
+msgstr "Zaawansowane"
+
+#: settings.c:231
+msgid "Zoom"
+msgstr "Przybliżenie"
+
+#: settings.c:243
+msgid "Speedhacks"
+msgstr "Sztuczki z prędkością"
+
+#: about.c:55
+msgid "About"
+msgstr "O programie"
+
+#: cellrendererkey.c:10
+msgid "Press key or…"
+msgstr "Naciśnij klawisz lub..."
+
+#: buttons.inc:22
+msgid "Return to launcher"
+msgstr "Wróć do uruchamiania"
+
+#: buttons.inc:23
+msgid "Fullscreen"
+msgstr "Pełny ekran"
+
+#: buttons.inc:24
+msgid "Quick Load 1"
+msgstr "Szybkie wczytanie 1"
+
+#: buttons.inc:25
+msgid "Quick Save 1"
+msgstr "Szybki zapis 1"
+
+#: buttons.inc:26
+msgid "Quick Load 2"
+msgstr "Szybkie wczytanie 2"
+
+#: buttons.inc:27
+msgid "Quick Save 2"
+msgstr "Szybki zapis 2"
+

@@ -1,0 +1,235 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: maemo@javispedro.com\n"
+"POT-Creation-Date: 2010-01-26 20:44+0100\n"
+"PO-Revision-Date: 2010-01-28 05:00+0100\n"
+"Last-Translator: Robert Hägerström <rofo1000@gmail.com>\n"
+"Language-Team: Swedish\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: plugin.c:106
+msgid "<no rom selected>"
+msgstr "<ingen rom vald>"
+
+#: plugin.c:233
+msgid "ROM"
+msgstr "ROM"
+
+#: plugin.c:251
+msgid "Select ROM..."
+msgstr "Välj ROM..."
+
+#: plugin.c:268
+msgid "Sound"
+msgstr "Ljud"
+
+#: plugin.c:274
+msgid "Target framerate"
+msgstr "Mål bildhastighet"
+
+#: plugin.c:291
+msgid "Show while in game"
+msgstr "Visa i spelet"
+
+#: plugin.c:295 plugin.c:313
+msgid "Turbo mode"
+msgstr "Turbo läge"
+
+#: plugin.c:310
+msgid "Enable sound"
+msgstr "Aktivera ljud"
+
+#: plugin.c:315
+msgid "Display framerate"
+msgstr "Visa bildhastighet"
+
+#: plugin.c:334 settings.c:224
+msgid "Accurate graphics"
+msgstr "Exakt grafik"
+
+#: plugin.c:338
+msgid "Framerate:"
+msgstr "Bildhastighet:"
+
+#: plugin.c:347 settings.c:249
+msgid "No speedhacks"
+msgstr "Inga speedhacks"
+
+#: plugin.c:348 settings.c:250
+msgid "Safe hacks only"
+msgstr "Enbart säkra hack"
+
+#: plugin.c:349 settings.c:251
+msgid "All speedhacks"
+msgstr "Alla speedhacks"
+
+#: plugin.c:446
+msgid "Settings…"
+msgstr "Inställningar…"
+
+#: plugin.c:448 plugin.c:457
+msgid "About…"
+msgstr "Om…"
+
+#: plugin.c:456 settings.c:177
+msgid "Settings"
+msgstr "Inställningar"
+
+#: plugin.c:465
+msgid "Controls…"
+msgstr "Kontroller…"
+
+#: plugin.c:469
+msgid "Advanced…"
+msgstr "Avancerad…"
+
+#: plugin.c:531
+msgid "No ROM selected"
+msgstr "Ingen ROM vald"
+
+#: plugin.c:536
+msgid "ROM file does not exist"
+msgstr "ROM-filen existerar inte"
+
+#: controls.c:119
+msgid "Keyboard"
+msgstr "Tangentbord"
+
+#: controls.c:123
+msgid "Disabled"
+msgstr "Inaktiverad"
+
+#: controls.c:131
+#, c-format
+msgid "Player %d controls"
+msgstr "Spelare %d kontroller"
+
+#: controls.c:154
+msgid "Keys"
+msgstr "tangenter"
+
+#: controls.c:160
+msgid "Enable keyboard"
+msgstr "Aktivera tangentbordet"
+
+#: controls.c:167
+msgid "Configure keys..."
+msgstr "Anpassa tangenter..."
+
+#: controls.c:173
+msgid "Touchscreen"
+msgstr "Pekskärm"
+
+#: controls.c:180
+msgid "Enable touchscreen buttons"
+msgstr "Aktivera pekskärmsknappar"
+
+#: controls.c:187
+msgid "Show on-screen button grid"
+msgstr "Visa skärmknapparnas rutnät"
+
+#: controls.c:191
+msgid "Accelerometer"
+msgstr "Accelerometer"
+
+#: controls.c:195
+msgid "Wiimote"
+msgstr "Wiimote"
+
+#: controls.c:199
+msgid "Zeemote"
+msgstr "Zeemote"
+
+#: keys.c:267
+#, c-format
+msgid "Player %d keys"
+msgstr "Spelare %d tangenter"
+
+#: keys.c:270
+msgid "Defaults"
+msgstr "Standard"
+
+#: settings.c:52 settings.c:59 settings.c:61
+msgid "2x zoom"
+msgstr "Dubbel zoom"
+
+#: settings.c:54
+msgid "Scale to fit"
+msgstr "Skala för att passa"
+
+#: settings.c:55
+msgid "Fill the entire screen"
+msgstr "Fyll hela skärmen"
+
+#: settings.c:58
+msgid "Antialiased 2x zoom"
+msgstr "Kantutjämnad dubbel zoom"
+
+#: settings.c:64
+msgid "No zoom"
+msgstr "Ingen zoom"
+
+#: settings.c:196
+msgid "Controls"
+msgstr "Kontroller"
+
+#: settings.c:203
+msgid "Player 1"
+msgstr "Spelare 1"
+
+#: settings.c:212
+msgid "Player 2"
+msgstr "Spelare 2"
+
+#: settings.c:218
+msgid "Advanced"
+msgstr "Avancerad"
+
+#: settings.c:231
+msgid "Zoom"
+msgstr "Zoom"
+
+#: settings.c:243
+msgid "Speedhacks"
+msgstr "Speedhacks"
+
+#: about.c:55
+msgid "About"
+msgstr "Om"
+
+#: cellrendererkey.c:10
+msgid "Press key or…"
+msgstr "Tryck på tangent eller…"
+
+#: buttons.inc:22
+msgid "Return to launcher"
+msgstr "Tillbaka till startskärmen"
+
+#: buttons.inc:23
+msgid "Fullscreen"
+msgstr "Fullskärm"
+
+#: buttons.inc:24
+msgid "Quick Load 1"
+msgstr "Snabbladda 1"
+
+#: buttons.inc:25
+msgid "Quick Save 1"
+msgstr "Snabbspara 1"
+
+#: buttons.inc:26
+msgid "Quick Load 2"
+msgstr "Snabbladda 2"
+
+#: buttons.inc:27
+msgid "Quick Save 2"
+msgstr "Snabbspara 2"

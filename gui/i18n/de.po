@@ -1,0 +1,246 @@
+#  German Translation for DrNokSnes.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the drnoksnes package.
+# Philipp Zabel <philipp.zabel@gmail.com>, 2010.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: drnoksnes\n"
+"Report-Msgid-Bugs-To: maemo@javispedro.com\n"
+"POT-Creation-Date: 2010-01-26 20:44+0100\n"
+"PO-Revision-Date: 2010-01-28 09:50+0100\n"
+"Last-Translator: Philipp Zabel <philipp.zabel@gmail.com>\n"
+"Language-Team: German\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: German\n"
+"X-Poedit-Country: Germany\n"
+
+#: plugin.c:106
+msgid "<no rom selected>"
+msgstr "<kein rom ausgewählt>"
+
+#: plugin.c:233
+msgid "ROM"
+msgstr "ROM"
+
+#: plugin.c:251
+msgid "Select ROM..."
+msgstr "ROM auswählen..."
+
+#: plugin.c:268
+msgid "Sound"
+msgstr "Ton"
+
+#: plugin.c:274
+msgid "Target framerate"
+msgstr "Ziel-Bildwiederholrate"
+
+#: plugin.c:291
+msgid "Show while in game"
+msgstr "Im Spiel anzeigen"
+
+#: plugin.c:295
+#: plugin.c:313
+msgid "Turbo mode"
+msgstr "Turbomodus"
+
+#: plugin.c:310
+msgid "Enable sound"
+msgstr "Ton einschalten"
+
+#: plugin.c:315
+msgid "Display framerate"
+msgstr "Bildwiederholrate anzeigen"
+
+#: plugin.c:334
+#: settings.c:224
+msgid "Accurate graphics"
+msgstr "Akkurate Grafik"
+
+#: plugin.c:338
+msgid "Framerate:"
+msgstr "Bildwiederholrate:"
+
+#: plugin.c:347
+#: settings.c:249
+msgid "No speedhacks"
+msgstr "Keine Speedhacks"
+
+#: plugin.c:348
+#: settings.c:250
+msgid "Safe hacks only"
+msgstr "Nur sichere Hacks"
+
+#: plugin.c:349
+#: settings.c:251
+msgid "All speedhacks"
+msgstr "Alle Speedhacks"
+
+#: plugin.c:446
+msgid "Settings…"
+msgstr "Einstellungen..."
+
+#: plugin.c:448
+#: plugin.c:457
+msgid "About…"
+msgstr "Über..."
+
+#: plugin.c:456
+#: settings.c:177
+msgid "Settings"
+msgstr "Einstellungen"
+
+#: plugin.c:465
+msgid "Controls…"
+msgstr "Steuerung..."
+
+#: plugin.c:469
+msgid "Advanced…"
+msgstr "Erweitert..."
+
+#: plugin.c:531
+msgid "No ROM selected"
+msgstr "Kein ROM ausgewählt"
+
+#: plugin.c:536
+msgid "ROM file does not exist"
+msgstr "ROM-Datei existiert nicht"
+
+#: controls.c:119
+msgid "Keyboard"
+msgstr "Tastatur"
+
+#: controls.c:123
+msgid "Disabled"
+msgstr "Deaktiviert"
+
+#: controls.c:131
+#, c-format
+msgid "Player %d controls"
+msgstr "Spieler %d Steuerung"
+
+#: controls.c:154
+msgid "Keys"
+msgstr "Tasten"
+
+#: controls.c:160
+msgid "Enable keyboard"
+msgstr "Tastatur aktivieren"
+
+#: controls.c:167
+msgid "Configure keys..."
+msgstr "Tasten konfigurieren..."
+
+#: controls.c:173
+msgid "Touchscreen"
+msgstr "Touchscreen"
+
+#: controls.c:180
+msgid "Enable touchscreen buttons"
+msgstr "Touchscreen-Knöpfe aktivieren"
+
+#: controls.c:187
+msgid "Show on-screen button grid"
+msgstr "Wyświetlaj siatkę ekranową"
+
+#: controls.c:191
+msgid "Accelerometer"
+msgstr "Beschleunigungssensor"
+
+#: controls.c:195
+msgid "Wiimote"
+msgstr "Wiimote"
+
+#: controls.c:199
+msgid "Zeemote"
+msgstr "Zeemote"
+
+#: keys.c:267
+#, c-format
+msgid "Player %d keys"
+msgstr "Spieler %d Tasten"
+
+#: keys.c:270
+msgid "Defaults"
+msgstr "Standardeinstellungen"
+
+#: settings.c:52
+#: settings.c:59
+#: settings.c:61
+msgid "2x zoom"
+msgstr "2x Vergrößerung"
+
+#: settings.c:54
+msgid "Scale to fit"
+msgstr "Auf Bildschirmgröße skalieren"
+
+#: settings.c:55
+msgid "Fill the entire screen"
+msgstr "Den ganzen Bildschirm füllen"
+
+#: settings.c:58
+msgid "Antialiased 2x zoom"
+msgstr "2x Zoom mit Kantenglättung"
+
+#: settings.c:64
+msgid "No zoom"
+msgstr "Kein Zoom"
+
+#: settings.c:196
+msgid "Controls"
+msgstr "Steuerung"
+
+#: settings.c:203
+msgid "Player 1"
+msgstr "Spieler 1"
+
+#: settings.c:212
+msgid "Player 2"
+msgstr "Spieler 2"
+
+#: settings.c:218
+msgid "Advanced"
+msgstr "Erweitert"
+
+#: settings.c:231
+msgid "Zoom"
+msgstr "Zoom"
+
+#: settings.c:243
+msgid "Speedhacks"
+msgstr "Speedhacks"
+
+#: about.c:55
+msgid "About"
+msgstr "Über"
+
+#: cellrendererkey.c:10
+msgid "Press key or…"
+msgstr "Taste drücken oder..."
+
+#: buttons.inc:22
+msgid "Return to launcher"
+msgstr "Zurück zum Starter"
+
+#: buttons.inc:23
+msgid "Fullscreen"
+msgstr "Vollbild"
+
+#: buttons.inc:24
+msgid "Quick Load 1"
+msgstr "Schnell laden 1"
+
+#: buttons.inc:25
+msgid "Quick Save 1"
+msgstr "Schnell speichern 1"
+
+#: buttons.inc:26
+msgid "Quick Load 2"
+msgstr "Schnell laden 2"
+
+#: buttons.inc:27
+msgid "Quick Save 2"
+msgstr "Schnell speichern 2"
+
