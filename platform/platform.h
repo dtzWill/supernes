@@ -4,7 +4,7 @@
 #include "port.h"
 
 // Configuration and command line parsing
-void S9xLoadConfig(int argc, const char ** argv);
+void S9xLoadConfig(int argc, char ** argv);
 void S9xUnloadConfig();
 void S9xSetRomFile(const char * file);
 extern struct config {
@@ -41,7 +41,11 @@ extern struct gui {
 	/** Scaling ratio */
 	float ScaleX, ScaleY;
 } GUI;
+
+void S9xInitDisplay(int argc, char **argv);
+void S9xDeinitDisplay();
 void S9xVideoToggleFullscreen();
+void S9xSetTitle (const char *title);
 
 // Audio output
 void S9xInitAudioOutput();
@@ -49,10 +53,11 @@ void S9xDeinitAudioOutput();
 void S9xAudioOutputEnable(bool enable);
 
 // Input devices
-EXTERN_C void S9xInitInputDevices();
+void S9xInitInputDevices();
 void S9xDeinitInputDevices();
 void S9xInputScreenChanged();
 void S9xInputScreenDraw(int pixelSize, void * buffer, int pitch);
+void S9xProcessEvents(bool block);
 
 // Input actions
 #define kActionNone						0

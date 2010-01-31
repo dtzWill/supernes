@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: DrNokSnes 1.2.5\n"
 "Report-Msgid-Bugs-To: maemo@javispedro.com\n"
-"POT-Creation-Date: 2010-01-23 20:44+0100\n"
+"POT-Creation-Date: 2010-01-28 01:46+0100\n"
 "PO-Revision-Date: 2010-01-07 03:11+0100\n"
 "Last-Translator: Javier <javier@javispedro.com>\n"
 "Language-Team: Spanish <maemo@javispedro.com>\n"
@@ -153,12 +153,12 @@ msgstr ""
 msgid "Zeemote"
 msgstr ""
 
-#: keys.c:267
+#: keys.c:266
 #, fuzzy, c-format
 msgid "Player %d keys"
 msgstr "Jugador 1"
 
-#: keys.c:270
+#: keys.c:269
 msgid "Defaults"
 msgstr ""
 

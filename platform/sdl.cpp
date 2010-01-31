@@ -14,10 +14,10 @@
 #include "soundux.h"
 #include "hacks.h"
 #include "snapshot.h"
-#include "hgw.h"
+#include "osso.h"
 
 #define kPollEveryNFrames		5		//Poll input only every this many frames
-#define kPollHgwEveryNFrames	10		//Poll dbus only every this many frames
+#define kPollOssoEveryNFrames	10		//Poll dbus only every this many frames
 
 #define TRACE printf("trace: %s:%s\n", __FILE__, __func__);
 #define DIE(format, ...) do { \
@@ -186,37 +186,37 @@ static inline void pollEvents() {
 	static int frames = 0;
 	
 	if (++frames > kPollEveryNFrames) {
-		S9xProcessEvents(FALSE);
+		S9xProcessEvents(false);
 		frames = 0;
 	}
 }
 
-#if CONF_HGW
-/** Wraps HgwPollEvents, taking care of kPollHgwEveryNFrames */
-static inline void pollHgwEvents() {
+#if CONF_GUI
+/** Wraps OssoPollEvents, taking care of kPollOssoEveryNFrames */
+static inline void pollOssoEvents() {
 	static int frames = 0;
 	
-	if (!hgwLaunched) return;
+	if (!OssoOk()) return;
 	
-	if (++frames > kPollHgwEveryNFrames) {
-		HgwPollEvents();
+	if (++frames > kPollOssoEveryNFrames) {
+		OssoPollEvents();
 		frames = 0;
 	}
 }
 #endif
 
-int main(int argc, const char ** argv) {	
+int main(int argc, char ** argv) {
 	// Initialise SDL
 	if (SDL_Init(0) < 0) 
 		DIE("SDL_Init: %s", SDL_GetError());
 
 	// Configure snes9x
-#if CONF_HGW
-	HgwInit();						// Hildon-games-wrapper initialization.
+#if CONF_GUI
+	OssoInit();						// Hildon-games-wrapper initialization.
 #endif
 	S9xLoadConfig(argc, argv);		// Load config files and parse cmd line.
-#if CONF_HGW
-	HgwConfig();					// Apply specific hildon-games config.
+#if CONF_GUI
+	OssoConfig();					// Apply specific hildon-games config.
 #endif
 
 	// S9x initialization
@@ -242,8 +242,8 @@ int main(int argc, const char ** argv) {
 		frameSync();			// May block, or set frameskip to true.
 		S9xMainLoop();			// Does CPU things, renders if needed.
 		pollEvents();
-#if CONF_HGW
-		pollHgwEvents();
+#if CONF_GUI
+		pollOssoEvents();
 #endif
 	} while (!Config.quitting);
 	
@@ -261,8 +261,8 @@ int main(int argc, const char ** argv) {
 	S9xGraphicsDeinit();
 	Memory.Deinit();
 	S9xUnloadConfig();
-#if CONF_HGW
-	HgwDeinit();
+#if CONF_GUI
+	OssoDeinit();
 #endif
 
 	SDL_Quit();

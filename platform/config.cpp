@@ -7,7 +7,10 @@
 #include "port.h"
 #include "snes9x.h"
 #include "display.h"
-#include "hgw.h"
+
+#if CONF_GUI
+#include "osso.h"
+#endif
 
 #define DIE(format, ...) do { \
 		fprintf(stderr, "Died at %s:%d: ", __FILE__, __LINE__ ); \
@@ -407,41 +410,35 @@ static void parseArgs(poptContext optCon)
 		S9xSetRomFile(extra_arg);
 }
 
-void S9xLoadConfig(int argc, const char ** argv)
+void S9xLoadConfig(int argc, char ** argv)
 {
-	poptContext optCon =
-		poptGetContext("drnoksnes", argc, argv, optionsTable, 0);
+	poptContext optCon = poptGetContext("drnoksnes",
+		argc, const_cast<const char **>(argv), optionsTable, 0);
 	poptSetOtherOptionHelp(optCon, "<rom>");
 
 	// Builtin defaults
 	loadDefaults();
 
-	// Read config file ~/apps/DrNokSnes.txt
+	// Read config file ~/.config/drnoksnes.conf
 	char defConfFile[PATH_MAX];
-	sprintf(defConfFile, "%s/%s", getenv("HOME"), "apps/DrNokSnes.txt");
+	sprintf(defConfFile, "%s/%s", getenv("HOME"), ".config/drnoksnes.conf");
 	loadConfig(optCon, defConfFile);
 
 	// Command line parameters (including --conf args)
 	parseArgs(optCon);
 
-#if CONF_HGW
-	if (!gotRomFile() && !hgwLaunched) {
-		// User did not specify a ROM file, 
-		// and we're not being launched from D-Bus.
-		fprintf(stderr, "You need to specify a ROM, like this:\n");
-		poptPrintUsage(optCon, stdout, 0);
-		poptFreeContext(optCon);
-		exit(2);
-	}
-#else
-	if (!gotRomFile()) {
-		// User did not specify a ROM file
-		fprintf(stderr, "You need to specify a ROM, like this:\n");
-		poptPrintUsage(optCon, stdout, 0);
-		poptFreeContext(optCon);
-		exit(2);
-	}
+#if CONF_GUI
+	if (!OssoOk())
 #endif
+	{
+		if (!gotRomFile()) {
+			// User did not specify a ROM file in the command line
+			fprintf(stderr, "You need to specify a ROM, like this:\n");
+			poptPrintUsage(optCon, stdout, 0);
+			poptFreeContext(optCon);
+			exit(2);
+		}
+	}
 
 	poptFreeContext(optCon);
 }

@@ -53,22 +53,12 @@ uint32 S9xReadJoypad (int which1_0_to_4);
 bool8_32 S9xReadMousePosition (int which1_0_to_1, int &x, int &y, uint32 &buttons);
 bool8_32 S9xReadSuperScopePosition (int &x, int &y, uint32 &buttons);
 
-void S9xUsage ();
-void S9xInitDisplay (int argc, const char **argv);
-void S9xDeinitDisplay ();
-void S9xInitInputDevices ();
-void S9xSetTitle (const char *title);
-void S9xProcessEvents (bool8_32 block);
-void S9xPutImage (int width, int height);
-void S9xParseDisplayArg (char **argv, int &index, int argc);
-void S9xToggleSoundChannel (int channel);
 void S9xSetInfoString (const char * fmt, ...);
-int S9xMinCommandLineArgs ();
+
 void S9xNextController ();
 
 bool8_32 S9xOpenSnapshotFile (const char *base, bool8_32 read_only, STREAM *file);
 void S9xCloseSnapshotFile (STREAM file);
-
 END_EXTERN_C
 
 #endif

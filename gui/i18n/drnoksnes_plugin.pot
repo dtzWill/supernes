@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: maemo@javispedro.com\n"
-"POT-Creation-Date: 2010-01-26 20:44+0100\n"
+"POT-Creation-Date: 2010-01-28 01:47+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -149,12 +149,12 @@ msgstr ""
 msgid "Zeemote"
 msgstr ""
 
-#: keys.c:267
+#: keys.c:266
 #, c-format
 msgid "Player %d keys"
 msgstr ""
 
-#: keys.c:270
+#: keys.c:269
 msgid "Defaults"
 msgstr ""
 

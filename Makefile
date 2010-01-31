@@ -7,8 +7,6 @@ LDLIBS := -lz $(shell sdl-config --libs) $(shell pkg-config --libs x11) -lpopt
 
 # Sane defaults
 CONF_GUI?=1
-# Use Hildon Games Wrapper library
-CONF_HGW?=$(CONF_GUI)
 ifeq ($(ARCH),armel)
 	CONF_BUILD_ASM_CPU?=1
 	CONF_BUILD_ASM_SPC700?=1
@@ -69,10 +67,10 @@ ifeq ($(CONF_HD), 1)
 	LDLIBS += -lSDL_haa
 	CONF_EXIT_BUTTON ?= 1
 endif
-ifeq ($(CONF_HGW), 1)
-	CPPFLAGS += -DCONF_HGW=1 -I/usr/include/hgw $(shell pkg-config --cflags gconf-2.0)
-	LDLIBS += -lhgw $(shell pkg-config --libs gconf-2.0)
-	OBJS += platform/hgw.o
+ifeq ($(CONF_GUI), 1)
+	CPPFLAGS += -DCONF_GUI=1 $(shell pkg-config --cflags libosso gconf-2.0)
+	LDLIBS += $(shell pkg-config --libs libosso gconf-2.0)
+	OBJS += platform/osso.o
 endif
 ifeq ($(CONF_EXIT_BUTTON), 1)
 	CPPFLAGS += -DCONF_EXIT_BUTTON=1

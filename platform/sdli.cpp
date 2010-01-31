@@ -188,7 +188,7 @@ bool8 S9xReadSuperScopePosition(int& x, int& y, uint32& buttons)
 	return TRUE;
 }
 
-void S9xProcessEvents(bool8_32 block)
+void S9xProcessEvents(bool block)
 {
 	SDL_Event event;
 

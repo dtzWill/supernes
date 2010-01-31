@@ -1,140 +1,195 @@
 #include <stdio.h>
-#include <libgen.h>
-#include <hgw/hgw.h>
 
 #include "snes9x.h"
 
 #include <glib.h>
+#include <libosso.h>
 #include <gconf/gconf.h>
 #include <gconf/gconf-client.h>
 
 #include "platform.h"
-#include "hgw.h"
+#include "osso.h"
 #include "../gui/gconf.h"
 
-#define DIE(format, ...) do { \
-		fprintf(stderr, "Died at %s:%d: ", __FILE__, __LINE__ ); \
-		fprintf(stderr, format "\n", ## __VA_ARGS__); \
-		abort(); \
-	} while (0);
+static GMainContext *mainContext;
+static GMainLoop *mainLoop;
+osso_context_t *ossoContext;
 
-bool hgwLaunched;
-static HgwContext *hgw;
+static volatile enum {
+	STARTUP_COMMAND_INVALID = -1,
+	STARTUP_COMMAND_UNKNOWN = 0,
+	STARTUP_COMMAND_RUN,
+	STARTUP_COMMAND_CONTINUE,
+	STARTUP_COMMAND_RESTART,
+	STARTUP_COMMAND_QUIT
+} startupCommand;
 
 static void createActionMappingsOnly();
 static void parseGConfKeyMappings(GConfClient* gcc);
 
-void HgwInit()
+static gint ossoAppCallback(const gchar *interface, const gchar *method,
+  GArray *arguments, gpointer data, osso_rpc_t *retval)
 {
-	// hildon-games-wrapper sets this env variable for itself.
-	char* service = getenv("HGW_EXEC_SERVICE");
+	retval->type = DBUS_TYPE_BOOLEAN;
 
-	if (!service) {
-		// Not launched from hildon-games-wrapper
-		hgwLaunched = false;
+	if (startupCommand == STARTUP_COMMAND_UNKNOWN) {
+		// Only if we haven't received the startup command yet.
+		printf("Osso: Startup method is: %s\n", method);
+
+		if (strcmp(method, "game_run") == 0) {
+			startupCommand = STARTUP_COMMAND_RUN;
+			retval->value.b = TRUE;
+		} else if (strcmp(method, "game_continue") == 0) {
+			startupCommand = STARTUP_COMMAND_CONTINUE;
+			retval->value.b = TRUE;
+		} else if (strcmp(method, "game_restart") == 0) {
+			startupCommand = STARTUP_COMMAND_RESTART;
+			retval->value.b = TRUE;
+		} else if (strcmp(method, "game_close") == 0) {
+			// A bit weird, but could happen
+			startupCommand = STARTUP_COMMAND_QUIT;
+			retval->value.b = TRUE;
+		} else {
+			startupCommand = STARTUP_COMMAND_INVALID;
+			retval->value.b = FALSE;
+		}
+	} else {
+		if (strcmp(method, "game_close") == 0) {
+			printf("Osso: quitting because of D-Bus close message\n");
+			S9xDoAction(kActionQuit);
+			retval->value.b = TRUE;
+		} else {
+			retval->value.b = FALSE;
+		}
+	}
+
+	return OSSO_OK;
+}
+
+/** Called from main(), initializes Glib & libosso stuff if needed. */
+void OssoInit()
+{
+	char *dbusLaunch = getenv("DRNOKSNES_DBUS");
+
+	if (!dbusLaunch || dbusLaunch[0] != 'y') {
+		// Not launched from GUI, so we don't assume GUI features.
+		ossoContext = 0;
 		return;
 	}
 
 	g_type_init();
-	hgw = hgw_context_init();
+	mainContext = g_main_context_default();
+	mainLoop = g_main_loop_new(mainContext, FALSE);
+	ossoContext = osso_initialize("com.javispedro.drnoksnes", "1", 0, 0);
 
-	if (!hgw) {
-		fprintf(stderr, "Error opening hgw context\n");
-		hgwLaunched = false;
+	if (!ossoContext) {
+		fprintf(stderr, "Error initializing libosso\n");
+		exit(2);
 	}
 
-	hgwLaunched = true;
-	printf("Loading in HGW mode\n");
+	// At this point, we still don't know what the startup command is
+	startupCommand = STARTUP_COMMAND_UNKNOWN;
+
+	osso_return_t ret;
+	ret = osso_rpc_set_default_cb_f(ossoContext, ossoAppCallback, 0);
+	g_assert(ret == OSSO_OK);
+
+	printf("Osso: Initialized libosso\n");
 }
 
-void HgwDeinit()
+static osso_return_t invokeLauncherMethod(const char *method, osso_rpc_t *retval)
 {
-	if (!hgwLaunched) return;
-
-	hgw_context_destroy(hgw,
-		(Config.snapshotSave ? HGW_BYE_PAUSED : HGW_BYE_INACTIVE));
-
-	hgw = 0;
+	// The launcher seems to assume there is at least one parameter,
+	// even if the method doesn't actually require one.
+	return osso_rpc_run(ossoContext, "com.javispedro.drnoksnes.startup",
+		"/com/javispedro/drnoksnes/startup", "com.javispedro.drnoksnes.startup",
+		method, retval, DBUS_TYPE_INVALID);
 }
 
-void HgwConfig()
+void OssoDeinit()
 {
-	if (!hgwLaunched) return;
+	if (!OssoOk()) return;
+
+	// Send a goodbye message to the launcher
+	osso_return_t ret;
+	osso_rpc_t retval = { 0 };
+	if (Config.snapshotSave) {
+		// If we saved game state, notify launcher to enter "paused" status.
+		ret = invokeLauncherMethod("game_pause", &retval);
+	} else {
+		ret = invokeLauncherMethod("game_close", &retval);
+	}
+	if (ret != OSSO_OK) {
+		printf("Osso: failed to notify launcher\n");
+	}
+	osso_rpc_free_val(&retval);
+
+	osso_deinitialize(ossoContext);
+	g_main_loop_unref(mainLoop);
+	g_main_context_unref(mainContext);
+
+	ossoContext = 0;
+}
+
+/** Called after loading the config file, loads settings from gconf. */
+void OssoConfig()
+{
+	if (!OssoOk()) return;
 
 	GConfClient *gcc = gconf_client_get_default();
 
+	// GUI only allows fullscreen
 	Config.fullscreen = true;
 
-	char romFile[PATH_MAX + 1];
-	if (hgw_conf_request_string(hgw, kGConfRomFile, romFile) == HGW_ERR_NONE
-		&& strlen(romFile) > 0) {
+	// Get ROM filename from Gconf
+	gchar *romFile = gconf_client_get_string(gcc, kGConfRomFile, 0);
+	if (romFile && strlen(romFile) > 0) {
 		S9xSetRomFile(romFile);
 	} else {
 		printf("Exiting gracefully because there's no ROM in Gconf\n");
-		HgwDeinit();
+		OssoDeinit();
 		exit(0);
 	}
 
-	char sound = FALSE;
-	if (hgw_conf_request_bool(hgw, kGConfSound, &sound) == HGW_ERR_NONE) {
-		Config.enableAudio = sound ? true : false;
-	}
+	// Read most of the non-player specific settings
+	Config.enableAudio = gconf_client_get_bool(gcc, kGConfSound, 0);
+	Settings.TurboMode = gconf_client_get_bool(gcc, kGConfTurboMode, 0);
+	Settings.Transparency = gconf_client_get_bool(gcc, kGConfTransparency, 0);
+	Settings.DisplayFrameRate = gconf_client_get_bool(gcc, kGConfDisplayFramerate, 0);
 
-	char turbo = FALSE;
-	if (hgw_conf_request_bool(hgw, kGConfTurboMode, &turbo) == HGW_ERR_NONE) {
-		Settings.TurboMode = turbo ? TRUE : FALSE;
-	}
+	int frameskip = gconf_client_get_int(gcc, kGConfFrameskip, 0);
+	Settings.SkipFrames = (frameskip > 0 ? frameskip : AUTO_FRAMERATE);
 
-	int frameskip = 0;
-	if (hgw_conf_request_int(hgw, kGConfFrameskip, &frameskip) == HGW_ERR_NONE) {
-		Settings.SkipFrames = (frameskip > 0 ? frameskip : AUTO_FRAMERATE);
-	}
-
-	char transparency = FALSE;
-	if (hgw_conf_request_bool(hgw, kGConfTransparency, &transparency) == HGW_ERR_NONE) {
-		Settings.Transparency = transparency ? TRUE : FALSE;
-	}
-
-	char scaler[NAME_MAX];
-	if (hgw_conf_request_string(hgw, kGConfScaler, scaler) == HGW_ERR_NONE
-		&& strlen(scaler) > 0) {
+	gchar *scaler = gconf_client_get_string(gcc, kGConfScaler, 0);
+	if (scaler && strlen(scaler) > 0) {
 		free(Config.scaler);
 		Config.scaler = strdup(scaler);
 	}
+	g_free(scaler);
 
-	char displayFramerate = FALSE;
-	if (hgw_conf_request_bool(hgw, kGConfDisplayFramerate, &displayFramerate) == HGW_ERR_NONE) {
-		Settings.DisplayFrameRate = displayFramerate ? TRUE : FALSE;
+	int speedhacks = gconf_client_get_int(gcc, kGConfSpeedhacks, 0);
+	if (speedhacks <= 0) {
+		Settings.HacksEnabled = FALSE;
+		Settings.HacksFilter = FALSE;
+	} else if (speedhacks == 1) {
+		Settings.HacksEnabled = TRUE;
+		Settings.HacksFilter = TRUE;
+	} else {
+		Settings.HacksEnabled = TRUE;
+		Settings.HacksFilter = FALSE;
 	}
 
-#if TODO
-	char displayControls = FALSE;
-	if (hgw_conf_request_bool(hgw, kGConfDisplayControls, &displayControls) == HGW_ERR_NONE) {
-		Config.touchscreenShow = displayControls ? true : false;
-	}
-#endif
-
-	int speedhacks = 0;
-	if (hgw_conf_request_int(hgw, kGConfSpeedhacks, &speedhacks) == HGW_ERR_NONE) {
-		if (speedhacks <= 0) {
-			Settings.HacksEnabled = FALSE;
-			Settings.HacksFilter = FALSE;
-		} else if (speedhacks == 1) {
-			Settings.HacksEnabled = TRUE;
-			Settings.HacksFilter = TRUE;
-		} else {
-			Settings.HacksEnabled = TRUE;
-			Settings.HacksFilter = FALSE;
-		}
-	}
 	if (Settings.HacksEnabled && !Config.hacksFile) {
 		// Provide a default speedhacks file
-		if (asprintf(&Config.hacksFile, "%s/snesadvance.dat", dirname(romFile))
+		gchar *romDir = g_path_get_dirname(romFile);
+		if (asprintf(&Config.hacksFile, "%s/snesadvance.dat", romDir)
 				< 0) {
 			Config.hacksFile = 0; // malloc error.
 		}
-		// remember that dirname garbles romFile.
+		g_free(romDir);
 	}
+
+	g_free(romFile);
 
 	gchar key[kGConfPlayerPathBufferLen];
 	gchar *relKey = key + sprintf(key, kGConfPlayerPath, 1);
@@ -146,77 +201,51 @@ void HgwConfig()
 		createActionMappingsOnly();
 	}
 
-	HgwStartCommand cmd = hgw_context_get_start_command(hgw);
-	switch (cmd) {
-		default:
-		case HGW_COMM_NONE:	// called from libosso
-		case HGW_COMM_CONT:
+	// Iterate the event loop since we want to catch the initial dbus messages
+	while (startupCommand == STARTUP_COMMAND_UNKNOWN) {
+		// This is not busylooping since we are blocking here
+		g_main_context_iteration(mainContext, TRUE);
+	}
+
+	switch (startupCommand) {
+		case STARTUP_COMMAND_RUN:
+		case STARTUP_COMMAND_RESTART:
+			Config.snapshotLoad = false;
+			Config.snapshotSave = true;
+			break;
+		case STARTUP_COMMAND_CONTINUE:
 			Config.snapshotLoad = true;
 			Config.snapshotSave = true;
 			break;
-		case HGW_COMM_RESTART:
-			Config.snapshotLoad = false;
-			Config.snapshotSave = true;
-			break;
-		case HGW_COMM_QUIT:
-			// hum, what?
+		case STARTUP_COMMAND_QUIT:
 			Config.snapshotLoad = false;
 			Config.snapshotSave = false;
 			Config.quitting = true;
+			break;
+		default:
+			Config.snapshotLoad = false;
+			Config.snapshotSave = false;
 			break;
 	}
 
 	g_object_unref(G_OBJECT(gcc));
 }
 
-void HgwPollEvents()
+void OssoPollEvents()
 {
-	if (!hgwLaunched) return;
-	
-	HgwMessage msg;
-	HgwMessageFlags flags = HGW_MSG_FLAG_NONE;
-	
-	if ( hgw_msg_check_incoming(hgw, &msg, flags) == HGW_ERR_COMMUNICATION ) {
-		// Message Incoming, process msg
-		
-		switch (msg.type) {
-			case HGW_MSG_TYPE_CBREQ:
-				switch (msg.e_val) {
-					case HGW_CB_QUIT:
-					case HGW_CB_EXIT:
-						Config.quitting = true;
-						break;
-				}
-				break;
-			case HGW_MSG_TYPE_DEVSTATE:
-				switch (msg.e_val) {
-					case HGW_DEVICE_STATE_SHUTDOWN:
-						Config.quitting = true;	// try to quit gracefully
-						break;
-				}
-				break;
-			default:
-				// do nothing
-				break;
-		}
-		
-		hgw_msg_free_data(&msg);
-	}
+	if (!OssoOk()) return;
+
+	//g_main_context_iteration(mainContext, FALSE);
 }
 
-// For now, please keep this in sync with ../gui/controls.c
 typedef struct ButtonEntry {
 	const char * gconf_key;
 	unsigned long mask;
 	bool is_action;
 } ButtonEntry;
-#define BUTTON_INITIALIZER(button, name) \
-	{ kGConfKeysPath "/" name, SNES_##button##_MASK, false }
-#define ACTION_INITIALIZER(action, name) \
-	{ kGConfKeysPath "/" name, kAction##action, true }
-#define BUTTON_LAST	\
-	{ 0 }
 
+/** This arrays contains generic info about each of the mappable buttons the
+	GUI shows */
 static const ButtonEntry buttons[] = {
 #define HELP(...)
 #define P(x) SNES_##x##_MASK

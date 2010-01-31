@@ -12,7 +12,6 @@ ARCH=$(dpkg-architecture -qDEB_BUILD_ARCH)
 GAME_VERSION=$(head -n 1 debian/changelog | sed 's/[^0-9.-]//g')
 
 echo ARCH="${ARCH}" > config.mk
-echo CONF_HGW=0 >> config.mk
 echo CONF_GUI=0 >> config.mk
 echo CONF_XSP=0 >> config.mk
 echo ASFLAGS="" >> config.mk

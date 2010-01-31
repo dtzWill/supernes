@@ -64,7 +64,6 @@ configure-stamp:
 	
 	echo ARCH="$(ARCH)" > config.mk
 	echo CONF_GUI=1 >> config.mk
-	echo CONF_HGW=1 >> config.mk
 ifeq ($(shell expr "$(MAEMO_VERSION)" ">" 4), 1)
 	# Maemo 5 devices do not support Xsp
 	# But they support hildon compositing stuff

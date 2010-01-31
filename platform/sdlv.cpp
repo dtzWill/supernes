@@ -174,7 +174,7 @@ static void drawOnscreenControls()
 	}
 }
 
-void S9xInitDisplay(int argc, const char ** argv)
+void S9xInitDisplay(int argc, char ** argv)
 {	
 	if (SDL_InitSubSystem(SDL_INIT_VIDEO) < 0) 
 		DIE("SDL_InitSubSystem(VIDEO): %s", SDL_GetError());

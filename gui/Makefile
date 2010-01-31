@@ -17,13 +17,12 @@ GAME_SHARE_PATH=/usr/share/games/drnoksnes
 GAME_PLUGIN_PATH=/usr/lib/drnoksnes_plugin.so
 GAME_CONF_PATH=$(GAME_SHARE_PATH)/drnoksnes.conf
 GAME_BIN_PATH=/usr/games/drnoksnes
-GAME_GAME_PATH=/usr/games/wrapper/games/drnoksnes.game
 GAME_BANNER_PATH=/usr/share/pixmaps/osso-games-startup-drnoksnes.png
 
 M4:=m4
 M4DEFS:= -DGAME_VERSION=$(GAME_VERSION) -DGAME_PLUGIN_PATH=$(GAME_PLUGIN_PATH)
 M4DEFS+= -DGAME_CONF_PATH=$(GAME_CONF_PATH) -DGAME_BIN_PATH=$(GAME_BIN_PATH)
-M4DEFS+= -DGAME_GAME_PATH=$(GAME_GAME_PATH) -DGAME_BANNER_PATH=$(GAME_BANNER_PATH)
+M4DEFS+= -DGAME_BANNER_PATH=$(GAME_BANNER_PATH)
 ifdef MAEMO_VERSION
 M4DEFS+= -DMAEMO -DMAEMO_MAJOR=$(MAEMO_VERSION)
 endif
@@ -38,12 +37,12 @@ SRCS:=plugin.c state.c save.c controls.c keys.c settings.c about.c \
 	 cellrendererkey.c
 OBJS:=$(SRCS:.c=.o)
 
-POT:=$(GETTEXT_PACKAGE).pot
+POT:=i18n/$(GETTEXT_PACKAGE).pot
 PO_FILES:=$(wildcard i18n/*.po)
 MO_FILES:=$(PO_FILES:.po=.mo)
 LANGS:=$(basename $(notdir $(PO_FILES)))
 
-DATA_FILES:=drnoksnes.conf drnoksnes.desktop drnoksnes.game 
+DATA_FILES:=drnoksnes.conf drnoksnes.desktop
 DATA_FILES+=drnoksnes.service drnoksnes.startup.service
 DATA_FILES+=drnoksnes.schemas
 
@@ -64,7 +63,7 @@ $(PO_FILES): %: $(POT)
 	
 clean: 
 	rm -f drnoksnes_plugin.so *.o
-	rm -f $(POT) $(MO_FILES)
+	rm -f $(MO_FILES)
 	rm -f $(DATA_FILES)
 
 %: %.m4
@@ -75,7 +74,6 @@ install: all
 	install drnoksnes_plugin.so $(DESTDIR)$(GAME_PLUGIN_PATH)
 	install -m 0644 drnoksnes.conf $(DESTDIR)$(GAME_CONF_PATH)
 	install -m 0644 drnoksnes.desktop $(DESTDIR)/usr/share/applications/hildon/
-	install -m 0644 drnoksnes.game $(DESTDIR)$(GAME_GAME_PATH)
 	install -m 0644 drnoksnes.service $(DESTDIR)/usr/share/dbus-1/services/
 	install -m 0644 drnoksnes.startup.service $(DESTDIR)/usr/share/dbus-1/services/
 	install -m 0644 icons/main_26.png $(DESTDIR)/usr/share/icons/hicolor/26x26/hildon/drnoksnes.png

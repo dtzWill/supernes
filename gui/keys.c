@@ -30,7 +30,6 @@
 #include <hildon/hildon-check-button.h>
 #endif
 
-#include "../platform/hgw.h"
 #include "plugin.h"
 #include "gconf.h"
 #include "cellrendererkey.h"
