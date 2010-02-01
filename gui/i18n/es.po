@@ -1,12 +1,11 @@
-# Spanish translations for PACKAGE package
-# Traducciones al español para el paquete PACKAGE.
-# Copyright (C) 2009 THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
+# Spanish translations for DrNokSnes
+# Traducciones al español para DrNokSnes
+# This file is distributed under the same license as the DrNokSnes package.
 # Javier <maemo@javispedro.com>, 2009.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: DrNokSnes 1.2.5\n"
+"Project-Id-Version: DrNokSnes 1.2.6\n"
 "Report-Msgid-Bugs-To: maemo@javispedro.com\n"
 "POT-Creation-Date: 2010-02-01 02:37+0100\n"
 "PO-Revision-Date: 2010-01-07 03:11+0100\n"

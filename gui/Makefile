@@ -55,7 +55,7 @@ $(POT): $(SRCS) $(EXTRA_GETTEXT_SRCS)
 	$(XGETTEXT) $(XGETTEXT_OPTS) -o$@ $^
 
 $(MO_FILES): %.mo: %.po
-	msgfmt -o $@ $<
+	msgfmt -c -o $@ $<
 
 $(PO_FILES): %: $(POT)
 	msgmerge -U $@ $(POT)
