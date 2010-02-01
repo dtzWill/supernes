@@ -626,15 +626,15 @@ public:
 
 	bool filter(const SDL_Event& event)
 	{
-		if (event.type == SDL_ACTIVEEVENT) {
-			if (scaler && (event.active.state & SDL_APPINPUTFOCUS)) {
-				if (event.active.gain)
-					scaler->resume();
-				else
-					scaler->pause();
-
-				return true;
+		if (event.type == SDL_ACTIVEEVENT &&
+		  (event.active.state & SDL_APPINPUTFOCUS)) {
+			if (event.active.gain) {
+				resume();
+			} else {
+				pause();
 			}
+
+			return true;
 		}
 
 		return false;

@@ -28,6 +28,9 @@ static bool gotWindowSize, gotScreenSize;
 /** The current scaler object */
 Scaler* scaler;
 
+/** Use the current window size to calculate screen size.
+	Useful on "single window" platforms, like Hildon.
+ */
 static void calculateScreenSize()
 {
 	SDL_SysWMinfo wminfo;
@@ -57,8 +60,10 @@ static void calculateScreenSize()
 	}
 }
 
+/** Sets the main window title */
 void S9xSetTitle(const char *title)
 {
+	// This is a Maemo specific hack, but works on most platforms.
 	SDL_SysWMinfo info;
 	SDL_VERSION(&info.version);
 	if ( SDL_GetWMInfo(&info) ) {
@@ -92,9 +97,13 @@ static void setupVideoSurface()
 	const unsigned gameHeight = IMAGE_HEIGHT;
 
 #ifdef MAEMO
+	// Under Maemo we know that the window manager will automatically
+	// resize our windows to fullscreen.
+	// Thus we can use that to detect the screen size.
+	// Of course, this causes flicker, so we try to avoid it when
+	// changing between modes.
 	if ((Config.fullscreen && !gotScreenSize) ||
 		(!Config.fullscreen && !gotWindowSize)) {
-		// Do a first try, in order to get window/screen size
 		screen = SDL_SetVideoMode(gameWidth, gameHeight, 16,
 			SDL_SWSURFACE | SDL_RESIZABLE |
 			(Config.fullscreen ? SDL_FULLSCREEN : 0));
@@ -134,7 +143,7 @@ static void setupVideoSurface()
 
 	scaler = sFactory->instantiate(screen, gameWidth, gameHeight);
 
-	// We get pitch surface values from SDL
+	// Each scaler may have its own pitch
 	GFX.RealPitch = GFX.Pitch = scaler->getDrawBufferPitch();
 	GFX.ZPitch = GFX.Pitch / 2; // gfx & tile.cpp depend on this, unfortunately.
 	GFX.PixSize = screen->format->BitsPerPixel / 8;
@@ -199,11 +208,22 @@ void S9xVideoToggleFullscreen()
 
 void processVideoEvent(const SDL_Event& event)
 {
+	// If we're in power save mode, and this is a defocus event, quit.
+	if (Config.saver) {
+		if (event.type == SDL_ACTIVEEVENT &&
+		   (event.active.state & SDL_APPINPUTFOCUS) &&
+		   !event.active.gain) {
+			S9xDoAction(kActionQuit);
+			return;
+		}
+	}
+
+	// Forward video event to the active scaler, if any.
 	if (scaler)
 		scaler->filter(event);
 }
 
-// This is here for completeness, but palette mode is useless on N8x0
+// This is here for completeness, but palette mode is mostly useless (slow).
 void S9xSetPalette ()
 {
 	if (Settings.SixteenBit) return;
@@ -220,6 +240,11 @@ void S9xSetPalette ()
 	SDL_SetColors(screen, colors, 0, 256);
 }
 
+/** Called before rendering a frame.
+	This function must ensure GFX.Screen points to something, but we did that
+	while initializing video output.
+	@return TRUE if we should render the frame.
+ */
 bool8_32 S9xInitUpdate ()
 {
 	scaler->prepare();
@@ -227,6 +252,7 @@ bool8_32 S9xInitUpdate ()
 	return TRUE;
 }
 
+/** Called after rendering a frame. */
 bool8_32 S9xDeinitUpdate (int width, int height, bool8_32 sixteenBit)
 {
 	scaler->finish();

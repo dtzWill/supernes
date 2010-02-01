@@ -18,6 +18,8 @@ extern struct config {
 	char * scaler;
 	/** Audio output enabled */
 	bool enableAudio;
+	/** Quit when the emulator window is deactivated */
+	bool saver;
 	/** Speedhacks file to use */
 	char * hacksFile;
 	/** Enable touchscreen controls */

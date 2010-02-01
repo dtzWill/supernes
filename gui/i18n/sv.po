@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: maemo@javispedro.com\n"
-"POT-Creation-Date: 2010-01-26 20:44+0100\n"
+"POT-Creation-Date: 2010-01-28 01:47+0100\n"
 "PO-Revision-Date: 2010-01-28 05:00+0100\n"
 "Last-Translator: Robert Hägerström <rofo1000@gmail.com>\n"
 "Language-Team: Swedish\n"
@@ -149,12 +149,12 @@ msgstr "Wiimote"
 msgid "Zeemote"
 msgstr "Zeemote"
 
-#: keys.c:267
+#: keys.c:266
 #, c-format
 msgid "Player %d keys"
 msgstr "Spelare %d tangenter"
 
-#: keys.c:270
+#: keys.c:269
 msgid "Defaults"
 msgstr "Standard"
 

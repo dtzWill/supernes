@@ -45,6 +45,20 @@ define(`N_', `$*')dnl
       </locale>
     </schema>
     <schema>
+     <key>/schemas/apps/maemo/drnoksnes/saver</key>
+      <applyto>/apps/maemo/drnoksnes/saver</applyto>
+      <owner>drnoksnes</owner>
+      <type>bool</type>
+      <default>true</default>
+      <locale name="C">
+        <short>Enable power saving</short>
+        <long>
+          This will save and close the emulator when it is deactivated or
+          the device enters idle state.
+        </long>
+      </locale>
+    </schema>
+    <schema>
      <key>/schemas/apps/maemo/drnoksnes/sound</key>
       <applyto>/apps/maemo/drnoksnes/sound</applyto>
       <owner>drnoksnes</owner>

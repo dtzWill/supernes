@@ -3,8 +3,10 @@ drnoksnes (1.2.6) unstable; urgency=low
   * Using SDL_haa for scaling in Fremantle now.
   * Reworked GUI key mapping gconf entries.
   * Using GConfClient instead of HGW. Removing dependency on hgw.
+  * Moved config file from ~/apps to ~/.config
+  * Added new "saver" setting.
 
- -- Javier S. Pedro <maemo@javispedro.com>  Mon,  1 Feb 2010 00:27:45 +0100
+ -- Javier S. Pedro <maemo@javispedro.com>  Mon,  1 Feb 2010 02:26:00 +0100
 
 drnoksnes (1.2.5) unstable; urgency=low
 

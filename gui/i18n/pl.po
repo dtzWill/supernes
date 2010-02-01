@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: drnoksnes\n"
 "Report-Msgid-Bugs-To: maemo@javispedro.com\n"
-"POT-Creation-Date: 2010-01-26 20:44+0100\n"
+"POT-Creation-Date: 2010-01-28 01:47+0100\n"
 "PO-Revision-Date: 2010-01-28 00:42+0100\n"
 "Last-Translator: Tomasz Dominikowski <dominikowski@gmail.com>\n"
 "Language-Team: Polish <dominikowski@gmail.com>\n"
@@ -41,8 +41,7 @@ msgstr "Docel. liczba kl./s"
 msgid "Show while in game"
 msgstr "Wyświetlaj podczas gry"
 
-#: plugin.c:295
-#: plugin.c:313
+#: plugin.c:295 plugin.c:313
 msgid "Turbo mode"
 msgstr "Tryb Turbo"
 
@@ -54,8 +53,7 @@ msgstr "Włącz dźwięk"
 msgid "Display framerate"
 msgstr "Wyświetlaj liczbę klatek/s"
 
-#: plugin.c:334
-#: settings.c:224
+#: plugin.c:334 settings.c:224
 msgid "Accurate graphics"
 msgstr "Dokładna grafika"
 
@@ -63,18 +61,15 @@ msgstr "Dokładna grafika"
 msgid "Framerate:"
 msgstr "Klatek/s:"
 
-#: plugin.c:347
-#: settings.c:249
+#: plugin.c:347 settings.c:249
 msgid "No speedhacks"
 msgstr "Bez sztuczek z prędkością"
 
-#: plugin.c:348
-#: settings.c:250
+#: plugin.c:348 settings.c:250
 msgid "Safe hacks only"
 msgstr "Tylko bezpieczne sztuczki"
 
-#: plugin.c:349
-#: settings.c:251
+#: plugin.c:349 settings.c:251
 msgid "All speedhacks"
 msgstr "Wszystkie sztuczki z prędkością"
 
@@ -82,13 +77,11 @@ msgstr "Wszystkie sztuczki z prędkością"
 msgid "Settings…"
 msgstr "Ustawienia..."
 
-#: plugin.c:448
-#: plugin.c:457
+#: plugin.c:448 plugin.c:457
 msgid "About…"
 msgstr "O programie..."
 
-#: plugin.c:456
-#: settings.c:177
+#: plugin.c:456 settings.c:177
 msgid "Settings"
 msgstr "Ustawienia"
 
@@ -157,18 +150,16 @@ msgstr "Wiimote"
 msgid "Zeemote"
 msgstr "Zeemote"
 
-#: keys.c:267
+#: keys.c:266
 #, c-format
 msgid "Player %d keys"
 msgstr "Klawisze gracza %d"
 
-#: keys.c:270
+#: keys.c:269
 msgid "Defaults"
 msgstr "Domyślne"
 
-#: settings.c:52
-#: settings.c:59
-#: settings.c:61
+#: settings.c:52 settings.c:59 settings.c:61
 msgid "2x zoom"
 msgstr "2x przybliżenie"
 
@@ -243,4 +234,3 @@ msgstr "Szybkie wczytanie 2"
 #: buttons.inc:27
 msgid "Quick Save 2"
 msgstr "Szybki zapis 2"
-

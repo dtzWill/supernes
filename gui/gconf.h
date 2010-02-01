@@ -3,6 +3,7 @@
 
 #define kGConfPath "/apps/maemo/drnoksnes"
 #define kGConfRomFile kGConfPath "/" "rom"
+#define kGConfSaver kGConfPath "/" "saver"
 #define kGConfSound kGConfPath "/" "sound"
 #define kGConfTurboMode kGConfPath "/" "turbo"
 #define kGConfFrameskip kGConfPath "/" "frameskip"

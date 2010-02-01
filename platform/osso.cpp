@@ -66,6 +66,18 @@ static gint ossoAppCallback(const gchar *interface, const gchar *method,
 	return OSSO_OK;
 }
 
+static void ossoHwCallback(osso_hw_state_t *state, gpointer data)
+{
+	if (state->shutdown_ind) {
+		// Shutting down. Try to quit gracefully.
+		S9xDoAction(kActionQuit);
+	}
+	if (Config.saver && state->system_inactivity_ind) {
+		// Screen went off, and power saving is active.
+		S9xDoAction(kActionQuit);
+	}
+}
+
 /** Called from main(), initializes Glib & libosso stuff if needed. */
 void OssoInit()
 {
@@ -78,6 +90,8 @@ void OssoInit()
 	}
 
 	g_type_init();
+	g_set_prgname("drnoksnes");
+	g_set_application_name("DrNokSnes");
 	mainContext = g_main_context_default();
 	mainLoop = g_main_loop_new(mainContext, FALSE);
 	ossoContext = osso_initialize("com.javispedro.drnoksnes", "1", 0, 0);
@@ -92,7 +106,13 @@ void OssoInit()
 
 	osso_return_t ret;
 	ret = osso_rpc_set_default_cb_f(ossoContext, ossoAppCallback, 0);
-	g_assert(ret == OSSO_OK);
+	g_warn_if_fail(ret == OSSO_OK);
+
+	osso_hw_state_t hwStateFlags = { FALSE };
+	hwStateFlags.shutdown_ind = TRUE;
+	hwStateFlags.system_inactivity_ind = TRUE;
+	ret = osso_hw_set_event_cb(ossoContext, &hwStateFlags, ossoHwCallback, 0);
+	g_warn_if_fail(ret == OSSO_OK);
 
 	printf("Osso: Initialized libosso\n");
 }
@@ -152,6 +172,7 @@ void OssoConfig()
 	}
 
 	// Read most of the non-player specific settings
+	Config.saver = gconf_client_get_bool(gcc, kGConfSaver, 0);
 	Config.enableAudio = gconf_client_get_bool(gcc, kGConfSound, 0);
 	Settings.TurboMode = gconf_client_get_bool(gcc, kGConfTurboMode, 0);
 	Settings.Transparency = gconf_client_get_bool(gcc, kGConfTransparency, 0);
@@ -191,6 +212,7 @@ void OssoConfig()
 
 	g_free(romFile);
 
+	// Read player 1 controls
 	gchar key[kGConfPlayerPathBufferLen];
 	gchar *relKey = key + sprintf(key, kGConfPlayerPath, 1);
 
@@ -207,6 +229,8 @@ void OssoConfig()
 		g_main_context_iteration(mainContext, TRUE);
 	}
 
+	// The command we received from the launcher will tell us if we have to
+	// load a snapshot file.
 	switch (startupCommand) {
 		case STARTUP_COMMAND_RUN:
 		case STARTUP_COMMAND_RESTART:
@@ -231,6 +255,9 @@ void OssoConfig()
 	g_object_unref(G_OBJECT(gcc));
 }
 
+/** This is called periodically from the main loop.
+	Iterates the GLib loop to get D-Bus events.
+ */
 void OssoPollEvents()
 {
 	if (!OssoOk()) return;

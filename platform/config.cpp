@@ -188,6 +188,7 @@ static void loadDefaults()
 	basePath = 0;
 
 	Config.quitting = false;
+	Config.saver = false;
 	Config.enableAudio = true;
 	Config.fullscreen = false;
 	Config.scaler = 0;
