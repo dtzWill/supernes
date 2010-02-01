@@ -109,58 +109,56 @@ msgstr "Teclado"
 
 #: controls.c:123
 msgid "Disabled"
-msgstr ""
+msgstr "Desactivado"
 
 #: controls.c:131
 #, c-format
 msgid "Player %d controls"
-msgstr ""
+msgstr "Controles del jugador %d"
 
 #: controls.c:154
 msgid "Keys"
-msgstr ""
+msgstr "Teclas"
 
 #: controls.c:160
-#, fuzzy
 msgid "Enable keyboard"
-msgstr "Activar sonido"
+msgstr "Activar teclado"
 
 #: controls.c:167
 msgid "Configure keys..."
-msgstr ""
+msgstr "Configurar teclas…"
 
 #: controls.c:173
 msgid "Touchscreen"
-msgstr ""
+msgstr "Pantalla táctil"
 
 #: controls.c:180
 msgid "Enable touchscreen buttons"
-msgstr ""
+msgstr "Activar controles en pantalla"
 
 #: controls.c:187
 msgid "Show on-screen button grid"
-msgstr ""
+msgstr "Mostrar controles en pantalla"
 
 #: controls.c:191
 msgid "Accelerometer"
-msgstr ""
+msgstr "Accelerómetro"
 
 #: controls.c:195
 msgid "Wiimote"
-msgstr ""
+msgstr "Wiimote"
 
 #: controls.c:199
 msgid "Zeemote"
-msgstr ""
+msgstr "Zeemote"
 
 #: keys.c:266
-#, fuzzy, c-format
 msgid "Player %d keys"
-msgstr "Jugador 1"
+msgstr "Teclas del jugador %d"
 
 #: keys.c:269
 msgid "Defaults"
-msgstr ""
+msgstr "Por defecto"
 
 #: settings.c:52 settings.c:59 settings.c:61
 msgid "2x zoom"
@@ -191,9 +189,8 @@ msgid "Player 1"
 msgstr "Jugador 1"
 
 #: settings.c:217
-#, fuzzy
 msgid "Player 2"
-msgstr "Jugador 1"
+msgstr "Jugador 2"
 
 #: settings.c:223
 msgid "Advanced"
@@ -201,7 +198,7 @@ msgstr "Avanzado"
 
 #: settings.c:236
 msgid "Pause game in the background"
-msgstr ""
+msgstr "Pausar juego en segundo plano"
 
 #: settings.c:243
 msgid "Zoom"
@@ -221,38 +218,25 @@ msgstr "Pulsa tecla o…"
 
 #: buttons.inc:22
 msgid "Return to launcher"
-msgstr ""
+msgstr "Volver a la pantalla de inicio"
 
 #: buttons.inc:23
 msgid "Fullscreen"
-msgstr ""
+msgstr "Pantalla completa"
 
 #: buttons.inc:24
 msgid "Quick Load 1"
-msgstr ""
+msgstr "Carga rápida 1"
 
 #: buttons.inc:25
 msgid "Quick Save 1"
-msgstr ""
+msgstr "Guardado rápido 1"
 
 #: buttons.inc:26
 msgid "Quick Load 2"
-msgstr ""
+msgstr "Carga rápida 2"
 
 #: buttons.inc:27
 msgid "Quick Save 2"
-msgstr ""
+msgstr "Guardado rápido 2"
 
-#, fuzzy
-#~ msgid "Enable"
-#~ msgstr "Activar sonido"
-
-#, fuzzy
-#~ msgid "2x zoom "
-#~ msgstr "Zoom 2X simple"
-
-#~ msgid "Simple 2x zoom (fast)"
-#~ msgstr "Zoom 2X simple (rápido)"
-
-#~ msgid "Original size"
-#~ msgstr "Tamaño original"
