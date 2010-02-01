@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: maemo@javispedro.com\n"
-"POT-Creation-Date: 2010-01-28 01:47+0100\n"
+"POT-Creation-Date: 2010-02-01 02:37+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -52,7 +52,7 @@ msgstr ""
 msgid "Display framerate"
 msgstr ""
 
-#: plugin.c:334 settings.c:224
+#: plugin.c:334 settings.c:229
 msgid "Accurate graphics"
 msgstr ""
 
@@ -60,15 +60,15 @@ msgstr ""
 msgid "Framerate:"
 msgstr ""
 
-#: plugin.c:347 settings.c:249
+#: plugin.c:347 settings.c:261
 msgid "No speedhacks"
 msgstr ""
 
-#: plugin.c:348 settings.c:250
+#: plugin.c:348 settings.c:262
 msgid "Safe hacks only"
 msgstr ""
 
-#: plugin.c:349 settings.c:251
+#: plugin.c:349 settings.c:263
 msgid "All speedhacks"
 msgstr ""
 
@@ -80,7 +80,7 @@ msgstr ""
 msgid "About…"
 msgstr ""
 
-#: plugin.c:456 settings.c:177
+#: plugin.c:456 settings.c:182
 msgid "Settings"
 msgstr ""
 
@@ -178,27 +178,31 @@ msgstr ""
 msgid "No zoom"
 msgstr ""
 
-#: settings.c:196
+#: settings.c:201
 msgid "Controls"
 msgstr ""
 
-#: settings.c:203
+#: settings.c:208
 msgid "Player 1"
 msgstr ""
 
-#: settings.c:212
+#: settings.c:217
 msgid "Player 2"
 msgstr ""
 
-#: settings.c:218
+#: settings.c:223
 msgid "Advanced"
 msgstr ""
 
-#: settings.c:231
-msgid "Zoom"
+#: settings.c:236
+msgid "Pause game in the background"
 msgstr ""
 
 #: settings.c:243
+msgid "Zoom"
+msgstr ""
+
+#: settings.c:255
 msgid "Speedhacks"
 msgstr ""
 

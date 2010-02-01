@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: drnoksnes\n"
 "Report-Msgid-Bugs-To: maemo@javispedro.com\n"
-"POT-Creation-Date: 2010-01-28 01:47+0100\n"
+"POT-Creation-Date: 2010-02-01 02:37+0100\n"
 "PO-Revision-Date: 2010-01-28 09:50+0100\n"
 "Last-Translator: Philipp Zabel <philipp.zabel@gmail.com>\n"
 "Language-Team: German\n"
@@ -53,7 +53,7 @@ msgstr "Ton einschalten"
 msgid "Display framerate"
 msgstr "Bildwiederholrate anzeigen"
 
-#: plugin.c:334 settings.c:224
+#: plugin.c:334 settings.c:229
 msgid "Accurate graphics"
 msgstr "Akkurate Grafik"
 
@@ -61,15 +61,15 @@ msgstr "Akkurate Grafik"
 msgid "Framerate:"
 msgstr "Bildwiederholrate:"
 
-#: plugin.c:347 settings.c:249
+#: plugin.c:347 settings.c:261
 msgid "No speedhacks"
 msgstr "Keine Speedhacks"
 
-#: plugin.c:348 settings.c:250
+#: plugin.c:348 settings.c:262
 msgid "Safe hacks only"
 msgstr "Nur sichere Hacks"
 
-#: plugin.c:349 settings.c:251
+#: plugin.c:349 settings.c:263
 msgid "All speedhacks"
 msgstr "Alle Speedhacks"
 
@@ -81,7 +81,7 @@ msgstr "Einstellungen..."
 msgid "About…"
 msgstr "Über..."
 
-#: plugin.c:456 settings.c:177
+#: plugin.c:456 settings.c:182
 msgid "Settings"
 msgstr "Einstellungen"
 
@@ -179,27 +179,31 @@ msgstr "2x Zoom mit Kantenglättung"
 msgid "No zoom"
 msgstr "Kein Zoom"
 
-#: settings.c:196
+#: settings.c:201
 msgid "Controls"
 msgstr "Steuerung"
 
-#: settings.c:203
+#: settings.c:208
 msgid "Player 1"
 msgstr "Spieler 1"
 
-#: settings.c:212
+#: settings.c:217
 msgid "Player 2"
 msgstr "Spieler 2"
 
-#: settings.c:218
+#: settings.c:223
 msgid "Advanced"
 msgstr "Erweitert"
 
-#: settings.c:231
+#: settings.c:236
+msgid "Pause game in the background"
+msgstr ""
+
+#: settings.c:243
 msgid "Zoom"
 msgstr "Zoom"
 
-#: settings.c:243
+#: settings.c:255
 msgid "Speedhacks"
 msgstr "Speedhacks"
 

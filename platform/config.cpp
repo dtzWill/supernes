@@ -66,6 +66,8 @@ static struct poptOption commonOptionsTable[] = {
 	"enable safe subset of speedhacks", 0 },
 	{ "all-hacks", 'H', POPT_ARG_NONE, 0, 19,
 	"enable all speedhacks (may break sound)", 0 },
+	{ "saver", 'R', POPT_ARG_NONE, 0, 20,
+	"save&exit when the emulator window is unfocused", 0 },
 	POPT_TABLEEND
 };
 
@@ -375,6 +377,9 @@ static void parseArgs(poptContext optCon)
 			case 19:
 				Settings.HacksEnabled = TRUE;
 				Settings.HacksFilter = FALSE;
+				break;
+			case 20:
+				Config.saver = true;
 				break;
 			case 100:
 				scancode = atoi(poptGetOptArg(optCon));

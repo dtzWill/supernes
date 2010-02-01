@@ -68,6 +68,7 @@ static GtkDialog* dialog;
 #if MAEMO_VERSION >= 5
 static HildonButton* player1_btn, * player2_btn;
 static HildonCheckButton* accu_check;
+static HildonCheckButton* saver_check;
 static HildonPickerButton* scaler_picker;
 static HildonPickerButton* speedhacks_picker;
 #else
@@ -124,6 +125,8 @@ static void load_settings()
 	settings_update_controls(1);
 	hildon_check_button_set_active(accu_check,
 		gconf_client_get_bool(gcc, kGConfTransparency, NULL));
+	hildon_check_button_set_active(saver_check,
+		gconf_client_get_bool(gcc, kGConfSaver, NULL));
 	hildon_picker_button_set_active(scaler_picker, scaler_num);
 	hildon_picker_button_set_active(speedhacks_picker,
 		gconf_client_get_int(gcc, kGConfSpeedhacks, NULL));
@@ -138,6 +141,8 @@ static void save_settings()
 #if MAEMO_VERSION >= 5
 	gconf_client_set_bool(gcc, kGConfTransparency,
 		hildon_check_button_get_active(accu_check), NULL);
+	gconf_client_set_bool(gcc, kGConfSaver,
+		hildon_check_button_get_active(saver_check), NULL);
 	scaler_num = hildon_picker_button_get_active(scaler_picker);
 	gconf_client_set_int(gcc, kGConfSpeedhacks,
 		hildon_picker_button_get_active(speedhacks_picker), NULL);
@@ -225,6 +230,13 @@ void settings_dialog(GtkWindow* parent)
 	set_button_layout(HILDON_BUTTON(accu_check),
 		titles_size_group, values_size_group);
 
+	saver_check = HILDON_CHECK_BUTTON(hildon_check_button_new(
+		HILDON_SIZE_AUTO_WIDTH | HILDON_SIZE_FINGER_HEIGHT));
+	gtk_button_set_label(GTK_BUTTON(saver_check),
+		_("Pause game in the background"));
+	set_button_layout(HILDON_BUTTON(saver_check),
+		titles_size_group, values_size_group);
+
 	scaler_picker = HILDON_PICKER_BUTTON(hildon_picker_button_new(
 		HILDON_SIZE_AUTO_WIDTH | HILDON_SIZE_FINGER_HEIGHT,
 		HILDON_BUTTON_ARRANGEMENT_HORIZONTAL));
@@ -258,6 +270,8 @@ void settings_dialog(GtkWindow* parent)
 	gtk_box_pack_start(box, GTK_WIDGET(separator_2),
 		FALSE, FALSE, HILDON_MARGIN_HALF);
 	gtk_box_pack_start(box, GTK_WIDGET(accu_check),
+		FALSE, FALSE, 0);
+	gtk_box_pack_start(box, GTK_WIDGET(saver_check),
 		FALSE, FALSE, 0);
 	gtk_box_pack_start(box, GTK_WIDGET(scaler_picker),
 		FALSE, FALSE, 0);

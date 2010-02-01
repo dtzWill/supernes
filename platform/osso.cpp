@@ -262,7 +262,7 @@ void OssoPollEvents()
 {
 	if (!OssoOk()) return;
 
-	//g_main_context_iteration(mainContext, FALSE);
+	g_main_context_iteration(mainContext, FALSE);
 }
 
 typedef struct ButtonEntry {
