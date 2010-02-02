@@ -378,14 +378,15 @@ protected:
 	 m_Bpp(m_screen->format->BitsPerPixel / 8),
 	 ratio_x(r_x), ratio_y(r_y)
 	{
+		const bool fullscreen = m_screen->flags & SDL_FULLSCREEN;
 		centerRectangle(m_area, GUI.Width, GUI.Height, w * r_x, h * r_y);
 
 		// Clear the SDL screen with black, just in case it gets drawn.
 		SDL_FillRect(screen, 0, SDL_MapRGB(screen->format, 0, 0, 0));
 
-		HAA_Init(m_screen->flags & SDL_FULLSCREEN);
+		HAA_Init(fullscreen ? SDL_FULLSCREEN : 0);
 		actor = HAA_CreateActor(0, m_w, m_h, m_screen->format->BitsPerPixel);
-		HAA_SetPosition(actor, m_area.x, m_area.y + 60);
+		HAA_SetPosition(actor, m_area.x, m_area.y + (fullscreen ? 0 : 60));
 		HAA_SetScale(actor, r_x, r_y);
 		HAA_Show(actor);
 	}
