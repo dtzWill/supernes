@@ -46,13 +46,12 @@ struct scaler {
 };
 
 static struct scaler scalers[] = {
-
 #if MAEMO_VERSION == 5
 #ifdef __arm__
 	{"arm2x", N_("2x zoom")},
 #endif /* __arm__ */
-	{"hdsq", N_("Scale to fit")},
-	{"hdfill", N_("Fill the entire screen")},
+	{"haasq", N_("Scale to fit")},
+	{"haafill", N_("Fill the entire screen")},
 #elif MAEMO_VERSION == 4
 #ifdef __arm__
 	{"xsp", N_("Antialiased 2x zoom")},

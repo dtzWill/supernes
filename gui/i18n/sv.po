@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: DrNokSnes 1.2.5\n"
 "Report-Msgid-Bugs-To: maemo@javispedro.com\n"
-"POT-Creation-Date: 2010-02-01 02:37+0100\n"
+"POT-Creation-Date: 2010-02-01 22:56+0100\n"
 "PO-Revision-Date: 2010-01-28 05:00+0100\n"
 "Last-Translator: Robert Hägerström <rofo1000@gmail.com>\n"
 "Language-Team: Swedish\n"
@@ -51,7 +51,7 @@ msgstr "Aktivera ljud"
 msgid "Display framerate"
 msgstr "Visa bildhastighet"
 
-#: plugin.c:334 settings.c:229
+#: plugin.c:334 settings.c:228
 msgid "Accurate graphics"
 msgstr "Exakt grafik"
 
@@ -59,15 +59,15 @@ msgstr "Exakt grafik"
 msgid "Framerate:"
 msgstr "Bildhastighet:"
 
-#: plugin.c:347 settings.c:261
+#: plugin.c:347 settings.c:260
 msgid "No speedhacks"
 msgstr "Inga speedhacks"
 
-#: plugin.c:348 settings.c:262
+#: plugin.c:348 settings.c:261
 msgid "Safe hacks only"
 msgstr "Enbart säkra hack"
 
-#: plugin.c:349 settings.c:263
+#: plugin.c:349 settings.c:262
 msgid "All speedhacks"
 msgstr "Alla speedhacks"
 
@@ -79,7 +79,7 @@ msgstr "Inställningar…"
 msgid "About…"
 msgstr "Om…"
 
-#: plugin.c:456 settings.c:182
+#: plugin.c:456 settings.c:181
 msgid "Settings"
 msgstr "Inställningar"
 
@@ -157,51 +157,51 @@ msgstr "Spelare %d tangenter"
 msgid "Defaults"
 msgstr "Standard"
 
-#: settings.c:52 settings.c:59 settings.c:61
+#: settings.c:51 settings.c:58 settings.c:60
 msgid "2x zoom"
 msgstr "Dubbel zoom"
 
-#: settings.c:54
+#: settings.c:53
 msgid "Scale to fit"
 msgstr "Skala för att passa"
 
-#: settings.c:55
+#: settings.c:54
 msgid "Fill the entire screen"
 msgstr "Fyll hela skärmen"
 
-#: settings.c:58
+#: settings.c:57
 msgid "Antialiased 2x zoom"
 msgstr "Kantutjämnad dubbel zoom"
 
-#: settings.c:64
+#: settings.c:63
 msgid "No zoom"
 msgstr "Ingen zoom"
 
-#: settings.c:201
+#: settings.c:200
 msgid "Controls"
 msgstr "Kontroller"
 
-#: settings.c:208
+#: settings.c:207
 msgid "Player 1"
 msgstr "Spelare 1"
 
-#: settings.c:217
+#: settings.c:216
 msgid "Player 2"
 msgstr "Spelare 2"
 
-#: settings.c:223
+#: settings.c:222
 msgid "Advanced"
 msgstr "Avancerad"
 
-#: settings.c:236
+#: settings.c:235
 msgid "Pause game in the background"
 msgstr ""
 
-#: settings.c:243
+#: settings.c:242
 msgid "Zoom"
 msgstr "Zoom"
 
-#: settings.c:255
+#: settings.c:254
 msgid "Speedhacks"
 msgstr "Speedhacks"
 

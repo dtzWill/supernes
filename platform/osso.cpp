@@ -66,6 +66,16 @@ static gint ossoAppCallback(const gchar *interface, const gchar *method,
 	return OSSO_OK;
 }
 
+static gboolean ossoTimeoutCallback(gpointer data)
+{
+	if (startupCommand == STARTUP_COMMAND_UNKNOWN) {
+		// Assume that after N seconds we're not going to get a startup reason.
+		startupCommand = STARTUP_COMMAND_INVALID;
+	}
+
+	return FALSE; // This is a timeout, don't call us ever again.
+}
+
 static void ossoHwCallback(osso_hw_state_t *state, gpointer data)
 {
 	if (state->shutdown_ind) {
@@ -222,6 +232,12 @@ void OssoConfig()
 	} else {
 		createActionMappingsOnly();
 	}
+
+	// Time to read the startup command from D-Bus
+
+	// Timeout after 3 seconds, and assume we didn't receive any.
+	guint timeout = g_timeout_add_seconds(3, ossoTimeoutCallback, 0);
+	g_warn_if_fail(timeout > 0);
 
 	// Iterate the event loop since we want to catch the initial dbus messages
 	while (startupCommand == STARTUP_COMMAND_UNKNOWN) {

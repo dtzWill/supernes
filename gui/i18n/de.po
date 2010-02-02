@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: drnoksnes\n"
 "Report-Msgid-Bugs-To: maemo@javispedro.com\n"
-"POT-Creation-Date: 2010-02-01 02:37+0100\n"
+"POT-Creation-Date: 2010-02-01 22:56+0100\n"
 "PO-Revision-Date: 2010-01-28 09:50+0100\n"
 "Last-Translator: Philipp Zabel <philipp.zabel@gmail.com>\n"
 "Language-Team: German\n"
@@ -53,7 +53,7 @@ msgstr "Ton einschalten"
 msgid "Display framerate"
 msgstr "Bildwiederholrate anzeigen"
 
-#: plugin.c:334 settings.c:229
+#: plugin.c:334 settings.c:228
 msgid "Accurate graphics"
 msgstr "Akkurate Grafik"
 
@@ -61,15 +61,15 @@ msgstr "Akkurate Grafik"
 msgid "Framerate:"
 msgstr "Bildwiederholrate:"
 
-#: plugin.c:347 settings.c:261
+#: plugin.c:347 settings.c:260
 msgid "No speedhacks"
 msgstr "Keine Speedhacks"
 
-#: plugin.c:348 settings.c:262
+#: plugin.c:348 settings.c:261
 msgid "Safe hacks only"
 msgstr "Nur sichere Hacks"
 
-#: plugin.c:349 settings.c:263
+#: plugin.c:349 settings.c:262
 msgid "All speedhacks"
 msgstr "Alle Speedhacks"
 
@@ -81,7 +81,7 @@ msgstr "Einstellungen..."
 msgid "About…"
 msgstr "Über..."
 
-#: plugin.c:456 settings.c:182
+#: plugin.c:456 settings.c:181
 msgid "Settings"
 msgstr "Einstellungen"
 
@@ -159,51 +159,51 @@ msgstr "Spieler %d Tasten"
 msgid "Defaults"
 msgstr "Standardeinstellungen"
 
-#: settings.c:52 settings.c:59 settings.c:61
+#: settings.c:51 settings.c:58 settings.c:60
 msgid "2x zoom"
 msgstr "2x Vergrößerung"
 
-#: settings.c:54
+#: settings.c:53
 msgid "Scale to fit"
 msgstr "Auf Bildschirmgröße skalieren"
 
-#: settings.c:55
+#: settings.c:54
 msgid "Fill the entire screen"
 msgstr "Den ganzen Bildschirm füllen"
 
-#: settings.c:58
+#: settings.c:57
 msgid "Antialiased 2x zoom"
 msgstr "2x Zoom mit Kantenglättung"
 
-#: settings.c:64
+#: settings.c:63
 msgid "No zoom"
 msgstr "Kein Zoom"
 
-#: settings.c:201
+#: settings.c:200
 msgid "Controls"
 msgstr "Steuerung"
 
-#: settings.c:208
+#: settings.c:207
 msgid "Player 1"
 msgstr "Spieler 1"
 
-#: settings.c:217
+#: settings.c:216
 msgid "Player 2"
 msgstr "Spieler 2"
 
-#: settings.c:223
+#: settings.c:222
 msgid "Advanced"
 msgstr "Erweitert"
 
-#: settings.c:236
+#: settings.c:235
 msgid "Pause game in the background"
 msgstr ""
 
-#: settings.c:243
+#: settings.c:242
 msgid "Zoom"
 msgstr "Zoom"
 
-#: settings.c:255
+#: settings.c:254
 msgid "Speedhacks"
 msgstr "Speedhacks"
 

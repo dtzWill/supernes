@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: DrNokSnes 1.2.6\n"
 "Report-Msgid-Bugs-To: maemo@javispedro.com\n"
-"POT-Creation-Date: 2010-02-01 02:37+0100\n"
+"POT-Creation-Date: 2010-02-01 22:56+0100\n"
 "PO-Revision-Date: 2010-01-07 03:11+0100\n"
 "Last-Translator: Javier <javier@javispedro.com>\n"
 "Language-Team: Spanish <maemo@javispedro.com>\n"
@@ -54,7 +54,7 @@ msgstr "Activar sonido"
 msgid "Display framerate"
 msgstr "Mostrar velocidad"
 
-#: plugin.c:334 settings.c:229
+#: plugin.c:334 settings.c:228
 msgid "Accurate graphics"
 msgstr "Mejores gráficos"
 
@@ -62,15 +62,15 @@ msgstr "Mejores gráficos"
 msgid "Framerate:"
 msgstr "Velocidad:"
 
-#: plugin.c:347 settings.c:261
+#: plugin.c:347 settings.c:260
 msgid "No speedhacks"
 msgstr "Sin speedhacks"
 
-#: plugin.c:348 settings.c:262
+#: plugin.c:348 settings.c:261
 msgid "Safe hacks only"
 msgstr "Sólo hacks seguros"
 
-#: plugin.c:349 settings.c:263
+#: plugin.c:349 settings.c:262
 msgid "All speedhacks"
 msgstr "Todos los hacks"
 
@@ -82,7 +82,7 @@ msgstr "Ajustes…"
 msgid "About…"
 msgstr "Acerca de…"
 
-#: plugin.c:456 settings.c:182
+#: plugin.c:456 settings.c:181
 msgid "Settings"
 msgstr "Ajustes"
 
@@ -152,6 +152,7 @@ msgid "Zeemote"
 msgstr "Zeemote"
 
 #: keys.c:266
+#, c-format
 msgid "Player %d keys"
 msgstr "Teclas del jugador %d"
 
@@ -159,51 +160,51 @@ msgstr "Teclas del jugador %d"
 msgid "Defaults"
 msgstr "Por defecto"
 
-#: settings.c:52 settings.c:59 settings.c:61
+#: settings.c:51 settings.c:58 settings.c:60
 msgid "2x zoom"
 msgstr "Zoom 2x"
 
-#: settings.c:54
+#: settings.c:53
 msgid "Scale to fit"
 msgstr "Ajustar a la pantalla"
 
-#: settings.c:55
+#: settings.c:54
 msgid "Fill the entire screen"
 msgstr "Rellenar toda la pantalla"
 
-#: settings.c:58
+#: settings.c:57
 msgid "Antialiased 2x zoom"
 msgstr "Zoom 2x suavizado"
 
-#: settings.c:64
+#: settings.c:63
 msgid "No zoom"
 msgstr "Sin zoom"
 
-#: settings.c:201
+#: settings.c:200
 msgid "Controls"
 msgstr "Controles"
 
-#: settings.c:208
+#: settings.c:207
 msgid "Player 1"
 msgstr "Jugador 1"
 
-#: settings.c:217
+#: settings.c:216
 msgid "Player 2"
 msgstr "Jugador 2"
 
-#: settings.c:223
+#: settings.c:222
 msgid "Advanced"
 msgstr "Avanzado"
 
-#: settings.c:236
+#: settings.c:235
 msgid "Pause game in the background"
 msgstr "Pausar juego en segundo plano"
 
-#: settings.c:243
+#: settings.c:242
 msgid "Zoom"
 msgstr "Zoom"
 
-#: settings.c:255
+#: settings.c:254
 msgid "Speedhacks"
 msgstr "Speedhacks"
 
@@ -238,4 +239,3 @@ msgstr "Carga rápida 2"
 #: buttons.inc:27
 msgid "Quick Save 2"
 msgstr "Guardado rápido 2"
-
