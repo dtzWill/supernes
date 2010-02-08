@@ -197,8 +197,8 @@ static void loadDefaults()
 	Config.fullscreen = false;
 	Config.scaler = 0;
 	Config.hacksFile = 0;
-	Config.player1Enabled = false;
-	Config.player2Enabled = false;
+	Config.joypad1Enabled = false;
+	Config.joypad2Enabled = false;
 	Config.touchscreenInput = false;
 	Config.touchscreenShow = false;
 

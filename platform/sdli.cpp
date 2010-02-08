@@ -118,9 +118,10 @@ static void processMouse(unsigned int x, unsigned int y, int pressed = 0)
 			if (mouse.y > GUI.RenderH) mouse.y = GUI.RenderH;
 		}
 
-		// Take care of scaling
-		mouse.x /= GUI.ScaleX;
-		mouse.y /= GUI.ScaleY;
+		// mouse.{x,y} are system coordinates.
+		// Scale them to emulated screen coordinates.
+		mouse.x = static_cast<unsigned int>(mouse.x / GUI.ScaleX);
+		mouse.y = static_cast<unsigned int>(mouse.y / GUI.ScaleY);
 
 		if (pressed > 0)
 			mouse.pressed = true;
@@ -137,9 +138,11 @@ static void processEvent(const SDL_Event& event)
 			if (Config.action[event.key.keysym.scancode]) 
 				S9xDoAction(Config.action[event.key.keysym.scancode]);
 			joypads[0] |= Config.joypad1Mapping[event.key.keysym.scancode];
+			joypads[1] |= Config.joypad2Mapping[event.key.keysym.scancode];
 			break;
 		case SDL_KEYUP:
 			joypads[0] &= ~Config.joypad1Mapping[event.key.keysym.scancode];
+			joypads[1] &= ~Config.joypad2Mapping[event.key.keysym.scancode];
 			break;
 		case SDL_MOUSEBUTTONUP:
 		case SDL_MOUSEBUTTONDOWN:
@@ -159,15 +162,30 @@ static void processEvent(const SDL_Event& event)
 	}
 }
 
+/** This function is called to return a bit-wise mask of the state of one of the
+	five emulated SNES controllers.
+
+	@return 0 if you're not supporting controllers past a certain number or
+		return the mask representing the current state of the controller number
+		passed as a parameter or'ed with 0x80000000.
+*/
+
 uint32 S9xReadJoypad (int which)
 {
-	if (which < 0 || which > 2) {
+	if (which < 0 || which >= 2) {
+		// More joypads that we currently handle (could happen if bad conf)
 		return 0;
 	}
 
 	return joypads[which];
 }
 
+/** Get the current position of the host pointing device, usually a mouse,
+	used to emulated the SNES mouse.
+
+	@param buttons The buttons return value is a bit-wise mask of the two SNES
+		mouse buttons, bit 0 for button 1 (left) and bit 1 for button 2 (right).
+*/
 bool8 S9xReadMousePosition(int which1, int& x, int& y, uint32& buttons)
 {
 	if (which1 != 0) return FALSE;
@@ -188,6 +206,9 @@ bool8 S9xReadSuperScopePosition(int& x, int& y, uint32& buttons)
 	return TRUE;
 }
 
+/** Get and process system/input events.
+	@param block true to block, false to poll until the queue is empty.
+*/
 void S9xProcessEvents(bool block)
 {
 	SDL_Event event;
@@ -209,36 +230,38 @@ void S9xInitInputDevices()
 	mouse.enabled = false;
 	mouse.pressed = false;
 
-	switch (Settings.ControllerOption) {
-		case SNES_JOYPAD:
-			joypads[0] = 0x80000000UL;
-			printf("Input: 1 joypad, keyboard only\n");
-			break;
-		case SNES_MOUSE:
-			joypads[0] = 0x80000000UL;
-			mouse.enabled = true;
-			printf("Input: 1 joypad + mouse\n");
-			break;
-		case SNES_MOUSE_SWAPPED:
-			printf("Input: mouse\n");
-			mouse.enabled = true;
-			break;
-		case SNES_SUPERSCOPE:
-			joypads[0] = 0x80000000UL;
-			mouse.enabled = true;
-			printf("Input: 1 joypad + superscope\n");
-			break;
-		default:
-			printf("Input: unknown\n");
-			break;
+	if (Config.joypad1Enabled) {
+		joypads[0] = 0x80000000UL;
 	}
+	if (Config.joypad2Enabled) {
+		joypads[1] = 0x80000000UL;
+	}
+
+	// Pretty print some information
+	printf("Input: ");
+	if (Config.joypad1Enabled) {
+		printf("Player 1 (joypad)");
+		if (Config.joypad2Enabled) {
+			printf("+ player 2 (joypad)");
+		}
+	} else if (Config.joypad2Enabled) {
+		printf("Player 2 (joypad)");
+	} else {
+		printf("Nothing");
+	}
+	printf("\n");
+
+	// TODO Non-awful mouse support, Superscope
 
 	S9xInputScreenChanged();
 }
 
 void S9xDeinitInputDevices()
 {
-
+	joypads[0] = 0;
+	joypads[1] = 0;
+	mouse.enabled = false;
+	mouse.pressed = false;
 }
 
 void S9xInputScreenChanged()

@@ -252,7 +252,18 @@ bool8_32 S9xInitUpdate ()
 	return TRUE;
 }
 
-/** Called after rendering a frame. */
+/** Called once a complete SNES screen has been rendered into the GFX.Screen
+	memory buffer.
+
+	Now is your chance to copy the SNES rendered screen to the
+	host computer's screen memory. The problem is that you have to cope with
+	different sized SNES rendered screens. Width is always 256, unless you're
+	supporting SNES hi-res. screen modes (Settings.SupportHiRes is TRUE), in
+	which case it can be 256 or 512. The height parameter can be either 224 or
+	239 if you're only supporting SNES lo-res. screen modes, or 224, 239, 448 or
+	478 if hi-res. SNES screen modes are being supported.
+ */
+// TODO Above.
 bool8_32 S9xDeinitUpdate (int width, int height, bool8_32 sixteenBit)
 {
 	scaler->finish();

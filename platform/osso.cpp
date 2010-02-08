@@ -15,6 +15,19 @@ static GMainContext *mainContext;
 static GMainLoop *mainLoop;
 osso_context_t *ossoContext;
 
+// Older versions of glib don't have this.
+#ifndef g_warn_if_fail
+#define g_warn_if_fail(expr) \
+	if G_UNLIKELY(expr) { \
+		g_warning("Non critical assertion failed at %s:%d \"%s\"", \
+			__FILE__, __LINE__, #expr); \
+	}
+#endif
+#if ! GLIB_CHECK_VERSION(2,14,0)
+#define g_timeout_add_seconds(interval, function, data) \
+	g_timeout_add((interval) * 1000, function, data)
+#endif
+
 static volatile enum {
 	STARTUP_COMMAND_INVALID = -1,
 	STARTUP_COMMAND_UNKNOWN = 0,

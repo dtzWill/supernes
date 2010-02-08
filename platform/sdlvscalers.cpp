@@ -6,6 +6,7 @@
 #include <SDL.h>
 
 #if CONF_XSP
+#	include <SDL_syswm.h>
 #	include <X11/extensions/Xsp.h>
 #endif
 #if CONF_HD
