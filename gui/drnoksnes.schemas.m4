@@ -175,7 +175,7 @@ undefine(`LAST')dnl
       <applyto>/apps/maemo/drnoksnes/player1/touchscreen/enable</applyto>
       <owner>drnoksnes</owner>
       <type>bool</type>
-      <default>true</default>
+      <default>false</default>
       <locale name="C">
         <short>Player 1 touchscreen</short>
         <long>
