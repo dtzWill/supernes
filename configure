@@ -16,7 +16,7 @@ echo CONF_GUI=0 >> config.mk
 echo CONF_XSP=0 >> config.mk
 echo ASFLAGS="" >> config.mk
 echo CFLAGS="-Wall -g -O2" >> config.mk
-echo CXXFLAGS="-Wall -g -O2" >> config.mk
+echo CXXFLAGS="-Wall -g -O2 -fno-exceptions -fno-rtti" >> config.mk
 echo LDFLAGS="-Wl,-z,defs" >> config.mk
 
 make clean > /dev/null
