@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: DrNokSnes 1.2.5\n"
 "Report-Msgid-Bugs-To: maemo@javispedro.com\n"
-"POT-Creation-Date: 2010-02-01 22:56+0100\n"
+"POT-Creation-Date: 2010-02-08 18:37+0100\n"
 "PO-Revision-Date: 2010-01-28 05:00+0100\n"
 "Last-Translator: Robert Hägerström <rofo1000@gmail.com>\n"
 "Language-Team: Swedish\n"
@@ -24,7 +24,8 @@ msgid "ROM"
 msgstr "ROM"
 
 #: plugin.c:251
-msgid "Select ROM..."
+#, fuzzy
+msgid "Select ROM…"
 msgstr "Välj ROM..."
 
 #: plugin.c:268
@@ -51,7 +52,7 @@ msgstr "Aktivera ljud"
 msgid "Display framerate"
 msgstr "Visa bildhastighet"
 
-#: plugin.c:334 settings.c:228
+#: plugin.c:334 settings.c:237
 msgid "Accurate graphics"
 msgstr "Exakt grafik"
 
@@ -59,15 +60,15 @@ msgstr "Exakt grafik"
 msgid "Framerate:"
 msgstr "Bildhastighet:"
 
-#: plugin.c:347 settings.c:260
+#: plugin.c:347 settings.c:269
 msgid "No speedhacks"
 msgstr "Inga speedhacks"
 
-#: plugin.c:348 settings.c:261
+#: plugin.c:348 settings.c:270
 msgid "Safe hacks only"
 msgstr "Enbart säkra hack"
 
-#: plugin.c:349 settings.c:262
+#: plugin.c:349 settings.c:271
 msgid "All speedhacks"
 msgstr "Alla speedhacks"
 
@@ -79,23 +80,33 @@ msgstr "Inställningar…"
 msgid "About…"
 msgstr "Om…"
 
-#: plugin.c:456 settings.c:181
+#: plugin.c:456 settings.c:190
 msgid "Settings"
 msgstr "Inställningar"
 
-#: plugin.c:465
-msgid "Controls…"
-msgstr "Kontroller…"
+#: plugin.c:466 settings.c:209
+msgid "Controls"
+msgstr "Kontroller"
 
-#: plugin.c:469
+#: plugin.c:471
 msgid "Advanced…"
 msgstr "Avancerad…"
 
-#: plugin.c:531
+#: plugin.c:475
+#, fuzzy
+msgid "Player 1…"
+msgstr "Spelare 1"
+
+#: plugin.c:478
+#, fuzzy
+msgid "Player 2…"
+msgstr "Spelare 2"
+
+#: plugin.c:542
 msgid "No ROM selected"
 msgstr "Ingen ROM vald"
 
-#: plugin.c:536
+#: plugin.c:547
 msgid "ROM file does not exist"
 msgstr "ROM-filen existerar inte"
 
@@ -121,7 +132,8 @@ msgid "Enable keyboard"
 msgstr "Aktivera tangentbordet"
 
 #: controls.c:167
-msgid "Configure keys..."
+#, fuzzy
+msgid "Configure keys…"
 msgstr "Anpassa tangenter..."
 
 #: controls.c:173
@@ -177,31 +189,27 @@ msgstr "Kantutjämnad dubbel zoom"
 msgid "No zoom"
 msgstr "Ingen zoom"
 
-#: settings.c:200
-msgid "Controls"
-msgstr "Kontroller"
-
-#: settings.c:207
+#: settings.c:216
 msgid "Player 1"
 msgstr "Spelare 1"
 
-#: settings.c:216
+#: settings.c:225
 msgid "Player 2"
 msgstr "Spelare 2"
 
-#: settings.c:222
+#: settings.c:231
 msgid "Advanced"
 msgstr "Avancerad"
 
-#: settings.c:235
+#: settings.c:244 settings.c:307
 msgid "Pause game in the background"
 msgstr ""
 
-#: settings.c:242
+#: settings.c:251 settings.c:302
 msgid "Zoom"
 msgstr "Zoom"
 
-#: settings.c:254
+#: settings.c:263
 msgid "Speedhacks"
 msgstr "Speedhacks"
 
@@ -236,3 +244,6 @@ msgstr "Snabbladda 2"
 #: buttons.inc:27
 msgid "Quick Save 2"
 msgstr "Snabbspara 2"
+
+#~ msgid "Controls…"
+#~ msgstr "Kontroller…"

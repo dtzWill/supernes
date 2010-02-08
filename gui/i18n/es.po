@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: DrNokSnes 1.2.6\n"
 "Report-Msgid-Bugs-To: maemo@javispedro.com\n"
-"POT-Creation-Date: 2010-02-01 22:56+0100\n"
+"POT-Creation-Date: 2010-02-08 18:37+0100\n"
 "PO-Revision-Date: 2010-01-07 03:11+0100\n"
 "Last-Translator: Javier <javier@javispedro.com>\n"
 "Language-Team: Spanish <maemo@javispedro.com>\n"
@@ -27,7 +27,8 @@ msgid "ROM"
 msgstr "ROM"
 
 #: plugin.c:251
-msgid "Select ROM..."
+#, fuzzy
+msgid "Select ROM…"
 msgstr "Seleccionar ROM..."
 
 #: plugin.c:268
@@ -54,7 +55,7 @@ msgstr "Activar sonido"
 msgid "Display framerate"
 msgstr "Mostrar velocidad"
 
-#: plugin.c:334 settings.c:228
+#: plugin.c:334 settings.c:237
 msgid "Accurate graphics"
 msgstr "Mejores gráficos"
 
@@ -62,15 +63,15 @@ msgstr "Mejores gráficos"
 msgid "Framerate:"
 msgstr "Velocidad:"
 
-#: plugin.c:347 settings.c:260
+#: plugin.c:347 settings.c:269
 msgid "No speedhacks"
 msgstr "Sin speedhacks"
 
-#: plugin.c:348 settings.c:261
+#: plugin.c:348 settings.c:270
 msgid "Safe hacks only"
 msgstr "Sólo hacks seguros"
 
-#: plugin.c:349 settings.c:262
+#: plugin.c:349 settings.c:271
 msgid "All speedhacks"
 msgstr "Todos los hacks"
 
@@ -82,23 +83,33 @@ msgstr "Ajustes…"
 msgid "About…"
 msgstr "Acerca de…"
 
-#: plugin.c:456 settings.c:181
+#: plugin.c:456 settings.c:190
 msgid "Settings"
 msgstr "Ajustes"
 
-#: plugin.c:465
-msgid "Controls…"
-msgstr "Controles…"
+#: plugin.c:466 settings.c:209
+msgid "Controls"
+msgstr "Controles"
 
-#: plugin.c:469
+#: plugin.c:471
 msgid "Advanced…"
 msgstr "Avanzados…"
 
-#: plugin.c:531
+#: plugin.c:475
+#, fuzzy
+msgid "Player 1…"
+msgstr "Jugador 1"
+
+#: plugin.c:478
+#, fuzzy
+msgid "Player 2…"
+msgstr "Jugador 2"
+
+#: plugin.c:542
 msgid "No ROM selected"
 msgstr "Sin ROM seleccionada"
 
-#: plugin.c:536
+#: plugin.c:547
 msgid "ROM file does not exist"
 msgstr "El archivo ROM no existe"
 
@@ -124,7 +135,8 @@ msgid "Enable keyboard"
 msgstr "Activar teclado"
 
 #: controls.c:167
-msgid "Configure keys..."
+#, fuzzy
+msgid "Configure keys…"
 msgstr "Configurar teclas…"
 
 #: controls.c:173
@@ -180,31 +192,27 @@ msgstr "Zoom 2x suavizado"
 msgid "No zoom"
 msgstr "Sin zoom"
 
-#: settings.c:200
-msgid "Controls"
-msgstr "Controles"
-
-#: settings.c:207
+#: settings.c:216
 msgid "Player 1"
 msgstr "Jugador 1"
 
-#: settings.c:216
+#: settings.c:225
 msgid "Player 2"
 msgstr "Jugador 2"
 
-#: settings.c:222
+#: settings.c:231
 msgid "Advanced"
 msgstr "Avanzado"
 
-#: settings.c:235
+#: settings.c:244 settings.c:307
 msgid "Pause game in the background"
 msgstr "Pausar juego en segundo plano"
 
-#: settings.c:242
+#: settings.c:251 settings.c:302
 msgid "Zoom"
 msgstr "Zoom"
 
-#: settings.c:254
+#: settings.c:263
 msgid "Speedhacks"
 msgstr "Speedhacks"
 
@@ -239,3 +247,6 @@ msgstr "Carga rápida 2"
 #: buttons.inc:27
 msgid "Quick Save 2"
 msgstr "Guardado rápido 2"
+
+#~ msgid "Controls…"
+#~ msgstr "Controles…"

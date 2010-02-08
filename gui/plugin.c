@@ -170,7 +170,7 @@ static void select_rom_callback(GtkWidget * button, gpointer data)
 #if MAEMO_VERSION < 5
 static void controls_item_callback(GtkWidget * button, gpointer data)
 {
-	controls_dialog(get_parent_window());
+	controls_dialog(get_parent_window(), GPOINTER_TO_INT(data));
 }
 #endif
 
@@ -248,7 +248,7 @@ static GtkWidget * load_plugin(void)
 #else
 {
 	GtkWidget* rom_hbox = gtk_hbox_new(FALSE, HILDON_MARGIN_DEFAULT);
-	select_rom_btn = GTK_BUTTON(gtk_button_new_with_label(_("Select ROM...")));
+	select_rom_btn = GTK_BUTTON(gtk_button_new_with_label(_("Select ROM…")));
 	gtk_widget_set_size_request(GTK_WIDGET(select_rom_btn),	180, 46);
 	rom_label = GTK_LABEL(gtk_label_new(NULL));
 
@@ -461,16 +461,27 @@ static GtkWidget **load_menu(guint *nitems)
 	gtk_menu_item_set_submenu(GTK_MENU_ITEM(menu_items[0]),
 		GTK_WIDGET(settings_menu));
 
+	GtkMenu* controls_menu = GTK_MENU(gtk_menu_new());
 	GtkMenuItem* controls_item =
-		GTK_MENU_ITEM(gtk_menu_item_new_with_label(_("Controls…")));
-	gtk_menu_append(GTK_MENU(settings_menu), GTK_WIDGET(controls_item));
+		GTK_MENU_ITEM(gtk_menu_item_new_with_label(_("Controls")));
+	gtk_menu_item_set_submenu(controls_item, GTK_WIDGET(controls_menu));
+	gtk_menu_append(settings_menu, GTK_WIDGET(controls_item));
 
 	GtkMenuItem* advanced_item =
 		GTK_MENU_ITEM(gtk_menu_item_new_with_label(_("Advanced…")));
-	gtk_menu_append(GTK_MENU(settings_menu), GTK_WIDGET(advanced_item));
+	gtk_menu_append(settings_menu, GTK_WIDGET(advanced_item));
 
-	g_signal_connect(G_OBJECT(controls_item), "activate",
-					G_CALLBACK(controls_item_callback), NULL);
+	GtkMenuItem* player1_item =
+		GTK_MENU_ITEM(gtk_menu_item_new_with_label(_("Player 1…")));
+	gtk_menu_append(controls_menu, GTK_WIDGET(player1_item));
+	GtkMenuItem* player2_item =
+		GTK_MENU_ITEM(gtk_menu_item_new_with_label(_("Player 2…")));
+	gtk_menu_append(controls_menu, GTK_WIDGET(player2_item));
+
+	g_signal_connect(G_OBJECT(player1_item), "activate",
+					G_CALLBACK(controls_item_callback), GINT_TO_POINTER(1));
+	g_signal_connect(G_OBJECT(player2_item), "activate",
+					G_CALLBACK(controls_item_callback), GINT_TO_POINTER(2));
 	g_signal_connect(G_OBJECT(advanced_item), "activate",
 					G_CALLBACK(settings_item_callback), NULL);
 	g_signal_connect(G_OBJECT(menu_items[1]), "activate",

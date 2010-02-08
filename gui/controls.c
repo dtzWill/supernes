@@ -164,7 +164,7 @@ void controls_dialog(GtkWindow* parent, int player)
 	keys_btn = HILDON_BUTTON(hildon_button_new_with_text(
 		HILDON_SIZE_AUTO_WIDTH | HILDON_SIZE_FINGER_HEIGHT,
 		HILDON_BUTTON_ARRANGEMENT_HORIZONTAL,
-		_("Configure keys..."), NULL));
+		_("Configure keys…"), NULL));
 	set_button_layout(HILDON_BUTTON(keys_btn),
 		titles_size_group, values_size_group);
 	g_signal_connect(G_OBJECT(keys_btn), "clicked",

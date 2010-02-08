@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: maemo@javispedro.com\n"
-"POT-Creation-Date: 2010-02-01 22:56+0100\n"
+"POT-Creation-Date: 2010-02-08 18:38+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -25,7 +25,7 @@ msgid "ROM"
 msgstr ""
 
 #: plugin.c:251
-msgid "Select ROM..."
+msgid "Select ROM…"
 msgstr ""
 
 #: plugin.c:268
@@ -52,7 +52,7 @@ msgstr ""
 msgid "Display framerate"
 msgstr ""
 
-#: plugin.c:334 settings.c:228
+#: plugin.c:334 settings.c:237
 msgid "Accurate graphics"
 msgstr ""
 
@@ -60,15 +60,15 @@ msgstr ""
 msgid "Framerate:"
 msgstr ""
 
-#: plugin.c:347 settings.c:260
+#: plugin.c:347 settings.c:269
 msgid "No speedhacks"
 msgstr ""
 
-#: plugin.c:348 settings.c:261
+#: plugin.c:348 settings.c:270
 msgid "Safe hacks only"
 msgstr ""
 
-#: plugin.c:349 settings.c:262
+#: plugin.c:349 settings.c:271
 msgid "All speedhacks"
 msgstr ""
 
@@ -80,23 +80,31 @@ msgstr ""
 msgid "About…"
 msgstr ""
 
-#: plugin.c:456 settings.c:181
+#: plugin.c:456 settings.c:190
 msgid "Settings"
 msgstr ""
 
-#: plugin.c:465
-msgid "Controls…"
+#: plugin.c:466 settings.c:209
+msgid "Controls"
 msgstr ""
 
-#: plugin.c:469
+#: plugin.c:471
 msgid "Advanced…"
 msgstr ""
 
-#: plugin.c:531
+#: plugin.c:475
+msgid "Player 1…"
+msgstr ""
+
+#: plugin.c:478
+msgid "Player 2…"
+msgstr ""
+
+#: plugin.c:542
 msgid "No ROM selected"
 msgstr ""
 
-#: plugin.c:536
+#: plugin.c:547
 msgid "ROM file does not exist"
 msgstr ""
 
@@ -122,7 +130,7 @@ msgid "Enable keyboard"
 msgstr ""
 
 #: controls.c:167
-msgid "Configure keys..."
+msgid "Configure keys…"
 msgstr ""
 
 #: controls.c:173
@@ -178,31 +186,27 @@ msgstr ""
 msgid "No zoom"
 msgstr ""
 
-#: settings.c:200
-msgid "Controls"
-msgstr ""
-
-#: settings.c:207
+#: settings.c:216
 msgid "Player 1"
 msgstr ""
 
-#: settings.c:216
+#: settings.c:225
 msgid "Player 2"
 msgstr ""
 
-#: settings.c:222
+#: settings.c:231
 msgid "Advanced"
 msgstr ""
 
-#: settings.c:235
+#: settings.c:244 settings.c:307
 msgid "Pause game in the background"
 msgstr ""
 
-#: settings.c:242
+#: settings.c:251 settings.c:302
 msgid "Zoom"
 msgstr ""
 
-#: settings.c:254
+#: settings.c:263
 msgid "Speedhacks"
 msgstr ""
 
