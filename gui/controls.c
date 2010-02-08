@@ -48,7 +48,10 @@ static HildonButton* keys_btn;
 static HildonCheckButton* touch_chk;
 static HildonCheckButton* touch_show_chk;
 #else
-
+static GtkCheckButton* keys_chk;
+static GtkButton* keys_btn;
+static GtkCheckButton* touch_chk;
+static GtkCheckButton* touch_show_chk;
 #endif
 
 static void load_settings()
@@ -62,6 +65,9 @@ static void load_settings()
 	hildon_check_button_set_active(keys_chk,
 		gconf_client_get_bool(gcc, key_base, NULL));
 #else
+	strcpy(key, kGConfPlayerKeyboardEnable);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(keys_chk),
+		gconf_client_get_bool(gcc, key_base, NULL));
 #endif
 }
 
@@ -76,6 +82,9 @@ static void save_settings()
 	gconf_client_set_bool(gcc, key_base,
 		hildon_check_button_get_active(keys_chk), NULL);
 #else
+	strcpy(key, kGConfPlayerKeyboardEnable);
+	gconf_client_set_bool(gcc, key_base,
+		gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(keys_chk)), NULL);
 #endif
 }
 
@@ -226,6 +235,32 @@ void controls_dialog(GtkWindow* parent, int player)
 	g_object_unref(titles_size_group);
 	g_object_unref(values_size_group);
 #else
+	GtkBox* keys_box = GTK_BOX(gtk_hbox_new(FALSE, HILDON_MARGIN_DEFAULT));
+
+	keys_chk = GTK_CHECK_BUTTON(gtk_check_button_new_with_label(
+		_("Enable keyboard")));
+	keys_btn = GTK_BUTTON(gtk_button_new_with_label(_("Configure keys…")));
+	g_signal_connect(G_OBJECT(keys_btn), "clicked",
+					G_CALLBACK(keys_btn_callback), GINT_TO_POINTER(player));
+
+	gtk_box_pack_start_defaults(keys_box, GTK_WIDGET(keys_chk));
+	gtk_box_pack_start_defaults(keys_box, GTK_WIDGET(keys_btn));
+
+	GtkWidget* sep_1 = GTK_WIDGET(gtk_hseparator_new());
+
+	GtkBox* touch_box = GTK_BOX(gtk_vbox_new(FALSE, HILDON_MARGIN_HALF));
+
+	touch_chk = GTK_CHECK_BUTTON(gtk_check_button_new_with_label(
+		_("Enable touchscreen buttons")));
+	touch_show_chk = GTK_CHECK_BUTTON(gtk_check_button_new_with_label(
+		_("Show on-screen button grid")));
+
+	gtk_box_pack_start_defaults(touch_box, GTK_WIDGET(touch_chk));
+	gtk_box_pack_start_defaults(touch_box, GTK_WIDGET(touch_show_chk));
+
+	gtk_box_pack_start_defaults(GTK_BOX(dialog->vbox), GTK_WIDGET(keys_box));
+	gtk_box_pack_start_defaults(GTK_BOX(dialog->vbox), sep_1);
+	gtk_box_pack_start_defaults(GTK_BOX(dialog->vbox), GTK_WIDGET(touch_box));
 #endif
 
 	load_settings();

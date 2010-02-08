@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: maemo@javispedro.com\n"
-"POT-Creation-Date: 2010-02-08 18:38+0100\n"
+"POT-Creation-Date: 2010-02-08 18:56+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -108,52 +108,52 @@ msgstr ""
 msgid "ROM file does not exist"
 msgstr ""
 
-#: controls.c:119
+#: controls.c:128
 msgid "Keyboard"
 msgstr ""
 
-#: controls.c:123
+#: controls.c:132
 msgid "Disabled"
 msgstr ""
 
-#: controls.c:131
+#: controls.c:140
 #, c-format
 msgid "Player %d controls"
 msgstr ""
 
-#: controls.c:154
+#: controls.c:163
 msgid "Keys"
 msgstr ""
 
-#: controls.c:160
+#: controls.c:169 controls.c:241
 msgid "Enable keyboard"
 msgstr ""
 
-#: controls.c:167
+#: controls.c:176 controls.c:242
 msgid "Configure keys…"
 msgstr ""
 
-#: controls.c:173
+#: controls.c:182
 msgid "Touchscreen"
 msgstr ""
 
-#: controls.c:180
+#: controls.c:189 controls.c:254
 msgid "Enable touchscreen buttons"
 msgstr ""
 
-#: controls.c:187
+#: controls.c:196 controls.c:256
 msgid "Show on-screen button grid"
 msgstr ""
 
-#: controls.c:191
+#: controls.c:200
 msgid "Accelerometer"
 msgstr ""
 
-#: controls.c:195
+#: controls.c:204
 msgid "Wiimote"
 msgstr ""
 
-#: controls.c:199
+#: controls.c:208
 msgid "Zeemote"
 msgstr ""
 
