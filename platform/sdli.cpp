@@ -14,27 +14,33 @@ struct TouchButton {
 	double fw, fh;
 };
 
-#define TOUCH_BUTTON_INITIALIZER(name, x, y, w, h) \
-	{SNES_##name##_MASK, 0, 0, 0, 0, x, y, w, h}
-
 #define kCornerButtonWidth 	(0.375)
 #define kCornerButtonHeight	(0.0833333333334)
 #define kBigButtonWidth		(0.125)
 #define kBigButtonHeight	(0.2777777777778)
 
 static TouchButton touchbuttons[] = {
-	TOUCH_BUTTON_INITIALIZER(TL, 0.0, 0.0, kCornerButtonWidth, kCornerButtonHeight),
-	TOUCH_BUTTON_INITIALIZER(TR, 0.625, 0.0, kCornerButtonWidth, kCornerButtonHeight),
-	TOUCH_BUTTON_INITIALIZER(UP, kBigButtonWidth, kCornerButtonHeight, kBigButtonWidth, kBigButtonHeight),
-	TOUCH_BUTTON_INITIALIZER(LEFT, 0.0, kCornerButtonHeight + kBigButtonHeight, kBigButtonWidth, kBigButtonHeight),
-	TOUCH_BUTTON_INITIALIZER(RIGHT, 2.0 * kBigButtonWidth, kCornerButtonHeight + kBigButtonHeight, kBigButtonWidth, kBigButtonHeight),
-	TOUCH_BUTTON_INITIALIZER(DOWN, kBigButtonWidth, 1.0 - (kCornerButtonHeight + kBigButtonHeight), kBigButtonWidth, kBigButtonHeight),
-	TOUCH_BUTTON_INITIALIZER(SELECT, 0.0, 1.0 - kCornerButtonHeight, kCornerButtonWidth, kCornerButtonHeight),
-	TOUCH_BUTTON_INITIALIZER(X, 1.0 - 2.0 * kBigButtonWidth, kCornerButtonHeight, kBigButtonWidth, kBigButtonHeight),
-	TOUCH_BUTTON_INITIALIZER(Y, 1.0 - 3.0 * kBigButtonWidth, kCornerButtonHeight + kBigButtonHeight, kBigButtonWidth, kBigButtonHeight),
-	TOUCH_BUTTON_INITIALIZER(A, 1.0 - kBigButtonWidth, kCornerButtonHeight + kBigButtonHeight, kBigButtonWidth, kBigButtonHeight),
-	TOUCH_BUTTON_INITIALIZER(B, 1.0 - 2.0 * kBigButtonWidth, 1.0 - (kCornerButtonHeight + kBigButtonHeight), kBigButtonWidth, kBigButtonHeight),
-	TOUCH_BUTTON_INITIALIZER(START, 1.0 - kCornerButtonWidth, 1.0 - kCornerButtonHeight, kCornerButtonWidth, kCornerButtonHeight),
+#define TB(actions, x, y, w, h) \
+	{actions, 0, 0, 0, 0, x, y, w, h}
+#define P(x) SNES_##x##_MASK
+	TB(P(TL), 0.0, 0.0, kCornerButtonWidth, kCornerButtonHeight),
+	TB(P(TR), 0.625, 0.0, kCornerButtonWidth, kCornerButtonHeight),
+	TB(P(LEFT) | P(UP), 0.0, kCornerButtonHeight, kBigButtonWidth, kBigButtonHeight),
+	TB(P(UP), kBigButtonWidth, kCornerButtonHeight, kBigButtonWidth, kBigButtonHeight),
+	TB(P(RIGHT) | P(UP), 2.0 * kBigButtonWidth, kCornerButtonHeight, kBigButtonWidth, kBigButtonHeight),
+	TB(P(LEFT), 0.0, kCornerButtonHeight + kBigButtonHeight, kBigButtonWidth, kBigButtonHeight),
+	TB(P(RIGHT), 2.0 * kBigButtonWidth, kCornerButtonHeight + kBigButtonHeight, kBigButtonWidth, kBigButtonHeight),
+	TB(P(LEFT) | P(DOWN), 0, 1.0 - (kCornerButtonHeight + kBigButtonHeight), kBigButtonWidth, kBigButtonHeight),
+	TB(P(DOWN), kBigButtonWidth, 1.0 - (kCornerButtonHeight + kBigButtonHeight), kBigButtonWidth, kBigButtonHeight),
+	TB(P(RIGHT) | P(DOWN), 2.0 * kBigButtonWidth, 1.0 - (kCornerButtonHeight + kBigButtonHeight), kBigButtonWidth, kBigButtonHeight),
+	TB(P(SELECT), 0.0, 1.0 - kCornerButtonHeight, kCornerButtonWidth, kCornerButtonHeight),
+	TB(P(X), 1.0 - 2.0 * kBigButtonWidth, kCornerButtonHeight, kBigButtonWidth, kBigButtonHeight),
+	TB(P(Y), 1.0 - 3.0 * kBigButtonWidth, kCornerButtonHeight + kBigButtonHeight, kBigButtonWidth, kBigButtonHeight),
+	TB(P(A), 1.0 - kBigButtonWidth, kCornerButtonHeight + kBigButtonHeight, kBigButtonWidth, kBigButtonHeight),
+	TB(P(B), 1.0 - 2.0 * kBigButtonWidth, 1.0 - (kCornerButtonHeight + kBigButtonHeight), kBigButtonWidth, kBigButtonHeight),
+	TB(P(START), 1.0 - kCornerButtonWidth, 1.0 - kCornerButtonHeight, kCornerButtonWidth, kCornerButtonHeight),
+#undef P
+#undef TB
 };
 
 static TouchButton* current = 0;
