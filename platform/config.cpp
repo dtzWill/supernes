@@ -191,49 +191,30 @@ static void loadDefaults()
 	romFile = 0;
 	basePath = 0;
 
-	Config.quitting = false;
-	Config.saver = false;
 	Config.enableAudio = true;
-	Config.fullscreen = false;
-	Config.scaler = 0;
-	Config.hacksFile = 0;
-	Config.joypad1Enabled = false;
-	Config.joypad2Enabled = false;
-	Config.touchscreenInput = 0;
-	Config.touchscreenShow = false;
 
-	Settings.JoystickEnabled = FALSE;
 	Settings.SoundPlaybackRate = 22050;
 	Settings.Stereo = TRUE;
 	Settings.SoundBufferSize = 512; // in samples
 	Settings.CyclesPercentage = 100;
-	Settings.DisableSoundEcho = FALSE;
-	Settings.APUEnabled = FALSE;
+	Settings.APUEnabled = FALSE;		// We'll enable it later
 	Settings.H_Max = SNES_CYCLES_PER_SCANLINE;
 	Settings.SkipFrames = AUTO_FRAMERATE;
 	Settings.Shutdown = Settings.ShutdownMaster = TRUE;
 	Settings.FrameTimePAL = 20;	// in msecs
 	Settings.FrameTimeNTSC = 16;
 	Settings.FrameTime = Settings.FrameTimeNTSC;
-	Settings.DisableSampleCaching = FALSE;
-	Settings.DisableMasterVolume = FALSE;
-	Settings.Mouse = FALSE;
-	Settings.SuperScope = FALSE;
-	Settings.MultiPlayer5 = FALSE;
 	Settings.ControllerOption = SNES_JOYPAD;
-	
-	Settings.ForceTransparency = FALSE;
+
+	Settings.ForceTransparency = FALSE;	// We'll enable those later
 	Settings.Transparency = FALSE;
 	Settings.SixteenBit = TRUE;
-	
+
 	Settings.SupportHiRes = FALSE;
-	Settings.NetPlay = FALSE;
-	Settings.ServerName [0] = 0;
-	Settings.AutoSaveDelay = 30;
 	Settings.ApplyCheats = FALSE;
 	Settings.TurboMode = FALSE;
 	Settings.TurboSkipFrames = 15;
-    
+
     Settings.ForcePAL = FALSE;
     Settings.ForceNTSC = FALSE;
 
