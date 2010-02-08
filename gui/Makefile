@@ -30,6 +30,7 @@ endif
 XGETTEXT:=xgettext
 XGETTEXT_OPTS:=--default-domain=$(GETTEXT_PACKAGE) --from-code=UTF-8 \
 	--language=C --msgid-bugs-address=maemo@javispedro.com \
+	--package-name=DrNokSnes --package-version=$(GAME_VERSION) \
 	--keyword=_ --keyword=N_
 EXTRA_GETTEXT_SRCS:=buttons.inc
 
