@@ -22,6 +22,10 @@ extern struct config {
 	bool saver;
 	/** Speedhacks file to use */
 	char * hacksFile;
+	/** Enable player 1 joypad */
+	bool joypad1Enabled;
+	/** Enable player 2 joypad */
+	bool joypad2Enabled;
 	/** Enable touchscreen controls */
 	bool touchscreenInput;
 	/** Display touchscreen controls grid */

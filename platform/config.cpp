@@ -76,7 +76,9 @@ static struct poptOption configOptionsTable[] = {
 	"scancode to map", "CODE" },
 	{ "button", '\0', POPT_ARG_STRING, 0, 101,
 	"SNES Button to press (A, B, X, Y, L, R, Up, Down, Left, Right)", "name" },
-	{ "action", '\0', POPT_ARG_STRING, 0, 102,
+	{ "button2", '\0', POPT_ARG_STRING, 0, 102,
+	"SNES Button to press for joypad 2", "name" },
+	{ "action", '\0', POPT_ARG_STRING, 0, 110,
 	"emulator action to do (fullscreen, quit, ...)", "action" },
 	{ "hacks-file", '\0', POPT_ARG_STRING, 0, 200,
 	"path to snesadvance.dat file", "FILE" },
@@ -195,6 +197,8 @@ static void loadDefaults()
 	Config.fullscreen = false;
 	Config.scaler = 0;
 	Config.hacksFile = 0;
+	Config.player1Enabled = false;
+	Config.player2Enabled = false;
 	Config.touchscreenInput = false;
 	Config.touchscreenShow = false;
 
@@ -385,10 +389,16 @@ static void parseArgs(poptContext optCon)
 				scancode = atoi(poptGetOptArg(optCon));
 				break;
 			case 101:
-				Config.joypad1Mapping[scancode] |= 
+				Config.joypad1Mapping[scancode] |=
 					buttonNameToBit(poptGetOptArg(optCon));
+				Config.joypad1Enabled = true;
 				break;
 			case 102:
+				Config.joypad2Mapping[scancode] |=
+					buttonNameToBit(poptGetOptArg(optCon));
+				Config.joypad2Enabled = true;
+				break;
+			case 110:
 				Config.action[scancode] |= 
 					actionNameToBit(poptGetOptArg(optCon));
 				break;
