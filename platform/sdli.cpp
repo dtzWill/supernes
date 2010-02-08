@@ -61,10 +61,10 @@ static TouchButton* getButtonFor(unsigned int x, unsigned int y) {
 }
 
 static inline void unpress(TouchButton* b) {
-	joypads[0] &= ~b->mask;
+	joypads[Config.touchscreenInput - 1] &= ~b->mask;
 }
 static inline void press(TouchButton* b) {
-	joypads[0] |= b->mask;
+	joypads[Config.touchscreenInput - 1] |= b->mask;
 }
 
 static void processMouse(unsigned int x, unsigned int y, int pressed = 0)

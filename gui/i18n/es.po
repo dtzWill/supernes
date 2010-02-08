@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: DrNokSnes 1.2.6\n"
 "Report-Msgid-Bugs-To: maemo@javispedro.com\n"
-"POT-Creation-Date: 2010-02-08 18:56+0100\n"
+"POT-Creation-Date: 2010-02-08 20:11+0100\n"
 "PO-Revision-Date: 2010-01-07 03:11+0100\n"
 "Last-Translator: Javier <javier@javispedro.com>\n"
 "Language-Team: Spanish <maemo@javispedro.com>\n"
@@ -113,53 +113,53 @@ msgstr "Sin ROM seleccionada"
 msgid "ROM file does not exist"
 msgstr "El archivo ROM no existe"
 
-#: controls.c:128
+#: controls.c:156
 msgid "Keyboard"
 msgstr "Teclado"
 
-#: controls.c:132
+#: controls.c:160
 msgid "Disabled"
 msgstr "Desactivado"
 
-#: controls.c:140
+#: controls.c:168
 #, c-format
 msgid "Player %d controls"
 msgstr "Controles del jugador %d"
 
-#: controls.c:163
+#: controls.c:191
 msgid "Keys"
 msgstr "Teclas"
 
-#: controls.c:169 controls.c:241
+#: controls.c:197 controls.c:269
 msgid "Enable keyboard"
 msgstr "Activar teclado"
 
-#: controls.c:176 controls.c:242
+#: controls.c:204 controls.c:270
 #, fuzzy
 msgid "Configure keys…"
 msgstr "Configurar teclas…"
 
-#: controls.c:182
+#: controls.c:210
 msgid "Touchscreen"
 msgstr "Pantalla táctil"
 
-#: controls.c:189 controls.c:254
+#: controls.c:217 controls.c:282
 msgid "Enable touchscreen buttons"
 msgstr "Activar controles en pantalla"
 
-#: controls.c:196 controls.c:256
+#: controls.c:224 controls.c:284
 msgid "Show on-screen button grid"
 msgstr "Mostrar controles en pantalla"
 
-#: controls.c:200
+#: controls.c:228
 msgid "Accelerometer"
 msgstr "Accelerómetro"
 
-#: controls.c:204
+#: controls.c:232
 msgid "Wiimote"
 msgstr "Wiimote"
 
-#: controls.c:208
+#: controls.c:236
 msgid "Zeemote"
 msgstr "Zeemote"
 

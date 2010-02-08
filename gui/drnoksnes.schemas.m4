@@ -171,6 +171,32 @@ undefine(`BUTTON')dnl
 undefine(`ACTION')dnl
 undefine(`LAST')dnl
     <schema>
+     <key>/schemas/apps/maemo/drnoksnes/player1/touchscreen/enable</key>
+      <applyto>/apps/maemo/drnoksnes/player1/touchscreen/enable</applyto>
+      <owner>drnoksnes</owner>
+      <type>bool</type>
+      <default>true</default>
+      <locale name="C">
+        <short>Player 1 touchscreen</short>
+        <long>
+          Enable touchscreen buttons for player 1.
+        </long>
+      </locale>
+    </schema>
+    <schema>
+     <key>/schemas/apps/maemo/drnoksnes/player1/touchscreen/show_buttons</key>
+      <applyto>/apps/maemo/drnoksnes/player1/touchscreen/show_buttons</applyto>
+      <owner>drnoksnes</owner>
+      <type>bool</type>
+      <default>false</default>
+      <locale name="C">
+        <short>Player 1 touchscreen show</short>
+        <long>
+          Show touchscreen buttons for player 1.
+        </long>
+      </locale>
+    </schema>
+    <schema>
      <key>/schemas/apps/maemo/drnoksnes/player2/keyboard/enable</key>
       <applyto>/apps/maemo/drnoksnes/player2/keyboard/enable</applyto>
       <owner>drnoksnes</owner>
@@ -204,5 +230,31 @@ undefine(`HELP')dnl
 undefine(`BUTTON')dnl
 undefine(`ACTION')dnl
 undefine(`LAST')dnl
+    <schema>
+     <key>/schemas/apps/maemo/drnoksnes/player2/touchscreen/enable</key>
+      <applyto>/apps/maemo/drnoksnes/player2/touchscreen/enable</applyto>
+      <owner>drnoksnes</owner>
+      <type>bool</type>
+      <default>false</default>
+      <locale name="C">
+        <short>Player 2 touchscreen</short>
+        <long>
+          Enable touchscreen buttons for player 2.
+        </long>
+      </locale>
+    </schema>
+    <schema>
+     <key>/schemas/apps/maemo/drnoksnes/player2/touchscreen/show_buttons</key>
+      <applyto>/apps/maemo/drnoksnes/player2/touchscreen/show_buttons</applyto>
+      <owner>drnoksnes</owner>
+      <type>bool</type>
+      <default>false</default>
+      <locale name="C">
+        <short>Player 2 touchscreen show</short>
+        <long>
+          Show touchscreen buttons for player 2.
+        </long>
+      </locale>
+    </schema>
   </schemalist>
 </gconfschemafile>

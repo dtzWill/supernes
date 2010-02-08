@@ -64,9 +64,23 @@ static void load_settings()
 	strcpy(key, kGConfPlayerKeyboardEnable);
 	hildon_check_button_set_active(keys_chk,
 		gconf_client_get_bool(gcc, key_base, NULL));
+
+	strcpy(key, kGConfPlayerTouchscreenEnable);
+	hildon_check_button_set_active(touch_chk,
+		gconf_client_get_bool(gcc, key_base, NULL));
+	strcpy(key, kGConfPlayerTouchscreenShow);
+	hildon_check_button_set_active(touch_show_chk,
+		gconf_client_get_bool(gcc, key_base, NULL));
 #else
 	strcpy(key, kGConfPlayerKeyboardEnable);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(keys_chk),
+		gconf_client_get_bool(gcc, key_base, NULL));
+
+	strcpy(key, kGConfPlayerTouchscreenEnable);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(touch_chk),
+		gconf_client_get_bool(gcc, key_base, NULL));
+	strcpy(key, kGConfPlayerTouchscreenShow);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(touch_show_chk),
 		gconf_client_get_bool(gcc, key_base, NULL));
 #endif
 }
@@ -81,10 +95,24 @@ static void save_settings()
 	strcpy(key, kGConfPlayerKeyboardEnable);
 	gconf_client_set_bool(gcc, key_base,
 		hildon_check_button_get_active(keys_chk), NULL);
+
+	strcpy(key, kGConfPlayerTouchscreenEnable);
+	gconf_client_set_bool(gcc, key_base,
+		hildon_check_button_get_active(touch_chk), NULL);
+	strcpy(key, kGConfPlayerTouchscreenShow);
+	gconf_client_set_bool(gcc, key_base,
+		hildon_check_button_get_active(touch_show_chk), NULL);
 #else
 	strcpy(key, kGConfPlayerKeyboardEnable);
 	gconf_client_set_bool(gcc, key_base,
 		gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(keys_chk)), NULL);
+
+	strcpy(key, kGConfPlayerTouchscreenEnable);
+	gconf_client_set_bool(gcc, key_base,
+		gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(touch_chk)), NULL);
+	strcpy(key, kGConfPlayerTouchscreenShow);
+	gconf_client_set_bool(gcc, key_base,
+		gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(touch_show_chk)), NULL);
 #endif
 }
 

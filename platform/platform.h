@@ -26,8 +26,8 @@ extern struct config {
 	bool joypad1Enabled;
 	/** Enable player 2 joypad */
 	bool joypad2Enabled;
-	/** Enable touchscreen controls */
-	bool touchscreenInput;
+	/** Enable touchscreen controls (0 = no, 1 = for player 1, 2 = for player 2) */
+	char touchscreenInput;
 	/** Display touchscreen controls grid */
 	bool touchscreenShow;
 	/** If true, next time the main loop is entered application will close */

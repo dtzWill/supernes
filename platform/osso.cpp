@@ -240,6 +240,7 @@ void OssoConfig()
 	gchar key[kGConfPlayerPathBufferLen];
 	gchar *relKey = key + sprintf(key, kGConfPlayerPath, 1);
 
+	//  keyboard
 	strcpy(relKey, kGConfPlayerKeyboardEnable);
 	if (gconf_client_get_bool(gcc, key, NULL)) {
 		Config.joypad1Enabled = true;
@@ -249,13 +250,36 @@ void OssoConfig()
 		loadSafeKeymap();
 	}
 
+	//  touchscreen
+	strcpy(relKey, kGConfPlayerTouchscreenEnable);
+	if (gconf_client_get_bool(gcc, key, NULL)) {
+		Config.touchscreenInput = 1;
+
+		strcpy(relKey, kGConfPlayerTouchscreenShow);
+		if (gconf_client_get_bool(gcc, key, NULL)) {
+			Config.touchscreenShow = true;
+		}
+	}
+
 	// Read player 2 controls
 	relKey = key + sprintf(key, kGConfPlayerPath, 2);
 
+	//  keyboard
 	strcpy(relKey, kGConfPlayerKeyboardEnable);
 	if (gconf_client_get_bool(gcc, key, NULL)) {
 		Config.joypad2Enabled = true;
 		loadPlayer2Keymap(gcc);
+	}
+
+	//  touchscreen
+	strcpy(relKey, kGConfPlayerTouchscreenEnable);
+	if (gconf_client_get_bool(gcc, key, NULL)) {
+		Config.touchscreenInput = 2;
+
+		strcpy(relKey, kGConfPlayerTouchscreenShow);
+		if (gconf_client_get_bool(gcc, key, NULL)) {
+			Config.touchscreenShow = true;
+		}
 	}
 
 	// Time to read the startup command from D-Bus

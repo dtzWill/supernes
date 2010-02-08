@@ -199,7 +199,7 @@ static void loadDefaults()
 	Config.hacksFile = 0;
 	Config.joypad1Enabled = false;
 	Config.joypad2Enabled = false;
-	Config.touchscreenInput = false;
+	Config.touchscreenInput = 0;
 	Config.touchscreenShow = false;
 
 	Settings.JoystickEnabled = FALSE;
@@ -368,10 +368,10 @@ static void parseArgs(poptContext optCon)
 				Settings.SoundBufferSize = atoi(poptGetOptArg(optCon));
 				break;
 			case 16:
-				Config.touchscreenInput = true;
+				Config.touchscreenInput = 1;
 				break;
 			case 17:
-				Config.touchscreenInput = true;
+				Config.touchscreenInput = 1;
 				Config.touchscreenShow = true;
 				break;
 			case 18:
