@@ -37,8 +37,9 @@ static volatile enum {
 	STARTUP_COMMAND_QUIT
 } startupCommand;
 
-static void createActionMappingsOnly();
-static void parseGConfKeyMappings(GConfClient* gcc);
+static void loadSafeKeymap();
+static void loadPlayer1Keymap(GConfClient* gcc);
+static void loadPlayer2Keymap(GConfClient* gcc);
 
 static gint ossoAppCallback(const gchar *interface, const gchar *method,
   GArray *arguments, gpointer data, osso_rpc_t *retval)
@@ -241,9 +242,20 @@ void OssoConfig()
 
 	strcpy(relKey, kGConfPlayerKeyboardEnable);
 	if (gconf_client_get_bool(gcc, key, NULL)) {
-		parseGConfKeyMappings(gcc);
+		Config.joypad1Enabled = true;
+		loadPlayer1Keymap(gcc);
 	} else {
-		createActionMappingsOnly();
+		// We allow controls to be enabled from the command line
+		loadSafeKeymap();
+	}
+
+	// Read player 2 controls
+	relKey = key + sprintf(key, kGConfPlayerPath, 2);
+
+	strcpy(relKey, kGConfPlayerKeyboardEnable);
+	if (gconf_client_get_bool(gcc, key, NULL)) {
+		Config.joypad2Enabled = true;
+		loadPlayer2Keymap(gcc);
 	}
 
 	// Time to read the startup command from D-Bus
@@ -321,7 +333,8 @@ static const ButtonEntry buttons[] = {
 #undef LAST
 };
 
-static void createActionMappingsOnly()
+/** This loads a keymap for player 1 that will allow him to exit the app. */
+static void loadSafeKeymap()
 {
 	// Map quit to fullscreen, escape and task switch.
 	Config.action[72] = kActionQuit;
@@ -329,7 +342,7 @@ static void createActionMappingsOnly()
 	Config.action[71] = kActionQuit;
 }
 
-static void parseGConfKeyMappings(GConfClient* gcc)
+static void loadPlayer1Keymap(GConfClient* gcc)
 {
 	// Build player 1 keyboard gconf key relative path
 	gchar key[kGConfPlayerPathBufferLen];
@@ -389,5 +402,30 @@ static void parseGConfKeyMappings(GConfClient* gcc)
 		Config.action[71] = kActionQuit;
 	}
 #endif
+}
+
+// This version is simpler since we don't need safeguards.
+static void loadPlayer2Keymap(GConfClient* gcc)
+{
+	// Build player 2 keyboard gconf key relative path
+	gchar key[kGConfPlayerPathBufferLen];
+	gchar *relKey = key + sprintf(key,
+		kGConfPlayerPath kGConfPlayerKeyboardPath "/", 2);
+
+	// Ignore config file key mappings
+	ZeroMemory(Config.joypad2Mapping, sizeof(Config.joypad2Mapping));
+
+	int i, scancode;
+	for (i = 0; buttons[i].gconf_key; i++) {
+		if (buttons[i].is_action) continue;
+
+		strcpy(relKey, buttons[i].gconf_key);
+		scancode = gconf_client_get_int(gcc, key, NULL);
+
+		// Ignore out of range values
+		if (scancode <= 0 || scancode > 255) continue;
+
+		Config.joypad2Mapping[scancode] |= buttons[i].mask;
+	}
 }
 
