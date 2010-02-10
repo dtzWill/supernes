@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: drnoksnes\n"
 "Report-Msgid-Bugs-To: maemo@javispedro.com\n"
-"POT-Creation-Date: 2010-02-08 20:11+0100\n"
-"PO-Revision-Date: 2010-01-28 09:50+0100\n"
+"POT-Creation-Date: 2010-02-08 20:56+0100\n"
+"PO-Revision-Date: 2010-02-10 09:17+0100\n"
 "Last-Translator: Philipp Zabel <philipp.zabel@gmail.com>\n"
 "Language-Team: German\n"
 "MIME-Version: 1.0\n"
@@ -26,7 +26,6 @@ msgid "ROM"
 msgstr "ROM"
 
 #: plugin.c:251
-#, fuzzy
 msgid "Select ROM…"
 msgstr "ROM auswählen..."
 
@@ -42,7 +41,8 @@ msgstr "Ziel-Bildwiederholrate"
 msgid "Show while in game"
 msgstr "Im Spiel anzeigen"
 
-#: plugin.c:295 plugin.c:313
+#: plugin.c:295
+#: plugin.c:313
 msgid "Turbo mode"
 msgstr "Turbomodus"
 
@@ -54,7 +54,8 @@ msgstr "Ton einschalten"
 msgid "Display framerate"
 msgstr "Bildwiederholrate anzeigen"
 
-#: plugin.c:334 settings.c:237
+#: plugin.c:334
+#: settings.c:237
 msgid "Accurate graphics"
 msgstr "Akkurate Grafik"
 
@@ -62,15 +63,18 @@ msgstr "Akkurate Grafik"
 msgid "Framerate:"
 msgstr "Bildwiederholrate:"
 
-#: plugin.c:347 settings.c:269
+#: plugin.c:347
+#: settings.c:269
 msgid "No speedhacks"
 msgstr "Keine Speedhacks"
 
-#: plugin.c:348 settings.c:270
+#: plugin.c:348
+#: settings.c:270
 msgid "Safe hacks only"
 msgstr "Nur sichere Hacks"
 
-#: plugin.c:349 settings.c:271
+#: plugin.c:349
+#: settings.c:271
 msgid "All speedhacks"
 msgstr "Alle Speedhacks"
 
@@ -78,15 +82,18 @@ msgstr "Alle Speedhacks"
 msgid "Settings…"
 msgstr "Einstellungen..."
 
-#: plugin.c:448 plugin.c:457
+#: plugin.c:448
+#: plugin.c:457
 msgid "About…"
 msgstr "Über..."
 
-#: plugin.c:456 settings.c:190
+#: plugin.c:456
+#: settings.c:190
 msgid "Settings"
 msgstr "Einstellungen"
 
-#: plugin.c:466 settings.c:209
+#: plugin.c:466
+#: settings.c:209
 msgid "Controls"
 msgstr "Steuerung"
 
@@ -95,14 +102,12 @@ msgid "Advanced…"
 msgstr "Erweitert..."
 
 #: plugin.c:475
-#, fuzzy
 msgid "Player 1…"
-msgstr "Spieler 1"
+msgstr "Spieler 1..."
 
 #: plugin.c:478
-#, fuzzy
 msgid "Player 2…"
-msgstr "Spieler 2"
+msgstr "Spieler 2..."
 
 #: plugin.c:542
 msgid "No ROM selected"
@@ -129,26 +134,29 @@ msgstr "Spieler %d Steuerung"
 msgid "Keys"
 msgstr "Tasten"
 
-#: controls.c:197 controls.c:269
+#: controls.c:197
+#: controls.c:269
 msgid "Enable keyboard"
 msgstr "Tastatur aktivieren"
 
-#: controls.c:204 controls.c:270
-#, fuzzy
+#: controls.c:204
+#: controls.c:270
 msgid "Configure keys…"
-msgstr "Tasten konfigurieren..."
+msgstr "Tastenbelegung..."
 
 #: controls.c:210
 msgid "Touchscreen"
 msgstr "Touchscreen"
 
-#: controls.c:217 controls.c:282
+#: controls.c:217
+#: controls.c:282
 msgid "Enable touchscreen buttons"
-msgstr "Touchscreen-Knöpfe aktivieren"
+msgstr "Bildschirmtasten aktivieren"
 
-#: controls.c:224 controls.c:284
+#: controls.c:224
+#: controls.c:284
 msgid "Show on-screen button grid"
-msgstr "Wyświetlaj siatkę ekranową"
+msgstr "Tastengitter anzeigen"
 
 #: controls.c:228
 msgid "Accelerometer"
@@ -169,9 +177,11 @@ msgstr "Spieler %d Tasten"
 
 #: keys.c:269
 msgid "Defaults"
-msgstr "Standardeinstellungen"
+msgstr "Standard"
 
-#: settings.c:51 settings.c:58 settings.c:60
+#: settings.c:51
+#: settings.c:58
+#: settings.c:60
 msgid "2x zoom"
 msgstr "2x Vergrößerung"
 
@@ -203,11 +213,13 @@ msgstr "Spieler 2"
 msgid "Advanced"
 msgstr "Erweitert"
 
-#: settings.c:244 settings.c:307
+#: settings.c:244
+#: settings.c:307
 msgid "Pause game in the background"
-msgstr ""
+msgstr "Spiel im Hintergrund anhalten"
 
-#: settings.c:251 settings.c:302
+#: settings.c:251
+#: settings.c:302
 msgid "Zoom"
 msgstr "Zoom"
 
@@ -249,3 +261,4 @@ msgstr "Schnell speichern 2"
 
 #~ msgid "Controls…"
 #~ msgstr "Steuerung..."
+
