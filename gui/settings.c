@@ -275,6 +275,8 @@ void settings_dialog(GtkWindow* parent)
 		FALSE, FALSE, HILDON_MARGIN_HALF);
 	gtk_box_pack_start(box, GTK_WIDGET(player1_btn),
 		FALSE, FALSE, 0);
+	gtk_box_pack_start(box, GTK_WIDGET(player2_btn),
+		FALSE, FALSE, 0);
 	gtk_box_pack_start(box, GTK_WIDGET(separator_2),
 		FALSE, FALSE, HILDON_MARGIN_HALF);
 	gtk_box_pack_start(box, GTK_WIDGET(accu_check),

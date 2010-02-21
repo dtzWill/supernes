@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: drnoksnes\n"
 "Report-Msgid-Bugs-To: maemo@javispedro.com\n"
-"POT-Creation-Date: 2010-02-08 20:56+0100\n"
+"POT-Creation-Date: 2010-02-19 16:14+0100\n"
 "PO-Revision-Date: 2010-02-16 23:12+0100\n"
 "Last-Translator: Tomasz Dominikowski <dominikowski@gmail.com>\n"
 "Language-Team: Polish <dominikowski@gmail.com>\n"
@@ -41,8 +41,7 @@ msgstr "Docel. liczba kl./s"
 msgid "Show while in game"
 msgstr "Wyświetlaj podczas gry"
 
-#: plugin.c:295
-#: plugin.c:313
+#: plugin.c:295 plugin.c:313
 msgid "Turbo mode"
 msgstr "Tryb Turbo"
 
@@ -54,8 +53,7 @@ msgstr "Włącz dźwięk"
 msgid "Display framerate"
 msgstr "Wyświetlaj liczbę klatek/s"
 
-#: plugin.c:334
-#: settings.c:237
+#: plugin.c:334 settings.c:237
 msgid "Accurate graphics"
 msgstr "Dokładna grafika"
 
@@ -63,18 +61,15 @@ msgstr "Dokładna grafika"
 msgid "Framerate:"
 msgstr "Klatek/s:"
 
-#: plugin.c:347
-#: settings.c:269
+#: plugin.c:347 settings.c:269
 msgid "No speedhacks"
 msgstr "Bez sztuczek z prędkością"
 
-#: plugin.c:348
-#: settings.c:270
+#: plugin.c:348 settings.c:270
 msgid "Safe hacks only"
 msgstr "Tylko bezpieczne sztuczki"
 
-#: plugin.c:349
-#: settings.c:271
+#: plugin.c:349 settings.c:271
 msgid "All speedhacks"
 msgstr "Wszystkie sztuczki z prędkością"
 
@@ -82,18 +77,15 @@ msgstr "Wszystkie sztuczki z prędkością"
 msgid "Settings…"
 msgstr "Ustawienia..."
 
-#: plugin.c:448
-#: plugin.c:457
+#: plugin.c:448 plugin.c:457
 msgid "About…"
 msgstr "O programie..."
 
-#: plugin.c:456
-#: settings.c:190
+#: plugin.c:456 settings.c:190
 msgid "Settings"
 msgstr "Ustawienia"
 
-#: plugin.c:466
-#: settings.c:209
+#: plugin.c:466 settings.c:209
 msgid "Controls"
 msgstr "Sterowanie"
 
@@ -134,13 +126,11 @@ msgstr "Gracz %d steruje"
 msgid "Keys"
 msgstr "Klawisze"
 
-#: controls.c:197
-#: controls.c:269
+#: controls.c:197 controls.c:269
 msgid "Enable keyboard"
 msgstr "Włącz klawiaturę"
 
-#: controls.c:204
-#: controls.c:270
+#: controls.c:204 controls.c:270
 msgid "Configure keys…"
 msgstr "Skonfiguruj klawisze..."
 
@@ -148,13 +138,11 @@ msgstr "Skonfiguruj klawisze..."
 msgid "Touchscreen"
 msgstr "Ekran dotykowy"
 
-#: controls.c:217
-#: controls.c:282
+#: controls.c:217 controls.c:282
 msgid "Enable touchscreen buttons"
 msgstr "Włącz przyciski ekranu dotyk."
 
-#: controls.c:224
-#: controls.c:284
+#: controls.c:224 controls.c:284
 msgid "Show on-screen button grid"
 msgstr "Wyświetlaj siatkę ekranową"
 
@@ -179,9 +167,7 @@ msgstr "Klawisze gracza %d"
 msgid "Defaults"
 msgstr "Domyślne"
 
-#: settings.c:51
-#: settings.c:58
-#: settings.c:60
+#: settings.c:51 settings.c:58 settings.c:60
 msgid "2x zoom"
 msgstr "2x przybliżenie"
 
@@ -213,13 +199,11 @@ msgstr "Gracz 2"
 msgid "Advanced"
 msgstr "Zaawansowane"
 
-#: settings.c:244
-#: settings.c:307
+#: settings.c:244 settings.c:309
 msgid "Pause game in the background"
 msgstr "Wstrzymaj grę w tle"
 
-#: settings.c:251
-#: settings.c:302
+#: settings.c:251 settings.c:304
 msgid "Zoom"
 msgstr "Przybliżenie"
 
@@ -261,4 +245,3 @@ msgstr "Szybki zapis 2"
 
 #~ msgid "Controls…"
 #~ msgstr "Sterowanie..."
-

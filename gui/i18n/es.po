@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: DrNokSnes 1.3.0\n"
 "Report-Msgid-Bugs-To: maemo@javispedro.com\n"
-"POT-Creation-Date: 2010-02-08 20:11+0100\n"
+"POT-Creation-Date: 2010-02-19 16:14+0100\n"
 "PO-Revision-Date: 2010-02-08 20:56+0100\n"
 "Last-Translator: Javier <javier@javispedro.com>\n"
 "Language-Team: Spanish <maemo@javispedro.com>\n"
@@ -42,8 +42,7 @@ msgstr "Velocidad objetivo"
 msgid "Show while in game"
 msgstr "Mostrar durante el juego"
 
-#: plugin.c:295
-#: plugin.c:313
+#: plugin.c:295 plugin.c:313
 msgid "Turbo mode"
 msgstr "Modo Turbo"
 
@@ -55,8 +54,7 @@ msgstr "Activar sonido"
 msgid "Display framerate"
 msgstr "Mostrar velocidad"
 
-#: plugin.c:334
-#: settings.c:237
+#: plugin.c:334 settings.c:237
 msgid "Accurate graphics"
 msgstr "Mejores gráficos"
 
@@ -64,18 +62,15 @@ msgstr "Mejores gráficos"
 msgid "Framerate:"
 msgstr "Velocidad:"
 
-#: plugin.c:347
-#: settings.c:269
+#: plugin.c:347 settings.c:269
 msgid "No speedhacks"
 msgstr "Sin speedhacks"
 
-#: plugin.c:348
-#: settings.c:270
+#: plugin.c:348 settings.c:270
 msgid "Safe hacks only"
 msgstr "Sólo hacks seguros"
 
-#: plugin.c:349
-#: settings.c:271
+#: plugin.c:349 settings.c:271
 msgid "All speedhacks"
 msgstr "Todos los hacks"
 
@@ -83,18 +78,15 @@ msgstr "Todos los hacks"
 msgid "Settings…"
 msgstr "Ajustes…"
 
-#: plugin.c:448
-#: plugin.c:457
+#: plugin.c:448 plugin.c:457
 msgid "About…"
 msgstr "Acerca de…"
 
-#: plugin.c:456
-#: settings.c:190
+#: plugin.c:456 settings.c:190
 msgid "Settings"
 msgstr "Ajustes"
 
-#: plugin.c:466
-#: settings.c:209
+#: plugin.c:466 settings.c:209
 msgid "Controls"
 msgstr "Controles"
 
@@ -135,13 +127,11 @@ msgstr "Controles del jugador %d"
 msgid "Keys"
 msgstr "Teclas"
 
-#: controls.c:197
-#: controls.c:269
+#: controls.c:197 controls.c:269
 msgid "Enable keyboard"
 msgstr "Activar teclado"
 
-#: controls.c:204
-#: controls.c:270
+#: controls.c:204 controls.c:270
 msgid "Configure keys…"
 msgstr "Configurar teclas…"
 
@@ -149,13 +139,11 @@ msgstr "Configurar teclas…"
 msgid "Touchscreen"
 msgstr "Pantalla táctil"
 
-#: controls.c:217
-#: controls.c:282
+#: controls.c:217 controls.c:282
 msgid "Enable touchscreen buttons"
 msgstr "Activar controles en pantalla"
 
-#: controls.c:224
-#: controls.c:284
+#: controls.c:224 controls.c:284
 msgid "Show on-screen button grid"
 msgstr "Mostrar controles en pantalla"
 
@@ -180,9 +168,7 @@ msgstr "Teclas del jugador %d"
 msgid "Defaults"
 msgstr "Por defecto"
 
-#: settings.c:51
-#: settings.c:58
-#: settings.c:60
+#: settings.c:51 settings.c:58 settings.c:60
 msgid "2x zoom"
 msgstr "Zoom 2x"
 
@@ -214,13 +200,11 @@ msgstr "Jugador 2"
 msgid "Advanced"
 msgstr "Avanzado"
 
-#: settings.c:244
-#: settings.c:307
+#: settings.c:244 settings.c:309
 msgid "Pause game in the background"
 msgstr "Pausar juego en segundo plano"
 
-#: settings.c:251
-#: settings.c:302
+#: settings.c:251 settings.c:304
 msgid "Zoom"
 msgstr "Zoom"
 
@@ -262,4 +246,3 @@ msgstr "Guardado rápido 2"
 
 #~ msgid "Controls…"
 #~ msgstr "Controles…"
-
