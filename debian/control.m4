@@ -6,7 +6,8 @@ Build-Depends: debhelper (>= 5), pkg-config, maemo-version, m4, libsdl1.2-dev,
  libx11-dev, x11proto-core-dev, libxsp-dev, libpopt-dev, zlib1g-dev, gnupg,
  libosso-dev, osso-games-startup-dev, libsdl-image1.2-dev,
  libhildonfm2-dev, libosso-gnomevfs2-dev, libhildonmime-dev,
- maemo-version (<< 5.0) | libsdl-haa1.2-dev
+ maemo-version (<< 5.0) | libsdl-haa1.2-dev,
+ libbluetooth2-dev | libbluetooth3-dev, libzeemote-dev, libzeemote-conf-dev
 Standards-Version: 3.7.2
 
 Package: drnoksnes

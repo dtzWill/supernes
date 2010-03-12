@@ -22,5 +22,8 @@
 #define kGConfPlayerTouchscreenEnable kGConfPlayerTouchscreenPath "/" "enable"
 #define kGConfPlayerTouchscreenShow kGConfPlayerTouchscreenPath "/" "show_buttons"
 
+#define kGConfPlayerZeemotePath "/" "zeemote"
+#define kGConfPlayerZeemoteEnable kGConfPlayerZeemotePath "/" "enable"
+
 #endif
 

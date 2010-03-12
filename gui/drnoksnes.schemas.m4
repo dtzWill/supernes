@@ -197,6 +197,19 @@ undefine(`LAST')dnl
       </locale>
     </schema>
     <schema>
+     <key>/schemas/apps/maemo/drnoksnes/player1/zeemote/enable</key>
+      <applyto>/apps/maemo/drnoksnes/player1/zeemote/enable</applyto>
+      <owner>drnoksnes</owner>
+      <type>bool</type>
+      <default>false</default>
+      <locale name="C">
+        <short>Player 1 zeemote</short>
+        <long>
+          Connect zeemote to player 1.
+        </long>
+      </locale>
+    </schema>
+    <schema>
      <key>/schemas/apps/maemo/drnoksnes/player2/keyboard/enable</key>
       <applyto>/apps/maemo/drnoksnes/player2/keyboard/enable</applyto>
       <owner>drnoksnes</owner>
@@ -253,6 +266,19 @@ undefine(`LAST')dnl
         <short>Player 2 touchscreen show</short>
         <long>
           Show touchscreen buttons for player 2.
+        </long>
+      </locale>
+    </schema>
+    <schema>
+     <key>/schemas/apps/maemo/drnoksnes/player2/zeemote/enable</key>
+      <applyto>/apps/maemo/drnoksnes/player2/zeemote/enable</applyto>
+      <owner>drnoksnes</owner>
+      <type>bool</type>
+      <default>false</default>
+      <locale name="C">
+        <short>Player 2 zeemote</short>
+        <long>
+          Connect zeemote to player 2.
         </long>
       </locale>
     </schema>

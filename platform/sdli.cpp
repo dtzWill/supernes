@@ -6,6 +6,10 @@
 #include "display.h"
 #include "sdlv.h" // Dispatching video-related events
 
+#if CONF_ZEEMOTE
+#include "zeemote.h"
+#endif
+
 struct TouchButton {
 	unsigned short mask;
 	unsigned short x, y;
@@ -219,6 +223,11 @@ void S9xProcessEvents(bool block)
 {
 	SDL_Event event;
 
+#if CONF_ZEEMOTE
+	// Wheter blocking or non blocking, poll zeemotes now.
+	ZeeRead(joypads);
+#endif
+
 	if (block) {
 		SDL_WaitEvent(&event);
 		processEvent(event);
@@ -257,6 +266,10 @@ void S9xInitInputDevices()
 	}
 	printf("\n");
 
+#if CONF_ZEEMOTE
+	ZeeInit();
+#endif
+
 	// TODO Non-awful mouse support, Superscope
 
 	S9xInputScreenChanged();
@@ -268,6 +281,9 @@ void S9xDeinitInputDevices()
 	joypads[1] = 0;
 	mouse.enabled = false;
 	mouse.pressed = false;
+#if CONF_ZEEMOTE
+	ZeeQuit();
+#endif
 }
 
 void S9xInputScreenChanged()
