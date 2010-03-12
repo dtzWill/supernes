@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: drnoksnes\n"
 "Report-Msgid-Bugs-To: maemo@javispedro.com\n"
-"POT-Creation-Date: 2010-03-12 19:39+0100\n"
+"POT-Creation-Date: 2010-03-12 21:28+0100\n"
 "PO-Revision-Date: 2010-02-16 23:12+0100\n"
 "Last-Translator: Tomasz Dominikowski <dominikowski@gmail.com>\n"
 "Language-Team: Polish <dominikowski@gmail.com>\n"
@@ -109,56 +109,56 @@ msgstr "Nie wybrano pliku ROM"
 msgid "ROM file does not exist"
 msgstr "Plik ROM nie istnieje"
 
-#: controls.c:172
+#: controls.c:187
 msgid "Keyboard"
 msgstr "Klawiatura"
 
-#: controls.c:176
+#: controls.c:194 controls.c:257
+msgid "Touchscreen"
+msgstr "Ekran dotykowy"
+
+#: controls.c:201 controls.c:285
+msgid "Zeemote"
+msgstr "Zeemote"
+
+#: controls.c:207
 msgid "Disabled"
 msgstr "Wyłączone"
 
-#: controls.c:184
+#: controls.c:215
 #, c-format
 msgid "Player %d controls"
 msgstr "Gracz %d steruje"
 
-#: controls.c:207
+#: controls.c:238
 msgid "Keys"
 msgstr "Klawisze"
 
-#: controls.c:213 controls.c:297
+#: controls.c:244 controls.c:328
 msgid "Enable keyboard"
 msgstr "Włącz klawiaturę"
 
-#: controls.c:220 controls.c:298
+#: controls.c:251 controls.c:329
 msgid "Configure keys…"
 msgstr "Skonfiguruj klawisze..."
 
-#: controls.c:226
-msgid "Touchscreen"
-msgstr "Ekran dotykowy"
-
-#: controls.c:233 controls.c:310
+#: controls.c:264 controls.c:341
 msgid "Enable touchscreen buttons"
 msgstr "Włącz przyciski ekranu dotyk."
 
-#: controls.c:240 controls.c:312
+#: controls.c:271 controls.c:343
 msgid "Show on-screen button grid"
 msgstr "Wyświetlaj siatkę ekranową"
 
-#: controls.c:245
+#: controls.c:276
 msgid "Accelerometer"
 msgstr "Akcelerometr"
 
-#: controls.c:249
+#: controls.c:280
 msgid "Wiimote"
 msgstr "Wiimote"
 
-#: controls.c:254
-msgid "Zeemote"
-msgstr "Zeemote"
-
-#: controls.c:260 controls.c:316
+#: controls.c:291 controls.c:347
 msgid "Enable Zeemote joystick"
 msgstr ""
 

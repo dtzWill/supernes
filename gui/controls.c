@@ -63,26 +63,40 @@ static void load_settings()
 	gchar *key = key_base + key_len;
 
 #if MAEMO_VERSION >= 5
+	// Keyboard
 	strcpy(key, kGConfPlayerKeyboardEnable);
 	hildon_check_button_set_active(keys_chk,
 		gconf_client_get_bool(gcc, key_base, NULL));
 
+	// Touchscreen
 	strcpy(key, kGConfPlayerTouchscreenEnable);
 	hildon_check_button_set_active(touch_chk,
 		gconf_client_get_bool(gcc, key_base, NULL));
 	strcpy(key, kGConfPlayerTouchscreenShow);
 	hildon_check_button_set_active(touch_show_chk,
 		gconf_client_get_bool(gcc, key_base, NULL));
+
+	// Zeemote
+	strcpy(key, kGConfPlayerZeemoteEnable);
+	hildon_check_button_set_active(zeemote_chk,
+		gconf_client_get_bool(gcc, key_base, NULL));
 #else
+	// Keyboard
 	strcpy(key, kGConfPlayerKeyboardEnable);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(keys_chk),
 		gconf_client_get_bool(gcc, key_base, NULL));
 
+	// Touchscreen
 	strcpy(key, kGConfPlayerTouchscreenEnable);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(touch_chk),
 		gconf_client_get_bool(gcc, key_base, NULL));
 	strcpy(key, kGConfPlayerTouchscreenShow);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(touch_show_chk),
+		gconf_client_get_bool(gcc, key_base, NULL));
+
+	// Zeemote
+	strcpy(key, kGConfPlayerZeemoteEnable);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(zeemote_chk),
 		gconf_client_get_bool(gcc, key_base, NULL));
 #endif
 }
@@ -159,7 +173,8 @@ static void set_button_layout(HildonButton* button,
 
 gchar* controls_describe(int player)
 {
-	static gchar description[128];
+	static gchar description[256];
+	unsigned char count = 0;
 
 	gchar key_base[kGConfPlayerPathBufferLen];
 	const int key_len = sprintf(key_base, kGConfPlayerPath, player);
@@ -170,9 +185,25 @@ gchar* controls_describe(int player)
 	strcpy(key, kGConfPlayerKeyboardEnable);
 	if (gconf_client_get_bool(gcc, key_base, NULL)) {
 		strcpy(description, _("Keyboard"));
+		count++;
 	}
 
-	if (description[0] == '\0') {
+	strcpy(key, kGConfPlayerTouchscreenEnable);
+	if (gconf_client_get_bool(gcc, key_base, NULL)) {
+		if (count > 0) strcat(description, ", ");
+		strcat(description, _("Touchscreen"));
+		count++;
+	}
+
+	strcpy(key, kGConfPlayerZeemoteEnable);
+	if (gconf_client_get_bool(gcc, key_base, NULL)) {
+		if (count > 0) strcat(description, ", ");
+		strcat(description, _("Zeemote"));
+		count++;
+	}
+
+	if (count == 0) {
+		/* Add some text if there are no enabled controls */
 		strcpy(description, _("Disabled"));
 	}
 

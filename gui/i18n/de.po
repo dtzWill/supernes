@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: drnoksnes\n"
 "Report-Msgid-Bugs-To: maemo@javispedro.com\n"
-"POT-Creation-Date: 2010-03-12 19:39+0100\n"
+"POT-Creation-Date: 2010-03-12 21:28+0100\n"
 "PO-Revision-Date: 2010-02-10 09:17+0100\n"
 "Last-Translator: Philipp Zabel <philipp.zabel@gmail.com>\n"
 "Language-Team: German\n"
@@ -109,56 +109,56 @@ msgstr "Kein ROM ausgewählt"
 msgid "ROM file does not exist"
 msgstr "ROM-Datei existiert nicht"
 
-#: controls.c:172
+#: controls.c:187
 msgid "Keyboard"
 msgstr "Tastatur"
 
-#: controls.c:176
+#: controls.c:194 controls.c:257
+msgid "Touchscreen"
+msgstr "Touchscreen"
+
+#: controls.c:201 controls.c:285
+msgid "Zeemote"
+msgstr "Zeemote"
+
+#: controls.c:207
 msgid "Disabled"
 msgstr "Deaktiviert"
 
-#: controls.c:184
+#: controls.c:215
 #, c-format
 msgid "Player %d controls"
 msgstr "Spieler %d Steuerung"
 
-#: controls.c:207
+#: controls.c:238
 msgid "Keys"
 msgstr "Tasten"
 
-#: controls.c:213 controls.c:297
+#: controls.c:244 controls.c:328
 msgid "Enable keyboard"
 msgstr "Tastatur aktivieren"
 
-#: controls.c:220 controls.c:298
+#: controls.c:251 controls.c:329
 msgid "Configure keys…"
 msgstr "Tastenbelegung..."
 
-#: controls.c:226
-msgid "Touchscreen"
-msgstr "Touchscreen"
-
-#: controls.c:233 controls.c:310
+#: controls.c:264 controls.c:341
 msgid "Enable touchscreen buttons"
 msgstr "Bildschirmtasten aktivieren"
 
-#: controls.c:240 controls.c:312
+#: controls.c:271 controls.c:343
 msgid "Show on-screen button grid"
 msgstr "Tastengitter anzeigen"
 
-#: controls.c:245
+#: controls.c:276
 msgid "Accelerometer"
 msgstr "Beschleunigungssensor"
 
-#: controls.c:249
+#: controls.c:280
 msgid "Wiimote"
 msgstr "Wiimote"
 
-#: controls.c:254
-msgid "Zeemote"
-msgstr "Zeemote"
-
-#: controls.c:260 controls.c:316
+#: controls.c:291 controls.c:347
 msgid "Enable Zeemote joystick"
 msgstr ""
 
