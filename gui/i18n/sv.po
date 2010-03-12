@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: DrNokSnes 1.2.5\n"
 "Report-Msgid-Bugs-To: maemo@javispedro.com\n"
-"POT-Creation-Date: 2010-02-19 16:14+0100\n"
+"POT-Creation-Date: 2010-03-12 19:39+0100\n"
 "PO-Revision-Date: 2010-01-28 05:00+0100\n"
 "Last-Translator: Robert Hägerström <rofo1000@gmail.com>\n"
 "Language-Team: Swedish\n"
@@ -19,146 +19,150 @@ msgstr ""
 msgid "<no rom selected>"
 msgstr "<ingen rom vald>"
 
-#: plugin.c:233
+#: plugin.c:212
 msgid "ROM"
 msgstr "ROM"
 
-#: plugin.c:251
+#: plugin.c:230
 #, fuzzy
 msgid "Select ROM…"
 msgstr "Välj ROM..."
 
-#: plugin.c:268
+#: plugin.c:247
 msgid "Sound"
 msgstr "Ljud"
 
-#: plugin.c:274
+#: plugin.c:253
 msgid "Target framerate"
 msgstr "Mål bildhastighet"
 
-#: plugin.c:291
+#: plugin.c:270
 msgid "Show while in game"
 msgstr "Visa i spelet"
 
-#: plugin.c:295 plugin.c:313
+#: plugin.c:274 plugin.c:292
 msgid "Turbo mode"
 msgstr "Turbo läge"
 
-#: plugin.c:310
+#: plugin.c:289
 msgid "Enable sound"
 msgstr "Aktivera ljud"
 
-#: plugin.c:315
+#: plugin.c:294
 msgid "Display framerate"
 msgstr "Visa bildhastighet"
 
-#: plugin.c:334 settings.c:237
+#: plugin.c:313 settings.c:237
 msgid "Accurate graphics"
 msgstr "Exakt grafik"
 
-#: plugin.c:338
+#: plugin.c:317
 msgid "Framerate:"
 msgstr "Bildhastighet:"
 
-#: plugin.c:347 settings.c:269
+#: plugin.c:326 settings.c:269
 msgid "No speedhacks"
 msgstr "Inga speedhacks"
 
-#: plugin.c:348 settings.c:270
+#: plugin.c:327 settings.c:270
 msgid "Safe hacks only"
 msgstr "Enbart säkra hack"
 
-#: plugin.c:349 settings.c:271
+#: plugin.c:328 settings.c:271
 msgid "All speedhacks"
 msgstr "Alla speedhacks"
 
-#: plugin.c:446
+#: plugin.c:420
 msgid "Settings…"
 msgstr "Inställningar…"
 
-#: plugin.c:448 plugin.c:457
+#: plugin.c:422 plugin.c:431
 msgid "About…"
 msgstr "Om…"
 
-#: plugin.c:456 settings.c:190
+#: plugin.c:430 settings.c:190
 msgid "Settings"
 msgstr "Inställningar"
 
-#: plugin.c:466 settings.c:209
+#: plugin.c:440 settings.c:209
 msgid "Controls"
 msgstr "Kontroller"
 
-#: plugin.c:471
+#: plugin.c:445
 msgid "Advanced…"
 msgstr "Avancerad…"
 
-#: plugin.c:475
+#: plugin.c:449
 #, fuzzy
 msgid "Player 1…"
 msgstr "Spelare 1"
 
-#: plugin.c:478
+#: plugin.c:452
 #, fuzzy
 msgid "Player 2…"
 msgstr "Spelare 2"
 
-#: plugin.c:542
+#: plugin.c:516
 msgid "No ROM selected"
 msgstr "Ingen ROM vald"
 
-#: plugin.c:547
+#: plugin.c:521
 msgid "ROM file does not exist"
 msgstr "ROM-filen existerar inte"
 
-#: controls.c:156
+#: controls.c:172
 msgid "Keyboard"
 msgstr "Tangentbord"
 
-#: controls.c:160
+#: controls.c:176
 msgid "Disabled"
 msgstr "Inaktiverad"
 
-#: controls.c:168
+#: controls.c:184
 #, c-format
 msgid "Player %d controls"
 msgstr "Spelare %d kontroller"
 
-#: controls.c:191
+#: controls.c:207
 msgid "Keys"
 msgstr "tangenter"
 
-#: controls.c:197 controls.c:269
+#: controls.c:213 controls.c:297
 msgid "Enable keyboard"
 msgstr "Aktivera tangentbordet"
 
-#: controls.c:204 controls.c:270
+#: controls.c:220 controls.c:298
 #, fuzzy
 msgid "Configure keys…"
 msgstr "Anpassa tangenter..."
 
-#: controls.c:210
+#: controls.c:226
 msgid "Touchscreen"
 msgstr "Pekskärm"
 
-#: controls.c:217 controls.c:282
+#: controls.c:233 controls.c:310
 msgid "Enable touchscreen buttons"
 msgstr "Aktivera pekskärmsknappar"
 
-#: controls.c:224 controls.c:284
+#: controls.c:240 controls.c:312
 msgid "Show on-screen button grid"
 msgstr "Visa skärmknapparnas rutnät"
 
-#: controls.c:228
+#: controls.c:245
 msgid "Accelerometer"
 msgstr "Accelerometer"
 
-#: controls.c:232
+#: controls.c:249
 msgid "Wiimote"
 msgstr "Wiimote"
 
-#: controls.c:236
+#: controls.c:254
 msgid "Zeemote"
 msgstr "Zeemote"
+
+#: controls.c:260 controls.c:316
+msgid "Enable Zeemote joystick"
+msgstr ""
 
 #: keys.c:266
 #, c-format

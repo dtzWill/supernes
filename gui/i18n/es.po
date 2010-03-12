@@ -5,9 +5,9 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: DrNokSnes 1.3.0\n"
+"Project-Id-Version: DrNokSnes 1.3.1\n"
 "Report-Msgid-Bugs-To: maemo@javispedro.com\n"
-"POT-Creation-Date: 2010-02-19 16:14+0100\n"
+"POT-Creation-Date: 2010-03-12 19:39+0100\n"
 "PO-Revision-Date: 2010-02-08 20:56+0100\n"
 "Last-Translator: Javier <javier@javispedro.com>\n"
 "Language-Team: Spanish <maemo@javispedro.com>\n"
@@ -22,142 +22,146 @@ msgstr ""
 msgid "<no rom selected>"
 msgstr "<sin rom seleccionada>"
 
-#: plugin.c:233
+#: plugin.c:212
 msgid "ROM"
 msgstr "ROM"
 
-#: plugin.c:251
+#: plugin.c:230
 msgid "Select ROM…"
 msgstr "Seleccionar ROM…"
 
-#: plugin.c:268
+#: plugin.c:247
 msgid "Sound"
 msgstr "Sonido"
 
-#: plugin.c:274
+#: plugin.c:253
 msgid "Target framerate"
 msgstr "Velocidad objetivo"
 
-#: plugin.c:291
+#: plugin.c:270
 msgid "Show while in game"
 msgstr "Mostrar durante el juego"
 
-#: plugin.c:295 plugin.c:313
+#: plugin.c:274 plugin.c:292
 msgid "Turbo mode"
 msgstr "Modo Turbo"
 
-#: plugin.c:310
+#: plugin.c:289
 msgid "Enable sound"
 msgstr "Activar sonido"
 
-#: plugin.c:315
+#: plugin.c:294
 msgid "Display framerate"
 msgstr "Mostrar velocidad"
 
-#: plugin.c:334 settings.c:237
+#: plugin.c:313 settings.c:237
 msgid "Accurate graphics"
 msgstr "Mejores gráficos"
 
-#: plugin.c:338
+#: plugin.c:317
 msgid "Framerate:"
 msgstr "Velocidad:"
 
-#: plugin.c:347 settings.c:269
+#: plugin.c:326 settings.c:269
 msgid "No speedhacks"
 msgstr "Sin speedhacks"
 
-#: plugin.c:348 settings.c:270
+#: plugin.c:327 settings.c:270
 msgid "Safe hacks only"
 msgstr "Sólo hacks seguros"
 
-#: plugin.c:349 settings.c:271
+#: plugin.c:328 settings.c:271
 msgid "All speedhacks"
 msgstr "Todos los hacks"
 
-#: plugin.c:446
+#: plugin.c:420
 msgid "Settings…"
 msgstr "Ajustes…"
 
-#: plugin.c:448 plugin.c:457
+#: plugin.c:422 plugin.c:431
 msgid "About…"
 msgstr "Acerca de…"
 
-#: plugin.c:456 settings.c:190
+#: plugin.c:430 settings.c:190
 msgid "Settings"
 msgstr "Ajustes"
 
-#: plugin.c:466 settings.c:209
+#: plugin.c:440 settings.c:209
 msgid "Controls"
 msgstr "Controles"
 
-#: plugin.c:471
+#: plugin.c:445
 msgid "Advanced…"
 msgstr "Avanzados…"
 
-#: plugin.c:475
+#: plugin.c:449
 msgid "Player 1…"
 msgstr "Jugador 1…"
 
-#: plugin.c:478
+#: plugin.c:452
 msgid "Player 2…"
 msgstr "Jugador 2…"
 
-#: plugin.c:542
+#: plugin.c:516
 msgid "No ROM selected"
 msgstr "Sin ROM seleccionada"
 
-#: plugin.c:547
+#: plugin.c:521
 msgid "ROM file does not exist"
 msgstr "El archivo ROM no existe"
 
-#: controls.c:156
+#: controls.c:172
 msgid "Keyboard"
 msgstr "Teclado"
 
-#: controls.c:160
+#: controls.c:176
 msgid "Disabled"
 msgstr "Desactivado"
 
-#: controls.c:168
+#: controls.c:184
 #, c-format
 msgid "Player %d controls"
 msgstr "Controles del jugador %d"
 
-#: controls.c:191
+#: controls.c:207
 msgid "Keys"
 msgstr "Teclas"
 
-#: controls.c:197 controls.c:269
+#: controls.c:213 controls.c:297
 msgid "Enable keyboard"
 msgstr "Activar teclado"
 
-#: controls.c:204 controls.c:270
+#: controls.c:220 controls.c:298
 msgid "Configure keys…"
 msgstr "Configurar teclas…"
 
-#: controls.c:210
+#: controls.c:226
 msgid "Touchscreen"
 msgstr "Pantalla táctil"
 
-#: controls.c:217 controls.c:282
+#: controls.c:233 controls.c:310
 msgid "Enable touchscreen buttons"
 msgstr "Activar controles en pantalla"
 
-#: controls.c:224 controls.c:284
+#: controls.c:240 controls.c:312
 msgid "Show on-screen button grid"
 msgstr "Mostrar controles en pantalla"
 
-#: controls.c:228
+#: controls.c:245
 msgid "Accelerometer"
 msgstr "Accelerómetro"
 
-#: controls.c:232
+#: controls.c:249
 msgid "Wiimote"
 msgstr "Wiimote"
 
-#: controls.c:236
+#: controls.c:254
 msgid "Zeemote"
 msgstr "Zeemote"
+
+#: controls.c:260 controls.c:316
+msgid "Enable Zeemote joystick"
+msgstr "Activar Zeemote"
 
 #: keys.c:266
 #, c-format
@@ -244,5 +248,3 @@ msgstr "Carga rápida 2"
 msgid "Quick Save 2"
 msgstr "Guardado rápido 2"
 
-#~ msgid "Controls…"
-#~ msgstr "Controles…"
