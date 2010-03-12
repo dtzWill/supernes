@@ -31,11 +31,6 @@ void S9xMessage(int type, int number, const char * message)
 	printf("%s\n", message);
 }
 
-void S9xLoadSDD1Data()
-{TRACE
-	Settings.SDD1Pack=FALSE;
-}
-
 void S9xAutoSaveSRAM()
 {
 	Memory.SaveSRAM(S9xGetFilename(FILE_SRAM));

@@ -38,15 +38,155 @@
  * Super NES and Super Nintendo Entertainment System are trademarks of
  * Nintendo Co., Limited and its subsidiary companies.
  */
+
+#include <stdio.h>
+#include <dirent.h>
+
 #include "snes9x.h"
 #include "memmap.h"
 #include "ppu.h"
 #include "sdd1.h"
 #include "display.h"
 
-#ifdef __linux
-//#include <unistd.h>
+static int S9xCompareSDD1IndexEntries (const void *p1, const void *p2)
+{
+    return (*(uint32 *) p1 - *(uint32 *) p2);
+}
+
+static int S9xGetSDD1Dir(char * packdir)
+{
+	char dir[_MAX_DIR + 1];
+	char drive[_MAX_DRIVE + 1];
+	char name[_MAX_FNAME + 1];
+	char ext[_MAX_EXT + 1];
+
+	PathSplit(S9xGetFilename(FILE_ROM), drive, dir, name, ext);
+
+	if (strncmp(Memory.ROMName, "Star Ocean", 10) == 0) {
+        PathMake(packdir, drive, dir, "socnsdd1", 0);
+        return 1;
+	} else if(strncmp(Memory.ROMName, "STREET FIGHTER ALPHA2", 21) == 0) {
+		PathMake(packdir, drive, dir, "sfa2sdd1", 0);
+		return 1;
+	} else {
+		S9xMessage(S9X_WARNING, S9X_ROM_INFO,
+			"WARNING: No default SDD1 pack for this ROM");
+		return 0;
+	}
+}
+
+void S9xLoadSDD1Data ()
+{
+	char packdir[_MAX_PATH + 1];
+
+	// Unload any previous pack
+	Settings.SDD1Pack = FALSE;
+	Memory.FreeSDD1Data();
+
+	if (!S9xGetSDD1Dir(packdir)) {
+		printf("SDD1: Didn't found pack for this ROM\n");
+		return;
+	}
+
+	printf("SDD1: Searching for pack in %s\n", packdir);
+	Settings.SDD1Pack=TRUE;
+
+	char index[_MAX_PATH + 1];
+	char data[_MAX_PATH + 1];
+	char patch[_MAX_PATH + 1];
+	DIR *dir = opendir(packdir);
+
+	index[0] = 0;
+	data[0] = 0;
+	patch[0] = 0;
+
+	if (dir) {
+		struct dirent *d;
+
+		while ((d = readdir (dir))) {
+			if (strcasecmp (d->d_name, "SDD1GFX.IDX") == 0) {
+				strcpy(index, packdir);
+				strcat(index, "/");
+				strcat(index, d->d_name);
+			} else if (strcasecmp (d->d_name, "SDD1GFX.DAT") == 0) {
+				strcpy(data, packdir);
+				strcat(data, "/");
+				strcat(data, d->d_name);
+			} else if (strcasecmp (d->d_name, "SDD1GFX.PAT") == 0) {
+				strcpy(patch, packdir);
+				strcat(patch, "/");
+				strcat(patch, d->d_name);
+			}
+		}
+		closedir (dir);
+	}
+
+	if (strlen (index) && strlen (data)) {
+		FILE *fs = fopen (index, "rb");
+		int len = 0;
+
+		if (fs)	{
+			// Index is stored as a sequence of entries, each entry being
+			// 12 bytes consisting of:
+			// 4 byte key: (24bit address & 0xfffff * 16) | translated block
+			// 4 byte ROM offset
+			// 4 byte length
+
+			fseek (fs, 0, SEEK_END);
+			len = ftell (fs);
+			rewind (fs);
+			Memory.SDD1Index = (uint8 *) malloc (len);
+			fread (Memory.SDD1Index, 1, len, fs);
+			fclose (fs);
+			Memory.SDD1Entries = len / 12;
+		} else {
+			fprintf(stderr, "Failed to read SDD1 index file %s\n", index);
+			return;
+		}
+		printf("SDD1: index: %s\n", PathBasename(index));
+
+		if (!(fs = fopen (data, "rb")))	{
+			fprintf(stderr, "Failed to read SDD1 data file %s\n", data);
+			free ((char *) Memory.SDD1Index);
+			Memory.SDD1Index = NULL;
+			Memory.SDD1Entries = 0;
+			return;
+		} else {
+			fseek (fs, 0, SEEK_END);
+			len = ftell (fs);
+			rewind (fs);
+			Memory.SDD1Data = (uint8 *) malloc (len);
+			fread (Memory.SDD1Data, 1, len, fs);
+			fclose (fs);
+		}
+		printf("SDD1: data pack: %s\n", PathBasename(data));
+
+		if (strlen (patch) > 0 && (fs = fopen (patch, "rb"))) {
+			fclose (fs);
+		}
+
+#ifdef MSB_FIRST
+		// Swap the byte order of the 32-bit value triplets on
+		// MSBFirst machines.
+		uint8 *ptr = Memory.SDD1Index;
+		for (int i = 0; i < Memory.SDD1Entries; i++, ptr += 12) 	{
+			SWAP_DWORD ((*(uint32 *) (ptr + 0)));
+			SWAP_DWORD ((*(uint32 *) (ptr + 4)));
+			SWAP_DWORD ((*(uint32 *) (ptr + 8)));
+		}
 #endif
+
+		qsort(Memory.SDD1Index, Memory.SDD1Entries, 12,
+			S9xCompareSDD1IndexEntries);
+		printf("SDD1: Pack loaded succesfully\n", data);
+	} else {
+		fprintf(stderr, "SDD1: SDD1 data pack not found in '%s'\n",
+			packdir);
+		fprintf(stderr, "SDD1: Check if sdd1gfx files exist\n",
+			packdir);
+		printf("SDD1: Failed to load pack\n", data);
+	}
+}
 
 void S9xSetSDD1MemoryMap (uint32 bank, uint32 value)
 {
