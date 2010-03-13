@@ -5,9 +5,9 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: DrNokSnes 1.3.1\n"
+"Project-Id-Version: DrNokSnes 1.3.2\n"
 "Report-Msgid-Bugs-To: maemo@javispedro.com\n"
-"POT-Creation-Date: 2010-03-12 21:28+0100\n"
+"POT-Creation-Date: 2010-03-13 16:06+0100\n"
 "PO-Revision-Date: 2010-02-08 20:56+0100\n"
 "Last-Translator: Javier <javier@javispedro.com>\n"
 "Language-Team: Spanish <maemo@javispedro.com>\n"
@@ -171,6 +171,14 @@ msgstr "Teclas del jugador %d"
 #: keys.c:269
 msgid "Defaults"
 msgstr "Por defecto"
+
+#: keys.c:292
+msgid "Button"
+msgstr "Botón"
+
+#: keys.c:301
+msgid "Key"
+msgstr "Tecla"
 
 #: settings.c:51 settings.c:58 settings.c:60
 msgid "2x zoom"

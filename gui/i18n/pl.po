@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: drnoksnes\n"
 "Report-Msgid-Bugs-To: maemo@javispedro.com\n"
-"POT-Creation-Date: 2010-03-12 21:28+0100\n"
+"POT-Creation-Date: 2010-03-13 16:06+0100\n"
 "PO-Revision-Date: 2010-02-16 23:12+0100\n"
 "Last-Translator: Tomasz Dominikowski <dominikowski@gmail.com>\n"
 "Language-Team: Polish <dominikowski@gmail.com>\n"
@@ -170,6 +170,15 @@ msgstr "Klawisze gracza %d"
 #: keys.c:269
 msgid "Defaults"
 msgstr "Domyślne"
+
+#: keys.c:292
+msgid "Button"
+msgstr ""
+
+#: keys.c:301
+#, fuzzy
+msgid "Key"
+msgstr "Klawisze"
 
 #: settings.c:51 settings.c:58 settings.c:60
 msgid "2x zoom"
