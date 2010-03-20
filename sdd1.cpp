@@ -178,13 +178,12 @@ void S9xLoadSDD1Data ()
 
 		qsort(Memory.SDD1Index, Memory.SDD1Entries, 12,
 			S9xCompareSDD1IndexEntries);
-		printf("SDD1: Pack loaded succesfully\n", data);
+		printf("SDD1: Pack loaded succesfully\n");
 	} else {
 		fprintf(stderr, "SDD1: SDD1 data pack not found in '%s'\n",
 			packdir);
-		fprintf(stderr, "SDD1: Check if sdd1gfx files exist\n",
-			packdir);
-		printf("SDD1: Failed to load pack\n", data);
+		fprintf(stderr, "SDD1: Check if sdd1gfx files exist\n");
+		printf("SDD1: Failed to load pack\n");
 	}
 }
 
