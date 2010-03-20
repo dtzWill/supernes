@@ -41,6 +41,7 @@ static void loadSafeKeymap();
 static void loadPlayer1Keymap(GConfClient* gcc);
 static void loadPlayer2Keymap(GConfClient* gcc);
 
+/** The dbus application service callback. Usually called by the launcher only. */
 static gint ossoAppCallback(const gchar *interface, const gchar *method,
   GArray *arguments, gpointer data, osso_rpc_t *retval)
 {
