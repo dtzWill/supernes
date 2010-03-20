@@ -279,8 +279,8 @@ STATIC INLINE uint8 REGISTER_4212()
 
 STATIC INLINE void FLUSH_REDRAW ()
 {
-    if (IPPU.PreviousLine != IPPU.CurrentLine)
-	S9xUpdateScreen ();
+	if (IPPU.PreviousLine != IPPU.CurrentLine)
+		S9xUpdateScreen();
 }
 
 STATIC INLINE void REGISTER_2104 (uint8 byte)
