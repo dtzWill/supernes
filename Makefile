@@ -128,7 +128,11 @@ clean: gui_clean
 install: gui_install
 endif
 
-distclean: clean
+profclean: clean
+	find . -name '*.gcno' -delete
+	find . -name '*.gcda' -delete
+
+distclean: profclean clean
 	rm -f config.mk
 
 .PHONY: all clean remake deps install gui gui_clean distclean
