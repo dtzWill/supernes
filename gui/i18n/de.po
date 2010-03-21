@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: drnoksnes\n"
 "Report-Msgid-Bugs-To: maemo@javispedro.com\n"
-"POT-Creation-Date: 2010-03-13 16:06+0100\n"
+"POT-Creation-Date: 2010-03-21 16:14+0100\n"
 "PO-Revision-Date: 2010-02-10 09:17+0100\n"
 "Last-Translator: Philipp Zabel <philipp.zabel@gmail.com>\n"
 "Language-Team: German\n"
@@ -142,11 +142,11 @@ msgstr "Tastatur aktivieren"
 msgid "Configure keys…"
 msgstr "Tastenbelegung..."
 
-#: controls.c:264 controls.c:341
+#: controls.c:264 controls.c:340
 msgid "Enable touchscreen buttons"
 msgstr "Bildschirmtasten aktivieren"
 
-#: controls.c:271 controls.c:343
+#: controls.c:271 controls.c:342
 msgid "Show on-screen button grid"
 msgstr "Tastengitter anzeigen"
 
@@ -158,7 +158,7 @@ msgstr "Beschleunigungssensor"
 msgid "Wiimote"
 msgstr "Wiimote"
 
-#: controls.c:291 controls.c:347
+#: controls.c:291 controls.c:349
 msgid "Enable Zeemote joystick"
 msgstr ""
 

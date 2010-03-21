@@ -334,7 +334,6 @@ void controls_dialog(GtkWindow* parent, int player)
 	gtk_box_pack_start_defaults(keys_box, GTK_WIDGET(keys_btn));
 
 	GtkWidget* sep_1 = GTK_WIDGET(gtk_hseparator_new());
-
 	GtkBox* touch_box = GTK_BOX(gtk_vbox_new(FALSE, HILDON_MARGIN_HALF));
 
 	touch_chk = GTK_CHECK_BUTTON(gtk_check_button_new_with_label(
@@ -342,12 +341,12 @@ void controls_dialog(GtkWindow* parent, int player)
 	touch_show_chk = GTK_CHECK_BUTTON(gtk_check_button_new_with_label(
 		_("Show on-screen button grid")));
 
-	GtkWidget* sep_2 = GTK_WIDGET(gtk_hseparator_new());
-	touch_show_chk = GTK_CHECK_BUTTON(gtk_check_button_new_with_label(
-		_("Enable Zeemote joystick")));
-
 	gtk_box_pack_start_defaults(touch_box, GTK_WIDGET(touch_chk));
 	gtk_box_pack_start_defaults(touch_box, GTK_WIDGET(touch_show_chk));
+
+	GtkWidget* sep_2 = GTK_WIDGET(gtk_hseparator_new());
+	zeemote_chk = GTK_CHECK_BUTTON(gtk_check_button_new_with_label(
+		_("Enable Zeemote joystick")));
 
 	gtk_box_pack_start_defaults(GTK_BOX(dialog->vbox), GTK_WIDGET(keys_box));
 	gtk_box_pack_start_defaults(GTK_BOX(dialog->vbox), sep_1);
@@ -361,7 +360,7 @@ void controls_dialog(GtkWindow* parent, int player)
 #if MAEMO_VERSION >= 5
 	gtk_window_resize(GTK_WINDOW(dialog), 800, 360);
 #else
-	gtk_window_resize(GTK_WINDOW(dialog), 400, 200);
+	gtk_window_resize(GTK_WINDOW(dialog), 450, 250);
 #endif
 
 	g_signal_connect(G_OBJECT(dialog), "response",

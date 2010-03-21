@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: DrNokSnes 1.2.5\n"
 "Report-Msgid-Bugs-To: maemo@javispedro.com\n"
-"POT-Creation-Date: 2010-03-13 16:06+0100\n"
+"POT-Creation-Date: 2010-03-21 16:14+0100\n"
 "PO-Revision-Date: 2010-01-28 05:00+0100\n"
 "Last-Translator: Robert Hägerström <rofo1000@gmail.com>\n"
 "Language-Team: Swedish\n"
@@ -144,11 +144,11 @@ msgstr "Aktivera tangentbordet"
 msgid "Configure keys…"
 msgstr "Anpassa tangenter..."
 
-#: controls.c:264 controls.c:341
+#: controls.c:264 controls.c:340
 msgid "Enable touchscreen buttons"
 msgstr "Aktivera pekskärmsknappar"
 
-#: controls.c:271 controls.c:343
+#: controls.c:271 controls.c:342
 msgid "Show on-screen button grid"
 msgstr "Visa skärmknapparnas rutnät"
 
@@ -160,7 +160,7 @@ msgstr "Accelerometer"
 msgid "Wiimote"
 msgstr "Wiimote"
 
-#: controls.c:291 controls.c:347
+#: controls.c:291 controls.c:349
 msgid "Enable Zeemote joystick"
 msgstr ""
 
