@@ -81,14 +81,18 @@ void ZeeInit()
 	if (enabled[0] && scan_result->number_of_devices > 0) {
 		players[0].zeemote =
 			zeemote_connect(&scan_result->device[0].bdaddr);
-		if (!players[0].zeemote) {
+		if (players[0].zeemote) {
+			Config.joypad1Enabled = true;
+		} else {
 			fprintf(stderr, "Zeemote: Failed to connect for player %d", 1);
 		}
 	}
 	if (enabled[1] && scan_result->number_of_devices > 1) {
 		players[1].zeemote =
 			zeemote_connect(&scan_result->device[1].bdaddr);
-		if (!players[1].zeemote) {
+		if (players[1].zeemote) {
+			Config.joypad2Enabled = true;
+		} else {
 			fprintf(stderr, "Zeemote: Failed to connect for player %d", 2);
 		}
 	}

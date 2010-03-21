@@ -245,6 +245,10 @@ void S9xInitInputDevices()
 	mouse.enabled = false;
 	mouse.pressed = false;
 
+#if CONF_ZEEMOTE
+	ZeeInit();
+#endif
+
 	if (Config.joypad1Enabled) {
 		joypads[0] = 0x80000000UL;
 	}
@@ -266,24 +270,20 @@ void S9xInitInputDevices()
 	}
 	printf("\n");
 
-#if CONF_ZEEMOTE
-	ZeeInit();
-#endif
-
-	// TODO Non-awful mouse support, Superscope
+	// TODO Non-awful mouse & superscope support
 
 	S9xInputScreenChanged();
 }
 
 void S9xDeinitInputDevices()
 {
+#if CONF_ZEEMOTE
+	ZeeQuit();
+#endif
 	joypads[0] = 0;
 	joypads[1] = 0;
 	mouse.enabled = false;
 	mouse.pressed = false;
-#if CONF_ZEEMOTE
-	ZeeQuit();
-#endif
 }
 
 void S9xInputScreenChanged()
