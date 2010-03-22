@@ -14,10 +14,13 @@
 #include "soundux.h"
 #include "hacks.h"
 #include "snapshot.h"
-#include "osso.h"
 
 #define kPollEveryNFrames		5		//Poll input only every this many frames
+
+#if CONF_GUI
+#include "osso.h"
 #define kPollOssoEveryNFrames	10		//Poll dbus only every this many frames
+#endif
 
 #define TRACE printf("trace: %s:%s\n", __FILE__, __func__);
 #define DIE(format, ...) do { \
