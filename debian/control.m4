@@ -17,8 +17,7 @@ ifelse(eval(MAEMO_MAJOR < 5), 1, `Pre-Depends: maemo-select-menu-location', `dnl
 Description: Super Nintendo Entertainment System emulator
  A Super NES emulator. It allows you to play some games designed for the SNES
  and Super Famicom Nintendo game systems on your tablet.
-XSBC-Bugtracker: 
- https://garage.maemo.org/tracker/?func=add&group_id=1014&atid=3790
+XSBC-Bugtracker: https://garage.maemo.org/tracker/?func=add&group_id=1014&atid=3790
 XB-Maemo-Display-Name: DrNokSnes
 XB-Maemo-Icon-26:
 ifelse(eval(MAEMO_MAJOR < 5), 1, `dnl
