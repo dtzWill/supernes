@@ -47,14 +47,18 @@ static HildonCheckButton* keys_chk;
 static HildonButton* keys_btn;
 static HildonCheckButton* touch_chk;
 static HildonCheckButton* touch_show_chk;
+#if CONF_ZEEMOTE
 static HildonCheckButton* zeemote_chk;
-#else
+#endif
+#else /* MAEMO_VERSION < 5 */
 static GtkCheckButton* keys_chk;
 static GtkButton* keys_btn;
 static GtkCheckButton* touch_chk;
 static GtkCheckButton* touch_show_chk;
+#if CONF_ZEEMOTE
 static GtkCheckButton* zeemote_chk;
 #endif
+#endif /* MAEMO_VERSION */
 
 static void load_settings()
 {
@@ -76,11 +80,12 @@ static void load_settings()
 	hildon_check_button_set_active(touch_show_chk,
 		gconf_client_get_bool(gcc, key_base, NULL));
 
-	// Zeemote
+#if CONF_ZEEMOTE
 	strcpy(key, kGConfPlayerZeemoteEnable);
 	hildon_check_button_set_active(zeemote_chk,
 		gconf_client_get_bool(gcc, key_base, NULL));
-#else
+#endif
+#else /* MAEMO_VERSION < 5 */
 	// Keyboard
 	strcpy(key, kGConfPlayerKeyboardEnable);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(keys_chk),
@@ -94,11 +99,12 @@ static void load_settings()
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(touch_show_chk),
 		gconf_client_get_bool(gcc, key_base, NULL));
 
-	// Zeemote
+#if CONF_ZEEMOTE
 	strcpy(key, kGConfPlayerZeemoteEnable);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(zeemote_chk),
 		gconf_client_get_bool(gcc, key_base, NULL));
 #endif
+#endif /* MAEMO_VERSION */
 }
 
 static void save_settings()
@@ -121,10 +127,11 @@ static void save_settings()
 	gconf_client_set_bool(gcc, key_base,
 		hildon_check_button_get_active(touch_show_chk), NULL);
 
-	// Zeemote
+#if CONF_ZEEMOTE
 	strcpy(key, kGConfPlayerZeemoteEnable);
 	gconf_client_set_bool(gcc, key_base,
 		hildon_check_button_get_active(zeemote_chk), NULL);
+#endif
 #else /* MAEMO_VERSION < 5 */
 	// Keyboard
 	strcpy(key, kGConfPlayerKeyboardEnable);
@@ -139,11 +146,12 @@ static void save_settings()
 	gconf_client_set_bool(gcc, key_base,
 		gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(touch_show_chk)), NULL);
 
-	// Zeemote
+#if CONF_ZEEMOTE
 	strcpy(key, kGConfPlayerZeemoteEnable);
 	gconf_client_set_bool(gcc, key_base,
 		gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(zeemote_chk)), NULL);
 #endif
+#endif /* MAEMO_VERSION */
 }
 
 static void keys_btn_callback(GtkWidget * button, gpointer data)
@@ -195,12 +203,14 @@ gchar* controls_describe(int player)
 		count++;
 	}
 
+#if CONF_ZEEMOTE
 	strcpy(key, kGConfPlayerZeemoteEnable);
 	if (gconf_client_get_bool(gcc, key_base, NULL)) {
 		if (count > 0) strcat(description, ", ");
 		strcat(description, _("Zeemote"));
 		count++;
 	}
+#endif
 
 	if (count == 0) {
 		/* Add some text if there are no enabled controls */
@@ -281,7 +291,7 @@ void controls_dialog(GtkWindow* parent, int player)
 	gtk_label_set_attributes(separator_4, pattrlist);
 	gtk_label_set_justify(separator_4, GTK_JUSTIFY_CENTER);
 #endif
-
+#if CONF_ZEEMOTE
 	GtkLabel* separator_5 = GTK_LABEL(gtk_label_new(_("Zeemote")));
 	gtk_label_set_attributes(separator_5, pattrlist);
 	gtk_label_set_justify(separator_5, GTK_JUSTIFY_CENTER);
@@ -291,7 +301,7 @@ void controls_dialog(GtkWindow* parent, int player)
 	gtk_button_set_label(GTK_BUTTON(zeemote_chk), _("Enable Zeemote joystick"));
 	set_button_layout(HILDON_BUTTON(zeemote_chk),
 		titles_size_group, values_size_group);
-
+#endif
 	gtk_box_pack_start(box, GTK_WIDGET(separator_1),
 		FALSE, FALSE, HILDON_MARGIN_HALF);
 	gtk_box_pack_start(box, GTK_WIDGET(keys_chk),
@@ -310,10 +320,12 @@ void controls_dialog(GtkWindow* parent, int player)
 	gtk_box_pack_start(box, GTK_WIDGET(separator_4),
 		FALSE, FALSE, HILDON_MARGIN_HALF);
 #endif
+#if CONF_ZEEMOTE
 	gtk_box_pack_start(box, GTK_WIDGET(separator_5),
 		FALSE, FALSE, HILDON_MARGIN_HALF);
 	gtk_box_pack_start(box, GTK_WIDGET(zeemote_chk),
 		FALSE, FALSE, 0);
+#endif
 
 	hildon_pannable_area_add_with_viewport(pannable, GTK_WIDGET(box));
 	gtk_box_pack_start_defaults(GTK_BOX(dialog->vbox), GTK_WIDGET(pannable));
@@ -344,16 +356,20 @@ void controls_dialog(GtkWindow* parent, int player)
 	gtk_box_pack_start_defaults(touch_box, GTK_WIDGET(touch_chk));
 	gtk_box_pack_start_defaults(touch_box, GTK_WIDGET(touch_show_chk));
 
+#if CONF_ZEEMOTE
 	GtkWidget* sep_2 = GTK_WIDGET(gtk_hseparator_new());
 	zeemote_chk = GTK_CHECK_BUTTON(gtk_check_button_new_with_label(
 		_("Enable Zeemote joystick")));
+#endif
 
 	gtk_box_pack_start_defaults(GTK_BOX(dialog->vbox), GTK_WIDGET(keys_box));
 	gtk_box_pack_start_defaults(GTK_BOX(dialog->vbox), sep_1);
 	gtk_box_pack_start_defaults(GTK_BOX(dialog->vbox), GTK_WIDGET(touch_box));
+#if CONF_ZEEMOTE
 	gtk_box_pack_start_defaults(GTK_BOX(dialog->vbox), sep_2);
 	gtk_box_pack_start_defaults(GTK_BOX(dialog->vbox), GTK_WIDGET(zeemote_chk));
 #endif
+#endif /* MAEMO_VERSION */
 
 	load_settings();
 

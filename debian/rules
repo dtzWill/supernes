@@ -80,7 +80,6 @@ ifeq ($(shell expr "$(MAEMO_VERSION)" ">" 4), 1)
 else
 	echo CONF_XSP=1 >> config.mk
 endif
-	echo CONF_ZEEMOTE=1 >> config.mk
 	echo ASFLAGS="$(ASFLAGS)" >> config.mk
 	echo CFLAGS="$(CFLAGS)" >> config.mk
 	echo CXXFLAGS="$(CXXFLAGS)" >> config.mk
