@@ -42,7 +42,7 @@ extern SDL_Surface* screen;
 /** The current scaler object */
 extern Scaler* scaler;
 
-void processVideoEvent(const SDL_Event& event);
+bool videoEventFilter(const SDL_Event& event);
 
 #if CONF_EXIT_BUTTON
 void ExitBtnReset();

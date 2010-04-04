@@ -207,7 +207,7 @@ void S9xVideoToggleFullscreen()
 	drawOnscreenControls();
 }
 
-void processVideoEvent(const SDL_Event& event)
+bool videoEventFilter(const SDL_Event& event)
 {
 	// If we're in power save mode, and this is a defocus event, quit.
 	if (Config.saver) {
@@ -215,13 +215,15 @@ void processVideoEvent(const SDL_Event& event)
 		   (event.active.state & SDL_APPINPUTFOCUS) &&
 		   !event.active.gain) {
 			S9xDoAction(kActionQuit);
-			return;
+			return true;
 		}
 	}
 
 	// Forward video event to the active scaler, if any.
 	if (scaler)
-		scaler->filter(event);
+		return scaler->filter(event);
+	else
+		return false;
 }
 
 // This is here for completeness, but palette mode is mostly useless (slow).

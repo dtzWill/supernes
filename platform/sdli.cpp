@@ -142,6 +142,8 @@ static void processMouse(unsigned int x, unsigned int y, int pressed = 0)
 
 static void processEvent(const SDL_Event& event)
 {
+	if (videoEventFilter(event)) return;
+
 	switch (event.type) 
 	{
 		case SDL_KEYDOWN:
@@ -164,10 +166,6 @@ static void processEvent(const SDL_Event& event)
 			break;
 		case SDL_QUIT:
 			Config.quitting = true;
-			break;
-		case SDL_ACTIVEEVENT:
-		case SDL_SYSWMEVENT:
-			processVideoEvent(event);
 			break;
 	}
 }
