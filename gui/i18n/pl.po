@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: drnoksnes\n"
 "Report-Msgid-Bugs-To: maemo@javispedro.com\n"
-"POT-Creation-Date: 2010-03-21 16:16+0100\n"
+"POT-Creation-Date: 2010-04-03 17:58+0200\n"
 "PO-Revision-Date: 2010-03-29 13:46+0100\n"
 "Last-Translator: Tomasz Dominikowski <dominikowski@gmail.com>\n"
 "Language-Team: Polish <dominikowski@gmail.com>\n"
@@ -41,8 +41,7 @@ msgstr "Docel. liczba kl./s"
 msgid "Show while in game"
 msgstr "Wyświetlaj podczas gry"
 
-#: plugin.c:274
-#: plugin.c:292
+#: plugin.c:274 plugin.c:292
 msgid "Turbo mode"
 msgstr "Tryb Turbo"
 
@@ -54,8 +53,7 @@ msgstr "Włącz dźwięk"
 msgid "Display framerate"
 msgstr "Wyświetlaj liczbę klatek/s"
 
-#: plugin.c:313
-#: settings.c:237
+#: plugin.c:313 settings.c:237
 msgid "Accurate graphics"
 msgstr "Dokładna grafika"
 
@@ -63,18 +61,15 @@ msgstr "Dokładna grafika"
 msgid "Framerate:"
 msgstr "Klatek/s:"
 
-#: plugin.c:326
-#: settings.c:269
+#: plugin.c:326 settings.c:269
 msgid "No speedhacks"
 msgstr "Bez sztuczek z prędkością"
 
-#: plugin.c:327
-#: settings.c:270
+#: plugin.c:327 settings.c:270
 msgid "Safe hacks only"
 msgstr "Tylko bezpieczne sztuczki"
 
-#: plugin.c:328
-#: settings.c:271
+#: plugin.c:328 settings.c:271
 msgid "All speedhacks"
 msgstr "Wszystkie sztuczki z prędkością"
 
@@ -82,18 +77,15 @@ msgstr "Wszystkie sztuczki z prędkością"
 msgid "Settings…"
 msgstr "Ustawienia..."
 
-#: plugin.c:422
-#: plugin.c:431
+#: plugin.c:422 plugin.c:431
 msgid "About…"
 msgstr "O programie..."
 
-#: plugin.c:430
-#: settings.c:190
+#: plugin.c:430 settings.c:190
 msgid "Settings"
 msgstr "Ustawienia"
 
-#: plugin.c:440
-#: settings.c:209
+#: plugin.c:440 settings.c:209
 msgid "Controls"
 msgstr "Sterowanie"
 
@@ -121,13 +113,11 @@ msgstr "Plik ROM nie istnieje"
 msgid "Keyboard"
 msgstr "Klawiatura"
 
-#: controls.c:194
-#: controls.c:257
+#: controls.c:202 controls.c:267
 msgid "Touchscreen"
 msgstr "Ekran dotykowy"
 
-#: controls.c:201
-#: controls.c:285
+#: controls.c:210 controls.c:295
 msgid "Zeemote"
 msgstr "Zeemote"
 
@@ -144,23 +134,19 @@ msgstr "Gracz %d steruje"
 msgid "Keys"
 msgstr "Klawisze"
 
-#: controls.c:244
-#: controls.c:328
+#: controls.c:254 controls.c:340
 msgid "Enable keyboard"
 msgstr "Włącz klawiaturę"
 
-#: controls.c:251
-#: controls.c:329
+#: controls.c:261 controls.c:341
 msgid "Configure keys…"
 msgstr "Skonfiguruj klawisze..."
 
-#: controls.c:264
-#: controls.c:340
+#: controls.c:274 controls.c:352
 msgid "Enable touchscreen buttons"
 msgstr "Włącz przyciski ekranu dotyk."
 
-#: controls.c:271
-#: controls.c:342
+#: controls.c:281 controls.c:354
 msgid "Show on-screen button grid"
 msgstr "Wyświetlaj siatkę ekranową"
 
@@ -172,8 +158,7 @@ msgstr "Akcelerometr"
 msgid "Wiimote"
 msgstr "Wiimote"
 
-#: controls.c:291
-#: controls.c:349
+#: controls.c:301 controls.c:362
 msgid "Enable Zeemote joystick"
 msgstr "Włącz joystick Zeemote"
 
@@ -194,9 +179,7 @@ msgstr "Przycisk"
 msgid "Key"
 msgstr "Klawisz"
 
-#: settings.c:51
-#: settings.c:58
-#: settings.c:60
+#: settings.c:51 settings.c:58 settings.c:60
 msgid "2x zoom"
 msgstr "2x przybliżenie"
 
@@ -228,13 +211,11 @@ msgstr "Gracz 2"
 msgid "Advanced"
 msgstr "Zaawansowane"
 
-#: settings.c:244
-#: settings.c:309
+#: settings.c:244 settings.c:309
 msgid "Pause game in the background"
 msgstr "Wstrzymaj grę w tle"
 
-#: settings.c:251
-#: settings.c:304
+#: settings.c:251 settings.c:304
 msgid "Zoom"
 msgstr "Przybliżenie"
 

@@ -255,6 +255,3 @@ msgstr "Schnell laden 2"
 #: buttons.inc:27
 msgid "Quick Save 2"
 msgstr "Schnell speichern 2"
-
-#~ msgid "Controls…"
-#~ msgstr "Steuerung..."

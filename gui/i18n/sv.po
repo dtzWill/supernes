@@ -2,12 +2,12 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the DrNokSnes package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-# 
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: DrNokSnes 1.2.5\n"
 "Report-Msgid-Bugs-To: maemo@javispedro.com\n"
-"POT-Creation-Date: 2010-03-21 16:16+0100\n"
+"POT-Creation-Date: 2010-04-03 17:58+0200\n"
 "PO-Revision-Date: 2010-01-28 05:00+0100\n"
 "Last-Translator: Robert Hägerström <rofo1000@gmail.com>\n"
 "Language-Team: Swedish\n"
@@ -107,56 +107,56 @@ msgstr "Ingen ROM vald"
 msgid "ROM file does not exist"
 msgstr "ROM-filen existerar inte"
 
-#: controls.c:187
+#: controls.c:195
 msgid "Keyboard"
 msgstr "Tangentbord"
 
-#: controls.c:194 controls.c:257
+#: controls.c:202 controls.c:267
 msgid "Touchscreen"
 msgstr "Pekskärm"
 
-#: controls.c:201 controls.c:285
+#: controls.c:210 controls.c:295
 msgid "Zeemote"
 msgstr "Zeemote"
 
-#: controls.c:207
+#: controls.c:217
 msgid "Disabled"
 msgstr "Inaktiverad"
 
-#: controls.c:215
+#: controls.c:225
 #, c-format
 msgid "Player %d controls"
 msgstr "Spelare %d kontroller"
 
-#: controls.c:238
+#: controls.c:248
 msgid "Keys"
 msgstr "tangenter"
 
-#: controls.c:244 controls.c:328
+#: controls.c:254 controls.c:340
 msgid "Enable keyboard"
 msgstr "Aktivera tangentbordet"
 
-#: controls.c:251 controls.c:329
+#: controls.c:261 controls.c:341
 msgid "Configure keys…"
 msgstr "Anpassa tangenter..."
 
-#: controls.c:264 controls.c:340
+#: controls.c:274 controls.c:352
 msgid "Enable touchscreen buttons"
 msgstr "Aktivera pekskärmsknappar"
 
-#: controls.c:271 controls.c:342
+#: controls.c:281 controls.c:354
 msgid "Show on-screen button grid"
 msgstr "Visa skärmknapparnas rutnät"
 
-#: controls.c:276
+#: controls.c:286
 msgid "Accelerometer"
 msgstr "Accelerometer"
 
-#: controls.c:280
+#: controls.c:290
 msgid "Wiimote"
 msgstr "Wiimote"
 
-#: controls.c:291 controls.c:349
+#: controls.c:301 controls.c:362
 msgid "Enable Zeemote joystick"
 msgstr "Aktivera Zeemote kontrollen"
 
@@ -252,6 +252,3 @@ msgstr "Snabbladda 2"
 #: buttons.inc:27
 msgid "Quick Save 2"
 msgstr "Snabbspara 2"
-
-#~ msgid "Controls…"
-#~ msgstr "Kontroller…"
