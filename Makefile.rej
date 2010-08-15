@@ -1,0 +1,46 @@
+***************
+*** 82,95 ****
+  CC = gcc
+  NASM = nasm
+  
+- INCLUDES=-I/usr/local/include
+  
+- OPTIMISE= -D_ZAURUS -Os -ffast-math -fstrict-aliasing -fomit-frame-pointer -mcpu=strongarm1100 -mtune=strongarm1100
+  CCFLAGS = $(OPTIMISE) \
+- -I/opt/Qtopia/include/SDL \
+  -I. \
+  -Iunzip \
+- -Isdl \
+  -D__linux \
+  -DZLIB \
+  -DVAR_CYCLES \
+--- 82,93 ----
+  CC = gcc
+  NASM = nasm
+  
++ INCLUDES=
+  
++ OPTIMISE= -D_ZAURUS -Os -ffast-math -fstrict-aliasing -fomit-frame-pointer
+  CCFLAGS = $(OPTIMISE) \
+  -I. \
+  -Iunzip \
+  -D__linux \
+  -DZLIB \
+  -DVAR_CYCLES \
+***************
+*** 114,120 ****
+  
+  .SUFFIXES: .o .cpp .c .cc .h .m .i .S .asm .obj
+  
+- LDLIBS = -L/opt/Qtopia/sharp/lib
+  
+  ifdef GLIDE
+  all: offsets gsnes9x
+--- 112,118 ----
+  
+  .SUFFIXES: .o .cpp .c .cc .h .m .i .S .asm .obj
+  
++ LDLIBS=
+  
+  ifdef GLIDE
+  all: offsets gsnes9x

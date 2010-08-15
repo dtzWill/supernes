@@ -1,0 +1,17 @@
+***************
+*** 48,54 ****
+  #include <stdlib.h>
+  #include <signal.h>
+  
+- #include "sdl.h"
+  
+  #include "snes9x.h"
+  #include "memmap.h"
+--- 48,54 ----
+  #include <stdlib.h>
+  #include <signal.h>
+  
++ #include <SDL.h>
+  
+  #include "snes9x.h"
+  #include "memmap.h"
