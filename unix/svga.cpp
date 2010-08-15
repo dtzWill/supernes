@@ -91,7 +91,8 @@ void S9xInitDisplay (int /*argc*/, char ** /*argv*/)
 	}
 	atexit(SDL_Quit);
 	keyssnes = SDL_GetKeyState(NULL);
-	screen = SDL_SetVideoMode(xs, ys, 16, SDL_SWSURFACE);
+	//screen = SDL_SetVideoMode(xs, ys, 16, SDL_SWSURFACE);
+	screen = SDL_SetVideoMode(320, 480, 16, SDL_SWSURFACE);
 	if (screen == NULL)
 	{
 		printf("Couldn't set video mode: %s\n", SDL_GetError());
