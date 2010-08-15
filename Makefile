@@ -78,16 +78,18 @@ OPENGLDEPENDS=no_opengl
 OPENGLNO_DEPENDS=use_opengl
 endif
 
-CCC = mipsel-linux-g++
-CC = mipsel-linux-gcc
+#Assumes you're within sb2 so these
+#map to arm-none-linux-gnueabi-g++, etc
+CCC = g++
+CC = gcc
 NASM = nasm
 
-INCLUDES=-I/opt/mipseltools-gcc412-glibc261/mipsel-linux/include
+INCLUDES=-I/usr/local/include
 
 OPTIMISE= -D_ZAURUS -Os -ffast-math -fstrict-aliasing -fomit-frame-pointer 
 CCFLAGS = $(OPTIMISE) \
--I/opt/mipseltools-gcc412-glibc261/mipsel-linux/include \
--I/opt/mipseltools-gcc412-glibc261/mipsel-linux/include/SDL \
+-I/usr/local/include \
+-I/usr/local/include/SDL \
 -I. \
 -Iunzip \
 -Isdl \
@@ -115,7 +117,7 @@ CFLAGS=$(CCFLAGS)
 
 .SUFFIXES: .o .cpp .c .cc .h .m .i .S .asm .obj
 
-LDLIBS = -L/opt/mipseltools-gcc412-glibc261/mipsel-linux/lib
+LDLIBS = -L/usr/local/lib -Wl,-rpath=/usr/local/lib
 
 ifdef GLIDE
 all: offsets gsnes9x
