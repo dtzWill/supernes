@@ -419,6 +419,7 @@ void S9xInitInputDevices ()
 	sfc_key[UP_1] = WEBOS_BUTTON_UP;
 	sfc_key[DOWN_1] = WEBOS_BUTTON_DOWN;
 
+#if 0
 	sfc_key[LEFT_2] = SDLK_g;
 	sfc_key[RIGHT_2] = SDLK_j;
 	sfc_key[UP_2] = SDLK_u;
@@ -427,6 +428,7 @@ void S9xInitInputDevices ()
 	sfc_key[LD_2] = SDLK_b;
 	sfc_key[RU_2] = SDLK_i;
 	sfc_key[RD_2] = SDLK_m;
+#endif
 
 	sfc_key[QUIT] = SDLK_ESCAPE;
 	sfc_key[ACCEL] = SDLK_TAB;
