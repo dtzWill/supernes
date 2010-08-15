@@ -86,7 +86,8 @@ NASM = nasm
 
 INCLUDES=-I/usr/local/include
 
-OPTIMISE= -D_ZAURUS -Os -ffast-math -fstrict-aliasing -fomit-frame-pointer 
+#OPTIMISE= -D_ZAURUS -Os -ffast-math -fstrict-aliasing -fomit-frame-pointer 
+OPTIMISE= -D_ZAURUS -O3 -mcpu=cortex-a8 -mfpu=neon -ftree-vectorize -mfloat-abi=softfp -ffast-math -fsingle-precision-constant -fstrict-aliasing -fomit-frame-pointer 
 CCFLAGS = $(OPTIMISE) \
 -I/usr/local/include \
 -I/usr/local/include/SDL \
