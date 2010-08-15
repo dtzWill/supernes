@@ -52,7 +52,7 @@ SDL_Rect overlay_rect;
 int gl_filter = GL_LINEAR;
 
 int srcWidth = 320;
-int srcHeight = 480;
+int srcHeight = 240;
 
 int destWidth = 320;
 int destHeight = 480;
