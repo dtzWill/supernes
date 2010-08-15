@@ -52,7 +52,7 @@
 #include <dirent.h>
 #include <SDL/SDL.h>
 #include "keydef.h"
-#include "dingoo.h"
+#include "webos.h"
 
 #undef USE_THREADS
 #define USE_THREADS
@@ -406,18 +406,18 @@ void S9xInitInputDevices ()
 {
 	memset(sfc_key, 0, 256);
 	sfc_key[QUIT] = SDLK_a;
-	sfc_key[A_1] = DINGOO_BUTTON_A;
-	sfc_key[B_1] = DINGOO_BUTTON_B;
-	sfc_key[X_1] = DINGOO_BUTTON_X;
-	sfc_key[Y_1] = DINGOO_BUTTON_Y;
-	sfc_key[L_1] = DINGOO_BUTTON_L;
-	sfc_key[R_1] = DINGOO_BUTTON_R;
-	sfc_key[START_1] = DINGOO_BUTTON_START;
-	sfc_key[SELECT_1] = DINGOO_BUTTON_SELECT;
-	sfc_key[LEFT_1] = DINGOO_BUTTON_LEFT;
-	sfc_key[RIGHT_1] = DINGOO_BUTTON_RIGHT;
-	sfc_key[UP_1] = DINGOO_BUTTON_UP;
-	sfc_key[DOWN_1] = DINGOO_BUTTON_DOWN;
+	sfc_key[A_1] = WEBOS_BUTTON_A;
+	sfc_key[B_1] = WEBOS_BUTTON_B;
+	sfc_key[X_1] = WEBOS_BUTTON_X;
+	sfc_key[Y_1] = WEBOS_BUTTON_Y;
+	sfc_key[L_1] = WEBOS_BUTTON_L;
+	sfc_key[R_1] = WEBOS_BUTTON_R;
+	sfc_key[START_1] = WEBOS_BUTTON_START;
+	sfc_key[SELECT_1] = WEBOS_BUTTON_SELECT;
+	sfc_key[LEFT_1] = WEBOS_BUTTON_LEFT;
+	sfc_key[RIGHT_1] = WEBOS_BUTTON_RIGHT;
+	sfc_key[UP_1] = WEBOS_BUTTON_UP;
+	sfc_key[DOWN_1] = WEBOS_BUTTON_DOWN;
 
 	sfc_key[LEFT_2] = SDLK_g;
 	sfc_key[RIGHT_2] = SDLK_j;
