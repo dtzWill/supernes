@@ -83,6 +83,7 @@ pthread_mutex_t mutex;
 #include "gfx.h"
 #include "soundux.h"
 #include "spc700.h"
+#include "GLUtil.h"
 
 uint8 *keyssnes;
 int OldSkipFrame;
@@ -92,7 +93,9 @@ void *S9xProcessSound (void *);
 
 extern void S9xDisplayFrameRate (uint8 *, uint32);
 extern void S9xDisplayString (const char *string, uint8 *, uint32);
+#ifndef USE_OPENGLES
 extern SDL_Surface *screen;
+#endif
 
 static uint32 ffc = 0;
 bool8_32 nso = FALSE, vga = FALSE;
@@ -629,6 +632,7 @@ bool8_32 S9xDeinitUpdate (int Width, int Height)
 	if (Width > 256 || vga)
 		lp *= 2;
 
+#ifndef USE_OPENGLES
 // 	SDL_LockSurface(screen);
 	if (vga) {
 		if (Width > 256) {
@@ -687,8 +691,18 @@ bool8_32 S9xDeinitUpdate (int Width, int Height)
 			++ffc;
 		} else
 			SDL_UpdateRect(screen,32,0,256,Height);
-		//	SDL_Flip(screen);
 	}
+#else
+    for ( int i = 0; i < 320; ++i )
+        GFX.Screen[i] = 0xFCEB;
+    GL_RenderPix(GFX.Screen);
+
+    //XXX: Hack for now so I can compare performance...
+    char string [16];
+    sprintf (string, "%02d/%02d", IPPU.DisplayedRenderedFrameCount,
+	     (int) Memory.ROMFramesPerSecond);
+    printf( "FPS: %s\n", string );
+#endif
 	return(TRUE);
 }
 

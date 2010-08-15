@@ -38,6 +38,7 @@ OBJECTS=$(CPUOBJ) $(FXOBJ) $(C4OBJ) \
 	memmap.o ppu.o dma.o unix/unix.o \
 	$(SOUNDOBJ) unix/svga.o dsp1.o \
     snes9x.o snapshot.o data.o globals.o \
+	unix/GLUtil.o \
 	$(KREEDOBJ)
 
 ifdef NETPLAY
@@ -87,7 +88,7 @@ NASM = nasm
 INCLUDES=-I/usr/local/include
 
 #OPTIMISE= -D_ZAURUS -Os -ffast-math -fstrict-aliasing -fomit-frame-pointer 
-OPTIMISE= -D_ZAURUS -O3 -mcpu=cortex-a8 -mfpu=neon -ftree-vectorize -mfloat-abi=softfp -ffast-math -fsingle-precision-constant -fstrict-aliasing -fomit-frame-pointer 
+OPTIMISE= -D_ZAURUS -O3 -mcpu=cortex-a8 -mfpu=neon -ftree-vectorize -mfloat-abi=softfp -ffast-math -fsingle-precision-constant -fstrict-aliasing -fomit-frame-pointer -DUSE_OPENGLES
 CCFLAGS = $(OPTIMISE) \
 -I/usr/local/include \
 -I/usr/local/include/SDL \
@@ -150,7 +151,7 @@ $(OPENGLDEPENDS):
 	$(RM) $(OPENGLNO_DEPENDS)
 
 snes9x: $(OBJECTS) 
-	$(CC) $(INCLUDES) -o $@ $(OBJECTS) $(EXTRALIBS) $(LDLIBS) -lSDL -lstdc++ -lz -lpthread 
+	$(CC) $(INCLUDES) -o $@ $(OBJECTS) $(EXTRALIBS) $(LDLIBS) -lSDL -lstdc++ -lz -lpthread -lGLESv2 -lpdl
 
 gsnes9x: $(OBJECTS) unix/x11.o unix/glide.o
 	$(CCC) $(INCLUDES) -o $@ $(OBJECTS) unix/x11.o unix/glide.o $(LDLIBS) $(GLIDELIBS) -lXext -lX11 -lXxf86dga -lXxf86vm $(EXTRALIBS) -lz -lm
@@ -235,5 +236,6 @@ xf86.o: display.h snes9x.h memmap.h debug.h ppu.h snapshot.h gfx.h
 server.o: snes9x.h port.h memmap.h netplay.h
 netplay.o: snes9x.h port.h memmap.h netplay.h
 snaporig.o: cpuexec.h
+GLUtil.o: unix/GLUtil.h unix/GLUtil.cpp
 
 

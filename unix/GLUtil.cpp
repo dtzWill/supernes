@@ -17,9 +17,17 @@
 #include "GLUtil.h"
 #include "Types.h"
 #include "esFunc.h"
-#include "VBA.h"
 #include "pdl.h"
-#include "Controller.h"
+#include <assert.h>
+//#include "Controller.h"
+
+enum orientation
+{
+    ORIENTATION_PORTRAIT,    // default mode, portrait
+    ORIENTATION_LANDSCAPE_R, // landscape, keyboard on right
+    ORIENTATION_LANDSCAPE_L  // landscape, keyboard on left
+};
+int orientation = ORIENTATION_PORTRAIT;
 
 /*-----------------------------------------------------------------------------
  *  GL variables
@@ -41,7 +49,15 @@ SDL_Surface *surface = NULL;
 SDL_Overlay *overlay = NULL;
 SDL_Rect overlay_rect;
 
-//#define DEBUG_GL
+int gl_filter = GL_LINEAR;
+
+int srcWidth = 320;
+int srcHeight = 480;
+
+int destWidth = 320;
+int destHeight = 480;
+
+#define DEBUG_GL
 
 #ifdef DEBUG_GL
 void checkError()
@@ -50,7 +66,7 @@ void checkError()
     GLenum gl_error = glGetError( );
 
     if( gl_error != GL_NO_ERROR ) {
-        fprintf( stderr, "VBA: OpenGL error: %x\n", gl_error );
+        fprintf( stderr, "SNES9X: OpenGL error: %x\n", gl_error );
         while(1);
         exit( 1 );
     }
@@ -58,7 +74,7 @@ void checkError()
     char * sdl_error = SDL_GetError( );
 
     if( sdl_error[0] != '\0' ) {
-        fprintf(stderr, "VBA: SDL error '%s'\n", sdl_error);
+        fprintf(stderr, "SNES9X: SDL error '%s'\n", sdl_error);
         while(1);
         exit( 2 );
     }
@@ -125,11 +141,10 @@ void GL_Init()
     assert( !SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, 2 ) );
 
     surface = SDL_SetVideoMode( 320, 480, 32,
-        SDL_OPENGL|
-        (fullscreen ? SDL_FULLSCREEN : 0));
+        SDL_OPENGL);
 
     if(surface == NULL) {
-      systemMessage(0, "Failed to set video mode");
+      //systemMessage(0, "Failed to set video mode");
       SDL_Quit();
       exit(-1);
     }
@@ -138,7 +153,7 @@ void GL_Init()
     checkError();
     checkError();
     // Black background
-    glClearColor( 0.0f, 0.0f, 0.0f, 1.0f );
+    glClearColor( 0.0f, 0.0f, 1.0f, 1.0f );
     checkError();
 
     // Remove unnecessary operations..
@@ -232,6 +247,7 @@ void GL_InitTexture()
             GL_UNSIGNED_SHORT_5_5_5_1, NULL );
     checkError();
 
+#if 0
     if( !skin )
     {
         printf( "No skins found! Running without one...\n" );
@@ -268,6 +284,7 @@ void GL_InitTexture()
 
     SDL_FreeSurface( initial_surface );
     SDL_FreeSurface( controller_surface );
+#endif
 }
 
 void updateOrientation()
@@ -307,6 +324,7 @@ void updateOrientation()
         vertexCoords[2*i+1] *= screenAspect / emulatedAspect;
     }
 
+#if 0
     if ( use_on_screen && orientation == ORIENTATION_LANDSCAPE_R && skin )
     {
         float controller_aspect = (float)skin->controller_screen_width / (float)skin->controller_screen_height;
@@ -346,6 +364,7 @@ void updateOrientation()
             vertexCoords[2*i+1] += x_offset;
         }
     }
+#endif
 
     int notification_direction;
     switch ( orientation )
@@ -372,6 +391,7 @@ void GL_RenderPix(u8 * pix)
     glClear( GL_COLOR_BUFFER_BIT );
     checkError();
 
+#if 0
     /*-----------------------------------------------------------------------------
      *  Overlay
      *-----------------------------------------------------------------------------*/
@@ -402,10 +422,11 @@ void GL_RenderPix(u8 * pix)
         glDrawElements( GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, indices );
         checkError();
     }
+#endif
 
 
     /*-----------------------------------------------------------------------------
-     *  Draw the frame of the gb(c/a)
+     *  Draw the frame of the snes
      *-----------------------------------------------------------------------------*/
 
     // Use the program object
