@@ -19,6 +19,11 @@ CXXFLAGS += $(OPTFLAGS)
 CPPFLAGS += $(OPTFLAGS)
 CFLAGS += $(OPTFLAGS)
 
+#Enabling these breaks SA-1 support, which is important
+#for games such as Kirby Super Star and Super Mario RPG :(
+CONF_BUILD_ASM_CPU=0
+CONF_BUILD_ASM_SPC700=0
+
 ARCH=armel
 # Sane defaults
 CONF_GUI?=0
