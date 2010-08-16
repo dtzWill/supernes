@@ -467,7 +467,9 @@ void S9xInitInputDevices ()
 
 const char *GetHomeDirectory ()
 {
-    return (getenv ("HOME"));
+    const char * home = getenv("HOME");
+    if (!home) home = ".";
+    return home;
 }
 
 const char *S9xGetSnapshotDirectory ()
