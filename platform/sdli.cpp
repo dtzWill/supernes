@@ -5,6 +5,7 @@
 #include "snes9x.h"
 #include "display.h"
 #include "sdlv.h" // Dispatching video-related events
+#include "webos.h"
 
 #if CONF_ZEEMOTE
 #include "zeemote.h"
@@ -147,14 +148,14 @@ static void processEvent(const SDL_Event& event)
 	switch (event.type) 
 	{
 		case SDL_KEYDOWN:
-			if (Config.action[event.key.keysym.scancode]) 
-				S9xDoAction(Config.action[event.key.keysym.scancode]);
-			joypads[0] |= Config.joypad1Mapping[event.key.keysym.scancode];
-			joypads[1] |= Config.joypad2Mapping[event.key.keysym.scancode];
+			if (Config.action[event.key.keysym.sym]) 
+				S9xDoAction(Config.action[event.key.keysym.sym]);
+			joypads[0] |= Config.joypad1Mapping[event.key.keysym.sym];
+			joypads[1] |= Config.joypad2Mapping[event.key.keysym.sym];
 			break;
 		case SDL_KEYUP:
-			joypads[0] &= ~Config.joypad1Mapping[event.key.keysym.scancode];
-			joypads[1] &= ~Config.joypad2Mapping[event.key.keysym.scancode];
+			joypads[0] &= ~Config.joypad1Mapping[event.key.keysym.sym];
+			joypads[1] &= ~Config.joypad2Mapping[event.key.keysym.sym];
 			break;
 		case SDL_MOUSEBUTTONUP:
 		case SDL_MOUSEBUTTONDOWN:
@@ -271,6 +272,7 @@ void S9xInitInputDevices()
 	// TODO Non-awful mouse & superscope support
 
 	S9xInputScreenChanged();
+  initialize_keymappings(&Config);
 }
 
 void S9xDeinitInputDevices()
