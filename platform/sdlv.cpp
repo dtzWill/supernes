@@ -72,6 +72,10 @@ static void setupVideoSurface()
 	GFX.DepthDelta = GFX.SubZBuffer - GFX.ZBuffer;
 	GFX.PPL = GFX.Pitch;
 
+  GUI.ScaleX = GUI.ScaleY = 1.0;
+  GUI.RenderX = GUI.RenderY = 0;
+  GUI.RenderW = gameWidth;
+  GUI.RenderH = gameHeight;
 }
 
 static void drawOnscreenControls()
