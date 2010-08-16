@@ -28,6 +28,8 @@ endif
 CONF_XSP?=0
 # Hildon Desktop compositing (in Fremantle)
 CONF_HD?=0
+# Link to libzeemote
+CONF_ZEEMOTE?=0
 
 # SNES stuff
 OBJS = apu.o c4.o c4emu.o cheats.o cheats2.o clip.o cpu.o cpuexec.o data.o
@@ -83,6 +85,11 @@ ifeq ($(CONF_EXIT_BUTTON), 1)
 	LDLIBS += -lSDL_image
 	OBJS += platform/sdlvexit.o
 endif
+ifeq ($(CONF_ZEEMOTE), 1)
+	CPPFLAGS += -DCONF_ZEEMOTE=1
+	LDLIBS += -lzeemote -lzeemote-conf -lbluetooth
+	OBJS += platform/zeemote.o
+endif
 
 # automatic dependencies
 DEPS := $(OBJS:.o=.d)
@@ -127,7 +134,11 @@ clean: gui_clean
 install: gui_install
 endif
 
-distclean: clean
+profclean: clean
+	find . -name '*.gcno' -delete
+	find . -name '*.gcda' -delete
+
+distclean: profclean clean
 	rm -f config.mk
 
 .PHONY: all clean remake deps install gui gui_clean distclean

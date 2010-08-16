@@ -99,9 +99,13 @@ typedef int16_t			int16_32;
 #define _MAX_EXT NAME_MAX
 #define _MAX_PATH PATH_MAX
 
-//True/False Defines
+// Boolean constants (may already be defined)
+#ifndef TRUE
 #define TRUE 1
+#endif
+#ifndef FALSE
 #define FALSE 0
+#endif
 
 // Config -> Defines
 #if CONF_BUILD_ASM_SPC700

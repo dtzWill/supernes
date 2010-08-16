@@ -43,32 +43,30 @@
 
 #include "port.h"
 
-struct SGFX{
-    // Initialize these variables
-    uint8  *Screen;
-    uint8  *SubScreen;
-    uint8  *ZBuffer;
-    uint8  *SubZBuffer;
-    uint32 Pitch;
+struct SGFX {
+	// Initialize these variables
+	uint8  *Screen;
+	uint8  *SubScreen;
+	uint8  *ZBuffer;
+	uint8  *SubZBuffer;
+	uint32 Pitch;		/// Width of surface in bytes
+	uint32 ZPitch;   	/// Pitch of ZBuffer
+	uint32 Delta;		/// Set to (GFX.SubScreen - GFX.Screen) >> 1
+    uint32 DepthDelta;	/// Set to GFX.SubZBuffer - GFX.ZBuffer
+    uint32 PPL;			/// Number of pixels per line (= pitch in pixels)
 
     // Setup in call to S9xGraphicsInit()
-    int   Delta;
     uint16 *X2;
     uint16 *ZERO_OR_X2;
     uint16 *ZERO;
-    uint32 RealPitch; // True pitch of Screen buffer.
-    uint32 Pitch2;    // Same as RealPitch except while using speed up hack for Glide.
-    uint32 ZPitch;    // Pitch of ZBuffer
-    uint32 PPL;	      // Number of pixels on each of Screen buffer
-    uint32 PPLx2;
-    uint32 PixSize;
+
     uint8  *S;
     uint8  *DB;
     uint16 *ScreenColors;
-    uint32 DepthDelta;
     uint8  Z1;
     uint8  Z2;
     uint32 FixedColour;
+
     char *InfoString;
     uint32 InfoStringTimeout;
     uint32 StartY;

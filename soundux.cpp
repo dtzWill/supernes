@@ -38,29 +38,12 @@
  * Super NES and Super Nintendo Entertainment System are trademarks of
  * Nintendo Co., Limited and its subsidiary companies.
  */
-#ifdef __DJGPP__
-#include <allegro.h>
-#undef TRUE
-#endif
 
 #include <stdint.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
-//#include <fcntl.h>
-
-//misc.s
-#ifdef __cplusplus
-extern "C" {
-#endif
-extern void memcpy16(unsigned short *dest, unsigned short *src, int count);
-extern void memcpy16bswap(unsigned short *dest, void *src, int count);
-extern void memcpy32(uint32_t *dest, int *src, int count);
-extern void memset32(void *dest, int c, int count);
-#ifdef __cplusplus
-}
-#endif
 
 #define CLIP16(v) \
 if ((v) < -32768) \
@@ -98,7 +81,7 @@ if ((v) > 127) \
 #include "apu.h"
 #include "memmap.h"
 #include "cpuexec.h"
-//#include "asmmemfuncs.h"
+#include "misc.h"
 
 
 static int wave[SOUND_BUFFER_SIZE];
@@ -142,17 +125,11 @@ static inline void S9xAPUSetEndOfSample (int i, Channel *ch)
     APU.DSP [APU_KOFF] &= ~(1 << i);
     APU.KeyedChannels &= ~(1 << i);
 }
-#ifdef __DJGPP
-END_OF_FUNCTION (S9xAPUSetEndOfSample)
-#endif
 
 static inline void S9xAPUSetEndX (int ch)
 {
     APU.DSP [APU_ENDX] |= 1 << ch;
 }
-#ifdef __DJGPP
-END_OF_FUNCTION (S9xAPUSetEndX)
-#endif
 
 void S9xSetEchoDelay (int delay)
 {
@@ -368,7 +345,7 @@ static void DecodeBlock (Channel *ch)
 
 static void MixStereo (int sample_count)
 {
-    int pitch_mod = SoundData.pitch_mod & (0xFFFFFFFF^APU.DSP[APU_NON]);//~APU.DSP[APU_NON];
+    int pitch_mod = SoundData.pitch_mod & ~APU.DSP[APU_NON];
 
     for (uint32 J = 0; J < NUM_CHANNELS; J++) 
     {
@@ -659,7 +636,7 @@ stereo_exit: ;
 
 static void MixMono (int sample_count)
 {
-    int pitch_mod = SoundData.pitch_mod & (0xFFFFFFFF^APU.DSP[APU_NON]);
+    int pitch_mod = SoundData.pitch_mod & ~APU.DSP[APU_NON];
 
     for (uint32 J = 0; J < NUM_CHANNELS; J++) 
     {
@@ -937,19 +914,10 @@ mono_exit: ;
 }
 
 
-// For backwards compatibility with older port specific code
-void S9xMixSamples (signed short *buffer, int sample_count)
-{
-    S9xMixSamplesO (buffer, sample_count, 0);
-}
-
-
-void S9xMixSamplesO (signed short *buffer, int sample_count, int sample_offset)
+void S9xMixSamples(signed short *buffer, int sample_count)
 {
 	// 16-bit sound only
 	int J;
-
-	buffer += sample_offset;
 
 	if (so.mute_sound)
 	{
@@ -1124,10 +1092,6 @@ void S9xMixSamplesO (signed short *buffer, int sample_count, int sample_offset)
 	}
 }
 
-#ifdef __DJGPP
-END_OF_FUNCTION(S9xMixSamplesO);
-#endif
-
 void S9xResetSound (bool8 full)
 {
     for (int i = 0; i < 8; i++)
@@ -1265,6 +1229,6 @@ bool8 S9xInitSound (void)
     S9xResetSound (TRUE);
     S9xSetSoundMute (TRUE);
 
-    return (1);
+	return TRUE;
 }
 

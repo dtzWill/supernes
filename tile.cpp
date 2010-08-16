@@ -605,10 +605,10 @@ INLINE void WRITE_4PIXELSx2x2 (uint32 Offset, uint8 *Pixels)
 #define FN(N) \
     if (GFX.Z1 > Depth [N * 2] && (Pixel = Pixels[N])) \
     { \
-	Screen [N * 2] = Screen [N * 2 + 1] = Screen [GFX.RealPitch + N * 2] =  \
-	    Screen [GFX.RealPitch + N * 2 + 1] = (uint8) GFX.ScreenColors [Pixel]; \
-	Depth [N * 2] = Depth [N * 2 + 1] = Depth [GFX.RealPitch + N * 2] = \
-	    Depth [GFX.RealPitch + N * 2 + 1] = GFX.Z2; \
+	Screen [N * 2] = Screen [N * 2 + 1] = Screen [GFX.Pitch + N * 2] =  \
+	    Screen [GFX.Pitch + N * 2 + 1] = (uint8) GFX.ScreenColors [Pixel]; \
+	Depth [N * 2] = Depth [N * 2 + 1] = Depth [GFX.Pitch + N * 2] = \
+	    Depth [GFX.Pitch + N * 2 + 1] = GFX.Z2; \
     }
 
     FN(0)
@@ -627,10 +627,10 @@ INLINE void WRITE_4PIXELS_FLIPPEDx2x2 (uint32 Offset, uint8 *Pixels)
 #define FN(N) \
     if (GFX.Z1 > Depth [N * 2] && (Pixel = Pixels[3 - N])) \
     { \
-	Screen [N * 2] = Screen [N * 2 + 1] = Screen [GFX.RealPitch + N * 2] =  \
-	    Screen [GFX.RealPitch + N * 2 + 1] = (uint8) GFX.ScreenColors [Pixel]; \
-	Depth [N * 2] = Depth [N * 2 + 1] = Depth [GFX.RealPitch + N * 2] = \
-	    Depth [GFX.RealPitch + N * 2 + 1] = GFX.Z2; \
+	Screen [N * 2] = Screen [N * 2 + 1] = Screen [GFX.Pitch + N * 2] =  \
+	    Screen [GFX.Pitch + N * 2 + 1] = (uint8) GFX.ScreenColors [Pixel]; \
+	Depth [N * 2] = Depth [N * 2 + 1] = Depth [GFX.Pitch + N * 2] = \
+	    Depth [GFX.Pitch + N * 2 + 1] = GFX.Z2; \
     }
 
     FN(0)
@@ -804,10 +804,10 @@ INLINE void WRITE_4PIXELS16x2x2 (uint32 Offset, uint8 *Pixels)
 #define FN(N) \
     if (GFX.Z1 > Depth [N * 2] && (Pixel = Pixels[N])) \
     { \
-	Screen [N * 2] = Screen [N * 2 + 1] = Screen [(GFX.RealPitch >> 1) + N * 2] = \
-	    Screen [(GFX.RealPitch >> 1) + N * 2 + 1] = GFX.ScreenColors [Pixel]; \
-	Depth [N * 2] = Depth [N * 2 + 1] = Depth [(GFX.RealPitch >> 1) + N * 2] = \
-	    Depth [(GFX.RealPitch >> 1) + N * 2 + 1] = GFX.Z2; \
+	Screen [N * 2] = Screen [N * 2 + 1] = Screen [(GFX.Pitch >> 1) + N * 2] = \
+	    Screen [(GFX.Pitch >> 1) + N * 2 + 1] = GFX.ScreenColors [Pixel]; \
+	Depth [N * 2] = Depth [N * 2 + 1] = Depth [(GFX.Pitch >> 1) + N * 2] = \
+	    Depth [(GFX.Pitch >> 1) + N * 2 + 1] = GFX.Z2; \
     }
 
     FN(0)
@@ -826,10 +826,10 @@ INLINE void WRITE_4PIXELS16_FLIPPEDx2x2 (uint32 Offset, uint8 *Pixels)
 #define FN(N) \
     if (GFX.Z1 > Depth [N * 2] && (Pixel = Pixels[3 - N])) \
     { \
-	Screen [N * 2] = Screen [N * 2 + 1] = Screen [(GFX.RealPitch >> 1) + N * 2] = \
-	    Screen [(GFX.RealPitch >> 1) + N * 2 + 1] = GFX.ScreenColors [Pixel]; \
-	Depth [N * 2] = Depth [N * 2 + 1] = Depth [(GFX.RealPitch >> 1) + N * 2] = \
-	    Depth [(GFX.RealPitch >> 1) + N * 2 + 1] = GFX.Z2; \
+	Screen [N * 2] = Screen [N * 2 + 1] = Screen [(GFX.Pitch >> 1) + N * 2] = \
+	    Screen [(GFX.Pitch >> 1) + N * 2 + 1] = GFX.ScreenColors [Pixel]; \
+	Depth [N * 2] = Depth [N * 2 + 1] = Depth [(GFX.Pitch >> 1) + N * 2] = \
+	    Depth [(GFX.Pitch >> 1) + N * 2 + 1] = GFX.Z2; \
     }
 
     FN(0)

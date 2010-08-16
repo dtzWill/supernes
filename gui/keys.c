@@ -289,7 +289,7 @@ void keys_dialog(GtkWindow* parent, int player)
 
 	GtkCellRenderer* renderer = GTK_CELL_RENDERER(gtk_cell_renderer_text_new());
 	GtkTreeViewColumn * column =
-		 gtk_tree_view_column_new_with_attributes ("Button",
+		 gtk_tree_view_column_new_with_attributes (_("Button"),
 			gtk_cell_renderer_text_new(),
 			"text", BUTTON_COLUMN,
 			NULL);
@@ -298,7 +298,7 @@ void keys_dialog(GtkWindow* parent, int player)
 	gtk_tree_view_append_column(keys_list, column);
 
 	renderer = GTK_CELL_RENDERER(cell_renderer_key_new());
-	column = gtk_tree_view_column_new_with_attributes("Key", renderer, NULL);
+	column = gtk_tree_view_column_new_with_attributes(_("Key"), renderer, NULL);
 	gtk_tree_view_column_set_cell_data_func(column, renderer, accel_set_func, NULL, NULL);
 	gtk_tree_view_column_set_resizable(column, FALSE);
 #if MAEMO_VERSION >= 5
@@ -314,7 +314,7 @@ void keys_dialog(GtkWindow* parent, int player)
 		GtkTreeIter iter;
 		gtk_list_store_append(keys_store, &iter);
 		gtk_list_store_set(keys_store, &iter,
-			BUTTON_COLUMN, buttons[i].name,
+			BUTTON_COLUMN, _(buttons[i].name),
 			BUTTONENTRY_COLUMN, &buttons[i],
 			-1);
 	}

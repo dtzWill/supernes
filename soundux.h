@@ -162,7 +162,6 @@ void S9xFixEnvelope (int channel, uint8 gain, uint8 adsr1, uint8 adsr2);
 void S9xStartSample (int channel);
 
 EXTERN_C void S9xMixSamples (signed short *buffer, int sample_count);
-EXTERN_C void S9xMixSamplesO(signed short *buffer, int sample_count, int sample_offset);
 void S9xSetPlaybackRate (uint32 rate);
 bool8 S9xInitSound (void);
 #endif

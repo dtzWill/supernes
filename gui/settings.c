@@ -72,10 +72,13 @@ static HildonPickerButton* scaler_picker;
 static HildonPickerButton* speedhacks_picker;
 #else
 static GtkComboBox* scaler_combo;
+static GtkCheckButton* saver_check;
 #endif
 
 static int find_scaler(const char * id)
 {
+	if (!id) return -1;
+
 	gchar* lid = g_ascii_strdown(id, -1);
 	
 	for (int i = 0; i < sizeof(scalers)/sizeof(struct scaler); i++) {
@@ -103,6 +106,7 @@ static void fill_scaler_list(GtkWidget* w)
 
 void settings_update_controls(int player)
 {
+#if MAEMO_VERSION >= 5
 	switch (player) {
 		case 1:
 			hildon_button_set_value(player1_btn, controls_describe(1));
@@ -111,6 +115,7 @@ void settings_update_controls(int player)
 			hildon_button_set_value(player2_btn, controls_describe(2));
 			break;
 	}
+#endif
 }
 
 static void load_settings()
@@ -121,7 +126,7 @@ static void load_settings()
 
 #if MAEMO_VERSION >= 5
 	settings_update_controls(1);
-	settings_update_controls(1);
+	settings_update_controls(2);
 	hildon_check_button_set_active(accu_check,
 		gconf_client_get_bool(gcc, kGConfTransparency, NULL));
 	hildon_check_button_set_active(saver_check,
@@ -130,6 +135,8 @@ static void load_settings()
 	hildon_picker_button_set_active(speedhacks_picker,
 		gconf_client_get_int(gcc, kGConfSpeedhacks, NULL));
 #else
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(saver_check),
+		gconf_client_get_bool(gcc, kGConfSaver, NULL));
 	gtk_combo_box_set_active(scaler_combo, scaler_num);
 #endif
 }
@@ -147,6 +154,8 @@ static void save_settings()
 		hildon_picker_button_get_active(speedhacks_picker), NULL);
 #else
 	scaler_num = gtk_combo_box_get_active(scaler_combo);
+	gconf_client_set_bool(gcc, kGConfSaver,
+		gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(saver_check)), NULL);
 #endif
 	if (scaler_num < 0) scaler_num = 0;
 	gconf_client_set_string(gcc, kGConfScaler, scalers[scaler_num].id, NULL);
@@ -266,6 +275,8 @@ void settings_dialog(GtkWindow* parent)
 		FALSE, FALSE, HILDON_MARGIN_HALF);
 	gtk_box_pack_start(box, GTK_WIDGET(player1_btn),
 		FALSE, FALSE, 0);
+	gtk_box_pack_start(box, GTK_WIDGET(player2_btn),
+		FALSE, FALSE, 0);
 	gtk_box_pack_start(box, GTK_WIDGET(separator_2),
 		FALSE, FALSE, HILDON_MARGIN_HALF);
 	gtk_box_pack_start(box, GTK_WIDGET(accu_check),
@@ -284,19 +295,30 @@ void settings_dialog(GtkWindow* parent)
 	g_object_unref(titles_size_group);
 	g_object_unref(values_size_group);
 #else
-	xsp_check = GTK_CHECK_BUTTON(gtk_check_button_new());
-	GtkWidget* xsp_caption = hildon_caption_new(NULL, 
-		"Use hardware scaling", GTK_WIDGET(xsp_check), NULL, 
+	GtkSizeGroup * size_group =
+		 gtk_size_group_new(GTK_SIZE_GROUP_HORIZONTAL);
+
+	scaler_combo = GTK_COMBO_BOX(gtk_combo_box_new_text());
+	fill_scaler_list(GTK_WIDGET(scaler_combo));
+	GtkWidget* scaler_caption = hildon_caption_new(size_group,
+		_("Zoom"), GTK_WIDGET(scaler_combo), NULL,
 		HILDON_CAPTION_OPTIONAL);
-	gtk_box_pack_start_defaults(GTK_BOX(dialog->vbox), GTK_WIDGET(xsp_caption));
+
+	saver_check = GTK_CHECK_BUTTON(gtk_check_button_new());
+	GtkWidget* saver_caption = hildon_caption_new(size_group,
+		_("Pause game in the background"), GTK_WIDGET(saver_check), NULL,
+		HILDON_CAPTION_OPTIONAL);
+
+	gtk_box_pack_start_defaults(GTK_BOX(dialog->vbox), scaler_caption);
+	gtk_box_pack_start_defaults(GTK_BOX(dialog->vbox), saver_caption);
+
+	g_object_unref(size_group);
 #endif
 
 	load_settings();
 
 #if MAEMO_VERSION >= 5
 	gtk_window_resize(GTK_WINDOW(dialog), 800, 380);
-#else
-	gtk_window_resize(GTK_WINDOW(dialog), 400, 200);
 #endif
 
 	g_signal_connect(G_OBJECT(dialog), "response",

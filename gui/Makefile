@@ -30,6 +30,7 @@ endif
 XGETTEXT:=xgettext
 XGETTEXT_OPTS:=--default-domain=$(GETTEXT_PACKAGE) --from-code=UTF-8 \
 	--language=C --msgid-bugs-address=maemo@javispedro.com \
+	--package-name=DrNokSnes --package-version=$(GAME_VERSION) \
 	--keyword=_ --keyword=N_
 EXTRA_GETTEXT_SRCS:=buttons.inc
 
@@ -37,8 +38,8 @@ SRCS:=plugin.c state.c save.c controls.c keys.c settings.c about.c \
 	 cellrendererkey.c
 OBJS:=$(SRCS:.c=.o)
 
-POT:=i18n/$(GETTEXT_PACKAGE).pot
-PO_FILES:=$(wildcard i18n/*.po)
+POT:=po/$(GETTEXT_PACKAGE).pot
+PO_FILES:=$(wildcard po/*.po)
 MO_FILES:=$(PO_FILES:.po=.mo)
 LANGS:=$(basename $(notdir $(PO_FILES)))
 
@@ -87,7 +88,7 @@ ifneq ($(GCONF_DISABLE_MAKEFILE_SCHEMA_INSTALL),1)
 endif
 	for lang in $(LANGS); do \
 		install -d $(DESTDIR)/usr/share/locale/$$lang/LC_MESSAGES ; \
-		install -m 0644 i18n/$$lang.mo \
+		install -m 0644 po/$$lang.mo \
 		 $(DESTDIR)/usr/share/locale/$$lang/LC_MESSAGES/$(GETTEXT_PACKAGE).mo ; \
 	done
 

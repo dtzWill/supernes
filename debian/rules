@@ -22,11 +22,16 @@ MAEMO_VERSION := $(shell cut -d"." -f1 /etc/maemo_version)
 GAME_VERSION := $(shell head -n 1 debian/changelog | sed 's/[^0-9.-]//g')
 
 # Default CFLAGS
-CFLAGS = -Wall -g -DMAEMO -DMAEMO_VERSION=$(MAEMO_VERSION)
+CFLAGS := -Wall -g -DMAEMO -DMAEMO_VERSION=$(MAEMO_VERSION)
+CXXFLAGS := -Wall -g -DMAEMO -DMAEMO_VERSION=$(MAEMO_VERSION)
 GUI_CFLAGS := -std=c99 -fPIC -shared $(CFLAGS)
-LDFLAGS = -Wl,-z,defs
+LDFLAGS := -Wl,-z,defs -Wl,-O1
 GUI_LDFLAGS := -export-dynamic -avoid-version -module -shared $(LDFLAGS)
-ASFLAGS = -g
+ASFLAGS := -g
+
+# Compiler optimization settings
+OPT_CFLAGS := -O2 -fomit-frame-pointer -ffast-math
+OPT_CXXFLAGS := $(OPT_CFLAGS) -fno-exceptions -fno-rtti
 
 M4=m4
 M4DEFS=-DMAEMO_MAJOR=$(MAEMO_VERSION)
@@ -34,8 +39,11 @@ M4DEFS=-DMAEMO_MAJOR=$(MAEMO_VERSION)
 # Architecture specific CFLAGS
 ifneq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))
 	CFLAGS += -O0
+	CXXFLAGS += -O0
+	GUI_CFLAGS += -O0
 else ifneq (,$(findstring armel,$(ARCH)))
-	CFLAGS += -O2 -ffast-math
+	CFLAGS += $(OPT_CFLAGS)
+	CXXFLAGS += $(OPT_CXXFLAGS)
 	GUI_CFLAGS += -Os
 	ifneq (,$(findstring vfp,$(DEB_BUILD_OPTIONS)))
 		CFLAGS += -march=armv6j -mtune=arm1136jf-s -mfpu=vfp -mfloat-abi=softfp
@@ -46,7 +54,8 @@ else ifneq (,$(findstring armel,$(ARCH)))
 		CFLAGS += -static-libgcc
 	endif
 else ifneq (,$(findstring i386,$(ARCH)))
-	CFLAGS += -O2 -ffast-math
+	CFLAGS += $(OPT_CFLAGS)
+	CXXFLAGS += $(OPT_CXXFLAGS)
 	GUI_CFLAGS += -O2
 else
 	# Don't support anything else
@@ -73,7 +82,7 @@ else
 endif
 	echo ASFLAGS="$(ASFLAGS)" >> config.mk
 	echo CFLAGS="$(CFLAGS)" >> config.mk
-	echo CXXFLAGS="$(CFLAGS)" >> config.mk
+	echo CXXFLAGS="$(CXXFLAGS)" >> config.mk
 	echo LDFLAGS="$(LDFLAGS)" >> config.mk
 	
 	echo CONF_NLS=1 > gui/config.mk

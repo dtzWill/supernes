@@ -6,6 +6,7 @@
 #include <SDL.h>
 
 #if CONF_XSP
+#	include <SDL_syswm.h>
 #	include <X11/extensions/Xsp.h>
 #endif
 #if CONF_HD
@@ -372,6 +373,8 @@ class HAAScalerBase : public Scaler
 	const int m_w, m_h, m_Bpp;
 	const float ratio_x, ratio_y;
 
+	static bool initialized;
+
 protected:
 	HAAScalerBase(SDL_Surface* screen, int w, int h, float r_x, float r_y)
 	: m_screen(screen), m_w(w), m_h(h),
@@ -384,9 +387,16 @@ protected:
 		// Clear the SDL screen with black, just in case it gets drawn.
 		SDL_FillRect(screen, 0, SDL_MapRGB(screen->format, 0, 0, 0));
 
-		HAA_Init(fullscreen ? SDL_FULLSCREEN : 0);
+		if (!initialized) {
+			HAA_Init(0);
+			initialized = true;
+		} else {
+			HAA_SetVideoMode(); // Tell HAA we might have changed video mode
+		}
+
 		actor = HAA_CreateActor(0, m_w, m_h, m_screen->format->BitsPerPixel);
 		HAA_SetPosition(actor, m_area.x, m_area.y + (fullscreen ? 0 : 60));
+			// In windowed mode, take care of the title bar (xoffset = 60)
 		HAA_SetScale(actor, r_x, r_y);
 		HAA_Show(actor);
 	}
@@ -395,7 +405,6 @@ public:
 	virtual ~HAAScalerBase()
 	{
 		HAA_FreeActor(actor);
-		HAA_Quit();
 	};
 
 	uint8* getDrawBuffer() const
@@ -437,6 +446,7 @@ public:
 		return HAA_FilterEvent(&event) == 0;
 	};
 };
+bool HAAScalerBase::initialized = false;
 
 class HAAFillScaler : public HAAScalerBase
 {

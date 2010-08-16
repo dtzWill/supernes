@@ -1,0 +1,33 @@
+display-framerate
+hacks-file=snesadvance.dat
+
+scancode=36
+	button=A
+scancode=116
+	button=B
+scancode=59
+	button=X
+scancode=60
+	button=Y
+scancode=37
+	button=L
+scancode=22
+	button=R
+scancode=65
+	button=START
+scancode=58
+	button=SELECT
+scancode=24
+	button=UP
+scancode=52
+	button=DOWN
+scancode=108
+	button=LEFT
+scancode=39
+	button=RIGHT
+
+scancode=50
+	action=quit
+scancode=41
+	action=fullscreen
+

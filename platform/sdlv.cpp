@@ -144,18 +144,19 @@ static void setupVideoSurface()
 	scaler = sFactory->instantiate(screen, gameWidth, gameHeight);
 
 	// Each scaler may have its own pitch
-	GFX.RealPitch = GFX.Pitch = scaler->getDrawBufferPitch();
-	GFX.ZPitch = GFX.Pitch / 2; // gfx & tile.cpp depend on this, unfortunately.
-	GFX.PixSize = screen->format->BitsPerPixel / 8;
-	
+	GFX.Pitch = scaler->getDrawBufferPitch();
+	GFX.ZPitch = GFX.Pitch / 2;
+	// gfx & tile.cpp depend on the zbuffer pitch being always half of the color buffer pitch.
+	// Which is a pity, since the color buffer might be much larger.
+
 	GFX.Screen = scaler->getDrawBuffer();
 	GFX.SubScreen = (uint8 *) malloc(GFX.Pitch * IMAGE_HEIGHT);
 	GFX.ZBuffer =  (uint8 *) malloc(GFX.ZPitch * IMAGE_HEIGHT);
 	GFX.SubZBuffer = (uint8 *) malloc(GFX.ZPitch * IMAGE_HEIGHT);
 
 	GFX.Delta = (GFX.SubScreen - GFX.Screen) >> 1;
-	GFX.PPL = GFX.Pitch >> 1;
-	GFX.PPLx2 = GFX.Pitch;
+	GFX.DepthDelta = GFX.SubZBuffer - GFX.ZBuffer;
+	GFX.PPL = GFX.Pitch / (screen->format->BitsPerPixel / 8);
 
 	scaler->getRenderedGUIArea(GUI.RenderX, GUI.RenderY, GUI.RenderW, GUI.RenderH);
 	scaler->getRatio(GUI.ScaleX, GUI.ScaleY);
@@ -206,7 +207,7 @@ void S9xVideoToggleFullscreen()
 	drawOnscreenControls();
 }
 
-void processVideoEvent(const SDL_Event& event)
+bool videoEventFilter(const SDL_Event& event)
 {
 	// If we're in power save mode, and this is a defocus event, quit.
 	if (Config.saver) {
@@ -214,13 +215,15 @@ void processVideoEvent(const SDL_Event& event)
 		   (event.active.state & SDL_APPINPUTFOCUS) &&
 		   !event.active.gain) {
 			S9xDoAction(kActionQuit);
-			return;
+			return true;
 		}
 	}
 
 	// Forward video event to the active scaler, if any.
 	if (scaler)
-		scaler->filter(event);
+		return scaler->filter(event);
+	else
+		return false;
 }
 
 // This is here for completeness, but palette mode is mostly useless (slow).
@@ -252,7 +255,18 @@ bool8_32 S9xInitUpdate ()
 	return TRUE;
 }
 
-/** Called after rendering a frame. */
+/** Called once a complete SNES screen has been rendered into the GFX.Screen
+	memory buffer.
+
+	Now is your chance to copy the SNES rendered screen to the
+	host computer's screen memory. The problem is that you have to cope with
+	different sized SNES rendered screens. Width is always 256, unless you're
+	supporting SNES hi-res. screen modes (Settings.SupportHiRes is TRUE), in
+	which case it can be 256 or 512. The height parameter can be either 224 or
+	239 if you're only supporting SNES lo-res. screen modes, or 224, 239, 448 or
+	478 if hi-res. SNES screen modes are being supported.
+ */
+// TODO Above.
 bool8_32 S9xDeinitUpdate (int width, int height, bool8_32 sixteenBit)
 {
 	scaler->finish();

@@ -14,10 +14,13 @@
 #include "soundux.h"
 #include "hacks.h"
 #include "snapshot.h"
-//#include "osso.h"
 
 #define kPollEveryNFrames		5		//Poll input only every this many frames
+
+#if CONF_GUI
+#include "osso.h"
 #define kPollOssoEveryNFrames	10		//Poll dbus only every this many frames
+#endif
 
 #define TRACE printf("trace: %s:%s\n", __FILE__, __func__);
 #define DIE(format, ...) do { \
@@ -29,11 +32,6 @@
 void S9xMessage(int type, int number, const char * message)
 {
 	printf("%s\n", message);
-}
-
-void S9xLoadSDD1Data()
-{TRACE
-	Settings.SDD1Pack=FALSE;
 }
 
 void S9xAutoSaveSRAM()
@@ -119,9 +117,13 @@ static void pauseGame()
 }
 
 /* This comes nearly straight from snes9x */
+/** Calculates framerate, enables frame skip if to low, sleeps if too high, etc. */
 static void frameSync() {
+	Uint32 now = SDL_GetTicks();
+
 	if (Settings.TurboMode)
 	{
+		// In Turbo mode, just skip as many frames as desired, but don't sleep.
 		if(Settings.SkipFrames == AUTO_FRAMERATE || 
 			++IPPU.FrameSkip >= Settings.SkipFrames)
 		{
@@ -134,10 +136,20 @@ static void frameSync() {
 			++IPPU.SkippedFrames;
 			IPPU.RenderThisFrame = FALSE;
 		}
-		return;
+
+		// Take care of framerate display
+		if (Settings.DisplayFrameRate) {
+			static Uint32 last = 0;
+			// Update framecounter every second
+			if (now > last && (now - last > 1000)) {
+				IPPU.DisplayedRenderedFrameCount =
+					IPPU.RenderedFramesCount;
+				IPPU.RenderedFramesCount = 0;
+				last = now;
+			}
+		}
 	} else {
 		static Uint32 next1 = 0;
-		Uint32 now = SDL_GetTicks();
 
 		// If there is no known "next" frame, initialize it now
 		if (next1 == 0) {
@@ -178,6 +190,16 @@ static void frameSync() {
 
 		// Calculate the timestamp of the next frame.
 		next1 += Settings.FrameTime;
+
+		// Take care of framerate display
+		if (Settings.DisplayFrameRate) {
+			// Update every theoretical 60 frames
+			if (IPPU.FrameCount % Memory.ROMFramesPerSecond == 0) {
+				IPPU.DisplayedRenderedFrameCount =
+					IPPU.RenderedFramesCount;
+				IPPU.RenderedFramesCount = 0;
+			}
+		}
 	}
 }
 

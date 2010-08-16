@@ -76,7 +76,9 @@ static struct poptOption configOptionsTable[] = {
 	"scancode to map", "CODE" },
 	{ "button", '\0', POPT_ARG_STRING, 0, 101,
 	"SNES Button to press (A, B, X, Y, L, R, Up, Down, Left, Right)", "name" },
-	{ "action", '\0', POPT_ARG_STRING, 0, 102,
+	{ "button2", '\0', POPT_ARG_STRING, 0, 102,
+	"SNES Button to press for joypad 2", "name" },
+	{ "action", '\0', POPT_ARG_STRING, 0, 110,
 	"emulator action to do (fullscreen, quit, ...)", "action" },
 	{ "hacks-file", '\0', POPT_ARG_STRING, 0, 200,
 	"path to snesadvance.dat file", "FILE" },
@@ -189,47 +191,30 @@ static void loadDefaults()
 	romFile = 0;
 	basePath = 0;
 
-	Config.quitting = false;
-	Config.saver = false;
 	Config.enableAudio = true;
-	Config.fullscreen = false;
-	Config.scaler = 0;
-	Config.hacksFile = 0;
-	Config.touchscreenInput = false;
-	Config.touchscreenShow = false;
 
-	Settings.JoystickEnabled = FALSE;
 	Settings.SoundPlaybackRate = 22050;
 	Settings.Stereo = TRUE;
 	Settings.SoundBufferSize = 512; // in samples
 	Settings.CyclesPercentage = 100;
-	Settings.DisableSoundEcho = FALSE;
-	Settings.APUEnabled = FALSE;
+	Settings.APUEnabled = FALSE;		// We'll enable it later
 	Settings.H_Max = SNES_CYCLES_PER_SCANLINE;
 	Settings.SkipFrames = AUTO_FRAMERATE;
 	Settings.Shutdown = Settings.ShutdownMaster = TRUE;
 	Settings.FrameTimePAL = 20;	// in msecs
 	Settings.FrameTimeNTSC = 16;
 	Settings.FrameTime = Settings.FrameTimeNTSC;
-	Settings.DisableSampleCaching = FALSE;
-	Settings.DisableMasterVolume = FALSE;
-	Settings.Mouse = FALSE;
-	Settings.SuperScope = FALSE;
-	Settings.MultiPlayer5 = FALSE;
 	Settings.ControllerOption = SNES_JOYPAD;
-	
-	Settings.ForceTransparency = FALSE;
+
+	Settings.ForceTransparency = FALSE;	// We'll enable those later
 	Settings.Transparency = FALSE;
 	Settings.SixteenBit = TRUE;
-	
+
 	Settings.SupportHiRes = FALSE;
-	Settings.NetPlay = FALSE;
-	Settings.ServerName [0] = 0;
-	Settings.AutoSaveDelay = 30;
 	Settings.ApplyCheats = FALSE;
 	Settings.TurboMode = FALSE;
 	Settings.TurboSkipFrames = 15;
-    
+
     Settings.ForcePAL = FALSE;
     Settings.ForceNTSC = FALSE;
 
@@ -364,10 +349,10 @@ static void parseArgs(poptContext optCon)
 				Settings.SoundBufferSize = atoi(poptGetOptArg(optCon));
 				break;
 			case 16:
-				Config.touchscreenInput = true;
+				Config.touchscreenInput = 1;
 				break;
 			case 17:
-				Config.touchscreenInput = true;
+				Config.touchscreenInput = 1;
 				Config.touchscreenShow = true;
 				break;
 			case 18:
@@ -385,10 +370,16 @@ static void parseArgs(poptContext optCon)
 				scancode = atoi(poptGetOptArg(optCon));
 				break;
 			case 101:
-				Config.joypad1Mapping[scancode] |= 
+				Config.joypad1Mapping[scancode] |=
 					buttonNameToBit(poptGetOptArg(optCon));
+				Config.joypad1Enabled = true;
 				break;
 			case 102:
+				Config.joypad2Mapping[scancode] |=
+					buttonNameToBit(poptGetOptArg(optCon));
+				Config.joypad2Enabled = true;
+				break;
+			case 110:
 				Config.action[scancode] |= 
 					actionNameToBit(poptGetOptArg(optCon));
 				break;

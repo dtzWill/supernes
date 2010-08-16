@@ -5,7 +5,9 @@ Maintainer: Javier S. Pedro <maemo@javispedro.com>
 Build-Depends: debhelper (>= 5), pkg-config, maemo-version, m4, libsdl1.2-dev,
  libx11-dev, x11proto-core-dev, libxsp-dev, libpopt-dev, zlib1g-dev, gnupg,
  libosso-dev, osso-games-startup-dev, libsdl-image1.2-dev,
- libhildonfm2-dev, libosso-gnomevfs2-dev, libhildonmime-dev
+ libhildonfm2-dev, libosso-gnomevfs2-dev, libhildonmime-dev,
+ maemo-version (<< 5.0) | libsdl-haa1.2-dev (>= 1.1.0),
+ libbluetooth2-dev | libbluetooth3-dev, libzeemote-dev, libzeemote-conf-dev
 Standards-Version: 3.7.2
 
 Package: drnoksnes
@@ -15,8 +17,7 @@ ifelse(eval(MAEMO_MAJOR < 5), 1, `Pre-Depends: maemo-select-menu-location', `dnl
 Description: Super Nintendo Entertainment System emulator
  A Super NES emulator. It allows you to play some games designed for the SNES
  and Super Famicom Nintendo game systems on your tablet.
-XSBC-Bugtracker: 
- https://garage.maemo.org/tracker/?func=add&group_id=1014&atid=3790
+XSBC-Bugtracker: https://garage.maemo.org/tracker/?func=add&group_id=1014&atid=3790
 XB-Maemo-Display-Name: DrNokSnes
 XB-Maemo-Icon-26:
 ifelse(eval(MAEMO_MAJOR < 5), 1, `dnl
