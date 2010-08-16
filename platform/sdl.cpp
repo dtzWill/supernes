@@ -14,7 +14,7 @@
 #include "soundux.h"
 #include "hacks.h"
 #include "snapshot.h"
-#include "osso.h"
+//#include "osso.h"
 
 #define kPollEveryNFrames		5		//Poll input only every this many frames
 #define kPollOssoEveryNFrames	10		//Poll dbus only every this many frames
@@ -207,7 +207,7 @@ static inline void pollOssoEvents() {
 
 int main(int argc, char ** argv) {
 	// Initialise SDL
-	if (SDL_Init(0) < 0) 
+	if (SDL_Init(SDL_INIT_VIDEO|SDL_INIT_AUDIO) < 0) 
 		DIE("SDL_Init: %s", SDL_GetError());
 
 	// Configure snes9x

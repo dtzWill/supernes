@@ -61,6 +61,7 @@ static void calculateScreenSize()
 /** Sets the main window title */
 void S9xSetTitle(const char *title)
 {
+#if 0
 	// This is a Maemo specific hack, but works on most platforms.
 	SDL_SysWMinfo info;
 	SDL_VERSION(&info.version);
@@ -74,6 +75,7 @@ void S9xSetTitle(const char *title)
 			if (win) XStoreName(dpy, win, title);
 		}
 	}
+#endif
 }
 
 static void freeVideoSurface()

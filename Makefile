@@ -3,11 +3,14 @@
 CC=gcc
 CXX=g++
 
-CPPFLAGS := -I. $(shell sdl-config --cflags) #$(shell pkg-config --cflags x11)
-LDLIBS := -lz $(shell sdl-config --libs) #$(shell pkg-config --libs x11) -lpopt
+CPPFLAGS := -I. $(shell sdl-config --cflags) \
+	-Ipopt-1.14
+LDLIBS := -lz $(shell sdl-config --libs) \
+	-lpopt -Lpopt-1.14/.libs
 
 -include config.mk
 
+ARCH=armel
 # Sane defaults
 CONF_GUI?=1
 ifeq ($(ARCH),armel)
@@ -95,7 +98,7 @@ remake: clean deps all
 -include $(DEPS)
 
 drnoksnes: $(OBJS)
-	$(CXX) $(CXXFLAGS) $(LDFLAGS) $^ $(LDLIBS) -o $@
+	$(CXX) $(CXXFLAGS) $(LDFLAGS) $(OBJS) $(LDLIBS) -o $@
 
 install: drnoksnes
 	install drnoksnes $(DESTDIR)/usr/games
