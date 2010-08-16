@@ -183,9 +183,9 @@ void GL_Init()
         "void main()                                         \n"
         "{                                                   \n"
         "  vec4 color = texture2D( s_texture, v_texCoord );  \n"
-        "  gl_FragColor.r = color.b;                         \n"
+        "  gl_FragColor.r = color.r;                         \n"
         "  gl_FragColor.g = color.g;                         \n"
-        "  gl_FragColor.b = color.r;                         \n"
+        "  gl_FragColor.b = color.b;                         \n"
         "  gl_FragColor.a = 1.0;                             \n"
         "}                                                   \n";
 

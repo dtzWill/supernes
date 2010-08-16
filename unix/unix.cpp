@@ -697,11 +697,16 @@ bool8_32 S9xDeinitUpdate (int Width, int Height)
         GFX.Screen[i] = 0xFCEB;
     GL_RenderPix(GFX.Screen);
 
-    //XXX: Hack for now so I can compare performance...
-    char string [16];
-    sprintf (string, "%02d/%02d", IPPU.DisplayedRenderedFrameCount,
-	     (int) Memory.ROMFramesPerSecond);
-    printf( "FPS: %s\n", string );
+    static int counter = 0;
+    if ( ++counter > 10 )
+    {
+        //XXX: Hack for now so I can compare performance...
+        char string [16];
+        sprintf (string, "%02d/%02d", IPPU.DisplayedRenderedFrameCount,
+                (int) Memory.ROMFramesPerSecond);
+        printf( "FPS: %s\n", string );
+        counter = 0;
+    }
 #endif
 	return(TRUE);
 }

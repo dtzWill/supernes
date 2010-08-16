@@ -143,7 +143,8 @@ void S9xInitDisplay (int /*argc*/, char ** /*argv*/)
 		S9xExit();
 	}
 	for (uint32 i = 0; i < 65536; i++) 
-		((uint16 *)(RGBconvert))[i] = ((i >> 11) << 10) | ((((i >> 5) & 63) >> 1) << 5) | (i & 31);
+		//((uint16 *)(RGBconvert))[i] = ((i >> 11) << 10) | ((((i >> 5) & 63) >> 1) << 5) | (i & 31);
+		((uint16 *)(RGBconvert))[i] = i << 1;//((i >> 11) << 10) | ((((i >> 5) & 63) >> 1) << 5) | (i & 31);
 #endif
 }
 
