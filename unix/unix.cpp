@@ -695,8 +695,6 @@ bool8_32 S9xDeinitUpdate (int Width, int Height)
 			SDL_UpdateRect(screen,32,0,256,Height);
 	}
 #else
-    for ( int i = 0; i < 320; ++i )
-        GFX.Screen[i] = 0xFCEB;
     GL_RenderPix(GFX.Screen);
 
 #endif

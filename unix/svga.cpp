@@ -128,7 +128,7 @@ void S9xInitDisplay (int /*argc*/, char ** /*argv*/)
     updateOrientation();
 
     GFX.Screen = (u8*)malloc(320*480);//(uint8 *)screen->pixels + 64;
-    GFX.Pitch = 320;
+    GFX.Pitch = 256;
 
 	GFX.SubScreen = (uint8 *)malloc(512 * 480 * 2);
 	GFX.ZBuffer = (uint8 *)malloc(512 * 480 * 2);
