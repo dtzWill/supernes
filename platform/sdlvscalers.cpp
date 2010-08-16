@@ -81,16 +81,16 @@ public:
 
 	virtual uint8* getDrawBuffer() const
 	{
-		const int Bpp = screen->format->BitsPerPixel / 8;
-		const int pitch = screen->pitch;
-		return ((uint8*) screen->pixels)
+		const int Bpp = m_screen->format->BitsPerPixel / 8;
+		const int pitch = m_screen->pitch;
+		return ((uint8*) m_screen->pixels)
 			+ (m_area.x * Bpp)
 			+ (m_area.y * pitch);
 	};
 
 	virtual unsigned int getDrawBufferPitch() const
 	{
-		return screen->pitch;
+		return m_screen->pitch;
 	};
 
 	virtual void getRenderedGUIArea(unsigned short & x, unsigned short & y,
