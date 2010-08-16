@@ -1,7 +1,10 @@
 #!/usr/bin/make
 
-CPPFLAGS := -I. $(shell sdl-config --cflags) $(shell pkg-config --cflags x11)
-LDLIBS := -lz $(shell sdl-config --libs) $(shell pkg-config --libs x11) -lpopt
+CC=gcc
+CXX=g++
+
+CPPFLAGS := -I. $(shell sdl-config --cflags) #$(shell pkg-config --cflags x11)
+LDLIBS := -lz $(shell sdl-config --libs) #$(shell pkg-config --libs x11) -lpopt
 
 -include config.mk
 
