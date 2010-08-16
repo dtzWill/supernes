@@ -66,7 +66,6 @@
 #ifndef USE_OPENGLES
 SDL_Surface *screen, *gfxscreen;
 #endif
-uint16 *RGBconvert;
 extern uint32 xs, ys, cl, cs;
 
 #ifndef _ZAURUS
@@ -114,14 +113,6 @@ void S9xInitDisplay (int /*argc*/, char ** /*argv*/)
 	GFX.ZBuffer = (uint8 *)malloc(512 * 480 * 2);
 	GFX.SubZBuffer = (uint8 *)malloc(512 * 480 * 2);
 
-	RGBconvert = (uint16 *)malloc(65536 * 2);
-	if (!RGBconvert)
-	{
-//		OutOfMemory();
-		S9xExit();
-	}
-	for (uint32 i = 0; i < 65536; i++) 
-		((uint16 *)(RGBconvert))[i] = ((i >> 11) << 10) | ((((i >> 5) & 63) >> 1) << 5) | (i & 31);
 #else
     GL_Init();
     GL_InitTexture();
@@ -134,17 +125,6 @@ void S9xInitDisplay (int /*argc*/, char ** /*argv*/)
 	GFX.ZBuffer = (uint8 *)malloc(512 * 480 * 2);
 	GFX.SubZBuffer = (uint8 *)malloc(512 * 480 * 2);
 
-
-    //Get rid of this! Let the GPU convert for us!
-	RGBconvert = (uint16 *)malloc(65536 * 2);
-	if (!RGBconvert)
-	{
-//		OutOfMemory();
-		S9xExit();
-	}
-	for (uint32 i = 0; i < 65536; i++) 
-		//((uint16 *)(RGBconvert))[i] = ((i >> 11) << 10) | ((((i >> 5) & 63) >> 1) << 5) | (i & 31);
-		((uint16 *)(RGBconvert))[i] = i << 1;//((i >> 11) << 10) | ((((i >> 5) & 63) >> 1) << 5) | (i & 31);
 #endif
 }
 

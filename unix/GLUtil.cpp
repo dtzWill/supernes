@@ -182,11 +182,7 @@ void GL_Init()
         "uniform sampler2D s_texture;                        \n"
         "void main()                                         \n"
         "{                                                   \n"
-        "  vec4 color = texture2D( s_texture, v_texCoord );  \n"
-        "  gl_FragColor.r = color.r;                         \n"
-        "  gl_FragColor.g = color.g;                         \n"
-        "  gl_FragColor.b = color.b;                         \n"
-        "  gl_FragColor.a = 1.0;                             \n"
+        "  gl_FragColor = texture2D( s_texture, v_texCoord );\n"
         "}                                                   \n";
 
     // Load the shaders and get a linked program object
@@ -243,8 +239,8 @@ void GL_InitTexture()
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
     checkError();
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, srcWidth, srcHeight, 0, GL_RGBA,
-            GL_UNSIGNED_SHORT_5_5_5_1, NULL );
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, srcWidth, srcHeight, 0, GL_RGB,
+            GL_UNSIGNED_SHORT_5_6_5, NULL );
     checkError();
 
 #if 0
@@ -447,7 +443,7 @@ void GL_RenderPix(u8 * pix)
     glBindTexture(GL_TEXTURE_2D, texture);
     glTexSubImage2D( GL_TEXTURE_2D,0,
             0,0, srcWidth,srcHeight,
-            GL_RGBA,GL_UNSIGNED_SHORT_5_5_5_1,pix);
+            GL_RGB,GL_UNSIGNED_SHORT_5_6_5,pix);
 
     checkError();
 
