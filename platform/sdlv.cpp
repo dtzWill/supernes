@@ -93,8 +93,14 @@ static void freeVideoSurface()
 static void setupVideoSurface()
 {
 	// Real surface area.
+#if 0
 	const unsigned gameWidth = IMAGE_WIDTH;
 	const unsigned gameHeight = IMAGE_HEIGHT;
+#else
+	const unsigned gameWidth = 320;
+	const unsigned gameHeight = 480;
+#endif
+
 
 #ifdef MAEMO
 	// Under Maemo we know that the window manager will automatically

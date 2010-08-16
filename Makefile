@@ -8,11 +8,17 @@ CPPFLAGS := -I. $(shell sdl-config --cflags) \
 LDLIBS := -lz $(shell sdl-config --libs) \
 	-lpopt -L$(shell pwd)
 
--include config.mk
+OPTFLAGS += -O3 -mcpu=cortex-a8 -mfpu=neon -ftree-vectorize -mfloat-abi=softfp -ffast-math -fsingle-precision-constant
+
+#-include config.mk
+
+CXXFLAGS += $(OPTFLAGS)
+CPPFLAGS += $(OPTFLAGS)
+CFLAGS += $(OPTFLAGS)
 
 ARCH=armel
 # Sane defaults
-CONF_GUI?=1
+CONF_GUI?=0
 ifeq ($(ARCH),armel)
 	CONF_BUILD_ASM_CPU?=1
 	CONF_BUILD_ASM_SPC700?=1
