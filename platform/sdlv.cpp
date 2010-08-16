@@ -58,7 +58,7 @@ static void setupVideoSurface()
 	SDL_ShowCursor(SDL_DISABLE);
  
 	// Each scaler may have its own pitch
-	GFX.Pitch = gameWidth;
+	GFX.Pitch = gameWidth * 2;
 	GFX.ZPitch = GFX.Pitch / 2;
 	// gfx & tile.cpp depend on the zbuffer pitch being always half of the color buffer pitch.
 	// Which is a pity, since the color buffer might be much larger.
@@ -70,7 +70,7 @@ static void setupVideoSurface()
 
 	GFX.Delta = (GFX.SubScreen - GFX.Screen) >> 1;
 	GFX.DepthDelta = GFX.SubZBuffer - GFX.ZBuffer;
-	GFX.PPL = GFX.Pitch;
+	GFX.PPL = GFX.Pitch / 2;
 
   GUI.ScaleX = GUI.ScaleY = 1.0;
   GUI.RenderX = GUI.RenderY = 0;
