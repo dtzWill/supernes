@@ -4,9 +4,9 @@ CC=gcc
 CXX=g++
 
 CPPFLAGS := -I. $(shell sdl-config --cflags) \
-	-Ipopt-1.14
+	-Ideps/popt-1.14
 LDLIBS := -lz $(shell sdl-config --libs) \
-	-lpopt -Lpopt-1.14/.libs
+	-lpopt -L$(shell pwd)
 
 -include config.mk
 
@@ -104,8 +104,18 @@ remake: clean deps all
 
 -include $(DEPS)
 
-drnoksnes: $(OBJS)
+drnoksnes: $(OBJS) libpopt.a
 	$(CXX) $(CXXFLAGS) $(LDFLAGS) $(OBJS) $(LDLIBS) -o $@
+
+
+libpopt.a:
+	cd deps/popt-1.14 && \
+	./configure && \
+	$(MAKE) -j8;
+	cp deps/popt-1.14/.libs/libpopt.a $@
+
+#libpopt.so.0: libpopt.so
+#	cp $^ $@
 
 install: drnoksnes
 	install drnoksnes $(DESTDIR)/usr/games
