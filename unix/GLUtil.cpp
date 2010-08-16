@@ -153,7 +153,7 @@ void GL_Init()
     checkError();
     checkError();
     // Black background
-    glClearColor( 0.0f, 0.0f, 1.0f, 1.0f );
+    glClearColor( 0.0f, 0.0f, 0.0f, 1.0f );
     checkError();
 
     // Remove unnecessary operations..
