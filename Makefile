@@ -13,7 +13,7 @@ LDLIBS := -lz $(shell sdl-config --libs) \
 #on the device :(
 #OPTFLAGS += -O3 -mcpu=cortex-a8 -mfpu=neon -ftree-vectorize -mfloat-abi=softfp -ffast-math -fsingle-precision-constant
 
-#-include config.mk
+-include config.mk
 
 CXXFLAGS += $(OPTFLAGS)
 CPPFLAGS += $(OPTFLAGS)
@@ -116,7 +116,6 @@ remake: clean deps all
 
 drnoksnes: $(OBJS) libpopt.a
 	$(CXX) $(CXXFLAGS) $(LDFLAGS) $(OBJS) $(LDLIBS) -o $@
-
 
 libpopt.a:
 	cd deps/popt-1.14 && \
