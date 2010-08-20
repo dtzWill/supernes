@@ -59,8 +59,8 @@
 #define SNES_WIDTH		256
 #define SNES_HEIGHT		224
 #define SNES_HEIGHT_EXTENDED	239
-#define IMAGE_WIDTH		(Settings.SupportHiRes ? SNES_WIDTH * 2 : SNES_WIDTH)
-#define IMAGE_HEIGHT		(Settings.SupportHiRes ? SNES_HEIGHT_EXTENDED * 2 : SNES_HEIGHT_EXTENDED)
+#define IMAGE_WIDTH		(SNES_WIDTH * 2)
+#define IMAGE_HEIGHT		(SNES_HEIGHT_EXTENDED * 2)
 
 #define SNES_MAX_NTSC_VCOUNTER  262
 #define SNES_MAX_PAL_VCOUNTER   312
@@ -304,7 +304,6 @@ struct SSettings{
     bool8  FixFrequency;
     
     // Graphics options
-    bool8  SupportHiRes;
     bool8  Mode7Interpolate;
 
     // SNES graphics options

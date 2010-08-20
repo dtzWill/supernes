@@ -2999,7 +2999,7 @@ void S9xUpdateScreen () // ~30-50ms! (called from FLUSH_REDRAW())
     uint32 endy = GFX.EndY;
 
 #ifndef RC_OPTIMIZED
-	if (Settings.SupportHiRes &&
+	if (
 	  (PPU.BGMode == 5 || PPU.BGMode == 6 || IPPU.LatchedInterlace)) {
 		if (PPU.BGMode == 5 || PPU.BGMode == 6) {
 		    IPPU.RenderedScreenWidth = 512;
@@ -3598,7 +3598,7 @@ void S9xUpdateScreen () // ~30-50ms! (called from FLUSH_REDRAW())
 		    }
 		}
 #ifndef RC_OPTIMIZE // no hi res
-    if (Settings.SupportHiRes && PPU.BGMode != 5 && PPU.BGMode != 6)
+    if (PPU.BGMode != 5 && PPU.BGMode != 6)
     {
 	if (IPPU.DoubleWidthPixels)
 	{

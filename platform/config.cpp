@@ -208,7 +208,6 @@ static void loadDefaults()
 
 	Settings.ForceTransparency = FALSE;	// We'll enable those later
 
-	Settings.SupportHiRes = FALSE;
 	Settings.ApplyCheats = FALSE;
 	Settings.TurboMode = FALSE;
 	Settings.TurboSkipFrames = 15;
