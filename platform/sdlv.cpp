@@ -159,7 +159,7 @@ bool8_32 S9xInitUpdate ()
 	478 if hi-res. SNES screen modes are being supported.
  */
 // TODO Above.
-bool8_32 S9xDeinitUpdate (int width, int height, bool8_32 sixteenBit)
+bool8_32 S9xDeinitUpdate (int width, int height)
 {
   GL_RenderPix(GFX.Screen);
 #if CONF_EXIT_BUTTON

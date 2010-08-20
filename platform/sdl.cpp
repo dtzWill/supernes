@@ -15,7 +15,7 @@
 #include "hacks.h"
 #include "snapshot.h"
 
-#define kPollEveryNFrames		5		//Poll input only every this many frames
+#define kPollEveryNFrames		1	//Poll input only every this many frames
 
 #if CONF_GUI
 #include "osso.h"

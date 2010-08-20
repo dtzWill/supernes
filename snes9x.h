@@ -304,8 +304,6 @@ struct SSettings{
     bool8  FixFrequency;
     
     // Graphics options
-    bool8  SixteenBit;
-    bool8  Transparency;
     bool8  SupportHiRes;
     bool8  Mode7Interpolate;
 

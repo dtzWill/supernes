@@ -207,8 +207,6 @@ static void loadDefaults()
 	Settings.ControllerOption = SNES_JOYPAD;
 
 	Settings.ForceTransparency = FALSE;	// We'll enable those later
-	Settings.Transparency = FALSE;
-	Settings.SixteenBit = TRUE;
 
 	Settings.SupportHiRes = FALSE;
 	Settings.ApplyCheats = FALSE;
@@ -303,10 +301,6 @@ static void parseArgs(poptContext optCon)
 			case 4:
 				Config.fullscreen = true;
 				break;
-			case 5:
-				Settings.SixteenBit = TRUE;
-				Settings.Transparency = TRUE;
-				break;
 			case 6:
 				free(Config.scaler);
 				Config.scaler = strdup(poptGetOptArg(optCon));
@@ -349,10 +343,10 @@ static void parseArgs(poptContext optCon)
 				Settings.SoundBufferSize = atoi(poptGetOptArg(optCon));
 				break;
 			case 16:
-				Config.touchscreenInput = 1;
+				Config.touchscreenInput = 2;
 				break;
 			case 17:
-				Config.touchscreenInput = 1;
+				Config.touchscreenInput = 2;
 				Config.touchscreenShow = true;
 				break;
 			case 18:
