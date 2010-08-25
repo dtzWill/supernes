@@ -10,8 +10,6 @@ LDLIBS := -lz $(shell sdl-config --libs) \
 	-lGLESv2 -lpdl -Wl,-rpath=/usr/local/lib \
 	-lSDL -lSDL_ttf
 
-#This breaks on the all versions of CodeSourcery's toolchain that work with the glibc
-#on the device :(
 OPTFLAGS += -O3 -mcpu=cortex-a8 -mfpu=neon -ftree-vectorize -mfloat-abi=softfp -ffast-math -fsingle-precision-constant
 
 -include config.mk
