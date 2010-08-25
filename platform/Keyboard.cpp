@@ -41,5 +41,8 @@ void initialize_keymappings(struct config * C)
   Config.joypad1Mapping[SDLK_w] = SNES_LEFT_MASK;
   Config.joypad1Mapping[SDLK_d] = SNES_RIGHT_MASK;
 
+  //Back gesture--'quit'
+  Config.action[SDLK_ESCAPE] = kActionQuit;
+
 }
 

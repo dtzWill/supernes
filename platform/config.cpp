@@ -7,7 +7,6 @@
 #include "port.h"
 #include "snes9x.h"
 #include "display.h"
-#include "RomSelector.h"
 
 #if CONF_GUI
 #include "osso.h"
@@ -420,16 +419,6 @@ void S9xLoadConfig(int argc, char ** argv)
 
 	// Command line parameters (including --conf args)
 	parseArgs(optCon);
-
-#if CONF_GUI
-	if (!OssoOk())
-#endif
-	{
-		if (!gotRomFile()) {
-			// User did not specify a ROM file in the command line
-      romFile = romSelector();
-		}
-	}
 
 	poptFreeContext(optCon);
 }

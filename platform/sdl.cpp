@@ -16,6 +16,7 @@
 #include "hacks.h"
 #include "snapshot.h"
 #include "GLUtil.h"
+#include "RomSelector.h"
 
 #define kPollEveryNFrames		1	//Poll input only every this many frames
 
@@ -254,43 +255,48 @@ int main(int argc, char ** argv) {
 	OssoConfig();					// Apply specific hildon-games config.
 #endif
 
-	// S9x initialization
-	S9xInitDisplay(argc, argv);
-	S9xInitAudioOutput();
-	S9xInitInputDevices();
-	S9xInit();
-	S9xReset();
+  // S9x initialization
+  S9xInitDisplay(argc, argv);
+  S9xInitAudioOutput();
+  S9xInitInputDevices();
+  S9xInit();
 
-	// Load rom and related files: state, unfreeze if needed
-	loadRom();
-	resumeGame();
+  while(1)
+  {
+    S9xReset();
 
-	// Late initialization
-	sprintf(String, "DrNokSnes - %s", Memory.ROMName);
-	S9xSetTitle(String);
-	S9xHacksLoadFile(Config.hacksFile);
-	if (!S9xGraphicsInit())
-         DIE("S9xGraphicsInit failed");
-	S9xAudioOutputEnable(true);
+    S9xSetRomFile(romSelector());
 
-	do {
-		frameSync();			// May block, or set frameskip to true.
-		S9xMainLoop();			// Does CPU things, renders if needed.
-		pollEvents();
-#if CONF_GUI
-		pollOssoEvents();
-#endif
-	} while (!Config.quitting);
-	
-	// Deinitialization
-	S9xAudioOutputEnable(false);
-	S9xDeinitInputDevices();
-	S9xDeinitAudioOutput();
-	S9xDeinitDisplay();
+    // Load rom and related files: state, unfreeze if needed
+    loadRom();
+    resumeGame();
 
-	// Save state
-	Memory.SaveSRAM(S9xGetFilename(FILE_SRAM));
-	pauseGame();
+    // Late initialization
+    sprintf(String, "DrNokSnes - %s", Memory.ROMName);
+    S9xSetTitle(String);
+    S9xHacksLoadFile(Config.hacksFile);
+    if (!S9xGraphicsInit())
+      DIE("S9xGraphicsInit failed");
+    S9xAudioOutputEnable(true);
+
+    do {
+      frameSync();			// May block, or set frameskip to true.
+      S9xMainLoop();			// Does CPU things, renders if needed.
+      pollEvents();
+    } while (!Config.quitting);
+    Config.quitting = false;
+
+
+    // Save state
+    Memory.SaveSRAM(S9xGetFilename(FILE_SRAM));
+    pauseGame();
+  }
+
+  // Deinitialization
+  S9xAudioOutputEnable(false);
+  S9xDeinitInputDevices();
+  S9xDeinitAudioOutput();
+  S9xDeinitDisplay();
 
 	// Late deinitialization
 	S9xGraphicsDeinit();
