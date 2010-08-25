@@ -17,20 +17,27 @@
 #ifndef _OPTIONS_H_
 #define _OPTIONS_H_
 
-#include "../getopt.h"
-
 typedef struct
 {
     char * name;
     int * value;
-} vba_option;
+} game_option;
 
-bool writeOptions( char * cfgfile, vba_option * option_list, int option_count, bool useHex );
-int readOptions( char * cfgfile, vba_option * option_list, int option_count, bool useHex );
-
-extern struct option sdlOptions[];
+bool writeOptions( char * cfgfile, game_option * option_list, int option_count, bool useHex );
+int readOptions( char * cfgfile, game_option * option_list, int option_count, bool useHex );
 
 extern void writeOptions();
 extern void readOptions();
+
+
+/*-----------------------------------------------------------------------------
+ *  Options
+ *-----------------------------------------------------------------------------*/
+
+extern int orientation;
+extern int soundMute;
+extern int gl_filter;
+extern int showSpeed;
+extern int autosave;
 
 #endif //_OPTIONS_H_

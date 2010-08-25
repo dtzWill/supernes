@@ -422,5 +422,6 @@ END_EXTERN_C
 #define SCROLL_FACTOR 20
 #define SNES_HOME "/media/internal/snes9x"
 #define ROM_PATH SNES_HOME "/roms/"
+#define OPTIONS_CFG "snes9x.cfg"
 
 #endif

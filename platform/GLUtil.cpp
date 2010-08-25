@@ -20,8 +20,7 @@
 #include "pdl.h"
 #include <assert.h>
 //#include "Controller.h"
-
-int orientation = ORIENTATION_PORTRAIT;
+#include "Options.h"
 
 /*-----------------------------------------------------------------------------
  *  GL variables
@@ -42,8 +41,6 @@ GLint samplerLoc;
 SDL_Surface *surface = NULL;
 SDL_Overlay *overlay = NULL;
 SDL_Rect overlay_rect;
-
-int gl_filter = GL_LINEAR;
 
 int srcWidth = -1;
 int srcHeight = -1;
