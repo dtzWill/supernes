@@ -10,5 +10,5 @@
        "main": "drnoksnes",
        "icon": "icon.png",
        "removable": "true",
-       "requiredMemory" : 30
+       "requiredMemory" : 40
 }
