@@ -279,12 +279,12 @@ int main(int argc, char ** argv) {
       DIE("S9xGraphicsInit failed");
     S9xAudioOutputEnable(true);
 
+    Config.running = true;
     do {
       frameSync();			// May block, or set frameskip to true.
       S9xMainLoop();			// Does CPU things, renders if needed.
       pollEvents();
-    } while (!Config.quitting);
-    Config.quitting = false;
+    } while (Config.running);
 
 
     // Save state
@@ -314,7 +314,7 @@ int main(int argc, char ** argv) {
 void S9xDoAction(unsigned char action)
 {
 	if (action & kActionQuit) 
-		Config.quitting = true;
+		Config.running = false;
 
 	if (action & kActionToggleFullscreen) {
 		S9xVideoToggleFullscreen();

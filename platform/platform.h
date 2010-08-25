@@ -30,8 +30,8 @@ extern struct config {
 	char touchscreenInput;
 	/** Display touchscreen controls grid */
 	bool touchscreenShow;
-	/** If true, next time the main loop is entered application will close */
-	bool quitting;
+	/** If false, next time the main loop is entered application will close */
+	bool running;
 	/** Current scancode->joypad mapping */
 	unsigned short joypad1Mapping[256];
 	unsigned short joypad2Mapping[256];

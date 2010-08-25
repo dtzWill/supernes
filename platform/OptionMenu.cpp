@@ -18,6 +18,7 @@
 #include "OptionMenu.h"
 #include "GLUtil.h"
 #include "snes9x.h"
+#include "platform.h"
 #include "RomSelector.h"
 //#include "Options.h"
 //#include "Controller.h"
@@ -47,6 +48,12 @@
 #define SKIN_PREVIEW_HEIGHT (NATIVE_RES_WIDTH/2 + 20)
 #define SKIN_PREVIEW_WIDTH (NATIVE_RES_HEIGHT/2 + 20)
 #define SKIN_SPACING (SKIN_PREVIEW_HEIGHT + 10)
+#endif
+
+#if SUPPORT_SKINS
+#define TOP_LEVEL_COUNT ( Config.running ? 6 : 4 )
+#else
+#define TOP_LEVEL_COUNT ( Config.running ? 5 : 3 )
 #endif
 
 //Colors (BGR format)
@@ -354,7 +361,7 @@ void menuSetOrientation( bool portrait )
   orientation = portrait ? ORIENTATION_PORTRAIT : ORIENTATION_LANDSCAPE_R;
   updateOrientation();
 }
-
+#if 0
 void menuSetAutoSkip( bool on )
 {
   //Update autoframeskip
@@ -371,8 +378,10 @@ void menuSetSpeed( bool show )    { showSpeed = show ? 1 : 0;                   
 void menuSetAutoSave( bool on )   { autosave = on;                               }
 void menuSetOnscreen( bool on )   { use_on_screen = on; updateOrientation();     }
 void menuSetTurboToggle( bool on ){ turbo_toggle = on;                           }
+#endif
 
 bool menuGetOrientation() { return orientation == ORIENTATION_PORTRAIT; }
+#if 0
 bool menuGetSound()       { return !soundMute;                          }
 bool menuGetFilter()      { return gl_filter == GL_LINEAR;              }
 bool menuGetSpeed()       { return showSpeed != 0;                      }
@@ -380,6 +389,7 @@ bool menuGetAutoSave()    { return autosave;                            }
 bool menuGetAutoSkip()    { return autoFrameSkip;                       }
 bool menuGetOnscreen()    { return use_on_screen;                       }
 bool menuGetTurboToggle() { return turbo_toggle;                        }
+#endif
 
 //Call this to display the options menu...
 eMenuResponse optionsMenu()
@@ -395,7 +405,7 @@ eMenuResponse optionsMenu()
   }
 
   //Make sure we have the proper values...
-  readOptions();
+  //readOptions();
 
   initializeMenu();
 
@@ -408,7 +418,7 @@ eMenuResponse optionsMenu()
     switch( menuState )
     {
       case MENU_MAIN:
-        doMenu( options_screen, topMenu, emulating? 6 : 4 );
+        doMenu( options_screen, topMenu, TOP_LEVEL_COUNT );
         break;
       case MENU_OPTIONS:
         doMenu( options_screen, optionMenu, 8 );
@@ -451,19 +461,15 @@ void initializeMenu()
 
   //Top-level menu
   int x = 0;
-#if SUPPORT_SKINS
-  topMenu = (menuOption*)malloc( ( emulating ? 5 : 3 )*sizeof(menuOption));
-#else
-  topMenu = (menuOption*)malloc( ( emulating ? 6 : 4 )*sizeof(menuOption));
-#endif
-  if (emulating)
+  topMenu = (menuOption*)malloc( TOP_LEVEL_COUNT*sizeof(menuOption));
+  if (Config.running)
     topMenu[x++] = createButton( "Save states",           changeToSaveState,   100+x*OPTION_SPACING);
   topMenu[x++] =   createButton( "Options",               changeToOptionsState,100+x*OPTION_SPACING);
 #if SUPPORT_SKINS
   topMenu[x++] =   createButton( skins_label,             changeToSkinState,   100+x*OPTION_SPACING);
 #endif
   topMenu[x++] =   createButton( "Help",                  changeToHelpState,   100+x*OPTION_SPACING);
-  if (emulating)
+  if (Config.running)
     topMenu[x++] = createButton( "Choose different game", moveToRomSelector,   100+x*OPTION_SPACING);
   topMenu[x++] =   createButton( "Return",                exitMenu,            100+x*OPTION_SPACING);
 
@@ -477,9 +483,11 @@ void initializeMenu()
   
   //Options menu
   x = 0;
-  optionMenu = (menuOption*)malloc(8*sizeof(menuOption));
+  //optionMenu = (menuOption*)malloc(8*sizeof(menuOption));
+  optionMenu = (menuOption*)malloc(2*sizeof(menuOption));
   optionMenu[x++] = createToggle( "Orientation",   "Port",   "Land",  50+x*OPTION_SPACING,
       menuSetOrientation, menuGetOrientation );
+#if 0
   optionMenu[x++] = createToggle( "Sound",         "On",     "Off",   50+x*OPTION_SPACING,
       menuSetSound, menuGetSound );
   optionMenu[x++] = createToggle( "Filter",        "Smooth", "Sharp", 50+x*OPTION_SPACING,
@@ -492,6 +500,7 @@ void initializeMenu()
       menuSetAutoSkip, menuGetAutoSkip );
   optionMenu[x++] = createToggle( "Turbo toggles", "On",     "Off",   50+x*OPTION_SPACING,
       menuSetTurboToggle, menuGetTurboToggle );
+#endif
   optionMenu[x++] = createButton( "Return", changeToMainState, 50+x*OPTION_SPACING );
   
 #if SUPPORT_SKINS
@@ -543,11 +552,7 @@ void freeMenu( menuOption ** opt, int numOptions )
 
 void freeMenu()
 {
-#if SUPPORT_SKINS
-  freeMenu( &topMenu, emulating ? 6 : 4 );
-#else
-  freeMenu( &topMenu, emulating ? 5 : 3 );
-#endif
+  freeMenu( &topMenu, TOP_LEVEL_COUNT );
   freeMenu( &saveMenu,   4 );
 #if SUPPORT_SKINS
   freeMenu( &skinMenu,   3 );
@@ -595,7 +600,8 @@ void doMenu( SDL_Surface * s, menuOption * options, int numOptions )
               printf( "Chose: %s\n", options[i].text );
               done = true;
               //Make sure any changes to options are saved.
-              writeOptions();
+              //XXX: Uncomment this when we have option-writing
+              //writeOptions();
               break;
             }
           }
@@ -659,8 +665,8 @@ void doHelp( SDL_Surface * s )
       case HELP_WIKI:
       {
         bool launchWiki = !showLines( s, helpWiki, 14, false );
-        if (launchWiki)
-          PDL_LaunchBrowser( VBA_WIKI );
+        //if (launchWiki)
+        //  PDL_LaunchBrowser( VBA_WIKI );
         break;
       }
       default:
@@ -699,12 +705,12 @@ bool optionHitCheck( menuOption * opt, int x, int y )
         if ( x >= TOGGLE_ON_X && x < TOGGLE_OFF_X )
         {
           hit = true;
-          sdlReadState(opt->save.save_num);
+          //sdlReadState(opt->save.save_num);
           menuDone = true;
         } else if ( x >= TOGGLE_OFF_X )
         {
           hit = true;
-          sdlWriteState(opt->save.save_num);
+          //sdlWriteState(opt->save.save_num);
           menuDone = true;
         }
         break;
