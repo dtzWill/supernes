@@ -1,7 +1,7 @@
 {
        "title": "Snes9x",
        "id": "@APPID@",
-       "version": "0.0.1-beta",
+       "version": "0.0.1",
        "release_date": "25-Aug-2010",
        "vendor": "WebOS Internals",
        "vendor_email": "support@webos-internals.org",
