@@ -608,7 +608,7 @@ void doMenu( SDL_Surface * s, menuOption * options, int numOptions )
             }
           }
           break;
-        case SDL_KEYUP:
+        case SDL_KEYDOWN:
           //Back-gesture /swipe back
           if ( event.key.keysym.sym == SDLK_ESCAPE )
           {
@@ -801,7 +801,7 @@ bool showLines( SDL_Surface * s, line * lines, int numlines, bool center )
                 done = true;
                 break;
             }
-            if ( event.type == SDL_KEYUP &&
+            if ( event.type == SDL_KEYDOWN &&
                  event.key.keysym.sym == SDLK_ESCAPE )
             {
               done = true;

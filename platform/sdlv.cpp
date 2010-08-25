@@ -123,7 +123,8 @@ bool videoEventFilter(const SDL_Event& event)
 		if (event.type == SDL_ACTIVEEVENT &&
 		   (event.active.state & SDL_APPINPUTFOCUS) &&
 		   !event.active.gain) {
-			S9xDoAction(kActionQuit);
+      //XXX Hmm, something to do here?
+			//S9xDoAction(kActionQuit);
 			return true;
 		}
 	}

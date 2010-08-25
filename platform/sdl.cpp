@@ -314,13 +314,6 @@ int main(int argc, char ** argv) {
 
 void S9xDoAction(unsigned char action)
 {
-	if (action & kActionQuit) 
-		Config.running = false;
-
-	if (action & kActionToggleFullscreen) {
-		S9xVideoToggleFullscreen();
-	}
-
 	if (action & kActionQuickLoad1) {
 		const char * file = S9xGetQuickSaveFilename(1);
 		int result = S9xUnfreezeGame(file);

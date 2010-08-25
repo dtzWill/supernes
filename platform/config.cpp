@@ -125,21 +125,22 @@ static unsigned short buttonNameToBit(const char *s) {
 }
 
 static unsigned char actionNameToBit(const char *s) {
-	if (strcasecmp(s, "quit") == 0) {
-		return kActionQuit;
-	} else if (strcasecmp(s, "fullscreen") == 0) {
-		return kActionToggleFullscreen;
-	} else if (strcasecmp(s, "quickload1") == 0) {
-		return kActionQuickLoad1;
-	} else if (strcasecmp(s, "quicksave1") == 0) {
-		return kActionQuickSave1;
-	} else if (strcasecmp(s, "quickload2") == 0) {
-		return kActionQuickLoad2;
-	} else if (strcasecmp(s, "quicksave2") == 0) {
-		return kActionQuickSave2;
-	} else {
-		DIE("Bad action name: %s\n", s);
-	}
+  DIE("We don't support setting these by command line!!");
+	//if (strcasecmp(s, "quit") == 0) {
+	//	return kActionQuit;
+	//} else if (strcasecmp(s, "fullscreen") == 0) {
+	//	return kActionToggleFullscreen;
+	//} else if (strcasecmp(s, "quickload1") == 0) {
+	//	return kActionQuickLoad1;
+	//} else if (strcasecmp(s, "quicksave1") == 0) {
+	//	return kActionQuickSave1;
+	//} else if (strcasecmp(s, "quickload2") == 0) {
+	//	return kActionQuickLoad2;
+	//} else if (strcasecmp(s, "quicksave2") == 0) {
+	//	return kActionQuickSave2;
+	//} else {
+	//	DIE("Bad action name: %s\n", s);
+	//}
 }
 
 const char * S9xGetFilename(FileTypes file)
