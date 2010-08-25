@@ -85,6 +85,7 @@ OBJS += platform/sdl.o platform/sdlv.o platform/sdla.o platform/sdli.o
 #WebOS port stuff
 OBJS += platform/GLUtil.o
 OBJS += platform/RomSelector.o
+OBJS += platform/OptionMenu.o
 OBJS += platform/Keyboard.o
 
 ifeq ($(CONF_XSP), 1)
