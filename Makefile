@@ -12,7 +12,7 @@ LDLIBS := -lz $(shell sdl-config --libs) \
 
 #This breaks on the all versions of CodeSourcery's toolchain that work with the glibc
 #on the device :(
-#OPTFLAGS += -O3 -mcpu=cortex-a8 -mfpu=neon -ftree-vectorize -mfloat-abi=softfp -ffast-math -fsingle-precision-constant
+OPTFLAGS += -O3 -mcpu=cortex-a8 -mfpu=neon -ftree-vectorize -mfloat-abi=softfp -ffast-math -fsingle-precision-constant
 
 -include config.mk
 
