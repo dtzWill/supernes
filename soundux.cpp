@@ -44,6 +44,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
+#include "platform/Options.h"
 
 #define CLIP16(v) \
 if ((v) < -32768) \
@@ -919,7 +920,7 @@ void S9xMixSamples(signed short *buffer, int sample_count)
 	// 16-bit sound only
 	int J;
 
-	if (so.mute_sound)
+	if (so.mute_sound || soundMute)
 	{
 		memset32(buffer, 0, sample_count>>1);
 		return;

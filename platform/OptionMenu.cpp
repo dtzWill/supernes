@@ -20,11 +20,10 @@
 #include "snes9x.h"
 #include "platform.h"
 #include "RomSelector.h"
-//#include "Options.h"
+#include "Options.h"
 //#include "Controller.h"
 #include "pdl.h"
 //#include "resize++.h"
-#include "soundux.h"
 
 #include <SDL.h>
 #include <SDL_ttf.h>
@@ -366,11 +365,11 @@ void menuSetOrientation( bool portrait )
   updateOrientation();
 }
 
-void menuSetSound( bool sound )   { S9xSetSoundMute(!sound);                        }
+void menuSetSound( bool sound )   { soundMute = !sound;                          }
 void menuSetFilter( bool smooth ) { gl_filter = smooth ? GL_LINEAR : GL_NEAREST;
-                                    GL_InitTexture(IMAGE_WIDTH,IMAGE_HEIGHT);       }
-void menuSetSpeed( bool show )    { Settings.DisplayFrameRate = show;               }
-void menuSetAutoSave( bool on )   { Config.snapshotLoad = Config.snapshotSave = on; }
+                                    GL_InitTexture(IMAGE_WIDTH,IMAGE_HEIGHT);    }
+void menuSetSpeed( bool show )    { showSpeed = show;                            }
+void menuSetAutoSave( bool on )   { autosave = on;                               }
 #if 0
 void menuSetAutoSkip( bool on )
 {
@@ -386,10 +385,10 @@ void menuSetTurboToggle( bool on ){ turbo_toggle = on;                          
 #endif
 
 bool menuGetOrientation() { return orientation == ORIENTATION_PORTRAIT; }
-bool menuGetSound()       { return !so.mute_sound;                      }
+bool menuGetSound()       { return !soundMute;                          }
 bool menuGetFilter()      { return gl_filter == GL_LINEAR;              }
-bool menuGetSpeed()       { return Settings.DisplayFrameRate;           }
-bool menuGetAutoSave()    { return Config.snapshotSave;                 }
+bool menuGetSpeed()       { return showSpeed;                           }
+bool menuGetAutoSave()    { return autosave;                            }
 #if 0
 bool menuGetAutoSkip()    { return autoFrameSkip;                       }
 bool menuGetOnscreen()    { return use_on_screen;                       }
@@ -410,7 +409,7 @@ eMenuResponse optionsMenu()
   }
 
   //Make sure we have the proper values...
-  //readOptions();
+  readOptions();
 
   initializeMenu();
 
@@ -604,8 +603,7 @@ void doMenu( SDL_Surface * s, menuOption * options, int numOptions )
               printf( "Chose: %s\n", options[i].text );
               done = true;
               //Make sure any changes to options are saved.
-              //XXX: Uncomment this when we have option-writing
-              //writeOptions();
+              writeOptions();
               break;
             }
           }

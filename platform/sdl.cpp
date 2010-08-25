@@ -18,6 +18,7 @@
 #include "GLUtil.h"
 #include "RomSelector.h"
 #include "OptionMenu.h"
+#include "Options.h"
 
 #define kPollEveryNFrames		1	//Poll input only every this many frames
 
@@ -77,7 +78,7 @@ static void loadRom()
 
 static void resumeGame()
 {
-	if (!Config.snapshotLoad) return;
+	if (!autosave) return;
 
 	const char * file = S9xGetFilename(FILE_FREEZE);
 	int result = S9xUnfreezeGame(file);
@@ -88,12 +89,12 @@ static void resumeGame()
 		printf(" failed");
 		FILE* fp = fopen(file, "rb");
 		if (fp) {
-			if (Config.snapshotSave) {
-				puts(", but the file exists, so I'm not going to overwrite it");
-				Config.snapshotSave = false;
-			} else {
+			//if (Config.snapshotSave) {
+			//	puts(", but the file exists, so I'm not going to overwrite it");
+			//	Config.snapshotSave = false;
+			//} else {
 				puts(" (bad file?)");
-			}
+			//}
 			fclose(fp);
 		} else {
 			puts(" (file does not exist)");
@@ -105,7 +106,7 @@ static void resumeGame()
 
 static void pauseGame()
 {
-	if (!Config.snapshotSave) return;
+	if (!autosave) return;
 
 	const char * file = S9xGetFilename(FILE_FREEZE);
 	int result = S9xFreezeGame(file);
@@ -142,7 +143,7 @@ static void frameSync() {
 		}
 
 		// Take care of framerate display
-		if (Settings.DisplayFrameRate) {
+		if (Settings.DisplayFrameRate || showSpeed) {
 			static Uint32 last = 0;
 			// Update framecounter every second
 			if (now > last && (now - last > 1000)) {
@@ -196,7 +197,7 @@ static void frameSync() {
 		next1 += Settings.FrameTime;
 
 		// Take care of framerate display
-		if (Settings.DisplayFrameRate) {
+		if (Settings.DisplayFrameRate || showSpeed) {
 			// Update every theoretical 60 frames
 			if (IPPU.FrameCount % Memory.ROMFramesPerSecond == 0) {
 				IPPU.DisplayedRenderedFrameCount =

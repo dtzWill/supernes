@@ -52,6 +52,7 @@
 #include "cheats.h"
 #include "tile.h"
 #include "misc.h"
+#include "platform/Options.h"
 
 #define USE_CRAZY_OPTS
 
@@ -510,7 +511,7 @@ void S9xEndScreenRefresh()
 			PPU.CGDATA[0] = saved;
 		}
 
-		if (Settings.DisplayFrameRate) {
+		if (Settings.DisplayFrameRate || showSpeed) {
 			S9xDisplayFrameRate();
 		}
 
