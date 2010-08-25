@@ -80,8 +80,11 @@ OBJS += hacks.o
 OBJS += platform/path.o platform/config.o
 OBJS += platform/sdl.o platform/sdlv.o platform/sdla.o platform/sdli.o
 #OBJS += platform/sdlvscalers.o
+
+#WebOS port stuff
 OBJS += platform/GLUtil.o
 OBJS += platform/RomSelector.o
+OBJS += platform/Keyboard.o
 
 ifeq ($(CONF_XSP), 1)
 	CPPFLAGS += -DCONF_XSP=1 $(shell pkg-config --cflags xsp)

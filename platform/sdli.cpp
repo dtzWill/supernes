@@ -5,7 +5,7 @@
 #include "snes9x.h"
 #include "display.h"
 #include "sdlv.h" // Dispatching video-related events
-#include "webos.h"
+#include "Keyboard.h"
 
 #if CONF_ZEEMOTE
 #include "zeemote.h"
