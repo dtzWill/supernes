@@ -261,10 +261,10 @@ int main(int argc, char ** argv) {
   S9xInitDisplay(argc, argv);
   S9xInitAudioOutput();
   S9xInitInputDevices();
-  S9xInit();
 
   while(1)
   {
+    S9xInit();
     S9xReset();
 
     S9xSetRomFile(romSelector());
@@ -288,10 +288,13 @@ int main(int argc, char ** argv) {
       pollEvents();
     } while (Config.running);
 
+    S9xGraphicsDeinit();
 
     // Save state
     Memory.SaveSRAM(S9xGetFilename(FILE_SRAM));
     pauseGame();
+    Memory.Deinit();
+    S9xDeinitAPU();
   }
 
   // Deinitialization
@@ -301,8 +304,6 @@ int main(int argc, char ** argv) {
   S9xDeinitDisplay();
 
 	// Late deinitialization
-	S9xGraphicsDeinit();
-	Memory.Deinit();
 	S9xUnloadConfig();
 #if CONF_GUI
 	OssoDeinit();
