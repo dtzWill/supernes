@@ -17,12 +17,12 @@
 
 #include "OptionMenu.h"
 #include "GLUtil.h"
-#include "VBA.h"
+#include "snes9x.h"
 #include "RomSelector.h"
-#include "Options.h"
-#include "Controller.h"
+//#include "Options.h"
+//#include "Controller.h"
 #include "pdl.h"
-#include "resize++.h"
+//#include "resize++.h"
 
 #include <SDL.h>
 #include <SDL_ttf.h>
@@ -37,6 +37,9 @@
 #define TOGGLE_OFF_X 240
 #define TOGGLE_Y 5
 
+//For now, until I get skins for this
+#define SUPPORT_SKINS 0
+#if SUPPORT_SKINS
 //Skin stuff
 #define SKIN_TXT_X TOGGLE_TXT_X
 #define SKIN_NUM_X TOGGLE_ON_X
@@ -44,6 +47,7 @@
 #define SKIN_PREVIEW_HEIGHT (NATIVE_RES_WIDTH/2 + 20)
 #define SKIN_PREVIEW_WIDTH (NATIVE_RES_HEIGHT/2 + 20)
 #define SKIN_SPACING (SKIN_PREVIEW_HEIGHT + 10)
+#endif
 
 //Colors (BGR format)
 static SDL_Color textColor = { 255, 255, 255 };
@@ -116,7 +120,9 @@ static menuOption * topMenu = NULL;
 static menuOption * saveMenu = NULL;
 static menuOption * optionMenu = NULL;
 static menuOption * helpMenu = NULL;
+#if SUPPORT_SKINS
 static menuOption * skinMenu = NULL;
+#endif
 static TTF_Font * menu_font = NULL;
 
 static enum menuState menuState;
@@ -132,7 +138,9 @@ void freeMenu();
 bool showLines( SDL_Surface * s, line * lines, int numlines, bool center );
 
 void updateToggleSurface( menuOption * opt );
+#if SUPPORT_SKINS
 void updateSkinSurface( menuOption * opt );
+#endif
 
 /*-----------------------------------------------------------------------------
  *  Constructors for menu items
@@ -181,6 +189,7 @@ menuOption createToggle( char * text, char * on, char * off, int y, void (*set)(
   return opt;
 }
 
+#if SUPPORT_SKINS
 menuOption createSkinWidget( int y )
 {
   menuOption opt;
@@ -192,6 +201,7 @@ menuOption createSkinWidget( int y )
 
   return opt;
 }
+#endif
 
 menuOption createSave( int num, int y )
 {
@@ -257,6 +267,7 @@ void updateToggleSurface( menuOption * opt )
   SDL_FreeSurface( s_off );
 }
 
+#if SUPPORT_SKINS
 void updateSkinSurface( menuOption * opt )
 {
   if ( opt->surface )
@@ -316,13 +327,16 @@ void updateSkinSurface( menuOption * opt )
   SDL_FreeSurface( s_num  );
   SDL_FreeSurface( rect_surface );
 }
+#endif
 
 /*-----------------------------------------------------------------------------
  *  Functors for menu options...
  *-----------------------------------------------------------------------------*/
 void changeToMainState(void)     { menuState = MENU_MAIN;    }
 void changeToSaveState(void)     { menuState = MENU_SAVES;   }
+#if SUPPORT_SKINS
 void changeToSkinState(void)     { menuState = MENU_SKINS;   }
+#endif
 void changeToOptionsState(void)  { menuState = MENU_OPTIONS; }
 void changeToHelpState(void)     { menuState = MENU_HELP;    }
 
@@ -399,9 +413,11 @@ eMenuResponse optionsMenu()
       case MENU_OPTIONS:
         doMenu( options_screen, optionMenu, 8 );
         break;
+#if SUPPORT_SKINS
       case MENU_SKINS:
         doMenu( options_screen, skinMenu, 3 );
         break;
+#endif
       case MENU_SAVES:
         doMenu( options_screen, saveMenu, 4 );
         break;
@@ -426,18 +442,26 @@ void initializeMenu()
 
   //Static initializers for all this is a PITA, so do it dynamically.
   
+#if SUPPORT_SKINS
   //Tell the user they have skins, and how many.
   char skins_label[1024];
   snprintf( skins_label, 1024, "Skins (%d)", skin_count );
   skins_label[1024]='\0';
+#endif
 
   //Top-level menu
   int x = 0;
+#if SUPPORT_SKINS
+  topMenu = (menuOption*)malloc( ( emulating ? 5 : 3 )*sizeof(menuOption));
+#else
   topMenu = (menuOption*)malloc( ( emulating ? 6 : 4 )*sizeof(menuOption));
+#endif
   if (emulating)
     topMenu[x++] = createButton( "Save states",           changeToSaveState,   100+x*OPTION_SPACING);
   topMenu[x++] =   createButton( "Options",               changeToOptionsState,100+x*OPTION_SPACING);
+#if SUPPORT_SKINS
   topMenu[x++] =   createButton( skins_label,             changeToSkinState,   100+x*OPTION_SPACING);
+#endif
   topMenu[x++] =   createButton( "Help",                  changeToHelpState,   100+x*OPTION_SPACING);
   if (emulating)
     topMenu[x++] = createButton( "Choose different game", moveToRomSelector,   100+x*OPTION_SPACING);
@@ -470,6 +494,7 @@ void initializeMenu()
       menuSetTurboToggle, menuGetTurboToggle );
   optionMenu[x++] = createButton( "Return", changeToMainState, 50+x*OPTION_SPACING );
   
+#if SUPPORT_SKINS
   //Skin menu
   x = 0;
   skinMenu = (menuOption*)malloc(3*sizeof(menuOption));
@@ -477,6 +502,7 @@ void initializeMenu()
       menuSetOnscreen, menuGetOnscreen );
   skinMenu[x++] = createSkinWidget( 100+x*OPTION_SPACING );
   skinMenu[x++] = createButton( "Return", changeToMainState, 100+x*OPTION_SPACING+SKIN_SPACING );
+#endif
 
   //Help menu
   x = 0;
@@ -517,9 +543,15 @@ void freeMenu( menuOption ** opt, int numOptions )
 
 void freeMenu()
 {
+#if SUPPORT_SKINS
   freeMenu( &topMenu, emulating ? 6 : 4 );
+#else
+  freeMenu( &topMenu, emulating ? 5 : 3 );
+#endif
   freeMenu( &saveMenu,   4 );
+#if SUPPORT_SKINS
   freeMenu( &skinMenu,   3 );
+#endif
   freeMenu( &helpMenu,   5 );
   freeMenu( &optionMenu, 8 );
 }
@@ -694,12 +726,14 @@ bool optionHitCheck( menuOption * opt, int x, int y )
         opt->toggle.set(!opt->toggle.get());
 #endif
         break;
+#if SUPPORT_SKINS
       case WIDGET_SKIN:
         hit = true;
         nextSkin();
         writeOptions();
 
         break;
+#endif
     }
   }
 
