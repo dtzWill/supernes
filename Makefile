@@ -17,6 +17,7 @@ OPTFLAGS += -O3 -mcpu=cortex-a8 -mfpu=neon -ftree-vectorize -mfloat-abi=softfp -
 CXXFLAGS += $(OPTFLAGS)
 CPPFLAGS += $(OPTFLAGS)
 CFLAGS += $(OPTFLAGS)
+LDFLAGS += -s #strip the binary
 
 #Enabling this breaks SA-1 support, which is important
 #for games such as Kirby Super Star and Super Mario RPG :(
