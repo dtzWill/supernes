@@ -216,7 +216,7 @@ menuOption createSkinWidget( int y )
 menuOption createSave( int num, int y )
 {
   char buf[1024];
-  sprintf( buf, "Save %d", num + 1 );
+  sprintf( buf, "Save %d", num );
   menuOption opt;
   opt.text = strdup( buf );
   opt.type = WIDGET_SAVE;
@@ -481,9 +481,9 @@ void initializeMenu()
   //Save menu
   x = 0;
   saveMenu = (menuOption*)malloc(4*sizeof(menuOption));
-  saveMenu[x++] = createSave( x, 100+x*OPTION_SPACING );
-  saveMenu[x++] = createSave( x, 100+x*OPTION_SPACING );
-  saveMenu[x++] = createSave( x, 100+x*OPTION_SPACING );
+  saveMenu[x++] = createSave( 1, 100+x*OPTION_SPACING );
+  saveMenu[x++] = createSave( 2, 100+x*OPTION_SPACING );
+  saveMenu[x++] = createSave( 3, 100+x*OPTION_SPACING );
   saveMenu[x++] = createButton( "Return", changeToMainState, 100+x*OPTION_SPACING );
   
   //Options menu
@@ -709,12 +709,12 @@ bool optionHitCheck( menuOption * opt, int x, int y )
         if ( x >= TOGGLE_ON_X && x < TOGGLE_OFF_X )
         {
           hit = true;
-          S9xSaveState(opt->save.save_num);
+          S9xLoadState(opt->save.save_num);
           menuDone = true;
         } else if ( x >= TOGGLE_OFF_X )
         {
           hit = true;
-          S9xLoadState(opt->save.save_num);
+          S9xSaveState(opt->save.save_num);
           menuDone = true;
         }
         break;
