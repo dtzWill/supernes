@@ -3,6 +3,8 @@
 
 #include "port.h"
 
+#define MAX_KEY 1024
+
 // Configuration and command line parsing
 void S9xLoadConfig(int argc, char ** argv);
 void S9xUnloadConfig();
@@ -33,9 +35,9 @@ extern struct config {
 	/** If false, next time the main loop is entered application will close */
 	bool running;
 	/** Current scancode->joypad mapping */
-	unsigned short joypad1Mapping[256];
-	unsigned short joypad2Mapping[256];
-	unsigned char action[256];
+	unsigned short joypad1Mapping[MAX_KEY];
+	unsigned short joypad2Mapping[MAX_KEY];
+	unsigned char action[MAX_KEY];
 } Config;
 
 // Video

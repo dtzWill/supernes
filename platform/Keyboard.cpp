@@ -44,5 +44,15 @@ void initialize_keymappings(struct config * C)
   //Back gesture--'quit'
   Config.action[SDLK_ESCAPE] = kActionMenu;
 
+  //Save states
+  Config.action[SDLK_1] = kActionQuickSave1;
+  Config.action[SDLK_2] = kActionQuickSave2;
+  Config.action[SDLK_3] = kActionQuickSave3;
+
+  //Load states
+  Config.action[SDLK_4] = kActionQuickLoad1;
+  Config.action[SDLK_5] = kActionQuickLoad2;
+  Config.action[SDLK_6] = kActionQuickLoad3;
+
 }
 
