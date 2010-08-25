@@ -51,8 +51,7 @@ static void setupVideoSurface()
 	if (gameHeight > GUI.Height || gameWidth > GUI.Width)
 		DIE("Video is larger than window size!");
 
-  GL_Init(gameWidth, gameHeight);
-  GL_InitTexture();
+  GL_InitTexture(gameWidth, gameHeight);
   updateOrientation();
 	
 	SDL_ShowCursor(SDL_DISABLE);

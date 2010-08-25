@@ -3,6 +3,7 @@
 #include <sys/time.h>
 #include <time.h>
 #include <SDL.h>
+#include <SDL_ttf.h>
 
 #include "platform.h"
 #include "snes9x.h"
@@ -14,6 +15,7 @@
 #include "soundux.h"
 #include "hacks.h"
 #include "snapshot.h"
+#include "GLUtil.h"
 
 #define kPollEveryNFrames		1	//Poll input only every this many frames
 
@@ -231,6 +233,17 @@ int main(int argc, char ** argv) {
 	// Initialise SDL
 	if (SDL_Init(SDL_INIT_VIDEO|SDL_INIT_AUDIO) < 0) 
 		DIE("SDL_Init: %s", SDL_GetError());
+
+  GL_Init();
+
+  //Init SDL_TTF to print text to the screen...
+  if ( TTF_Init() )
+  {
+    fprintf( stderr, "Error initializing SDL_ttf!\n" );
+    exit ( 1 );
+  }
+
+	S9xInitDisplay(argc, argv);
 
 	// Configure snes9x
 #if CONF_GUI

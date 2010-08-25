@@ -41,8 +41,6 @@
 #ifndef _SNES9X_H_
 #define _SNES9X_H_
 
-#define VERSION "1.39"
-
 #include <stdio.h>
 #include <stdlib.h>
 #include "port.h"
@@ -411,5 +409,18 @@ const char *S9xGetFilename(enum FileTypes file);
  */
 const char *S9xGetQuickSaveFilename(unsigned int slot);
 END_EXTERN_C
+
+
+/*-----------------------------------------------------------------------------
+ *  Misc stuff for the webos port
+ *-----------------------------------------------------------------------------*/
+#define VERSION "0.0.1-beta"
+#define FONT "/usr/share/fonts/PreludeCondensed-Medium.ttf"
+#define TITLE "SNES9x for WebOS (" VERSION ")"
+#define AUTHOR_TAG "Support: webos@wdtz.org"
+#define OPTIONS_TEXT "MENU"
+#define SCROLL_FACTOR 20
+#define SNES_HOME "/media/internal/snes9x"
+#define ROM_PATH SNES_HOME "/roms/"
 
 #endif

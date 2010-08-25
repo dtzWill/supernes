@@ -46,8 +46,8 @@ extern float portrait_vertexCoords[];
 extern float land_l_vertexCoords[];
 extern float land_r_vertexCoords[];
 
-extern void GL_Init(int w, int h);
-extern void GL_InitTexture();
+extern void GL_Init();
+extern void GL_InitTexture(int w, int h);
 extern void updateOrientation();
 extern void GL_RenderPix(u8 * pix);
 

@@ -7,6 +7,7 @@
 #include "port.h"
 #include "snes9x.h"
 #include "display.h"
+#include "RomSelector.h"
 
 #if CONF_GUI
 #include "osso.h"
@@ -192,6 +193,8 @@ static void loadDefaults()
 	basePath = 0;
 
 	Config.enableAudio = true;
+  Config.joypad1Enabled = true;
+  Config.joypad2Enabled = false;
 
 	Settings.SoundPlaybackRate = 22050;
 	Settings.Stereo = TRUE;
@@ -424,10 +427,7 @@ void S9xLoadConfig(int argc, char ** argv)
 	{
 		if (!gotRomFile()) {
 			// User did not specify a ROM file in the command line
-			fprintf(stderr, "You need to specify a ROM, like this:\n");
-			poptPrintUsage(optCon, stdout, 0);
-			poptFreeContext(optCon);
-			exit(2);
+      romFile = romSelector();
 		}
 	}
 

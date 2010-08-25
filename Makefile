@@ -7,7 +7,8 @@ CPPFLAGS := -I. $(shell sdl-config --cflags) \
 	-Ideps/popt-1.14
 LDLIBS := -lz $(shell sdl-config --libs) \
 	-lpopt -L$(shell pwd) \
-	-lGLESv2 -lpdl -Wl,-rpath=/usr/local/lib
+	-lGLESv2 -lpdl -Wl,-rpath=/usr/local/lib \
+	-lSDL -lSDL_ttf
 
 #This breaks on the all versions of CodeSourcery's toolchain that work with the glibc
 #on the device :(
@@ -80,6 +81,7 @@ OBJS += platform/path.o platform/config.o
 OBJS += platform/sdl.o platform/sdlv.o platform/sdla.o platform/sdli.o
 #OBJS += platform/sdlvscalers.o
 OBJS += platform/GLUtil.o
+OBJS += platform/RomSelector.o
 
 ifeq ($(CONF_XSP), 1)
 	CPPFLAGS += -DCONF_XSP=1 $(shell pkg-config --cflags xsp)

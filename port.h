@@ -53,9 +53,6 @@ I can't take it anymore, it's too convoluted.  So I've commented out the entire
 	with a single define-block for each target platform.
 */
 
-//Title
-#define TITLE "DrNokSnes"
-
 //Required Includes
 #include "pixform.h"
 #include <zlib.h>

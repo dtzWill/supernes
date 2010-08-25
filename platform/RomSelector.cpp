@@ -14,11 +14,12 @@
  * ===========================================================================
  */
 
-#include "VBA.h"
+#include "snes9x.h"
 #include "RomSelector.h"
 #include "GLUtil.h"
-#include "OptionMenu.h"
+//#include "OptionMenu.h"
 #include "pdl.h"
+#include <SDL_ttf.h>
 
 #include <dirent.h>
 
@@ -33,13 +34,13 @@ typedef struct
   SDL_Color color;
 } line;
 static line no_roms[] {
-{ "Welcome to VBA!",                     textColor},
+{ "Welcome to Snes9x!",                  textColor},
 { "Looks like you don't have any ROMs.", textColor},
 { "To play games, put the roms in ",     textColor},
-{ "/vba/roms",                           hiColor},
+{ "/snes9x/roms",                        hiColor},
 { "using USB mode",                      textColor},
 { "(make the directory if needed)",      textColor},
-{ "and then launch VBA again",           textColor},
+{ "and then launch Snes9x again",        textColor},
 { "For more information, see the help",  textColor},
 { "(click here to launch help)",         linkColor}
 };
@@ -72,9 +73,7 @@ int romFilter( const struct dirent * file )
     extPtr++;
 
     return !(
-            strcasecmp( extPtr, "gb" ) &&
-            strcasecmp( extPtr, "gbc" ) &&
-            strcasecmp( extPtr, "gba" ) &&
+            strcasecmp( extPtr, "smc" ) &&
             strcasecmp( extPtr, "zip" ) );
 }
 
@@ -220,7 +219,8 @@ char * romSelector()
                 {
                   //Regardless of what the text says, if the user clicks, launch the help...
                   //PDL_LaunchBrowser( VBA_WIKI );
-                  doHelpExternal( selector );
+                  //FIXME: add options, launchable help!
+                  //doHelpExternal( selector );
                 }
 
             }
@@ -313,7 +313,8 @@ char * romSelector()
                         }
                         if ( event.button.y > bottom && event.button.x < selector->w / 2 )
                         {
-                          optionsMenu();
+                          //FIXME: Launch options menu
+                          //optionsMenu();
                         }
                     }
                     break;

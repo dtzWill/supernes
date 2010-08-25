@@ -128,10 +128,8 @@ float texCoords[] =
 
 GLushort indices[] = { 0, 1, 2, 1, 2, 3 };
 
-void GL_Init(int width, int height)
+void GL_Init()
 {
-    srcWidth = width;
-    srcHeight = height;
 
     assert( !SDL_GL_SetAttribute( SDL_GL_RED_SIZE, 8 ) );
     assert( !SDL_GL_SetAttribute( SDL_GL_GREEN_SIZE, 8 ) );
@@ -205,8 +203,11 @@ void GL_Init(int width, int height)
 }
 
 
-void GL_InitTexture()
+void GL_InitTexture(int _srcWidth, int _srcHeight)
 {
+    srcWidth = _srcWidth;
+    srcHeight = _srcHeight;
+
     //delete it if we already have one
     if ( texture )
     {
