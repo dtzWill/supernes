@@ -165,7 +165,7 @@ char * romSelector()
 
     //Display general information
     int top, bottom;
-    int borderColor = SDL_MapRGB( selector->format, 85, 0, 0 );//BGR
+    int borderColor = SDL_MapRGB( selector->format, 0, 0, 85 );
     SDL_Surface * title = TTF_RenderText_Blended( font_normal, TITLE, textColor );
     top = 10+title->h+10;
 
@@ -389,7 +389,7 @@ char * romSelector()
            int index = scroll_offset + i;
            if ( index == romSelected )
            {
-               int hiColor = SDL_MapRGB( selector->format, 0, 128, 128 );//BGR
+               int hiColor = SDL_MapRGB( selector->format, 128, 128, 0 );
                SDL_Rect hiRect;
                hiRect.x = 10;
                hiRect.y = top+(10+roms_surface[0]->h)*i - 5;

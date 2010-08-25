@@ -62,10 +62,10 @@ static void setupVideoSurface()
 	// gfx & tile.cpp depend on the zbuffer pitch being always half of the color buffer pitch.
 	// Which is a pity, since the color buffer might be much larger.
 
-	GFX.Screen = (uint8 *) malloc(GFX.Pitch * IMAGE_HEIGHT);
-	GFX.SubScreen = (uint8 *) malloc(GFX.Pitch * IMAGE_HEIGHT);
-	GFX.ZBuffer =  (uint8 *) malloc(GFX.ZPitch * IMAGE_HEIGHT);
-	GFX.SubZBuffer = (uint8 *) malloc(GFX.ZPitch * IMAGE_HEIGHT);
+	GFX.Screen = (uint8 *) calloc(1,GFX.Pitch * IMAGE_HEIGHT);
+	GFX.SubScreen = (uint8 *) calloc(1,GFX.Pitch * IMAGE_HEIGHT);
+	GFX.ZBuffer =  (uint8 *) calloc(1,GFX.ZPitch * IMAGE_HEIGHT);
+	GFX.SubZBuffer = (uint8 *) calloc(1,GFX.ZPitch * IMAGE_HEIGHT);
 
 	GFX.Delta = (GFX.SubScreen - GFX.Screen) >> 1;
 	GFX.DepthDelta = GFX.SubZBuffer - GFX.ZBuffer;
