@@ -357,9 +357,11 @@ void S9xDoAction(unsigned char action)
 	}
 
   if (action & kActionMenu) {
+    S9xAudioOutputEnable(false);
     eMenuResponse r = optionsMenu();
     if ( r == MENU_RESPONSE_ROMSELECTOR )
       Config.running = false;
+    S9xAudioOutputEnable(true);
   }
 }
 
