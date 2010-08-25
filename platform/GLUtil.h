@@ -51,4 +51,13 @@ extern void GL_InitTexture(int w, int h);
 extern void updateOrientation();
 extern void GL_RenderPix(u8 * pix);
 
+enum orientation
+{
+    ORIENTATION_PORTRAIT,    // default mode, portrait
+    ORIENTATION_LANDSCAPE_R, // landscape, keyboard on right
+    ORIENTATION_LANDSCAPE_L  // landscape, keyboard on left
+};
+
+extern int orientation;
+
 #endif // _GL_UTIL_H_

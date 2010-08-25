@@ -21,12 +21,6 @@
 #include <assert.h>
 //#include "Controller.h"
 
-enum orientation
-{
-    ORIENTATION_PORTRAIT,    // default mode, portrait
-    ORIENTATION_LANDSCAPE_R, // landscape, keyboard on right
-    ORIENTATION_LANDSCAPE_L  // landscape, keyboard on left
-};
 int orientation = ORIENTATION_PORTRAIT;
 
 /*-----------------------------------------------------------------------------
