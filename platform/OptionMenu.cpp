@@ -56,13 +56,15 @@
 #define TOP_LEVEL_COUNT ( Config.running ? 5 : 3 )
 #endif
 
+#define OPTIONS_COUNT 2
+
 //Colors (BGR format)
 static SDL_Color textColor = { 255, 255, 255 };
-static SDL_Color onColor   = { 255, 200, 200 };
+static SDL_Color onColor   = { 200, 200, 255 };
 static SDL_Color offColor  = {  50,  50,  50 };
 static SDL_Color itemColor = {   0,   0,   0 };
-static SDL_Color linkColor = { 255, 200, 200 };
-static SDL_Color hiColor   = { 200, 200, 255 };
+static SDL_Color linkColor = { 200, 200, 255 };
+static SDL_Color hiColor   = { 255, 200, 200 };
 
 #include "HelpText.h"
 
@@ -307,6 +309,7 @@ void updateSkinSurface( menuOption * opt )
     //Scale the image by half:
     skin_preview = SDL_Resize( skin_preview, 0.5f, true, 1 );
 
+    //XXX: Not required anymore, will need to update when we use this code again
     //Convert to BGR (d'oh)
     SDL_Surface * rgb_surface = SDL_CreateRGBSurface( SDL_SWSURFACE, skin_preview->w, skin_preview->h, 24,
             0xff0000, 0x00ff00, 0x0000ff, 0);
@@ -421,7 +424,7 @@ eMenuResponse optionsMenu()
         doMenu( options_screen, topMenu, TOP_LEVEL_COUNT );
         break;
       case MENU_OPTIONS:
-        doMenu( options_screen, optionMenu, 8 );
+        doMenu( options_screen, optionMenu, OPTIONS_COUNT );
         break;
 #if SUPPORT_SKINS
       case MENU_SKINS:
@@ -483,8 +486,7 @@ void initializeMenu()
   
   //Options menu
   x = 0;
-  //optionMenu = (menuOption*)malloc(8*sizeof(menuOption));
-  optionMenu = (menuOption*)malloc(2*sizeof(menuOption));
+  optionMenu = (menuOption*)malloc(OPTIONS_COUNT*sizeof(menuOption));
   optionMenu[x++] = createToggle( "Orientation",   "Port",   "Land",  50+x*OPTION_SPACING,
       menuSetOrientation, menuGetOrientation );
 #if 0
@@ -558,13 +560,13 @@ void freeMenu()
   freeMenu( &skinMenu,   3 );
 #endif
   freeMenu( &helpMenu,   5 );
-  freeMenu( &optionMenu, 8 );
+  freeMenu( &optionMenu, OPTIONS_COUNT );
 }
 
 void doMenu( SDL_Surface * s, menuOption * options, int numOptions )
 {
   // Menu background, same as rom selector
-  int menuBGColor = SDL_MapRGB( s->format, 85, 0, 0 );//BGR
+  int menuBGColor = SDL_MapRGB( s->format, 0, 0, 85 );
   SDL_FillRect( s, NULL, menuBGColor );
 
   //Draw the menu we were given...
@@ -756,7 +758,7 @@ void moveToRomSelector()
 bool showLines( SDL_Surface * s, line * lines, int numlines, bool center )
 {
     // Menu background, same as rom selector
-    int menuBGColor = SDL_MapRGB( s->format, 85, 0, 0 );//BGR
+    int menuBGColor = SDL_MapRGB( s->format, 0, 0, 85 );
     SDL_FillRect( s, NULL, menuBGColor );
     bool exit = false;
 

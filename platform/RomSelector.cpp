@@ -17,7 +17,7 @@
 #include "snes9x.h"
 #include "RomSelector.h"
 #include "GLUtil.h"
-//#include "OptionMenu.h"
+#include "OptionMenu.h"
 #include "pdl.h"
 #include <SDL_ttf.h>
 
@@ -25,8 +25,8 @@
 
 //In 'BGR' format...
 static SDL_Color textColor = { 255, 255, 255 };
-static SDL_Color hiColor = { 200, 200, 255 };
-static SDL_Color linkColor = { 255, 200, 200 };
+static SDL_Color hiColor = { 255, 200, 200 };
+static SDL_Color linkColor = { 200, 200, 255 };
 
 typedef struct
 {
@@ -219,8 +219,7 @@ char * romSelector()
                 {
                   //Regardless of what the text says, if the user clicks, launch the help...
                   //PDL_LaunchBrowser( VBA_WIKI );
-                  //FIXME: add options, launchable help!
-                  //doHelpExternal( selector );
+                  doHelpExternal( selector );
                 }
 
             }
@@ -313,8 +312,7 @@ char * romSelector()
                         }
                         if ( event.button.y > bottom && event.button.x < selector->w / 2 )
                         {
-                          //FIXME: Launch options menu
-                          //optionsMenu();
+                          optionsMenu();
                         }
                     }
                     break;

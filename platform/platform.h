@@ -73,6 +73,9 @@ void S9xProcessEvents(bool block);
 #define kActionQuickSave1			(1U << 3)
 #define kActionQuickLoad2			(1U << 4)
 #define kActionQuickSave2			(1U << 5)
+#define kActionQuickLoad3			(1U << 6)
+#define kActionQuickSave3			(1U << 7)
+#define kActionMenu           (1U << 8)
 
 void S9xDoAction(unsigned char action);
 

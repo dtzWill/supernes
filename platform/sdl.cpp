@@ -17,6 +17,7 @@
 #include "snapshot.h"
 #include "GLUtil.h"
 #include "RomSelector.h"
+#include "OptionMenu.h"
 
 #define kPollEveryNFrames		1	//Poll input only every this many frames
 
@@ -347,5 +348,25 @@ void S9xDoAction(unsigned char action)
 		S9xSetInfoString("Save slot %u: %s", 2,
 			(result ? "done" : "failed"));
 	}
+
+	if (action & kActionQuickLoad3) {
+		const char * file = S9xGetQuickSaveFilename(3);
+		int result = S9xUnfreezeGame(file);
+		S9xSetInfoString("Load slot %u: %s", 3,
+			(result ? "done" : "failed"));
+	}
+
+	if (action & kActionQuickSave3) {
+		const char * file = S9xGetQuickSaveFilename(3);
+		int result = S9xFreezeGame(file);
+		S9xSetInfoString("Save slot %u: %s", 3,
+			(result ? "done" : "failed"));
+	}
+
+  if (action & kActionMenu) {
+    eMenuResponse r = optionsMenu();
+    if ( r == MENU_RESPONSE_ROMSELECTOR )
+      Config.running = false;
+  }
 }
 
