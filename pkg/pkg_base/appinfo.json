@@ -1,0 +1,14 @@
+{
+       "title": "Snes9x",
+       "id": "@APPID@",
+       "version": "0.0.1-beta",
+       "release_date": "25-Aug-2010",
+       "vendor": "WebOS Internals",
+       "vendor_email": "support@webos-internals.org",
+       "vendor_url": "http://www.webos-internals.org/wiki/Application:SNES9x",
+       "type": "pdk",
+       "main": "drnoksnes",
+       "icon": "icon.png",
+       "removable": "true",
+       "requiredMemory" : 30
+}
