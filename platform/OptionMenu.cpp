@@ -24,6 +24,7 @@
 //#include "Controller.h"
 #include "pdl.h"
 //#include "resize++.h"
+#include "soundux.h"
 
 #include <SDL.h>
 #include <SDL_ttf.h>
@@ -56,7 +57,7 @@
 #define TOP_LEVEL_COUNT ( Config.running ? 5 : 3 )
 #endif
 
-#define OPTIONS_COUNT 2
+#define OPTIONS_COUNT 6
 
 //Colors (BGR format)
 static SDL_Color textColor = { 255, 255, 255 };
@@ -364,6 +365,12 @@ void menuSetOrientation( bool portrait )
   orientation = portrait ? ORIENTATION_PORTRAIT : ORIENTATION_LANDSCAPE_R;
   updateOrientation();
 }
+
+void menuSetSound( bool sound )   { S9xSetSoundMute(!sound);                        }
+void menuSetFilter( bool smooth ) { gl_filter = smooth ? GL_LINEAR : GL_NEAREST;
+                                    GL_InitTexture(IMAGE_WIDTH,IMAGE_HEIGHT);       }
+void menuSetSpeed( bool show )    { Settings.DisplayFrameRate = show;               }
+void menuSetAutoSave( bool on )   { Config.snapshotLoad = Config.snapshotSave = on; }
 #if 0
 void menuSetAutoSkip( bool on )
 {
@@ -374,21 +381,16 @@ void menuSetAutoSkip( bool on )
   frameskipadjust = 0;
 }
 
-void menuSetSound( bool sound )   { soundMute = !sound;                          }
-void menuSetFilter( bool smooth ) { gl_filter = smooth ? GL_LINEAR : GL_NEAREST;
-                                    GL_InitTexture();                            }
-void menuSetSpeed( bool show )    { showSpeed = show ? 1 : 0;                    }
-void menuSetAutoSave( bool on )   { autosave = on;                               }
 void menuSetOnscreen( bool on )   { use_on_screen = on; updateOrientation();     }
 void menuSetTurboToggle( bool on ){ turbo_toggle = on;                           }
 #endif
 
 bool menuGetOrientation() { return orientation == ORIENTATION_PORTRAIT; }
-#if 0
-bool menuGetSound()       { return !soundMute;                          }
+bool menuGetSound()       { return !so.mute_sound;                      }
 bool menuGetFilter()      { return gl_filter == GL_LINEAR;              }
-bool menuGetSpeed()       { return showSpeed != 0;                      }
-bool menuGetAutoSave()    { return autosave;                            }
+bool menuGetSpeed()       { return Settings.DisplayFrameRate;           }
+bool menuGetAutoSave()    { return Config.snapshotSave;                 }
+#if 0
 bool menuGetAutoSkip()    { return autoFrameSkip;                       }
 bool menuGetOnscreen()    { return use_on_screen;                       }
 bool menuGetTurboToggle() { return turbo_toggle;                        }
@@ -489,15 +491,15 @@ void initializeMenu()
   optionMenu = (menuOption*)malloc(OPTIONS_COUNT*sizeof(menuOption));
   optionMenu[x++] = createToggle( "Orientation",   "Port",   "Land",  50+x*OPTION_SPACING,
       menuSetOrientation, menuGetOrientation );
-#if 0
+  optionMenu[x++] = createToggle( "Show Speed",    "On",     "Off",   50+x*OPTION_SPACING,
+      menuSetSpeed, menuGetSpeed );
   optionMenu[x++] = createToggle( "Sound",         "On",     "Off",   50+x*OPTION_SPACING,
       menuSetSound, menuGetSound );
   optionMenu[x++] = createToggle( "Filter",        "Smooth", "Sharp", 50+x*OPTION_SPACING,
       menuSetFilter, menuGetFilter );
-  optionMenu[x++] = createToggle( "Show Speed",    "On",     "Off",   50+x*OPTION_SPACING,
-      menuSetSpeed, menuGetSpeed );
   optionMenu[x++] = createToggle( "Autosave",      "On",     "Off",   50+x*OPTION_SPACING,
       menuSetAutoSave, menuGetAutoSave );
+#if 0
   optionMenu[x++] = createToggle( "Autoframeskip", "On",     "Off",   50+x*OPTION_SPACING,
       menuSetAutoSkip, menuGetAutoSkip );
   optionMenu[x++] = createToggle( "Turbo toggles", "On",     "Off",   50+x*OPTION_SPACING,
@@ -707,12 +709,12 @@ bool optionHitCheck( menuOption * opt, int x, int y )
         if ( x >= TOGGLE_ON_X && x < TOGGLE_OFF_X )
         {
           hit = true;
-          //sdlReadState(opt->save.save_num);
+          S9xSaveState(opt->save.save_num);
           menuDone = true;
         } else if ( x >= TOGGLE_OFF_X )
         {
           hit = true;
-          //sdlWriteState(opt->save.save_num);
+          S9xLoadState(opt->save.save_num);
           menuDone = true;
         }
         break;

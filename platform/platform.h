@@ -79,4 +79,7 @@ void S9xProcessEvents(bool block);
 
 void S9xDoAction(unsigned char action);
 
+void S9xSaveState(int state_num);
+void S9xLoadState(int state_num);
+
 #endif

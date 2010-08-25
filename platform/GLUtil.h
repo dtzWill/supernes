@@ -59,5 +59,6 @@ enum orientation
 };
 
 extern int orientation;
+extern int gl_filter;
 
 #endif // _GL_UTIL_H_

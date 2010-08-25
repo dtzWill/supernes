@@ -357,11 +357,27 @@ void S9xDoAction(unsigned char action)
 	}
 
   if (action & kActionMenu) {
-    S9xAudioOutputEnable(false);
+    bool wasmuted = S9xSetSoundMute(true);
     eMenuResponse r = optionsMenu();
     if ( r == MENU_RESPONSE_ROMSELECTOR )
       Config.running = false;
-    S9xAudioOutputEnable(true);
+    S9xSetSoundMute(wasmuted);
   }
 }
 
+
+void S9xSaveState(int num)
+{
+  const char * file = S9xGetQuickSaveFilename(num);
+  int result = S9xFreezeGame(file);
+  S9xSetInfoString("Save slot %u: %s", num,
+      (result ? "done" : "failed"));
+}
+
+void S9xLoadState(int num)
+{
+  const char * file = S9xGetQuickSaveFilename(num);
+  int result = S9xUnfreezeGame(file);
+  S9xSetInfoString("Load slot %u: %s", num,
+      (result ? "done" : "failed"));
+}
