@@ -20,6 +20,8 @@ CFLAGS += $(OPTFLAGS)
 
 #Enabling this breaks SA-1 support, which is important
 #for games such as Kirby Super Star and Super Mario RPG :(
+#However, this breaks Donkey Kong Country, and possibly others.
+#(fails its copy protection check)
 CONF_BUILD_ASM_CPU=0
 CONF_BUILD_ASM_SPC700=0
 
