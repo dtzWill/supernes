@@ -32,8 +32,8 @@ void initialize_keymappings(struct config * C)
   Config.joypad1Mapping[SDLK_m] = SNES_B_MASK;
 
   //Start/select
-  Config.joypad1Mapping[SDLK_RETURN] =    SNES_START_MASK;
-  Config.joypad1Mapping[SDLK_BACKSPACE] = SNES_SELECT_MASK;
+  Config.joypad1Mapping[SDLK_BACKSPACE] = SNES_START_MASK;
+  Config.joypad1Mapping[SDLK_RETURN] =    SNES_SELECT_MASK;
 
   //D-pad
   Config.joypad1Mapping[SDLK_e] = SNES_UP_MASK;
