@@ -76,7 +76,7 @@ static void loadRom()
 	Memory.LoadSRAM(file); 
 }
 
-static void resumeGame()
+void resumeGame()
 {
 	if (!autosave) return;
 
@@ -104,7 +104,7 @@ static void resumeGame()
 	}
 }
 
-static void pauseGame()
+void pauseGame()
 {
 	if (!autosave) return;
 

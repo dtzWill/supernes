@@ -116,13 +116,23 @@ void S9xVideoToggleFullscreen()
 	drawOnscreenControls();
 }
 
+extern void pauseGame(void);
+
 bool videoEventFilter(const SDL_Event& event)
 {
 		if (event.type == SDL_ACTIVEEVENT &&
 		   (event.active.state & SDL_APPINPUTFOCUS)) {
       bool active = event.active.gain;
-      if (active) {
+      if (!active) {
         //XXX: Pause!
+        //For now, we just save.
+
+        //Ensure SRAM is written
+        Memory.SaveSRAM(S9xGetFilename(FILE_SRAM));
+        //autosave (if enabled)
+        pauseGame();
+        printf( "Saved!!!\n");
+
       } else {
         //XXX: Resume!
       }
