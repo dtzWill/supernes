@@ -281,6 +281,7 @@ int main(int argc, char ** argv) {
     if (!S9xGraphicsInit())
       DIE("S9xGraphicsInit failed");
     S9xAudioOutputEnable(true);
+    SDL_PauseAudio(0);
 
     Config.running = true;
     do {
@@ -333,7 +334,7 @@ void S9xDoAction(unsigned char action)
 
 
   if (action & kActionMenu) {
-    SDL_PauseAudio(1);
+    S9xAudioOutputEnable(false);
     //Save state -- both SRAM and autosave
     {
       //SRAM
@@ -344,7 +345,8 @@ void S9xDoAction(unsigned char action)
     eMenuResponse r = optionsMenu();
     if ( r == MENU_RESPONSE_ROMSELECTOR )
       Config.running = false;
-    SDL_PauseAudio(0);
+    else
+      S9xAudioOutputEnable(true);
   }
 }
 
