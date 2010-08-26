@@ -333,7 +333,7 @@ void S9xDoAction(unsigned char action)
 
 
   if (action & kActionMenu) {
-    bool wasmuted = S9xSetSoundMute(true);
+    SDL_PauseAudio(1);
     //Save state -- both SRAM and autosave
     {
       //SRAM
@@ -344,7 +344,7 @@ void S9xDoAction(unsigned char action)
     eMenuResponse r = optionsMenu();
     if ( r == MENU_RESPONSE_ROMSELECTOR )
       Config.running = false;
-    S9xSetSoundMute(wasmuted);
+    SDL_PauseAudio(0);
   }
 }
 
