@@ -130,7 +130,6 @@ bool videoEventFilter(const SDL_Event& event)
       //We handled this event
       return true;
 		}
-	}
 
   //We didn't handle this, carry on
   return false;
