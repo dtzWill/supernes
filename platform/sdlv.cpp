@@ -118,17 +118,21 @@ void S9xVideoToggleFullscreen()
 
 bool videoEventFilter(const SDL_Event& event)
 {
-	// If we're in power save mode, and this is a defocus event, quit.
-	if (Config.saver) {
 		if (event.type == SDL_ACTIVEEVENT &&
-		   (event.active.state & SDL_APPINPUTFOCUS) &&
-		   !event.active.gain) {
-      //XXX Hmm, something to do here?
-			//S9xDoAction(kActionQuit);
-			return true;
+		   (event.active.state & SDL_APPINPUTFOCUS)) {
+      bool active = event.active.gain;
+      if (active) {
+        //XXX: Pause!
+      } else {
+        //XXX: Resume!
+      }
+
+      //We handled this event
+      return true;
 		}
 	}
 
+  //We didn't handle this, carry on
   return false;
 }
 
