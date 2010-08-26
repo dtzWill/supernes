@@ -253,6 +253,7 @@ int main(int argc, char ** argv) {
 	OssoInit();						// Hildon-games-wrapper initialization.
 #endif
 	S9xLoadConfig(argc, argv);		// Load config files and parse cmd line.
+  readOptions();
 #if CONF_GUI
 	OssoConfig();					// Apply specific hildon-games config.
 #endif
@@ -333,6 +334,13 @@ void S9xDoAction(unsigned char action)
 
   if (action & kActionMenu) {
     bool wasmuted = S9xSetSoundMute(true);
+    //Save state -- both SRAM and autosave
+    {
+      //SRAM
+      Memory.SaveSRAM(S9xGetFilename(FILE_SRAM));
+      //autosave (if enabled)
+      pauseGame();
+    }
     eMenuResponse r = optionsMenu();
     if ( r == MENU_RESPONSE_ROMSELECTOR )
       Config.running = false;
