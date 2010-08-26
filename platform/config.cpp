@@ -227,6 +227,33 @@ static void loadDefaults()
 	Settings.AutoSaveDelay = 15*60; // Autosave each 15 minutes.
 }
 
+char * FileBasename(const char * name)
+{
+  static char filebuffer[2048];
+
+  int len = strlen(name);
+
+  const char *p = name + len - 1;
+
+  while(true) {
+    if(*p == '/' ||
+        *p == '\\') {
+      p++;
+      break;
+    }
+    len--;
+    p--;
+    if(len == 0)
+      break;
+  }
+
+  if(len == 0)
+    strcpy(filebuffer, name);
+  else
+    strcpy(filebuffer, p);
+  return filebuffer;
+}
+
 void S9xSetRomFile(const char * path)
 {
 	if (romFile) {
@@ -235,15 +262,17 @@ void S9xSetRomFile(const char * path)
 	}
 
 	romFile = strndup(path, PATH_MAX);
-	basePath = strdup(romFile);
+
+  //Strip the extension...
+	char * noext = strdup(romFile);
 
 	// Truncate base path at the last '.' char
-	char * c = strrchr(basePath, '.');
+	char * c = strrchr(noext, '.');
 	if (c) {
 		if (strcasecmp(c, ".gz") == 0) {
 			// Ignore the .gz part when truncating
 			*c = '\0';
-			c = strrchr(basePath, '.');
+			c = strrchr(noext, '.');
 			if (c) {
 				*c = '\0';
 			}
@@ -251,6 +280,16 @@ void S9xSetRomFile(const char * path)
 			*c = '\0';
 		}
 	}
+
+  //Relocate to appdir, instead of /media/internal/.../
+  char * sav_path = "savs/";
+  char * baseName = FileBasename(noext);
+  basePath = (char *)malloc(strlen(sav_path)+strlen(baseName)+1);
+  strcpy(basePath, sav_path);
+  strcpy(basePath+strlen(sav_path),baseName);
+  printf("basePath: %s\n", basePath );
+
+  free(noext);
 }
 
 static bool gotRomFile() 
