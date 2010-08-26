@@ -22,14 +22,14 @@
 void initialize_keymappings(struct config * C)
 {
   //Action keys
-  Config.joypad1Mapping[SDLK_k] =     SNES_X_MASK;
-  Config.joypad1Mapping[SDLK_l] =     SNES_Y_MASK;
+  Config.joypad1Mapping[SDLK_k] =     SNES_Y_MASK;
+  Config.joypad1Mapping[SDLK_l] =     SNES_X_MASK;
   Config.joypad1Mapping[SDLK_m] =     SNES_B_MASK;
   Config.joypad1Mapping[SDLK_COMMA] = SNES_A_MASK;
 
   //Triggers
-  Config.joypad1Mapping[SDLK_m] = SNES_B_MASK;
-  Config.joypad1Mapping[SDLK_m] = SNES_B_MASK;
+  Config.joypad1Mapping[SDLK_i] = SNES_TL_MASK;
+  Config.joypad1Mapping[SDLK_o] = SNES_TR_MASK;
 
   //Start/select
   Config.joypad1Mapping[SDLK_BACKSPACE] = SNES_START_MASK;
