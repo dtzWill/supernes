@@ -29,18 +29,18 @@ typedef struct
 line helpROMs[][14] =
 {
 {
-    {"Welcome to VisualBoyAdvance (VBA)!",          textColor },
+    {"Welcome to Snes9x!",                          textColor },
     {" ",                                           textColor },
-    {"VBA is a Gameboy, Gameboy Color,",            textColor },
-    {"and Gameboy Advance emulator.",               textColor },
+    {"Snes9x is a Super Nintendo Entertainment",    textColor },
+    {"System (SNES) emulator.",                     textColor },
     {" ",                                           textColor },
-    {"What that means is VBA allows you",           textColor },
-    {"to play games made for those systems.",       textColor },
-    {"However, much like your gameboy needs",       textColor },
-    {"separate games to play, VBA needs games",     textColor },
-    {"too.  These games are generally called",      textColor },
-    {"'ROM's, which are computer copies of",        textColor },
-    {"games for those Gameboy devices.",            textColor },
+    {"What that means is Snes9x allows you",        textColor },
+    {"to play games made for the SNES.",            textColor },
+    {"However, much like a real SNES needs",        textColor },
+    {"separate games to play, Snes9x needs",        textColor },
+    {"game too.  These games are generally",        textColor },
+    {"called 'ROM's, which are computer copies",    textColor },
+    {"of games for the SNES console.",              textColor },
     {" ",                                           textColor },
     {"(Tap to go to next screen)",                  linkColor }
 },
@@ -48,17 +48,17 @@ line helpROMs[][14] =
     {"Where do I get ROMs?",                        textColor },
     {" ",                                           textColor },
     {"There are many great ROMs freely available",  textColor },
-    {"all over the internet.  Examples of such",    textColor },
-    {"include \"Anguna\" and \"Another World\".",   textColor },
-    {"VBA can also play many commercial games",     textColor },
-    {"made for the Gameboy (Color/Advance).",       textColor },
+    {"all over the internet.  Look for 'Public",    textColor },
+    {"Domain' ROMs and you should find many.",      textColor },
+    {"SNES can also play many commercial games",    textColor },
+    {"made for the Super Nintendo.",                textColor },
     {"We don't cover how to dump these games",      textColor },
     {"from your originals, and we remind you",      textColor },
     {"to observe all relevant laws that might",     textColor },
     {"apply before doing so.",                      textColor },
     {" ",                                           textColor },
     {" ",                                           textColor },
-    {"(Tap to go to next screen)",                linkColor }
+    {"(Tap to go to next screen)",                  linkColor }
 },
 {
     {"Okay I got the ROMs, what now?",              textColor },
@@ -67,13 +67,13 @@ line helpROMs[][14] =
     {"to your computer and put it in USB mode.",    textColor },
     {"You'll want to put your ROMs in",             textColor },
     {"a folder called",                             textColor },
-    {"/vba/roms",                                   hiColor },
+    {"/snes9x/roms",                                hiColor   },
     {"which you might have to create.",             textColor },
-    {"First create a 'vba' folder then create",     textColor },
+    {"First create a 'snes9x' folder then create",     textColor },
     {"a 'roms' folder inside of that.",             textColor },
     {"Watch the capitalization, all lower case.",   textColor },
-    {"Once you have the ROMs there, restart VBA",   textColor },
-    {"and then just tap them to play.",             textColor },
+    {"Once you have the ROMs there, restart",       textColor },
+    {"SNES9x and then just tap them to play.",      textColor },
     {"(Tap to go to return to help)",               linkColor }
 }
 };
@@ -248,9 +248,9 @@ line helpSettings[][14] =
 
 line helpWiki[14] =
 {
-    {"VBA Wiki",                                    textColor },
+    {"Snes9x Wiki",                                 textColor },
     {" ",                                           textColor },
-    {"Beyond the in-game help, VBA also has a",     textColor },
+    {"Beyond the in-game help, Snes9x also has a",  textColor },
     {"Wiki page that contains more in-depth",       textColor },
     {"explanations, guides, compatibility lists",   textColor },
     {"and more.",                                   textColor },

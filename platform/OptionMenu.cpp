@@ -667,8 +667,8 @@ void doHelp( SDL_Surface * s )
       case HELP_WIKI:
       {
         bool launchWiki = !showLines( s, helpWiki, 14, false );
-        //if (launchWiki)
-        //  PDL_LaunchBrowser( VBA_WIKI );
+        if (launchWiki)
+          PDL_LaunchBrowser( SNES9X_WIKI );
         break;
       }
       default:
