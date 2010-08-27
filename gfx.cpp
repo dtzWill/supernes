@@ -3032,6 +3032,8 @@ void S9xUpdateScreen () // ~30-50ms! (called from FLUSH_REDRAW())
 
     uint32 black = BLACK | (BLACK << 16);
 
+    if (UseTransparency)
+    {
 		if (GFX.Pseudo)
 		{
 			GFX.r2131 = 0x5f;  //0101 1111 - enable addition/subtraction on all BGS and sprites and "1/2 OF COLOR DATA" DESIGNATION
@@ -3598,6 +3600,167 @@ void S9xUpdateScreen () // ~30-50ms! (called from FLUSH_REDRAW())
 				RenderScreen (GFX.Screen, FALSE, TRUE, SUB_SCREEN_DEPTH);
 		    }
 		}
+    }
+    else // Transparencys are disabled, ahh lovely ... nice and easy.
+	{
+		    // get back colour to be used in clearing the screen
+			register uint32 back;
+			if (!(Memory.FillRAM [0x2131] & 0x80) &&(Memory.FillRAM[0x2131] & 0x20) &&
+					(PPU.FixedColourRed || PPU.FixedColourGreen || PPU.FixedColourBlue))
+			{
+				back = (IPPU.XB[PPU.FixedColourRed]<<11) |
+					   (IPPU.XB[PPU.FixedColourGreen] << 6) | 
+					   (IPPU.XB[PPU.FixedColourBlue] << 1) | 1;
+				back = (back << 16) | back;
+			}
+			else
+			{
+				back = IPPU.ScreenColors [0] | (IPPU.ScreenColors [0] << 16);
+			}
+    
+		    // if Forcedblanking in use then back colour becomes black
+			if (PPU.ForcedBlanking)
+				back = black;
+		    else
+			{
+				SelectTileRenderer (TRUE);  //selects the tile renderers to be used
+											// TRUE means to use the default
+											// FALSE means use best renderer based on current
+											// graphics register settings
+			}
+		    
+			// now clear all graphics lines which are being updated using the back colour
+			for (register uint32 y = starty; y <= endy; y++)
+		    {
+				memset32 ((uint32_t*)(GFX.Screen + y * GFX.Pitch), back,
+					IPPU.RenderedScreenWidth>>1);
+		    }
+		if (!PPU.ForcedBlanking)
+		{
+			// Loop through all lines being updated and clear the
+			// zbuffer for each of the lines
+			for (uint32 y = starty; y <= endy; y++)
+		    {
+				memset32 ((uint32_t*)(GFX.ZBuffer + y * GFX.ZPitch), 0,
+					IPPU.RenderedScreenWidth>>2);
+		    }
+		    GFX.DB = GFX.ZBuffer; // save pointer to Zbuffer in GFX object
+		    GFX.pCurrentClip = &IPPU.Clip [0];
+
+// Define an inline function to handle clipping
+#define FIXCLIP(n) \
+if (GFX.r212c & (1 << (n))) \
+	GFX.pCurrentClip = &IPPU.Clip [0]; \
+else \
+	GFX.pCurrentClip = &IPPU.Clip [1]
+
+// Define an inline function to handle which BGs are being displayed
+#define DISPLAY(n) \
+	( \
+		(!(PPU.BG_Forced & n) && (GFX.r212c & n)) || \
+		(((GFX.r212d & n) && subadd)) \
+	)
+
+		    uint8 subadd = GFX.r2131 & 0x3f;
+
+			// go through all BGS are check if they need to be displayed
+		    bool BG0 = DISPLAY(1) && !(Settings.os9x_hack & GFX_IGNORE_BG0);
+		    bool BG1 = DISPLAY(2) && !(Settings.os9x_hack & GFX_IGNORE_BG1);
+		    bool BG2 = DISPLAY(4) && !(Settings.os9x_hack & GFX_IGNORE_BG2);
+		    bool BG3 = DISPLAY(8) && !(Settings.os9x_hack & GFX_IGNORE_BG3);
+		    bool OB  = DISPLAY(16) && !(Settings.os9x_hack & GFX_IGNORE_OBJ);
+
+		    if (PPU.BGMode <= 1)
+		    {
+				// screen modes 0 and 1
+				if (OB)
+				{
+				    FIXCLIP(4);
+				    DrawOBJS ();
+				}
+				if (BG0)
+				{
+				    FIXCLIP(0);
+				    DrawBackground (PPU.BGMode, 0, 10, 14);
+				}
+				if (BG1)
+				{
+				    FIXCLIP(1);
+				    DrawBackground (PPU.BGMode, 1, 9, 13);
+				}
+				if (BG2)
+				{
+				    FIXCLIP(2);
+				    DrawBackground (PPU.BGMode, 2, 3,
+						    (Memory.FillRAM [0x2105] & 8) == 0 ? 6 : 17);
+				}
+				if (BG3 && PPU.BGMode == 0)
+				{
+				    FIXCLIP(3);
+				    DrawBackground (PPU.BGMode, 3, 2, 5);
+				}
+		    }
+		    else if (PPU.BGMode != 7)
+		    {
+				// screen modes 2 and up but not mode 7
+				if (OB)
+				{
+				    FIXCLIP(4);
+				    DrawOBJS ();
+				}
+				if (BG0)
+				{
+				    FIXCLIP(0);
+				    DrawBackground (PPU.BGMode, 0, 5, 13);
+				}
+				if (BG1 && PPU.BGMode != 6)
+				{
+				    FIXCLIP(1);
+				    DrawBackground (PPU.BGMode, 1, 2, 9);
+				}
+		    }
+		    else 
+		    {
+				// screen mode 7
+				if (OB)
+				{
+				    FIXCLIP(4);
+				    DrawOBJS ();
+				}
+				if (BG0 || ((Memory.FillRAM [0x2133] & 0x40) && BG1))
+				{
+				    int bg;
+				    FIXCLIP(0);
+				    if (Memory.FillRAM [0x2133] & 0x40)
+				    {
+					GFX.Mode7Mask = 0x7f;
+					GFX.Mode7PriorityMask = 0x80;
+					Mode7Depths [0] = 5;
+					Mode7Depths [1] = 9;
+					bg = 1;
+				    }
+				    else
+				    {
+					GFX.Mode7Mask = 0xff;
+					GFX.Mode7PriorityMask = 0;
+					Mode7Depths [0] = 5;
+					Mode7Depths [1] = 5;
+					bg = 0;
+				    }
+
+					if (!Settings.Mode7Interpolate)
+					{	
+					    DrawBGMode7Background16 (GFX.Screen, bg);
+					}
+					else
+					{	
+					    DrawBGMode7Background16_i (GFX.Screen, bg);
+					}
+				}
+		    }
+		}
+	}
+
 #ifndef RC_OPTIMIZE // no hi res
     if (Settings.SupportHiRes && PPU.BGMode != 5 && PPU.BGMode != 6)
     {

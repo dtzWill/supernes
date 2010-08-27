@@ -56,7 +56,7 @@
 #define TOP_LEVEL_COUNT ( Config.running ? 5 : 3 )
 #endif
 
-#define OPTIONS_COUNT 6
+#define OPTIONS_COUNT 7
 
 //Colors (BGR format)
 static SDL_Color textColor = { 255, 255, 255 };
@@ -370,6 +370,7 @@ void menuSetFilter( bool smooth ) { gl_filter = smooth ? GL_LINEAR : GL_NEAREST;
                                     GL_InitTexture(IMAGE_WIDTH,IMAGE_HEIGHT);    }
 void menuSetSpeed( bool show )    { showSpeed = show;                            }
 void menuSetAutoSave( bool on )   { autosave = on;                               }
+void menuSetTrans( bool on )      { UseTransparency = on;                        }
 #if 0
 void menuSetAutoSkip( bool on )
 {
@@ -389,6 +390,7 @@ bool menuGetSound()       { return !soundMute;                          }
 bool menuGetFilter()      { return gl_filter == GL_LINEAR;              }
 bool menuGetSpeed()       { return showSpeed;                           }
 bool menuGetAutoSave()    { return autosave;                            }
+bool menuGetTrans()       { return UseTransparency;                     }
 #if 0
 bool menuGetAutoSkip()    { return autoFrameSkip;                       }
 bool menuGetOnscreen()    { return use_on_screen;                       }
@@ -498,6 +500,8 @@ void initializeMenu()
       menuSetFilter, menuGetFilter );
   optionMenu[x++] = createToggle( "Autosave",      "On",     "Off",   50+x*OPTION_SPACING,
       menuSetAutoSave, menuGetAutoSave );
+  optionMenu[x++] = createToggle( "Transparency",  "On",     "Off",   50+x*OPTION_SPACING,
+      menuSetTrans, menuGetTrans );
 #if 0
   optionMenu[x++] = createToggle( "Autoframeskip", "On",     "Off",   50+x*OPTION_SPACING,
       menuSetAutoSkip, menuGetAutoSkip );

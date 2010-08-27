@@ -39,5 +39,6 @@ extern int soundMute;
 extern int gl_filter;
 extern int showSpeed;
 extern int autosave;
+extern int UseTransparency;
 
 #endif //_OPTIONS_H_

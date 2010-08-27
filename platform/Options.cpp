@@ -26,6 +26,7 @@ int gl_filter = GL_LINEAR;
 int soundMute = false;
 int showSpeed = false;
 int autosave = true;
+int UseTransparency = true;
 
 game_option state_options[] =
 {
@@ -33,7 +34,8 @@ game_option state_options[] =
     { "sound", &soundMute },
     { "filter", &gl_filter },
     { "speed", &showSpeed },
-    { "autosave", &autosave }
+    { "autosave", &autosave },
+    { "transparency", &UseTransparency }
 #if 0
     { "onscreen", &use_on_screen },
     { "autoframeskip", &autoFrameSkip },
