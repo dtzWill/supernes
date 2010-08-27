@@ -141,21 +141,49 @@ static void processMouse(unsigned int x, unsigned int y, int pressed = 0)
 	}
 }
 
+static int getJoyMask( int * mapping, int key )
+{
+  int mask = 0;
+
+  if ( mapping[SNES_KEY_UP] == key )     mask |= SNES_UP_MASK;
+  if ( mapping[SNES_KEY_DOWN] == key )   mask |= SNES_DOWN_MASK;
+  if ( mapping[SNES_KEY_LEFT] == key )   mask |= SNES_LEFT_MASK;
+  if ( mapping[SNES_KEY_RIGHT] == key )  mask |= SNES_RIGHT_MASK;
+  if ( mapping[SNES_KEY_START] == key )  mask |= SNES_START_MASK;
+  if ( mapping[SNES_KEY_SELECT] == key ) mask |= SNES_SELECT_MASK;
+  if ( mapping[SNES_KEY_L] == key )      mask |= SNES_TL_MASK;
+  if ( mapping[SNES_KEY_R] == key )      mask |= SNES_TR_MASK;
+  if ( mapping[SNES_KEY_Y] == key )      mask |= SNES_Y_MASK;
+  if ( mapping[SNES_KEY_X] == key )      mask |= SNES_X_MASK;
+  if ( mapping[SNES_KEY_B] == key )      mask |= SNES_B_MASK;
+  if ( mapping[SNES_KEY_A] == key )      mask |= SNES_A_MASK;
+  //if ( mapping[SNES_KEY_TURBO] == key )  mask |= SNES_TURBO_MASK;
+
+  return mask;
+}
+
 static void processEvent(const SDL_Event& event)
 {
 	if (videoEventFilter(event)) return;
+	if (keyboardBindingFilter(event)) return;
 
+  int key = 0;
 	switch (event.type) 
 	{
 		case SDL_KEYDOWN:
-			if (Config.action[event.key.keysym.sym]) 
-				S9xDoAction(Config.action[event.key.keysym.sym]);
-			joypads[0] |= Config.joypad1Mapping[event.key.keysym.sym];
-			joypads[1] |= Config.joypad2Mapping[event.key.keysym.sym];
+      key = event.key.keysym.sym;
+
+			if (Config.action[key]) 
+				S9xDoAction(Config.action[key]);
+
+      joypads[0] |= getJoyMask(Config.joypad1Mapping, key);
+      joypads[1] |= getJoyMask(Config.joypad2Mapping, key);
+
 			break;
 		case SDL_KEYUP:
-			joypads[0] &= ~Config.joypad1Mapping[event.key.keysym.sym];
-			joypads[1] &= ~Config.joypad2Mapping[event.key.keysym.sym];
+      key = event.key.keysym.sym;
+      joypads[0] &= ~getJoyMask(Config.joypad1Mapping, key);
+      joypads[1] &= ~getJoyMask(Config.joypad2Mapping, key);
 			break;
 		case SDL_MOUSEBUTTONUP:
 		case SDL_MOUSEBUTTONDOWN:

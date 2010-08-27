@@ -3,7 +3,7 @@
 
 #include "port.h"
 
-#define MAX_KEY 1024
+#define MAX_KEYS 20
 
 // Configuration and command line parsing
 void S9xLoadConfig(int argc, char ** argv);
@@ -34,11 +34,27 @@ extern struct config {
 	bool touchscreenShow;
 	/** If false, next time the main loop is entered application will close */
 	bool running;
-	/** Current scancode->joypad mapping */
-	unsigned short joypad1Mapping[MAX_KEY];
-	unsigned short joypad2Mapping[MAX_KEY];
-	unsigned char action[MAX_KEY];
+	/** Current joypad->scancode mapping */
+	int joypad1Mapping[MAX_KEYS];
+	int joypad2Mapping[MAX_KEYS];
+	int action[MAX_KEYS];
 } Config;
+
+typedef enum {
+  SNES_KEY_UP,
+  SNES_KEY_DOWN,
+  SNES_KEY_LEFT,
+  SNES_KEY_RIGHT,
+  SNES_KEY_START,
+  SNES_KEY_SELECT,
+  SNES_KEY_L,
+  SNES_KEY_R,
+  SNES_KEY_Y,
+  SNES_KEY_X,
+  SNES_KEY_B,
+  SNES_KEY_A,
+  SNES_KEY_TURBO
+} SNES_KEY;
 
 // Video
 extern struct gui {

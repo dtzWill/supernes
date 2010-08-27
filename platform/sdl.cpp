@@ -19,6 +19,7 @@
 #include "RomSelector.h"
 #include "OptionMenu.h"
 #include "Options.h"
+#include "Keyboard.h"
 
 #define kPollEveryNFrames		1	//Poll input only every this many frames
 
@@ -289,6 +290,8 @@ int main(int argc, char ** argv) {
       frameSync();			// May block, or set frameskip to true.
       S9xMainLoop();			// Does CPU things, renders if needed.
       pollEvents();
+      //Ouch that this is going here...
+      updateBindingMessage();
     } while (Config.running);
 
     S9xGraphicsDeinit();
