@@ -34,13 +34,13 @@ typedef struct
   SDL_Color color;
 } line;
 static line no_roms[] {
-{ "Welcome to Snes9x!",                  textColor},
+{ "Welcome to SuperNES!",                textColor},
 { "Looks like you don't have any ROMs.", textColor},
 { "To play games, put the roms in ",     textColor},
-{ "/snes9x/roms",                        hiColor},
+{ "/snes/roms",                          hiColor},
 { "using USB mode",                      textColor},
 { "(make the directory if needed)",      textColor},
-{ "and then launch Snes9x again",        textColor},
+{ "and then launch SuperNES again",      textColor},
 { "For more information, see the help",  textColor},
 { "(click here to launch help)",         linkColor}
 };
