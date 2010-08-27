@@ -4,7 +4,7 @@
        "version": "0.0.2",
        "release_date": "27-Aug-2010",
        "vendor": "WebOS Internals",
-       "vendor_email": "webos@wdtz.org"
+       "vendor_email": "webos@wdtz.org",
        "vendor_url": "http://www.webos-internals.org/wiki/Application:SuperNES",
        "type": "pdk",
        "main": "drnoksnes",
