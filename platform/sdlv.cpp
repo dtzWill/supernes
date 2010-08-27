@@ -77,6 +77,15 @@ static void setupVideoSurface()
   GUI.RenderH = gameHeight;
 }
 
+void S9xVideoReset()
+{
+  //Clear all graphics buffers...
+  memset(GFX.Screen,0,GFX.Pitch * IMAGE_HEIGHT);
+  memset(GFX.SubScreen,0,GFX.Pitch * IMAGE_HEIGHT);
+  memset(GFX.ZBuffer,0,GFX.ZPitch * IMAGE_HEIGHT);
+  memset(GFX.SubZBuffer,0,GFX.ZPitch * IMAGE_HEIGHT);
+}
+
 static void drawOnscreenControls()
 {
 #if 0

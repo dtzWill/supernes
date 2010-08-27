@@ -282,6 +282,7 @@ int main(int argc, char ** argv) {
       DIE("S9xGraphicsInit failed");
     S9xAudioOutputEnable(true);
     SDL_PauseAudio(0);
+    S9xVideoReset();
 
     Config.running = true;
     do {

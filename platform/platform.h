@@ -53,6 +53,7 @@ extern struct gui {
 void S9xInitDisplay(int argc, char **argv);
 void S9xDeinitDisplay();
 void S9xVideoToggleFullscreen();
+void S9xVideoReset();
 void S9xSetTitle (const char *title);
 
 // Audio output
