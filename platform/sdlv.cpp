@@ -133,14 +133,9 @@ bool videoEventFilter(const SDL_Event& event)
 		   (event.active.state & SDL_APPINPUTFOCUS)) {
       bool active = event.active.gain;
       if (!active) {
-        //XXX: Pause!
-        //For now, we just save.
-
-        //Ensure SRAM is written
-        Memory.SaveSRAM(S9xGetFilename(FILE_SRAM));
-        //autosave (if enabled)
-        pauseGame();
-        printf( "Saved!!!\n");
+        // We lost focus!
+        // Show the menu (which also saves)
+        S9xDoAction(kActionMenu);
 
       } else {
         //XXX: Resume!
