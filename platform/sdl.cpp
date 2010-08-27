@@ -130,8 +130,8 @@ static void frameSync() {
 	if (Settings.TurboMode)
 	{
 		// In Turbo mode, just skip as many frames as desired, but don't sleep.
-		if(Settings.SkipFrames == AUTO_FRAMERATE || 
-			++IPPU.FrameSkip >= Settings.SkipFrames)
+		if(Settings.TurboSkipFrames == AUTO_FRAMERATE || 
+			++IPPU.FrameSkip >= Settings.TurboSkipFrames)
 		{
 			IPPU.FrameSkip = 0;
 			IPPU.SkippedFrames = 0;

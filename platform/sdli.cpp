@@ -6,6 +6,7 @@
 #include "display.h"
 #include "sdlv.h" // Dispatching video-related events
 #include "Keyboard.h"
+#include "snes9x.h"
 
 #if CONF_ZEEMOTE
 #include "zeemote.h"
@@ -157,10 +158,19 @@ static int getJoyMask( int * mapping, int key )
   if ( mapping[SNES_KEY_X] == key )      mask |= SNES_X_MASK;
   if ( mapping[SNES_KEY_B] == key )      mask |= SNES_B_MASK;
   if ( mapping[SNES_KEY_A] == key )      mask |= SNES_A_MASK;
-  //if ( mapping[SNES_KEY_TURBO] == key )  mask |= SNES_TURBO_MASK;
 
   return mask;
 }
+
+static void checkOther( int * mapping, int key )
+{
+  if ( mapping[SNES_KEY_TURBO] == key )
+  {
+    //Turbo presed, toggle it!
+    Settings.TurboMode = !Settings.TurboMode;
+  }
+}
+
 
 static void processEvent(const SDL_Event& event)
 {
@@ -179,6 +189,8 @@ static void processEvent(const SDL_Event& event)
       joypads[0] |= getJoyMask(Config.joypad1Mapping, key);
       joypads[1] |= getJoyMask(Config.joypad2Mapping, key);
 
+      checkOther(Config.joypad1Mapping, key );
+      checkOther(Config.joypad2Mapping, key );
 			break;
 		case SDL_KEYUP:
       key = event.key.keysym.sym;
