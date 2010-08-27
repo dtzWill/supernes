@@ -202,8 +202,8 @@ line helpWiki[14] =
 {
     {"SuperNES Wiki",                               textColor },
     {" ",                                           textColor },
-    {"Beyond the in-game help, SuperNES also has a",textColor },
-    {"Wiki page that contains more in-depth",       textColor },
+    {"Beyond the in-game help, SuperNES also ",     textColor },
+    {"has a Wiki page that contains more",          textColor },
     {"explanations, guides, compatibility lists",   textColor },
     {"and more.",                                   textColor },
     {"To view this wiki, just tap the screen.",     textColor },
