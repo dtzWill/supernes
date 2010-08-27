@@ -414,15 +414,15 @@ END_EXTERN_C
 /*-----------------------------------------------------------------------------
  *  Misc stuff for the webos port
  *-----------------------------------------------------------------------------*/
-#define VERSION "0.0.1"
+#define VERSION "0.0.2"
 #define FONT "/usr/share/fonts/PreludeCondensed-Medium.ttf"
-#define TITLE "SNES9x for WebOS (" VERSION ")"
+#define TITLE "SuperNES for WebOS (" VERSION ")"
 #define AUTHOR_TAG "Support: webos@wdtz.org"
 #define OPTIONS_TEXT "MENU"
 #define SCROLL_FACTOR 20
-#define SNES_HOME "/media/internal/snes9x"
+#define SNES_HOME "/media/internal/snes"
 #define ROM_PATH SNES_HOME "/roms/"
 #define OPTIONS_CFG "snes9x.cfg"
-#define SNES9X_WIKI "http://www.webos-internals.org/wiki/Application:Snes9x"
+#define SNES9X_WIKI "http://www.webos-internals.org/wiki/Application:SuperNES"
 
 #endif
