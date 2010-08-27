@@ -105,7 +105,7 @@ line helpControls[][14] =
     {"I/O -- L/R (shoulder trigger buttons)",       textColor },
     {"Backspace -- Start",                          textColor },
     {"Enter -- Select",                             textColor },
-    {" ",                                           textColor },
+    {"Space -- Toggle turbo",                       textColor },
     {" ",                                           textColor },
     {" ",                                           textColor },
     {" ",                                           textColor },
@@ -193,7 +193,7 @@ line helpSettings[][14] =
     {"Transparency:",                               linkColor },
     {"This is an advanced feature. Having this",    textColor },
     {"on provides more accurate graphics but",      textColor },
-    {"can be slower.",                              textColor },
+    {"can be slower. (On by default)",              textColor },
     {"(Tap to go to return to help)",               linkColor }
 }
 };
