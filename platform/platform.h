@@ -37,7 +37,8 @@ extern struct config {
 	/** Current joypad->scancode mapping */
 	int joypad1Mapping[MAX_KEYS];
 	int joypad2Mapping[MAX_KEYS];
-	int action[MAX_KEYS];
+  /** Joypad->scancode mapping */
+	int action[1024];
 } Config;
 
 typedef enum {
