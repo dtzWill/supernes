@@ -1,8 +1,8 @@
 {
        "title": "SuperNES",
        "id": "@APPID@",
-       "version": "0.0.3",
-       "release_date": "27-Aug-2010",
+       "version": "0.0.4",
+       "release_date": "29-Aug-2010",
        "vendor": "WebOS Internals",
        "vendor_email": "webos@wdtz.org",
        "vendor_url": "http://www.webos-internals.org/wiki/Application:SuperNES",
