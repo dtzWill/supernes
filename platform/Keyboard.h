@@ -18,7 +18,10 @@
 #define _KEYBOARD_H_
 
 #include "platform.h"
+#include <SDL.h>
 
 void initialize_keymappings(struct config * C);
+bool keyboardBindingFilter( const SDL_Event& event );
+void updateBindingMessage();
 
 #endif //_KEYBOARD_H_

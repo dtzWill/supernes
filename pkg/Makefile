@@ -10,13 +10,13 @@ all: cat_beta cat preware
 update: ../binaries/armv7/drnoksnes
 
 cat_beta:
-	$(MAKE) pkg ID=org.webosinternals.snes9x.beta
+	$(MAKE) pkg ID=org.webosinternals.supernes.beta
 
 cat:
-	$(MAKE) pkg ID=org.webosinternals.snes9x
+	$(MAKE) pkg ID=org.webosinternals.supernes
 
 preware:
-	$(MAKE) pkg ID=org.webosinternals.snes9x.preware
+	$(MAKE) pkg ID=org.webosinternals.supernes.preware
 
 #Build a pkg with the specified 'ID'
 pkg: update

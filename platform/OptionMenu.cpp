@@ -492,12 +492,12 @@ void initializeMenu()
   optionMenu = (menuOption*)malloc(OPTIONS_COUNT*sizeof(menuOption));
   optionMenu[x++] = createToggle( "Orientation",   "Port",   "Land",  50+x*OPTION_SPACING,
       menuSetOrientation, menuGetOrientation );
-  optionMenu[x++] = createToggle( "Show Speed",    "On",     "Off",   50+x*OPTION_SPACING,
-      menuSetSpeed, menuGetSpeed );
   optionMenu[x++] = createToggle( "Sound",         "On",     "Off",   50+x*OPTION_SPACING,
       menuSetSound, menuGetSound );
   optionMenu[x++] = createToggle( "Filter",        "Smooth", "Sharp", 50+x*OPTION_SPACING,
       menuSetFilter, menuGetFilter );
+  optionMenu[x++] = createToggle( "Show Speed",    "On",     "Off",   50+x*OPTION_SPACING,
+      menuSetSpeed, menuGetSpeed );
   optionMenu[x++] = createToggle( "Autosave",      "On",     "Off",   50+x*OPTION_SPACING,
       menuSetAutoSave, menuGetAutoSave );
   optionMenu[x++] = createToggle( "Transparency",  "On",     "Off",   50+x*OPTION_SPACING,

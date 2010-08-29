@@ -19,6 +19,7 @@
 #include "RomSelector.h"
 #include "OptionMenu.h"
 #include "Options.h"
+#include "Keyboard.h"
 
 #define kPollEveryNFrames		1	//Poll input only every this many frames
 
@@ -129,8 +130,8 @@ static void frameSync() {
 	if (Settings.TurboMode)
 	{
 		// In Turbo mode, just skip as many frames as desired, but don't sleep.
-		if(Settings.SkipFrames == AUTO_FRAMERATE || 
-			++IPPU.FrameSkip >= Settings.SkipFrames)
+		if(Settings.TurboSkipFrames == AUTO_FRAMERATE || 
+			++IPPU.FrameSkip >= Settings.TurboSkipFrames)
 		{
 			IPPU.FrameSkip = 0;
 			IPPU.SkippedFrames = 0;
@@ -289,6 +290,8 @@ int main(int argc, char ** argv) {
       frameSync();			// May block, or set frameskip to true.
       S9xMainLoop();			// Does CPU things, renders if needed.
       pollEvents();
+      //Ouch that this is going here...
+      updateBindingMessage();
     } while (Config.running);
 
     S9xGraphicsDeinit();
