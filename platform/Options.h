@@ -40,5 +40,8 @@ extern int gl_filter;
 extern int showSpeed;
 extern int autosave;
 extern int UseTransparency;
+extern int use_on_screen;
+//Defined in Controller.cpp
+extern int skin_index;
 
 #endif //_OPTIONS_H_

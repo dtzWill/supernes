@@ -6,52 +6,16 @@
 #include "display.h"
 #include "sdlv.h" // Dispatching video-related events
 #include "Keyboard.h"
+#include "Controller.h"
 #include "snes9x.h"
+#include "GLUtil.h"
 
 #if CONF_ZEEMOTE
 #include "zeemote.h"
 #endif
 
-#if 0
-struct TouchButton {
-	unsigned short mask;
-	unsigned short x, y;
-	unsigned short x2, y2;
-	double fx, fy;
-	double fw, fh;
-};
-
-#define kCornerButtonWidth 	(0.375)
-#define kCornerButtonHeight	(0.0833333333334)
-#define kBigButtonWidth		(0.125)
-#define kBigButtonHeight	(0.2777777777778)
-
-static TouchButton touchbuttons[] = {
-#define TB(actions, x, y, w, h) \
-	{actions, 0, 0, 0, 0, x, y, w, h}
-#define P(x) SNES_##x##_MASK
-	TB(P(TL), 0.0, 0.0, kCornerButtonWidth, kCornerButtonHeight),
-	TB(P(TR), 0.625, 0.0, kCornerButtonWidth, kCornerButtonHeight),
-	TB(P(LEFT) | P(UP), 0.0, kCornerButtonHeight, kBigButtonWidth, kBigButtonHeight),
-	TB(P(UP), kBigButtonWidth, kCornerButtonHeight, kBigButtonWidth, kBigButtonHeight),
-	TB(P(RIGHT) | P(UP), 2.0 * kBigButtonWidth, kCornerButtonHeight, kBigButtonWidth, kBigButtonHeight),
-	TB(P(LEFT), 0.0, kCornerButtonHeight + kBigButtonHeight, kBigButtonWidth, kBigButtonHeight),
-	TB(P(RIGHT), 2.0 * kBigButtonWidth, kCornerButtonHeight + kBigButtonHeight, kBigButtonWidth, kBigButtonHeight),
-	TB(P(LEFT) | P(DOWN), 0, 1.0 - (kCornerButtonHeight + kBigButtonHeight), kBigButtonWidth, kBigButtonHeight),
-	TB(P(DOWN), kBigButtonWidth, 1.0 - (kCornerButtonHeight + kBigButtonHeight), kBigButtonWidth, kBigButtonHeight),
-	TB(P(RIGHT) | P(DOWN), 2.0 * kBigButtonWidth, 1.0 - (kCornerButtonHeight + kBigButtonHeight), kBigButtonWidth, kBigButtonHeight),
-	TB(P(SELECT), 0.0, 1.0 - kCornerButtonHeight, kCornerButtonWidth, kCornerButtonHeight),
-	TB(P(X), 1.0 - 2.0 * kBigButtonWidth, kCornerButtonHeight, kBigButtonWidth, kBigButtonHeight),
-	TB(P(Y), 1.0 - 3.0 * kBigButtonWidth, kCornerButtonHeight + kBigButtonHeight, kBigButtonWidth, kBigButtonHeight),
-	TB(P(A), 1.0 - kBigButtonWidth, kCornerButtonHeight + kBigButtonHeight, kBigButtonWidth, kBigButtonHeight),
-	TB(P(B), 1.0 - 2.0 * kBigButtonWidth, 1.0 - (kCornerButtonHeight + kBigButtonHeight), kBigButtonWidth, kBigButtonHeight),
-	TB(P(START), 1.0 - kCornerButtonWidth, 1.0 - kCornerButtonHeight, kCornerButtonWidth, kCornerButtonHeight),
-#undef P
-#undef TB
-};
-
-static TouchButton* current = 0;
-#endif
+//Touchscreen controls primary joystick
+#define TOUCH_JOY 0
 
 static uint32 joypads[2];
 static struct {
@@ -60,91 +24,28 @@ static struct {
 	bool enabled, pressed;
 } mouse;
 
-#if 0
-static TouchButton* getButtonFor(unsigned int x, unsigned int y) {
-	unsigned int i;
-
-	for (i = 0; i < sizeof(touchbuttons)/sizeof(TouchButton); i++) {
-		if (x >= touchbuttons[i].x && x < touchbuttons[i].x2 &&
-			y >= touchbuttons[i].y && y < touchbuttons[i].y2) {
-
-			return &touchbuttons[i];
-		}
-	}
-
-	return 0;
-}
-
-static inline void unpress(TouchButton* b) {
-	joypads[Config.touchscreenInput - 1] &= ~b->mask;
-}
-static inline void press(TouchButton* b) {
-	joypads[Config.touchscreenInput - 1] |= b->mask;
-}
-
-static void processMouse(unsigned int x, unsigned int y, int pressed = 0)
+static void processMouse(unsigned int x, unsigned int y, bool pressed)
 {
-#if CONF_EXIT_BUTTON
-	/* no fullscreen escape button, we have to simulate one! */
-	/* TODO: don't hardcode sizes */
-	if (Config.fullscreen && x > (800 - 100) && y < 50 && pressed > 0) {
-		S9xDoAction(kActionQuit);
-	}
-#endif
-	if (Config.touchscreenInput) {
-		if (pressed < 0) {
-			// Button up.
-			if (current) {
-				// Leaving button
-				unpress(current);
-				current = 0;
-			}
-		} else {
-			// Button down, or mouse motion.
-			TouchButton* b = getButtonFor(x, y);
-			if (current && b && current != b) {
-				// Moving from button to button
-				unpress(current);
-				current = b;
-				press(current);
-			} else if (current && !b) {
-				// Leaving button
-				unpress(current);
-				current = 0;
-			} else if (!current && b) {
-				// Entering button
-				current = b;
-				press(current);
-			}
-		}
-	} else if (mouse.enabled) {
-		mouse.x = x;
-		mouse.y = y;
-
-		if (mouse.x < GUI.RenderX) mouse.x = 0;
-		else {
-			mouse.x -= GUI.RenderX;
-			if (mouse.x > GUI.RenderW) mouse.x = GUI.RenderW;
-		}
-
-		if (mouse.y < GUI.RenderY) mouse.y = 0;
-		else {
-			mouse.y -= GUI.RenderY;
-			if (mouse.y > GUI.RenderH) mouse.y = GUI.RenderH;
-		}
-
-		// mouse.{x,y} are system coordinates.
-		// Scale them to emulated screen coordinates.
-		mouse.x = static_cast<unsigned int>(mouse.x / GUI.ScaleX);
-		mouse.y = static_cast<unsigned int>(mouse.y / GUI.ScaleY);
-
-		if (pressed > 0)
-			mouse.pressed = true;
-		else if (pressed < 0)
-			mouse.pressed = false;
-	}
+  printf( "Mouse pressed: %d, %d, pressed=%d\n", x, y, pressed );
+  if ( pressed )
+  {
+    joypads[TOUCH_JOY] |= controllerHitCheck( x, y );
+  } else
+  {
+    joypads[TOUCH_JOY] &= ~controllerHitCheck( x, y );
+  }
 }
-#endif
+
+static void processMouseMotion(unsigned int x, unsigned int y,
+    unsigned int xnew, unsigned int ynew)
+{
+  //If we move from (x,y) to (xnew,ynew), then the effect on the controller is
+  //to unpress the buttons for the old values, and press the buttons for the values
+  //Note nothing reads this data while this is happening.
+  printf( "Mouse moved: (%d,%d) -> (%d,%d)\n", x, y, xnew, ynew );
+  joypads[TOUCH_JOY] &= ~controllerHitCheck( x, y );
+  joypads[TOUCH_JOY] |= controllerHitCheck( xnew, ynew );
+}
 
 static int getJoyMask( int * mapping, int key )
 {
@@ -182,6 +83,7 @@ static void processEvent(const SDL_Event& event)
 	if (keyboardBindingFilter(event)) return;
 
   int key = 0;
+  int x, y, xnew, ynew;
 	switch (event.type) 
 	{
 		case SDL_KEYDOWN:
@@ -203,11 +105,31 @@ static void processEvent(const SDL_Event& event)
 			break;
 		case SDL_MOUSEBUTTONUP:
 		case SDL_MOUSEBUTTONDOWN:
-			processMouse(event.button.x, event.button.y,
-					(event.button.state == SDL_PRESSED) ? 1 : - 1);
+      x = event.button.x; y = event.button.y;
+      // We interpret mouse input differently depending on orientation
+      if ( orientation != ORIENTATION_PORTRAIT )
+      {
+        // XXX: Make this not magical
+        y = 320 - event.button.x;
+        x = event.button.y;
+      }
+			processMouse(x, y,
+					(event.button.state == SDL_PRESSED));
 			break;
 		case SDL_MOUSEMOTION:
-			processMouse(event.motion.x, event.motion.y);
+      xnew = event.motion.x; ynew = event.motion.y;
+      x = xnew - event.motion.xrel; y = ynew - event.motion.yrel;
+
+      // We interpret mouse input differently depending on orientation
+      if ( orientation != ORIENTATION_PORTRAIT )
+      {
+        // XXX: Make this not magical
+        ynew = 320 - event.motion.x;
+        xnew = event.motion.y;
+        x = xnew - event.motion.yrel;
+        y = ynew + event.motion.xrel;
+      }
+			processMouseMotion(x, y, xnew, ynew);
 			break;
 //		case SDL_QUIT:
 //			Config.running = false;
@@ -317,8 +239,9 @@ void S9xInitInputDevices()
 
 	S9xInputScreenChanged();
   initialize_keymappings(&Config);
-
   loadSkins();
+  updateOrientation();
+  GL_InitTexture(IMAGE_WIDTH,IMAGE_HEIGHT);
 }
 
 void S9xDeinitInputDevices()

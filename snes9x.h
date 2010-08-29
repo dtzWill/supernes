@@ -424,5 +424,8 @@ END_EXTERN_C
 #define ROM_PATH SNES_HOME "/roms/"
 #define OPTIONS_CFG "snes9x.cfg"
 #define SNES9X_WIKI "http://www.webos-internals.org/wiki/Application:SuperNES"
+#define SKIN_PATH SNES_HOME "/skins/"
+#define SKIN_CFG_NAME "controller.cfg"
+#define SKIN_IMG_NAME "controller.png"
 
 #endif

@@ -8,7 +8,7 @@ CPPFLAGS := -I. $(shell sdl-config --cflags) \
 LDLIBS := -lz $(shell sdl-config --libs) \
 	-lpopt -L$(shell pwd) \
 	-lGLESv2 -lpdl -Wl,-rpath=/usr/local/lib \
-	-lSDL -lSDL_ttf
+	-lSDL -lSDL_ttf -lSDL_image
 
 OPTFLAGS += -O3 -mcpu=cortex-a8 -mfpu=neon -ftree-vectorize -mfloat-abi=softfp -ffast-math -fsingle-precision-constant
 

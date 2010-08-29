@@ -27,6 +27,7 @@ int soundMute = false;
 int showSpeed = false;
 int autosave = true;
 int UseTransparency = true;
+int use_on_screen = true;
 
 game_option state_options[] =
 {
@@ -35,9 +36,9 @@ game_option state_options[] =
     { "filter", &gl_filter },
     { "speed", &showSpeed },
     { "autosave", &autosave },
-    { "transparency", &UseTransparency }
+    { "transparency", &UseTransparency },
+    { "onscreen", &use_on_screen }
 #if 0
-    { "onscreen", &use_on_screen },
     { "autoframeskip", &autoFrameSkip },
     { "skin", &skin_index },
     { "turbo_toggle", &turbo_toggle }

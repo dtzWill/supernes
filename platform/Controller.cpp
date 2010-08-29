@@ -18,14 +18,14 @@
 #include <stdio.h>
 #include <string.h>
 #include <dirent.h>
+#include "snes9x.h"
 
 #include "Controller.h"
-#include "Event.h"
 #include "GLUtil.h"
 
 //current skin
 controller_skin * skin = NULL;
-int skin_index = 9;
+int skin_index = 0;
 int skin_count;
 
 //No need to pull in a math library for this...
@@ -46,10 +46,14 @@ static bool hit( int x, int y, int c_x, int c_y, int c_radius )
         c_radius * c_radius;
 }
 
-
-static bool hit_a( controller_skin * skin, int x, int y )
+static bool hit_y( controller_skin * skin, int x, int y )
 {
-    return hit( x, y, skin->a_x, skin->a_y, skin->a_radius );
+    return hit( x, y, skin->y_x, skin->y_y, skin->y_radius );
+}
+
+static bool hit_x( controller_skin * skin, int x, int y )
+{
+    return hit( x, y, skin->x_x, skin->x_y, skin->x_radius );
 }
 
 static bool hit_b( controller_skin * skin, int x, int y )
@@ -57,9 +61,9 @@ static bool hit_b( controller_skin * skin, int x, int y )
     return hit( x, y, skin->b_x, skin->b_y, skin->b_radius );
 }
 
-static bool hit_ab( controller_skin * skin, int x, int y )
+static bool hit_a( controller_skin * skin, int x, int y )
 {
-    return hit( x, y, skin->ab_x, skin->ab_y, skin->ab_radius );
+    return hit( x, y, skin->a_x, skin->a_y, skin->a_radius );
 }
 
 static bool hit_start( controller_skin * skin, int x, int y )
@@ -138,7 +142,7 @@ static bool hit_right( controller_skin * skin, int x, int y )
 
 controller_skin tmp_skin;
 
-vba_option controller_options[] =
+game_option controller_options[] =
 {
     //Controller stuff
     { "touch_screen_x_offset", &tmp_skin.controller_screen_x_offset },
@@ -149,6 +153,12 @@ vba_option controller_options[] =
     { "touch_joy_y", &tmp_skin.joy_y },
     { "touch_joy_radius", &tmp_skin.joy_radius },
     { "touch_joy_deadzone", &tmp_skin.joy_dead },
+    { "touch_y_x", &tmp_skin.b_x },
+    { "touch_y_y", &tmp_skin.b_y },
+    { "touch_y_radius", &tmp_skin.b_radius },
+    { "touch_x_x", &tmp_skin.b_x },
+    { "touch_x_y", &tmp_skin.b_y },
+    { "touch_x_radius", &tmp_skin.b_radius },
     { "touch_b_x", &tmp_skin.b_x },
     { "touch_b_y", &tmp_skin.b_y },
     { "touch_b_radius", &tmp_skin.b_radius },
@@ -167,9 +177,6 @@ vba_option controller_options[] =
     { "touch_r_x", &tmp_skin.r_x },
     { "touch_r_y", &tmp_skin.r_y },
     { "touch_r_radius", &tmp_skin.r_radius },
-    { "touch_ab_x", &tmp_skin.ab_x },
-    { "touch_ab_y", &tmp_skin.ab_y },
-    { "touch_ab_radius", &tmp_skin.ab_radius },
     { "touch_turbo_x", &tmp_skin.turbo_x },
     { "touch_turbo_y", &tmp_skin.turbo_y },
     { "touch_turbo_radius", &tmp_skin.turbo_radius },
@@ -217,7 +224,7 @@ void load_skin( char * skin_cfg, char * skin_img, char * skin_name, char * skin_
     strcpy( full_skin_img + strlen( skin_folder ), "/" );
     strcpy( full_skin_img + strlen( skin_folder ) + 1, skin_img );
 
-    int all_options = sizeof( controller_options ) / sizeof ( vba_option );
+    int all_options = sizeof( controller_options ) / sizeof ( game_option );
     int options_read = readOptions(
             full_skin_cfg,
             controller_options,
@@ -278,89 +285,36 @@ void load_skin( char * skin_cfg, char * skin_img, char * skin_name, char * skin_
  *   
  *  Description:  Determines which on-screen controls were hit for the given x,y
  * =========================================================================*/
-controllerEvent controllerHitCheck( int x, int y )
+int controllerHitCheck( int x, int y )
 {
-    controllerEvent event;
-    event.valid = false;
-    event.button1 = -1;
-    event.button2 = -1;
+    int buttonMask = 0;
 
-    if ( !skin )
-    {
-        return event;
-    }
+    // If there are no skins loaded, then no buttons can be hit.
+    if ( !skin ) return 0;
 
-    if ( hit_a( skin, x, y ) )
-    {
-        event.valid = true;
-        event.button1 = KEY_BUTTON_A;
-    }
-    else if ( hit_b( skin, x, y ) )
-    {
-        event.valid = true;
-        event.button1 = KEY_BUTTON_B;
-    }
-    else if ( hit_ab( skin, x, y ) )
-    {
-        event.valid = true;
-        event.button1 = KEY_BUTTON_A;
-        event.button2 = KEY_BUTTON_B;
-    }
-    else if ( hit_l( skin, x, y ) )
-    {
-        event.valid = true;
-        event.button1 = KEY_BUTTON_L;
-    }
-    else if ( hit_r( skin, x, y ) )
-    {
-        event.valid = true;
-        event.button1 = KEY_BUTTON_R;
-    }
-    else if ( hit_start( skin, x, y ) )
-    {
-        event.valid = true;
-        event.button1 = KEY_BUTTON_START;
-    }
-    else if ( hit_select( skin, x, y ) )
-    {
-        event.valid = true;
-        event.button1 = KEY_BUTTON_SELECT;
-    }
-    else if ( hit_turbo( skin, x, y ) )
-    {
-        event.valid = true;
-        event.button1 = KEY_BUTTON_SPEED;
-    }
-    else if ( hit_capture( skin, x, y ) )
-    {
-        event.valid = true;
-        event.button1 = KEY_BUTTON_CAPTURE;
-    }
-    //We assign up/down to button '1', and
-    //left/right to button '2'.
-    //(You can't hit u/d or l/r at same time
-    if ( hit_up( skin, x, y ) )
-    {
-        event.valid = true;
-        event.button1 = KEY_UP;
-    }
-    if ( hit_down( skin, x, y ) )
-    {
-        event.valid = true;
-        event.button1 = KEY_DOWN;
-    }
-    if ( hit_left( skin, x, y ) )
-    {
-        event.valid = true;
-        event.button2 = KEY_LEFT;
-    }
-    if ( hit_right( skin, x, y ) )
-    {
-        event.valid = true;
-        event.button2 = KEY_RIGHT;
-    }
+    // D-pad
+    if ( hit_up( skin, x, y ) ) buttonMask |= SNES_UP_MASK;
+    if ( hit_down( skin, x, y ) ) buttonMask |= SNES_DOWN_MASK;
+    if ( hit_left( skin, x, y ) ) buttonMask |= SNES_LEFT_MASK;
+    if ( hit_right( skin, x, y ) ) buttonMask |= SNES_RIGHT_MASK;
 
-    return event;
+    //Buttons
+    if ( hit_y( skin, x, y ) ) buttonMask |= SNES_Y_MASK;
+    if ( hit_x( skin, x, y ) ) buttonMask |= SNES_X_MASK;
+    if ( hit_b( skin, x, y ) ) buttonMask |= SNES_B_MASK;
+    if ( hit_a( skin, x, y ) ) buttonMask |= SNES_A_MASK;
+
+    //Triggers/shoulder
+    if ( hit_l( skin, x, y ) ) buttonMask |= SNES_TL_MASK;
+    if ( hit_r( skin, x, y ) ) buttonMask |= SNES_TR_MASK;
+
+    //Start/select
+    if ( hit_start( skin, x, y ) ) buttonMask |= SNES_START_MASK;
+    if ( hit_select( skin, x, y ) ) buttonMask |= SNES_SELECT_MASK;
+
+    //XXX: Support touch-screen turbo/screenshot/misc others?
+
+    return buttonMask;
 }
 
 
@@ -459,6 +413,8 @@ void nextSkin()
     skin_index = ( skin_index + 1 ) % skin_count;
   }
 
-  GL_InitTexture();
+  //XXX: This doesn't really belong here.. what does the controller know about
+  //the screen size....
+  GL_InitTexture(IMAGE_WIDTH, IMAGE_HEIGHT);
   updateOrientation();
 }

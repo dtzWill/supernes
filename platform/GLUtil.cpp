@@ -19,8 +19,9 @@
 #include "esFunc.h"
 #include "pdl.h"
 #include <assert.h>
-//#include "Controller.h"
+#include "Controller.h"
 #include "Options.h"
+#include <SDL_image.h>
 
 /*-----------------------------------------------------------------------------
  *  GL variables
@@ -408,7 +409,6 @@ void GL_RenderPix(u8 * pix)
         glDrawElements( GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, indices );
         checkError();
     }
-
 
     /*-----------------------------------------------------------------------------
      *  Draw the frame of the snes

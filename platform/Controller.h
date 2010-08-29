@@ -17,15 +17,7 @@
 #ifndef _CONTROLLER_H_
 #define _CONTROLLER_H_
 
-#include "VBA.h"
 #include "Options.h"
-
-typedef struct
-{
-    int button1;
-    int button2;
-    char valid;
-} controllerEvent;
 
 struct controller_skin;
 typedef struct controller_skin controller_skin;
@@ -45,6 +37,14 @@ struct controller_skin
   int joy_y;
   int joy_radius;
   int joy_dead;
+
+  int y_x;
+  int y_y;
+  int y_radius;
+
+  int x_x;
+  int x_y;
+  int x_radius;
 
   int b_x;
   int b_y;
@@ -78,10 +78,6 @@ struct controller_skin
   int capture_y;
   int capture_radius;
 
-  int ab_x;
-  int ab_y;
-  int ab_radius;
-
   //circular linked list
   controller_skin * next;
 
@@ -92,7 +88,7 @@ extern controller_skin * skin;
 extern int skin_index;
 extern int skin_count;
 
-extern controllerEvent controllerHitCheck( int x, int y );
+extern int controllerHitCheck( int x, int y );
 
 extern void loadSkins();
 
