@@ -228,7 +228,7 @@ char * romSelector()
     }
 
     //Generate text for each rom...
-    SDL_Surface * roms_surface[filecount];
+    SDL_Surface ** roms_surface = new SDL_Surface*[filecount];
     for ( int i = 0; i < filecount; i++ )
     {
         //Here we remove everything in '()'s or '[]'s
@@ -409,6 +409,13 @@ char * romSelector()
     SDL_FreeSurface( author );
     SDL_FreeSurface( options );
     SDL_FreeSurface( selector );
+
+    //Free all the titles of the ROMs!
+    for (int i = 0; i < filecount; ++i)
+    {
+      SDL_FreeSurface( roms_surface[i] );
+    }
+    delete [] roms_surface;
 
     TTF_CloseFont( font_small );
     TTF_CloseFont( font_normal );
