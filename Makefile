@@ -88,6 +88,7 @@ OBJS += platform/RomSelector.o
 OBJS += platform/OptionMenu.o
 OBJS += platform/Keyboard.o
 OBJS += platform/Options.o
+OBJS += platform/Controller.o
 
 ifeq ($(CONF_XSP), 1)
 	CPPFLAGS += -DCONF_XSP=1 $(shell pkg-config --cflags xsp)

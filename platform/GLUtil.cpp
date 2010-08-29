@@ -238,7 +238,6 @@ void GL_InitTexture(int _srcWidth, int _srcHeight)
             GL_UNSIGNED_SHORT_5_6_5, NULL );
     checkError();
 
-#if 0
     if( !skin )
     {
         printf( "No skins found! Running without one...\n" );
@@ -275,7 +274,6 @@ void GL_InitTexture(int _srcWidth, int _srcHeight)
 
     SDL_FreeSurface( initial_surface );
     SDL_FreeSurface( controller_surface );
-#endif
 }
 
 void updateOrientation()
@@ -315,7 +313,6 @@ void updateOrientation()
         vertexCoords[2*i+1] *= screenAspect / emulatedAspect;
     }
 
-#if 0
     if ( use_on_screen && orientation == ORIENTATION_LANDSCAPE_R && skin )
     {
         float controller_aspect = (float)skin->controller_screen_width / (float)skin->controller_screen_height;
@@ -355,7 +352,6 @@ void updateOrientation()
             vertexCoords[2*i+1] += x_offset;
         }
     }
-#endif
 
     int notification_direction;
     switch ( orientation )
@@ -382,7 +378,6 @@ void GL_RenderPix(u8 * pix)
     glClear( GL_COLOR_BUFFER_BIT );
     checkError();
 
-#if 0
     /*-----------------------------------------------------------------------------
      *  Overlay
      *-----------------------------------------------------------------------------*/
@@ -413,7 +408,6 @@ void GL_RenderPix(u8 * pix)
         glDrawElements( GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, indices );
         checkError();
     }
-#endif
 
 
     /*-----------------------------------------------------------------------------

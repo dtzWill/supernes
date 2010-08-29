@@ -12,6 +12,7 @@
 #include "zeemote.h"
 #endif
 
+#if 0
 struct TouchButton {
 	unsigned short mask;
 	unsigned short x, y;
@@ -50,6 +51,7 @@ static TouchButton touchbuttons[] = {
 };
 
 static TouchButton* current = 0;
+#endif
 
 static uint32 joypads[2];
 static struct {
@@ -58,6 +60,7 @@ static struct {
 	bool enabled, pressed;
 } mouse;
 
+#if 0
 static TouchButton* getButtonFor(unsigned int x, unsigned int y) {
 	unsigned int i;
 
@@ -141,6 +144,7 @@ static void processMouse(unsigned int x, unsigned int y, int pressed = 0)
 			mouse.pressed = false;
 	}
 }
+#endif
 
 static int getJoyMask( int * mapping, int key )
 {
@@ -313,6 +317,8 @@ void S9xInitInputDevices()
 
 	S9xInputScreenChanged();
   initialize_keymappings(&Config);
+
+  loadSkins();
 }
 
 void S9xDeinitInputDevices()
@@ -328,6 +334,7 @@ void S9xDeinitInputDevices()
 
 void S9xInputScreenChanged()
 {
+#if 0
 	unsigned int i = 0;
 	const unsigned int w = GUI.Width, h = GUI.Height;
 	for (i = 0; i < sizeof(touchbuttons)/sizeof(TouchButton); i++) {
@@ -336,8 +343,10 @@ void S9xInputScreenChanged()
 		touchbuttons[i].x2 = (unsigned int)(touchbuttons[i].x + touchbuttons[i].fw * w);
 		touchbuttons[i].y2 = (unsigned int)(touchbuttons[i].y + touchbuttons[i].fh * h);
 	}
+#endif
 }
 
+#if 0
 template <typename T>
 static void drawControls(T * buffer, const int pitch)
 {
@@ -382,4 +391,4 @@ void S9xInputScreenDraw(int pixelSize, void * buffer, int pitch)
 			break;
 	}
 }
-
+#endif
