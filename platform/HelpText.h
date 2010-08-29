@@ -74,8 +74,25 @@ line helpROMs[][14] =
     {"Watch the capitalization, all lower case.",   textColor },
     {"Once you have the ROMs there, restart",       textColor },
     {"SuperNES and then just tap them to play.",    textColor },
-    {"(Tap to return to help)",                     linkColor }
+    {"(Tap to go to next screen)",                  linkColor }
+},
+{
+    {"My ROMs aren't showing up?!",                 textColor },
+    {" ",                                           textColor },
+    {"If you're having trouble getting your ROMS",  textColor },
+    {"to appear in the ROM selector, check:",       textColor },
+    {"-All files end in either \"smc\" or \"zip\"", textColor },
+    {"-Zip files contain exactly 1 ROM",            textColor },
+    {"-Try restarting the device",                  textColor },
+    {"-Make sure the folders are 'snes/roms'",      textColor },
+    {" ",                                           textColor },
+    {"If you still aren't seeing your ROMs feel ",  textColor },
+    {"free to contact me for support:",             textColor },
+    {"webos@wdtz.org",                              hiColor   },
+    {" ",                                           textColor },
+    {"(Tap to go to return to help)",               linkColor }
 }
+
 };
 
 line helpControls[][14] =
