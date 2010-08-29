@@ -293,9 +293,9 @@ int controllerHitCheck( int x, int y )
     if ( !skin ) return 0;
 
     // D-pad
-    if ( hit_up( skin, x, y ) ) buttonMask |= SNES_UP_MASK;
-    if ( hit_down( skin, x, y ) ) buttonMask |= SNES_DOWN_MASK;
-    if ( hit_left( skin, x, y ) ) buttonMask |= SNES_LEFT_MASK;
+    if ( hit_up( skin, x, y ) )    buttonMask |= SNES_UP_MASK;
+    if ( hit_down( skin, x, y ) )  buttonMask |= SNES_DOWN_MASK;
+    if ( hit_left( skin, x, y ) )  buttonMask |= SNES_LEFT_MASK;
     if ( hit_right( skin, x, y ) ) buttonMask |= SNES_RIGHT_MASK;
 
     //Buttons
@@ -309,7 +309,7 @@ int controllerHitCheck( int x, int y )
     if ( hit_r( skin, x, y ) ) buttonMask |= SNES_TR_MASK;
 
     //Start/select
-    if ( hit_start( skin, x, y ) ) buttonMask |= SNES_START_MASK;
+    if ( hit_start( skin, x, y ) )  buttonMask |= SNES_START_MASK;
     if ( hit_select( skin, x, y ) ) buttonMask |= SNES_SELECT_MASK;
 
     //XXX: Support touch-screen turbo/screenshot/misc others?

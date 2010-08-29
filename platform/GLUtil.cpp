@@ -254,7 +254,7 @@ void GL_InitTexture(int _srcWidth, int _srcHeight)
     }
     //Create RGB surface and copy controller into it
     SDL_Surface * controller_surface = SDL_CreateRGBSurface( SDL_SWSURFACE, initial_surface->w, initial_surface->h, 24,
-            0xff0000, 0x00ff00, 0x0000ff, 0);
+            0x0000ff, 0x00ff00, 0xff0000, 0);
     SDL_BlitSurface( initial_surface, NULL, controller_surface, NULL );
 
     glGenTextures(1, &controller_tex );

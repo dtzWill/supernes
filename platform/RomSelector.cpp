@@ -23,7 +23,6 @@
 
 #include <dirent.h>
 
-//In 'BGR' format...
 static SDL_Color textColor = { 255, 255, 255 };
 static SDL_Color hiColor = { 255, 200, 200 };
 static SDL_Color linkColor = { 200, 200, 255 };
