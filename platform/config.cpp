@@ -195,6 +195,7 @@ static void loadDefaults()
 	Config.enableAudio = true;
   Config.joypad1Enabled = true;
   Config.joypad2Enabled = false;
+  Config.hacksFile = strdup("snesadvance.dat");
 
 	Settings.SoundPlaybackRate = 22050;
 	Settings.Stereo = TRUE;
@@ -219,8 +220,7 @@ static void loadDefaults()
     Settings.ForcePAL = FALSE;
     Settings.ForceNTSC = FALSE;
 
-    Settings.HacksEnabled = FALSE;
-    Settings.HacksFilter = FALSE;
+    Settings.HacksFilter = TRUE;//only allow 'safe' hacks
 
 	Settings.HBlankStart = (256 * Settings.H_Max) / SNES_HCOUNTER_MAX;
 
@@ -392,11 +392,9 @@ static void parseArgs(poptContext optCon)
 				Config.touchscreenShow = true;
 				break;
 			case 18:
-				Settings.HacksEnabled = TRUE;
 				Settings.HacksFilter = TRUE;
 				break;
 			case 19:
-				Settings.HacksEnabled = TRUE;
 				Settings.HacksFilter = FALSE;
 				break;
 			case 20:

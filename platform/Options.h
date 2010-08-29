@@ -40,5 +40,6 @@ extern int gl_filter;
 extern int showSpeed;
 extern int autosave;
 extern int UseTransparency;
+extern int enable_speedhacks;
 
 #endif //_OPTIONS_H_

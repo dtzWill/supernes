@@ -27,6 +27,7 @@ int soundMute = false;
 int showSpeed = false;
 int autosave = true;
 int UseTransparency = true;
+int enable_speedhacks = false;//Don't work for now...
 
 game_option state_options[] =
 {
@@ -35,7 +36,8 @@ game_option state_options[] =
     { "filter", &gl_filter },
     { "speed", &showSpeed },
     { "autosave", &autosave },
-    { "transparency", &UseTransparency }
+    { "transparency", &UseTransparency },
+    { "speedhack", &enable_speedhacks }
 #if 0
     { "onscreen", &use_on_screen },
     { "autoframeskip", &autoFrameSkip },

@@ -6,6 +6,7 @@
 #include "snes9x.h"
 #include "hacks.h"
 #include "memmap.h"
+#include "platform/Options.h"
 
 #define kLineBufferSize 4095
 
@@ -136,7 +137,7 @@ void S9xHacksLoadFile(const char * file)
 	char * line;
 	FILE * fp;
 
-	if (!Settings.HacksEnabled) goto no_hacks;
+	if (!enable_speedhacks) goto no_hacks;
 	if (!file) goto no_hacks;
 
 	// At this point, the ROM is already loaded.
