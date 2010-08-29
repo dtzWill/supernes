@@ -32,60 +32,60 @@ typedef struct controller_skin controller_skin;
 
 struct controller_skin
 {
-char * name;
-char * image_path;
+  char * name;
+  char * image_path;
 
-int controller_screen_x_offset;
-int controller_screen_y_offset;
+  int controller_screen_x_offset;
+  int controller_screen_y_offset;
 
-int controller_screen_width;
-int controller_screen_height;
+  int controller_screen_width;
+  int controller_screen_height;
 
-int joy_x;
-int joy_y;
-int joy_radius;
-int joy_dead;
+  int joy_x;
+  int joy_y;
+  int joy_radius;
+  int joy_dead;
 
-int b_x;
-int b_y;
-int b_radius;
+  int b_x;
+  int b_y;
+  int b_radius;
 
-int a_x;
-int a_y;
-int a_radius;
+  int a_x;
+  int a_y;
+  int a_radius;
 
-int start_x;
-int start_y;
-int start_radius;
+  int start_x;
+  int start_y;
+  int start_radius;
 
-int select_x;
-int select_y;
-int select_radius;
+  int select_x;
+  int select_y;
+  int select_radius;
 
-int l_x;
-int l_y;
-int l_radius;
+  int l_x;
+  int l_y;
+  int l_radius;
 
-int r_x;
-int r_y;
-int r_radius;
+  int r_x;
+  int r_y;
+  int r_radius;
 
-int turbo_x;
-int turbo_y;
-int turbo_radius;
+  int turbo_x;
+  int turbo_y;
+  int turbo_radius;
 
-int capture_x;
-int capture_y;
-int capture_radius;
+  int capture_x;
+  int capture_y;
+  int capture_radius;
 
-int ab_x;
-int ab_y;
-int ab_radius;
+  int ab_x;
+  int ab_y;
+  int ab_radius;
 
-//circular linked list
-controller_skin * next;
+  //circular linked list
+  controller_skin * next;
 
-//end struct definition
+  //end struct definition
 };
 
 extern controller_skin * skin;
