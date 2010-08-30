@@ -1119,6 +1119,7 @@ void CMemory::MapExtraRAM ()
 
 void CMemory::LoROMMap ()
 {
+  printf( "LoRomMap!\n" );
     int c;
     int i;
 
@@ -1210,6 +1211,7 @@ void CMemory::LoROMMap ()
 
 void CMemory::HiROMMap ()
 {
+  printf( "HiROMMap!\n" );
     int c;
     int i;
 
@@ -1281,6 +1283,7 @@ void CMemory::HiROMMap ()
 
 void CMemory::TalesROMMap (bool8_32 Interleaved)
 {
+  printf ("TalesROMMap\n" );
     int c;
     int i;
 
@@ -1362,6 +1365,7 @@ void CMemory::TalesROMMap (bool8_32 Interleaved)
 
 void CMemory::AlphaROMMap ()
 {
+  printf( "Alpha rom map!\n" );
     int c;
     int i;
 
@@ -1414,6 +1418,7 @@ void CMemory::AlphaROMMap ()
 
 void CMemory::SuperFXROMMap ()
 {
+  printf( "SuperFXRomMap!\n" );
     int c;
     int i;
     
@@ -1501,6 +1506,7 @@ void CMemory::SuperFXROMMap ()
 
 void CMemory::SA1ROMMap ()
 {
+  printf( "SA1ROMMap!\n" );
     int c;
     int i;
 
@@ -1674,6 +1680,7 @@ void CMemory::LoROM24MBSMap ()
 
 void CMemory::SufamiTurboLoROMMap ()
 {
+  printf( "SufamiTurboLoROMMap!\n" );
     int c;
     int i;
 
@@ -1777,6 +1784,7 @@ void CMemory::SufamiTurboLoROMMap ()
 
 void CMemory::SRAM512KLoROMMap ()
 {
+  printf( "SRAM512KLoROMMap!\n" );
     int c;
     int i;
 
@@ -1832,6 +1840,7 @@ void CMemory::SRAM512KLoROMMap ()
 
 void CMemory::SRAM1024KLoROMMap ()
 {
+  printf( "SRAM1024KLoROMMap!\n" );
     int c;
     int i;
 
@@ -1870,6 +1879,7 @@ void CMemory::SRAM1024KLoROMMap ()
 
 void CMemory::BSHiROMMap ()
 {
+  printf( "BSHiROMMap!\n" );
     int c;
     int i;
 
