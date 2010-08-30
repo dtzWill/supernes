@@ -2,7 +2,8 @@
 
 #include "platform.h"
 #include "snes9x.h"
-#include "soundux.h"
+//#include "soundux.h"
+#include "apu/apu.h"
 
 #define DIE(format, ...) do { \
 		fprintf(stderr, "Died at %s:%d: ", __FILE__, __LINE__ ); \

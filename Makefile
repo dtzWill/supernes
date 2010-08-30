@@ -48,9 +48,9 @@ CONF_HD?=0
 CONF_ZEEMOTE?=0
 
 # SNES stuff
-OBJS = apu.o c4.o c4emu.o cheats.o cheats2.o clip.o cpu.o cpuexec.o data.o
-OBJS += dma.o dsp1.o font.o fxemu.o fxinst.o gfx.o globals.o loadzip.o memmap.o 
-OBJS += ppu.o sa1.o sdd1.o sdd1emu.o snapshot.o soundux.o spc700.o srtc.o tile.o
+OBJS = apu/apu.o c4.o c4emu.o cheats.o cheats2.o clip.o cpu.o cpuexec.o 
+OBJS += dma.o dsp1.o fxemu.o fxinst.o gfx.o globals.o loadzip.o memmap.o 
+OBJS += ppu.o sa1.o sdd1.o sdd1emu.o snapshot.o srtc.o tile.o
 
 ifeq ($(CONF_BUILD_ASM_CPU), 1)
 	# ASM CPU Core from yoyofr's OpenSnes9X
@@ -71,12 +71,12 @@ else
 	OBJS += sa1cpu.o
 endif
 
-OBJS += $(CONF_BUILD_MISC_ROUTINES).o
+#OBJS += $(CONF_BUILD_MISC_ROUTINES).o
 
 # from open-whatever sdk
-OBJS += unzip.o ioapi.o
+#OBJS += unzip.o ioapi.o
 # my extensions to snes9x (speedhacks support)
-OBJS += hacks.o
+#OBJS += hacks.o
 # the glue code that sticks it all together in a monstruous way
 OBJS += platform/path.o platform/config.o
 OBJS += platform/sdl.o platform/sdlv.o platform/sdla.o platform/sdli.o

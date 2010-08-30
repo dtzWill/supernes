@@ -12,8 +12,9 @@
 #include "ppu.h"
 #include "display.h"
 #include "memmap.h"
-#include "soundux.h"
-#include "hacks.h"
+//#include "soundux.h"
+#include "apu/apu.h"
+//#include "hacks.h"
 #include "snapshot.h"
 #include "GLUtil.h"
 #include "RomSelector.h"
@@ -50,7 +51,7 @@ static void S9xInit()
 	if (!Memory.Init () || !S9xInitAPU())
          DIE("Memory or APU failed");
 
-	if (!S9xInitSound ())
+	if (!S9xInitSound (1000, 50))
 		DIE("Sound failed");
 	S9xSetSoundMute (TRUE);
 	
@@ -278,7 +279,7 @@ int main(int argc, char ** argv) {
     // Late initialization
     sprintf(String, "DrNokSnes - %s", Memory.ROMName);
     S9xSetTitle(String);
-    S9xHacksLoadFile(Config.hacksFile);
+    //S9xHacksLoadFile(Config.hacksFile);
     if (!S9xGraphicsInit())
       DIE("S9xGraphicsInit failed");
     S9xAudioOutputEnable(true);

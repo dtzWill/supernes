@@ -198,18 +198,18 @@ static void loadDefaults()
 
 	Settings.SoundPlaybackRate = 22050;
 	Settings.Stereo = TRUE;
-	Settings.SoundBufferSize = 512; // in samples
-	Settings.CyclesPercentage = 100;
-	Settings.APUEnabled = FALSE;		// We'll enable it later
-	Settings.H_Max = SNES_CYCLES_PER_SCANLINE;
+	//Settings.SoundBufferSize = 512; // in samples
+	//Settings.CyclesPercentage = 100;
+	//Settings.APUEnabled = FALSE;		// We'll enable it later
+	//Settings.H_Max = SNES_CYCLES_PER_SCANLINE;
 	Settings.SkipFrames = AUTO_FRAMERATE;
 	Settings.Shutdown = Settings.ShutdownMaster = TRUE;
 	Settings.FrameTimePAL = 20;	// in msecs
 	Settings.FrameTimeNTSC = 16;
 	Settings.FrameTime = Settings.FrameTimeNTSC;
-	Settings.ControllerOption = SNES_JOYPAD;
+	//Settings.ControllerOption = SNES_JOYPAD;
 
-	Settings.ForceTransparency = FALSE;	// We'll enable those later
+	//Settings.ForceTransparency = FALSE;	// We'll enable those later
 
 	Settings.SupportHiRes = FALSE;
 	Settings.ApplyCheats = FALSE;
@@ -219,10 +219,10 @@ static void loadDefaults()
     Settings.ForcePAL = FALSE;
     Settings.ForceNTSC = FALSE;
 
-    Settings.HacksEnabled = FALSE;
-    Settings.HacksFilter = FALSE;
+    //Settings.HacksEnabled = FALSE;
+    //Settings.HacksFilter = FALSE;
 
-	Settings.HBlankStart = (256 * Settings.H_Max) / SNES_HCOUNTER_MAX;
+	//Settings.HBlankStart = (256 * Settings.H_Max) / SNES_HCOUNTER_MAX;
 
 	Settings.AutoSaveDelay = 15*60; // Autosave each 15 minutes.
 }
@@ -361,6 +361,7 @@ static void parseArgs(poptContext optCon)
 				break;
 			case 11:
 				val = poptGetOptArg(optCon);
+#if 0
 				Settings.Mouse = TRUE;
 				if (!val || atoi(val) <= 1) {
 					// Enable mouse on first controller
@@ -369,10 +370,13 @@ static void parseArgs(poptContext optCon)
 					// Enable mouse on second controller
 					Settings.ControllerOption = SNES_MOUSE;
 				}
+#endif
 				break;
 			case 12:
+#if 0
 				Settings.SuperScope = TRUE;
 				Settings.ControllerOption = SNES_SUPERSCOPE;
+#endif
 				break;
 			case 13:
 				Config.snapshotLoad = true;
@@ -382,7 +386,9 @@ static void parseArgs(poptContext optCon)
 				Settings.SoundPlaybackRate = atoi(poptGetOptArg(optCon));
 				break;
 			case 15:
+#if 0
 				Settings.SoundBufferSize = atoi(poptGetOptArg(optCon));
+#endif
 				break;
 			case 16:
 				Config.touchscreenInput = 2;
@@ -392,12 +398,16 @@ static void parseArgs(poptContext optCon)
 				Config.touchscreenShow = true;
 				break;
 			case 18:
+#if 0
 				Settings.HacksEnabled = TRUE;
 				Settings.HacksFilter = TRUE;
+#endif
 				break;
 			case 19:
+#if 0
 				Settings.HacksEnabled = TRUE;
 				Settings.HacksFilter = FALSE;
+#endif
 				break;
 			case 20:
 				Config.saver = true;

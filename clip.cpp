@@ -1,727 +1,405 @@
-/*
- * Snes9x - Portable Super Nintendo Entertainment System (TM) emulator.
- *
- * (c) Copyright 1996 - 2001 Gary Henderson (gary.henderson@ntlworld.com) and
- *                           Jerremy Koot (jkoot@snes9x.com)
- *
- * Super FX C emulator code 
- * (c) Copyright 1997 - 1999 Ivar (ivar@snes9x.com) and
- *                           Gary Henderson.
- * Super FX assembler emulator code (c) Copyright 1998 zsKnight and _Demo_.
- *
- * DSP1 emulator code (c) Copyright 1998 Ivar, _Demo_ and Gary Henderson.
- * C4 asm and some C emulation code (c) Copyright 2000 zsKnight and _Demo_.
- * C4 C code (c) Copyright 2001 Gary Henderson (gary.henderson@ntlworld.com).
- *
- * DOS port code contains the works of other authors. See headers in
- * individual files.
- *
- * Snes9x homepage: http://www.snes9x.com
- *
- * Permission to use, copy, modify and distribute Snes9x in both binary and
- * source form, for non-commercial purposes, is hereby granted without fee,
- * providing that this license information and copyright notice appear with
- * all copies and any derived work.
- *
- * This software is provided 'as-is', without any express or implied
- * warranty. In no event shall the authors be held liable for any damages
- * arising from the use of this software.
- *
- * Snes9x is freeware for PERSONAL USE only. Commercial users should
- * seek permission of the copyright holders first. Commercial use includes
- * charging money for Snes9x or software derived from Snes9x.
- *
- * The copyright holders request that bug fixes and improvements to the code
- * should be forwarded to them so everyone can benefit from the modifications
- * in future versions.
- *
- * Super NES and Super Nintendo Entertainment System are trademarks of
- * Nintendo Co., Limited and its subsidiary companies.
- */
-#include <stdlib.h>
+/***********************************************************************************
+  Snes9x - Portable Super Nintendo Entertainment System (TM) emulator.
+
+  (c) Copyright 1996 - 2002  Gary Henderson (gary.henderson@ntlworld.com),
+                             Jerremy Koot (jkoot@snes9x.com)
+
+  (c) Copyright 2002 - 2004  Matthew Kendora
+
+  (c) Copyright 2002 - 2005  Peter Bortas (peter@bortas.org)
+
+  (c) Copyright 2004 - 2005  Joel Yliluoma (http://iki.fi/bisqwit/)
+
+  (c) Copyright 2001 - 2006  John Weidman (jweidman@slip.net)
+
+  (c) Copyright 2002 - 2006  funkyass (funkyass@spam.shaw.ca),
+                             Kris Bleakley (codeviolation@hotmail.com)
+
+  (c) Copyright 2002 - 2010  Brad Jorsch (anomie@users.sourceforge.net),
+                             Nach (n-a-c-h@users.sourceforge.net),
+                             zones (kasumitokoduck@yahoo.com)
+
+  (c) Copyright 2006 - 2007  nitsuja
+
+  (c) Copyright 2009 - 2010  BearOso,
+                             OV2
+
+
+  BS-X C emulator code
+  (c) Copyright 2005 - 2006  Dreamer Nom,
+                             zones
+
+  C4 x86 assembler and some C emulation code
+  (c) Copyright 2000 - 2003  _Demo_ (_demo_@zsnes.com),
+                             Nach,
+                             zsKnight (zsknight@zsnes.com)
+
+  C4 C++ code
+  (c) Copyright 2003 - 2006  Brad Jorsch,
+                             Nach
+
+  DSP-1 emulator code
+  (c) Copyright 1998 - 2006  _Demo_,
+                             Andreas Naive (andreasnaive@gmail.com),
+                             Gary Henderson,
+                             Ivar (ivar@snes9x.com),
+                             John Weidman,
+                             Kris Bleakley,
+                             Matthew Kendora,
+                             Nach,
+                             neviksti (neviksti@hotmail.com)
+
+  DSP-2 emulator code
+  (c) Copyright 2003         John Weidman,
+                             Kris Bleakley,
+                             Lord Nightmare (lord_nightmare@users.sourceforge.net),
+                             Matthew Kendora,
+                             neviksti
+
+  DSP-3 emulator code
+  (c) Copyright 2003 - 2006  John Weidman,
+                             Kris Bleakley,
+                             Lancer,
+                             z80 gaiden
+
+  DSP-4 emulator code
+  (c) Copyright 2004 - 2006  Dreamer Nom,
+                             John Weidman,
+                             Kris Bleakley,
+                             Nach,
+                             z80 gaiden
+
+  OBC1 emulator code
+  (c) Copyright 2001 - 2004  zsKnight,
+                             pagefault (pagefault@zsnes.com),
+                             Kris Bleakley
+                             Ported from x86 assembler to C by sanmaiwashi
+
+  SPC7110 and RTC C++ emulator code used in 1.39-1.51
+  (c) Copyright 2002         Matthew Kendora with research by
+                             zsKnight,
+                             John Weidman,
+                             Dark Force
+
+  SPC7110 and RTC C++ emulator code used in 1.52+
+  (c) Copyright 2009         byuu,
+                             neviksti
+
+  S-DD1 C emulator code
+  (c) Copyright 2003         Brad Jorsch with research by
+                             Andreas Naive,
+                             John Weidman
+
+  S-RTC C emulator code
+  (c) Copyright 2001 - 2006  byuu,
+                             John Weidman
+
+  ST010 C++ emulator code
+  (c) Copyright 2003         Feather,
+                             John Weidman,
+                             Kris Bleakley,
+                             Matthew Kendora
+
+  Super FX x86 assembler emulator code
+  (c) Copyright 1998 - 2003  _Demo_,
+                             pagefault,
+                             zsKnight
+
+  Super FX C emulator code
+  (c) Copyright 1997 - 1999  Ivar,
+                             Gary Henderson,
+                             John Weidman
+
+  Sound emulator code used in 1.5-1.51
+  (c) Copyright 1998 - 2003  Brad Martin
+  (c) Copyright 1998 - 2006  Charles Bilyue'
+
+  Sound emulator code used in 1.52+
+  (c) Copyright 2004 - 2007  Shay Green (gblargg@gmail.com)
+
+  SH assembler code partly based on x86 assembler code
+  (c) Copyright 2002 - 2004  Marcus Comstedt (marcus@mc.pp.se)
+
+  2xSaI filter
+  (c) Copyright 1999 - 2001  Derek Liauw Kie Fa
+
+  HQ2x, HQ3x, HQ4x filters
+  (c) Copyright 2003         Maxim Stepin (maxim@hiend3d.com)
+
+  NTSC filter
+  (c) Copyright 2006 - 2007  Shay Green
+
+  GTK+ GUI code
+  (c) Copyright 2004 - 2010  BearOso
+
+  Win32 GUI code
+  (c) Copyright 2003 - 2006  blip,
+                             funkyass,
+                             Matthew Kendora,
+                             Nach,
+                             nitsuja
+  (c) Copyright 2009 - 2010  OV2
+
+  Mac OS GUI code
+  (c) Copyright 1998 - 2001  John Stiles
+  (c) Copyright 2001 - 2010  zones
+
+
+  Specific ports contains the works of other authors. See headers in
+  individual files.
+
+
+  Snes9x homepage: http://www.snes9x.com/
+
+  Permission to use, copy, modify and/or distribute Snes9x in both binary
+  and source form, for non-commercial purposes, is hereby granted without
+  fee, providing that this license information and copyright notice appear
+  with all copies and any derived work.
+
+  This software is provided 'as-is', without any express or implied
+  warranty. In no event shall the authors be held liable for any damages
+  arising from the use of this software or it's derivatives.
+
+  Snes9x is freeware for PERSONAL USE only. Commercial users should
+  seek permission of the copyright holders first. Commercial use includes,
+  but is not limited to, charging money for Snes9x or software derived from
+  Snes9x, including Snes9x or derivatives in commercial game bundles, and/or
+  using Snes9x as a promotion for your commercial product.
+
+  The copyright holders request that bug fixes and improvements to the code
+  should be forwarded to them so everyone can benefit from the modifications
+  in future versions.
+
+  Super NES and Super Nintendo Entertainment System are trademarks of
+  Nintendo Co., Limited and its subsidiary companies.
+ ***********************************************************************************/
+
 
 #include "snes9x.h"
 #include "memmap.h"
-#include "ppu.h"
 
-struct Band
+static uint8	region_map[6][6] =
 {
-    uint32 Left;
-    uint32 Right;
+	{ 0, 0x01, 0x03, 0x07, 0x0f, 0x1f },
+	{ 0,    0, 0x02, 0x06, 0x0e, 0x1e },
+	{ 0,    0,    0, 0x04, 0x0c, 0x1c },
+	{ 0,    0,    0,    0, 0x08, 0x18 },
+	{ 0,    0,    0,    0,    0, 0x10 }
 };
 
-#undef MIN
-#undef MAX
-#define MIN(A,B) ((A) < (B) ? (A) : (B))
-#define MAX(A,B) ((A) > (B) ? (A) : (B))
-#define BAND_EMPTY(B) (B.Left >= B.Right)
-#define BANDS_INTERSECT(A,B) ((A.Left >= B.Left && A.Left < B.Right) || \
-			      (A.Right > B.Left && A.Right <= B.Right))
-#define OR_BANDS(R,A,B) {\
-    R.Left = MIN(A.Left, B.Left); \
-    R.Right = MAX(A.Right, B.Right);}
-    
-#define AND_BANDS(R,A,B) {\
-    R.Left = MAX(A.Left, B.Left); \
-    R.Right = MIN(A.Right, B.Right);}
+static inline uint8 CalcWindowMask (int, uint8, uint8);
+static inline void StoreWindowRegions (uint8, struct ClipData *, int, int16 *, uint8 *, bool8, bool8 s = FALSE);
 
-#ifndef _SNESPPC
-static int IntCompare (const void *d1, const void *d2)
-#else
-static int _cdecl IntCompare (const void *d1, const void *d2)
-#endif
+
+static inline uint8 CalcWindowMask (int i, uint8 W1, uint8 W2)
 {
-    if (*(uint32 *) d1 > *(uint32 *) d2)
-	return (1);
-    else
-    if (*(uint32 *) d1 < *(uint32 *) d2)
-	return (-1);
-    return (0);
-}
-
-#ifndef _SNESPPC
-static int BandCompare (const void *d1, const void *d2)
-#else
-static int _cdecl BandCompare (const void *d1, const void *d2)
-#endif
-{
-    if (((struct Band *) d1)->Left > ((struct Band *) d2)->Left)
-	return (1);
-    else
-    if (((struct Band *) d1)->Left < ((struct Band *) d2)->Left)
-	return (-1);
-    return (0);
-}
-
-void ComputeClipWindows ()
-{
-    struct ClipData *pClip = &IPPU.Clip [0];
-
-    // Loop around the main screen then the sub-screen.
-    for (int c = 0; c < 2; c++, pClip++)
-    {
-        // Loop around the colour window then a clip window for each of the
-        // background layers.
-	for (int w = 5; w >= 0; w--)
+	if (!PPU.ClipWindow1Enable[i])
 	{
-	    pClip->Count[w] = 0;
-
-	    if (w == 5) // The colour window...
-	    {
-		if (c == 0) // ... on the main screen
+		if (!PPU.ClipWindow2Enable[i])
+			return (0);
+		else
 		{
-		    if ((Memory.FillRAM [0x2130] & 0xc0) == 0xc0)
-		    {
-			// The whole of the main screen is switched off,
-			// completely clip everything.
-			for (int i = 0; i < 6; i++)
-			{
-			    IPPU.Clip [c].Count [i] = 1;
-			    IPPU.Clip [c].Left [0][i] = 1;
-			    IPPU.Clip [c].Right [0][i] = 0;
-			}
-			continue;
-		    }
-		    else
-		    if ((Memory.FillRAM [0x2130] & 0xc0) == 0x00)
-			continue;
+			if (!PPU.ClipWindow2Inside[i])
+				return (~W2);
+			return (W2);
+		}
+	}
+	else
+	{
+		if (!PPU.ClipWindow2Enable[i])
+		{
+			if (!PPU.ClipWindow1Inside[i])
+				return (~W1);
+			return (W1);
 		}
 		else
 		{
-		    // .. colour window on the sub-screen.
-		    if ((Memory.FillRAM [0x2130] & 0x30) == 0x30)
-		    {
-			// The sub-screen is switched off, completely
-			// clip everything.
-			for (int i = 0; i < 6; i++)
+			if (!PPU.ClipWindow1Inside[i])
+				W1 = ~W1;
+			if (!PPU.ClipWindow2Inside[i])
+				W2 = ~W2;
+
+			switch (PPU.ClipWindowOverlapLogic[i])
 			{
-			    IPPU.Clip [1].Count [i] = 1;
-			    IPPU.Clip [1].Left [0][i] = 1;
-			    IPPU.Clip [1].Right [0][i] = 0;
+				case 0: // OR
+					return (W1 | W2);
+
+				case 1: // AND
+					return (W1 & W2);
+
+				case 2: // XOR
+					return (W1 ^ W2);
+
+				case 3: // XNOR
+					return (~(W1 ^ W2));
 			}
-			return;
-		    }
-		    else
-		    if ((Memory.FillRAM [0x2130] & 0x30) == 0x00)
-			continue;
 		}
-	    }
-	    if (!Settings.DisableGraphicWindows)
-	    {
-		if (w == 5 || pClip->Count [5] ||
-		    (Memory.FillRAM [0x212c + c] & 
-		     Memory.FillRAM [0x212e + c] & (1 << w)))
+	}
+
+	// Never get here
+	return (0);
+}
+
+static inline void StoreWindowRegions (uint8 Mask, struct ClipData *Clip, int n_regions, int16 *windows, uint8 *drawing_modes, bool8 sub, bool8 StoreMode0)
+{
+	int	ct = 0;
+
+	for (int j = 0; j < n_regions; j++)
+	{
+		int	DrawMode = drawing_modes[j];
+		if (sub)
+			DrawMode |= 1;
+		if (Mask & (1 << j))
+			DrawMode = 0;
+
+		if (!StoreMode0 && !DrawMode)
+			continue;
+
+		if (ct > 0 && Clip->Right[ct - 1] == windows[j] && Clip->DrawMode[ct - 1] == DrawMode)
+			Clip->Right[ct - 1] = windows[j + 1]; // This region borders with and has the same drawing mode as the previous region: merge them.
+		else
 		{
-		    struct Band Win1[3];
-		    struct Band Win2[3];
-		    uint32 Window1Enabled = 0;
-		    uint32 Window2Enabled = 0;
-		    bool8_32 invert = (w == 5 && 
-				    ((c == 1 && (Memory.FillRAM [0x2130] & 0x30) == 0x10) ||
-				     (c == 0 && (Memory.FillRAM [0x2130] & 0xc0) == 0x40)));
+			// Add a new region to the BG
+			Clip->Left[ct]     = windows[j];
+			Clip->Right[ct]    = windows[j + 1];
+			Clip->DrawMode[ct] = DrawMode;
+			ct++;
+		}
+	}
 
-		    if (w == 5 ||
-			(Memory.FillRAM [0x212c + c] & Memory.FillRAM [0x212e + c] & (1 << w)))
-		    {
-			if (PPU.ClipWindow1Enable [w])
+	Clip->Count = ct;
+}
+
+void S9xComputeClipWindows (void)
+{
+	int16	windows[6] = { 0, 256, 256, 256, 256, 256 };
+	uint8	drawing_modes[5] = { 0, 0, 0, 0, 0 };
+	int		n_regions = 1;
+	int		i, j;
+
+	// Calculate window regions. We have at most 5 regions, because we have 6 control points
+	// (screen edges, window 1 left & right, and window 2 left & right).
+
+	if (PPU.Window1Left <= PPU.Window1Right)
+	{
+		if (PPU.Window1Left > 0)
+		{
+			windows[2] = 256;
+			windows[1] = PPU.Window1Left;
+			n_regions = 2;
+		}
+
+		if (PPU.Window1Right < 255)
+		{
+			windows[n_regions + 1] = 256;
+			windows[n_regions] = PPU.Window1Right + 1;
+			n_regions++;
+		}
+	}
+
+	if (PPU.Window2Left <= PPU.Window2Right)
+	{
+		for (i = 0; i <= n_regions; i++)
+		{
+			if (PPU.Window2Left == windows[i])
+				break;
+
+			if (PPU.Window2Left <  windows[i])
 			{
-			    if (!PPU.ClipWindow1Inside [w])
-			    {
-				Win1[Window1Enabled].Left = PPU.Window1Left;
-				Win1[Window1Enabled++].Right = PPU.Window1Right + 1;
-			    }
-			    else
-			    {
-				if (PPU.Window1Left <= PPU.Window1Right)
-				{
-				    if (PPU.Window1Left > 0)
-				    {
-					Win1[Window1Enabled].Left = 0;
-					Win1[Window1Enabled++].Right = PPU.Window1Left;
-				    }
-				    if (PPU.Window1Right < 255)
-				    {
-					Win1[Window1Enabled].Left = PPU.Window1Right + 1;
-					Win1[Window1Enabled++].Right = 256;
-				    }
-				    if (Window1Enabled == 0)
-				    {
-					Win1[Window1Enabled].Left = 1;
-					Win1[Window1Enabled++].Right = 0;
-				    }
-				}
-				else
-				{
-				    // 'outside' a window with no range - 
-				    // appears to be the whole screen.
-				    Win1[Window1Enabled].Left = 0;
-				    Win1[Window1Enabled++].Right = 256;
-				}
-			    }
+				for (j = n_regions; j >= i; j--)
+					windows[j + 1] = windows[j];
+
+				windows[i] = PPU.Window2Left;
+				n_regions++;
+				break;
 			}
-			if (PPU.ClipWindow2Enable [w])
+		}
+
+		for (; i <= n_regions; i++)
+		{
+			if (PPU.Window2Right + 1 == windows[i])
+				break;
+
+			if (PPU.Window2Right + 1 <  windows[i])
 			{
-			    if (!PPU.ClipWindow2Inside [w])
-			    {
-				Win2[Window2Enabled].Left = PPU.Window2Left;
-				Win2[Window2Enabled++].Right = PPU.Window2Right + 1;
-			    }
-			    else
-			    {
-				if (PPU.Window2Left <= PPU.Window2Right)
-				{
-				    if (PPU.Window2Left > 0)
-				    {
-					Win2[Window2Enabled].Left = 0;
-					Win2[Window2Enabled++].Right = PPU.Window2Left;
-				    }
-				    if (PPU.Window2Right < 255)
-				    {
-					Win2[Window2Enabled].Left = PPU.Window2Right + 1;
-					Win2[Window2Enabled++].Right = 256;
-				    }
-				    if (Window2Enabled == 0)
-				    {
-					Win2[Window2Enabled].Left = 1;
-					Win2[Window2Enabled++].Right = 0;
-				    }
-				}
-				else
-				{
-				    Win2[Window2Enabled].Left = 0;
-				    Win2[Window2Enabled++].Right = 256;
-				}
-			    }
+				for (j = n_regions; j >= i; j--)
+					windows[j + 1] = windows[j];
+
+				windows[i] = PPU.Window2Right + 1;
+				n_regions++;
+				break;
 			}
-		    }
-		    if (Window1Enabled && Window2Enabled)
-		    {
-			// Overlap logic
-			//
-			// Each window will be in one of three states:
-			// 1. <no range> (Left > Right. One band)
-			// 2. |    ----------------             | (Left >= 0, Right <= 255, Left <= Right. One band)
-			// 3. |------------           ----------| (Left1 == 0, Right1 < Left2; Left2 > Right1, Right2 == 255. Two bands)
-			
-			struct Band Bands [6];
-			int B = 0;
-			switch (PPU.ClipWindowOverlapLogic [w] ^ 1)
-			{
-			case CLIP_OR:
-			    if (Window1Enabled == 1)
-			    {
-				if (BAND_EMPTY(Win1[0]))
-				{
-				    B = Window2Enabled;
-				    memmove (Bands, Win2,
-					     sizeof(Win2[0]) * Window2Enabled);
-				}
-				else
-				{
-				    if (Window2Enabled == 1)
-				    {
-					if (BAND_EMPTY (Win2[0]))
-					    Bands[B++] = Win1[0];
-					else
-					{
-					    if (BANDS_INTERSECT (Win1[0], Win2[0]))
-					    {
-						OR_BANDS(Bands[0],Win1[0], Win2[0])
-						B = 1;
-					    }
-					    else
-					    {
-						Bands[B++] = Win1[0];
-						Bands[B++] = Win2[0];
-					    }
-					}
-				    }
-				    else
-				    {
-					if (BANDS_INTERSECT(Win1[0], Win2[0]))
-					{
-					    OR_BANDS(Bands[0], Win1[0], Win2[0])
-					    if (BANDS_INTERSECT(Win1[0], Win2[1]))
-						OR_BANDS(Bands[1], Win1[0], Win2[1])
-					    else
-						Bands[1] = Win2[1];
-					    B = 1;
-					    if (BANDS_INTERSECT(Bands[0], Bands[1]))
-						OR_BANDS(Bands[0], Bands[0], Bands[1])
-					    else
-						B = 2;
-					}
-					else
-					if (BANDS_INTERSECT(Win1[0], Win2[1]))
-					{
-					    Bands[B++] = Win2[0];
-					    OR_BANDS(Bands[B], Win1[0], Win2[1]);
-					    B++;
-					}
-					else
-					{
-					    Bands[0] = Win2[0];
-					    Bands[1] = Win1[0];
-					    Bands[2] = Win2[1];
-					    B = 3;
-					}
-				    }
-				}
-			    }
-			    else
-			    if (Window2Enabled == 1)
-			    {
-				if (BAND_EMPTY(Win2[0]))
-				{
-				    // Window 2 defines an empty range - just
-				    // use window 1 as the clipping (which
-				    // could also be empty).
-				    B = Window1Enabled;
-				    memmove (Bands, Win1,
-					     sizeof(Win1[0]) * Window1Enabled);
-				}
-				else
-				{
-				    // Window 1 has two bands and Window 2 has one.
-				    // Neither is an empty region.
-				    if (BANDS_INTERSECT(Win2[0], Win1[0]))
-				    {
-					OR_BANDS(Bands[0], Win2[0], Win1[0])
-					if (BANDS_INTERSECT(Win2[0], Win1[1]))
-					    OR_BANDS(Bands[1], Win2[0], Win1[1])
-					else
-					    Bands[1] = Win1[1];
-					B = 1;
-					if (BANDS_INTERSECT(Bands[0], Bands[1]))
-					    OR_BANDS(Bands[0], Bands[0], Bands[1])
-					else
-					    B = 2;
-				    }
-				    else
-				    if (BANDS_INTERSECT(Win2[0], Win1[1]))
-				    {
-					Bands[B++] = Win1[0];
-					OR_BANDS(Bands[B], Win2[0], Win1[1]);
-					B++;
-				    }
-				    else
-				    {
-					Bands[0] = Win1[0];
-					Bands[1] = Win2[0];
-					Bands[2] = Win1[1];
-					B = 3;
-				    }
-				}
-			    }
-			    else
-			    {
-				// Both windows have two bands
-				OR_BANDS(Bands[0], Win1[0], Win2[0]);
-				OR_BANDS(Bands[1], Win1[1], Win2[1]);
-				B = 1;
-				if (BANDS_INTERSECT(Bands[0], Bands[1]))
-				    OR_BANDS(Bands[0], Bands[0], Bands[1])
-				else
-				    B = 2;
-			    }
-			    break;
+		}
+	}
 
-			case CLIP_AND:
-			    if (Window1Enabled == 1)
-			    {
-				// Window 1 has one band
-				if (BAND_EMPTY(Win1[0]))
-				    Bands [B++] = Win1[0];
-				else
-				if (Window2Enabled == 1)
-				{
-				    if (BAND_EMPTY (Win2[0]))
-					Bands [B++] = Win2[0];
-				    else
-				    {
-					AND_BANDS(Bands[0], Win1[0], Win2[0]);
-					B = 1;
-				    }
-				}
-				else
-				{
-				    AND_BANDS(Bands[0], Win1[0], Win2[0]);
-				    AND_BANDS(Bands[1], Win1[0], Win2[1]);
-				    B = 2;
-				}
-			    }
-			    else
-			    if (Window2Enabled == 1)
-			    {
-				if (BAND_EMPTY(Win2[0]))
-				    Bands[B++] = Win2[0];
-				else
-				{
-				    // Window 1 has two bands.
-				    AND_BANDS(Bands[0], Win1[0], Win2[0]);
-				    AND_BANDS(Bands[1], Win1[1], Win2[0]);
-				    B = 2;
-				}
-			    }
-			    else
-			    {
-				// Both windows have two bands.
-				AND_BANDS(Bands[0], Win1[0], Win2[0]);
-				AND_BANDS(Bands[1], Win1[1], Win2[1]);
-				B = 2;
-				if (BANDS_INTERSECT(Win1[0], Win2[1]))
-				{
-				    AND_BANDS(Bands[2], Win1[0], Win2[1]);
-				    B = 3;
-				}
-				else
-				if (BANDS_INTERSECT(Win1[1], Win2[0]))
-				{
-				    AND_BANDS(Bands[2], Win1[1], Win2[0]);
-				    B = 3;
-				}
-			    }
-			    break;
-			case CLIP_XNOR:
-			    invert = !invert;
-			    // Fall...
+	// Get a bitmap of which regions correspond to each window.
 
-			case CLIP_XOR:
-			    if (Window1Enabled == 1 && BAND_EMPTY(Win1[0]))
-			    {
-				B = Window2Enabled;
-				memmove (Bands, Win2,
-					 sizeof(Win2[0]) * Window2Enabled);
-			    }
-			    else
-			    if (Window2Enabled == 1 && BAND_EMPTY(Win2[0]))
-			    {
-				B = Window1Enabled;
-				memmove (Bands, Win1,
-					 sizeof(Win1[0]) * Window1Enabled);
-			    }
-			    else
-			    {
-				uint32 p = 0;
-				uint32 points [10];
-				uint32 i;
+	uint8	W1, W2;
 
-				invert = !invert;
-				// Build an array of points (window edges)
-				points [p++] = 0;
-				for (i = 0; i < Window1Enabled; i++)
-				{
-				    points [p++] = Win1[i].Left;
-				    points [p++] = Win1[i].Right;
-				}
-				for (i = 0; i < Window2Enabled; i++)
-				{
-				    points [p++] = Win2[i].Left;
-				    points [p++] = Win2[i].Right;
-				}
-				points [p++] = 256;
-				// Sort them
-				qsort ((void *) points, p, sizeof (points [0]),
-				       IntCompare);
-				for (i = 0; i < p; i += 2)
-				{
-				    if (points [i] == points [i + 1])
-					continue;
-				    Bands [B].Left = points [i];
-				    while (i + 2 < p && 
-					   points [i + 1] == points [i + 2])
-				    {
-					i += 2;
-				    }
-				    Bands [B++].Right = points [i + 1];
-				}
-			    }
-			    break;
-			}
-			if (invert)
-			{
-			    int b;
-			    int j = 0;
-			    int empty_band_count = 0;
+	if (PPU.Window1Left <= PPU.Window1Right)
+	{
+		for (i = 0; windows[i] != PPU.Window1Left; i++) ;
+		for (j = i; windows[j] != PPU.Window1Right + 1; j++) ;
+		W1 = region_map[i][j];
+	}
+	else
+		W1 = 0;
 
-			    // First remove all empty bands from the list.
-			    for (b = 0; b < B; b++)
-			    {
-				if (!BAND_EMPTY(Bands[b]))
-				{
-				    if (b != j)
-					Bands[j] = Bands[b];
-				    j++;
-				}
-				else
-				    empty_band_count++;
-			    }
-			    
-			    if (j > 0)
-			    {
-				if (j == 1)
-				{
-				    j = 0;
-				    // Easy case to deal with, so special case it.
+	if (PPU.Window2Left <= PPU.Window2Right)
+	{
+		for (i = 0; windows[i] != PPU.Window2Left; i++) ;
+		for (j = i; windows[j] != PPU.Window2Right + 1; j++) ;
+		W2 = region_map[i][j];
+	}
+	else
+		W2 = 0;
 
-				    if (Bands[0].Left > 0)
-				    {
-					pClip->Left[j][w] = 0;
-					pClip->Right[j++][w] = Bands[0].Left + 1;
-				    }
-				    if (Bands[0].Right < 256)
-				    {
-					pClip->Left[j][w] = Bands[0].Right;
-					pClip->Right[j++][w] = 256;
-				    }
-				    if (j == 0)
-				    {
-					pClip->Left[j][w] = 1;
-					pClip->Right[j++][w] = 0;
-				    }
-				}
-				else
-				{
-				    // Now sort the bands into order
-				    B = j;
-				    qsort ((void *) Bands, B,
-					   sizeof (Bands [0]), BandCompare);
+	// Color Window affects the drawing mode for each region.
+	// Modes are: 3=Draw as normal, 2=clip color (math only), 1=no math (draw only), 0=nothing.
 
-				    // Now invert the area the bands cover
-				    j = 0;
-				    for (b = 0; b < B; b++)
-				    {
-					if (b == 0 && Bands[b].Left > 0)
-					{
-					    pClip->Left[j][w] = 0;
-					    pClip->Right[j++][w] = Bands[b].Left + 1;
-					}
-					else
-					if (b == B - 1 && Bands[b].Right < 256)
-					{
-					    pClip->Left[j][w] = Bands[b].Right;
-					    pClip->Right[j++][w] = 256;
-					}
-					if (b < B - 1)
-					{
-					    pClip->Left[j][w] = Bands[b].Right;
-					    pClip->Right[j++][w] = Bands[b + 1].Left + 1;
-					}
-				    }
-				}
-			    }
-			    else
-			    {
-				// Inverting a window that consisted of only
-				// empty bands is the whole width of the screen.
-				// Needed for Mario Kart's rear-view mirror display.
-				if (empty_band_count)
-				{
-				    pClip->Left[j][w] = 0;
-				    pClip->Right[j][w] = 256;
-				    j++;
-				}
-			    }
-			    pClip->Count[w] = j;
-			}
+	uint8	CW_color = 0, CW_math = 0;
+	uint8	CW = CalcWindowMask(5, W1, W2);
+
+	switch (Memory.FillRAM[0x2130] & 0xc0)
+	{
+		case 0x00:	CW_color = 0;		break;
+		case 0x40:	CW_color = ~CW;		break;
+		case 0x80:	CW_color = CW;		break;
+		case 0xc0:	CW_color = 0xff;	break;
+	}
+
+	switch (Memory.FillRAM[0x2130] & 0x30)
+	{
+		case 0x00:	CW_math  = 0;		break;
+		case 0x10:	CW_math  = ~CW;		break;
+		case 0x20:	CW_math  = CW;		break;
+		case 0x30:	CW_math  = 0xff;	break;
+	}
+
+	for (i = 0; i < n_regions; i++)
+	{
+		if (!(CW_color & (1 << i)))
+			drawing_modes[i] |= 1;
+		if (!(CW_math  & (1 << i)))
+			drawing_modes[i] |= 2;
+	}
+
+	// Store backdrop clip window (draw everywhere color window allows)
+
+	StoreWindowRegions(0, &IPPU.Clip[0][5], n_regions, windows, drawing_modes, FALSE, TRUE);
+	StoreWindowRegions(0, &IPPU.Clip[1][5], n_regions, windows, drawing_modes, TRUE,  TRUE);
+
+	// Store per-BG and OBJ clip windows
+
+	for (j = 0; j < 5; j++)
+	{
+		uint8	W = Settings.DisableGraphicWindows ? 0 : CalcWindowMask(j, W1, W2);
+		for (int sub = 0; sub < 2; sub++)
+		{
+			if (Memory.FillRAM[sub + 0x212e] & (1 << j))
+				StoreWindowRegions(W, &IPPU.Clip[sub][j], n_regions, windows, drawing_modes, sub);
 			else
-			{
-			    for (int j = 0; j < B; j++)
-			    {
-				pClip->Left[j][w] = Bands[j].Left;
-				pClip->Right[j][w] = Bands[j].Right;
-			    }
-			    pClip->Count [w] = B;
-			}
-		    }
-		    else
-		    {
-			// Only one window enabled so no need to perform
-			// complex overlap logic...
-
-			if (Window1Enabled)
-			{
-			    if (invert)
-			    {
-				int j = 0;
-
-				if (Window1Enabled == 1)
-				{
-				    if (Win1[0].Left <= Win1[0].Right)
-				    {
-					if (Win1[0].Left > 0)
-					{
-					    pClip->Left[j][w] = 0;
-					    pClip->Right[j++][w] = Win1[0].Left;
-					}
-					if (Win1[0].Right < 256)
-					{
-					    pClip->Left[j][w] = Win1[0].Right;
-					    pClip->Right[j++][w] = 256;
-					}
-					if (j == 0)
-					{
-					    pClip->Left[j][w] = 1;
-					    pClip->Right[j++][w] = 0;
-					}
-				    }
-				    else
-				    {
-					pClip->Left[j][w] = 0;
-					pClip->Right[j++][w] = 256;
-				    }
-				}
-				else
-				{
-				    pClip->Left [j][w] = Win1[0].Right;
-				    pClip->Right[j++][w] = Win1[1].Left;
-				}
-				pClip->Count [w] = j;
-			    }
-			    else
-			    {
-				for (uint32 j = 0; j < Window1Enabled; j++)
-				{
-				    pClip->Left [j][w] = Win1[j].Left;
-				    pClip->Right [j][w] = Win1[j].Right;
-				}
-				pClip->Count [w] = Window1Enabled;
-			    }
-			}
-			else
-			if (Window2Enabled)
-			{
-			    if (invert)
-			    {
-				int j = 0;
-				if (Window2Enabled == 1)
-				{
-				    if (Win2[0].Left <= Win2[0].Right)
-				    {
-					if (Win2[0].Left > 0)
-					{
-					    pClip->Left[j][w] = 0;
-					    pClip->Right[j++][w] = Win2[0].Left;
-					}
-					if (Win2[0].Right < 256)
-					{
-					    pClip->Left[j][w] = Win2[0].Right;
-					    pClip->Right[j++][w] = 256;
-					}
-					if (j == 0)
-					{
-					    pClip->Left[j][w] = 1;
-					    pClip->Right[j++][w] = 0;
-					}
-				    }
-				    else
-				    {
-					pClip->Left[j][w] = 0;
-					pClip->Right[j++][w] = 256;
-				    }
-				}
-				else
-				{
-				    pClip->Left [j][w] = Win2[0].Right;
-				    pClip->Right[j++][w] = Win2[1].Left + 1;
-				}
-				pClip->Count [w] = j;
-			    }
-			    else
-			    {
-				for (uint32 j = 0; j < Window2Enabled; j++)
-				{
-				    pClip->Left [j][w] = Win2[j].Left;
-				    pClip->Right [j][w] = Win2[j].Right;
-				}
-				pClip->Count [w] = Window2Enabled;
-			    }
-			}
-		    }
-
-		    if (w != 5)
-		    {
-			if (pClip->Count [5])
-			{
-			    // Colour window enabled. Set the
-			    // clip windows for all remaining backgrounds to be
-			    // the same as the colour window.
-			    if (pClip->Count [w] == 0)
-			    {
-				pClip->Count [w] = pClip->Count [5];
-				for (uint32 i = 0; i < pClip->Count [w]; i++)
-				{
-				    pClip->Left [i][w] = pClip->Left [i][5];
-				    pClip->Right [i][w] = pClip->Right [i][5];
-				}
-			    }
-			    else
-			    {
-				// Intersect the colour window with the bg's
-				// own clip window.
-				for (uint32 i = 0; i < pClip->Count [w]; i++)
-				{
-						uint32 j;
-						for (j = 0; j < pClip->Count [5]; j++)
-				    {
-							if((pClip->Left[i][w] >= pClip->Left[j][5] && pClip->Left[i][w] < pClip->Right[j][5]) || (pClip->Left[j][5] >= pClip->Left[i][w] && pClip->Left[j][5] < pClip->Right[i][w])){
-								// Found an intersection!
-								pClip->Left[i][w]=MAX(pClip->Left[i][w], pClip->Left[j][5]);
-								pClip->Right[i][w]=MIN(pClip->Right[i][w], pClip->Right[j][5]);
-								goto Clip_ok;
-					}
-				    }
-						// no intersection, nullify it
-						pClip->Left[i][w]=1;
-						pClip->Right[i][w]=0;
-Clip_ok:
-						j=0; // dummy statement
-				}
-			    }
-			}
-		    }
-		} // if (w == 5 | ...
-	    } // if (!Settings.DisableGraphicWindows)
-	} // for (int w...
-    } // for (int c...
+				StoreWindowRegions(0, &IPPU.Clip[sub][j], n_regions, windows, drawing_modes, sub);
+		}
+	}
 }
