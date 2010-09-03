@@ -21,12 +21,13 @@
 #include "platform.h"
 #include "RomSelector.h"
 #include "Options.h"
-//#include "Controller.h"
+#include "Controller.h"
 #include "pdl.h"
-//#include "resize++.h"
+#include "resize++.h"
 
 #include <SDL.h>
 #include <SDL_ttf.h>
+#include <SDL_image.h>
 
 #define OPTION_SIZE 40
 #define OPTION_SPACING 50
@@ -38,8 +39,8 @@
 #define TOGGLE_OFF_X 240
 #define TOGGLE_Y 5
 
-//For now, until I get skins for this
-#define SUPPORT_SKINS 0
+#define SUPPORT_SKINS 1
+
 #if SUPPORT_SKINS
 //Skin stuff
 #define SKIN_TXT_X TOGGLE_TXT_X
@@ -371,6 +372,7 @@ void menuSetFilter( bool smooth ) { gl_filter = smooth ? GL_LINEAR : GL_NEAREST;
 void menuSetSpeed( bool show )    { showSpeed = show;                            }
 void menuSetAutoSave( bool on )   { autosave = on;                               }
 void menuSetTrans( bool on )      { UseTransparency = on;                        }
+void menuSetOnscreen( bool on )   { use_on_screen = on; updateOrientation();     }
 #if 0
 void menuSetAutoSkip( bool on )
 {
@@ -381,7 +383,6 @@ void menuSetAutoSkip( bool on )
   frameskipadjust = 0;
 }
 
-void menuSetOnscreen( bool on )   { use_on_screen = on; updateOrientation();     }
 void menuSetTurboToggle( bool on ){ turbo_toggle = on;                           }
 #endif
 
@@ -391,9 +392,9 @@ bool menuGetFilter()      { return gl_filter == GL_LINEAR;              }
 bool menuGetSpeed()       { return showSpeed;                           }
 bool menuGetAutoSave()    { return autosave;                            }
 bool menuGetTrans()       { return UseTransparency;                     }
+bool menuGetOnscreen()    { return use_on_screen;                       }
 #if 0
 bool menuGetAutoSkip()    { return autoFrameSkip;                       }
-bool menuGetOnscreen()    { return use_on_screen;                       }
 bool menuGetTurboToggle() { return turbo_toggle;                        }
 #endif
 

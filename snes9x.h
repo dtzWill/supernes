@@ -428,4 +428,7 @@ END_EXTERN_C
 #define SKIN_CFG_NAME "controller.cfg"
 #define SKIN_IMG_NAME "controller.png"
 
+#define NATIVE_RES_WIDTH 320
+#define NATIVE_RES_HEIGHT 480
+
 #endif

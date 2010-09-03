@@ -78,6 +78,8 @@ struct controller_skin
   int capture_y;
   int capture_radius;
 
+  int transparent;
+
   //circular linked list
   controller_skin * next;
 

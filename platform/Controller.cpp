@@ -182,7 +182,8 @@ game_option controller_options[] =
     { "touch_turbo_radius", &tmp_skin.turbo_radius },
     { "touch_capture_x", &tmp_skin.capture_x },
     { "touch_capture_y", &tmp_skin.capture_y },
-    { "touch_capture_radius", &tmp_skin.capture_radius }
+    { "touch_capture_radius", &tmp_skin.capture_radius },
+    { "touch_transparent", &tmp_skin.transparent }
 };
 
 /*-----------------------------------------------------------------------------

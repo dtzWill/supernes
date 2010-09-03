@@ -49,7 +49,7 @@ int srcHeight = -1;
 int destWidth = 320;
 int destHeight = 480;
 
-//#define DEBUG_GL
+#define DEBUG_GL
 
 #ifdef DEBUG_GL
 void checkError()
@@ -159,6 +159,10 @@ void GL_Init()
     glDisable(GL_CULL_FACE);
     checkError();
 
+    //Enable alpha blending
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_BLEND);
+
     GLbyte vShaderStr[] =  
         "attribute vec4 a_position;   \n"
         "attribute vec2 a_texCoord;   \n"
@@ -252,10 +256,10 @@ void GL_InitTexture(int _srcWidth, int _srcHeight)
         printf( "No controller image found!  Running without one...\n" );
         return;
     }
-    //Create RGB surface and copy controller into it
-    SDL_Surface * controller_surface = SDL_CreateRGBSurface( SDL_SWSURFACE, initial_surface->w, initial_surface->h, 24,
-            0x0000ff, 0x00ff00, 0xff0000, 0);
-    SDL_BlitSurface( initial_surface, NULL, controller_surface, NULL );
+
+    //Make sure the surface is the right format...
+    //XXX: I don't like this, but I couldn't get CreateRGBSurface to work right. :(
+    SDL_Surface * controller_surface = SDL_DisplayFormatAlpha( initial_surface );
 
     glGenTextures(1, &controller_tex );
     glBindTexture( GL_TEXTURE_2D, controller_tex );
@@ -269,7 +273,7 @@ void GL_InitTexture(int _srcWidth, int _srcHeight)
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
     checkError();
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, controller_surface->w, controller_surface->h, 0, GL_RGB,
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, controller_surface->w, controller_surface->h, 0, GL_RGBA,
             GL_UNSIGNED_BYTE, controller_surface->pixels );
     checkError();
 
@@ -374,40 +378,47 @@ void updateOrientation()
     PDL_SetOrientation( notification_direction );
 }
 
+void drawSkin()
+{
+  // Use the program object
+  glUseProgram ( programObject );
+  checkError();
+
+  glVertexAttribPointer( positionLoc, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GLfloat), controller_coords );
+  checkError();
+  glVertexAttribPointer( texCoordLoc, 2, GL_FLOAT, GL_FALSE, 2*sizeof(GLfloat), texCoords );
+
+  checkError();
+
+  glEnableVertexAttribArray( positionLoc );
+  checkError();
+  glEnableVertexAttribArray( texCoordLoc );
+  checkError();
+
+  checkError();
+
+  //sampler texture unit to 0
+  glBindTexture(GL_TEXTURE_2D, controller_tex);
+  glUniform1i( samplerLoc, 0 );
+  checkError();
+
+  glDrawElements( GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, indices );
+  checkError();
+
+}
+
+
 void GL_RenderPix(u8 * pix)
 {
     glClear( GL_COLOR_BUFFER_BIT );
     checkError();
 
     /*-----------------------------------------------------------------------------
-     *  Overlay
+     *  Background Skin
      *-----------------------------------------------------------------------------*/
-    if ( use_on_screen && orientation == ORIENTATION_LANDSCAPE_R && skin )
+    if ( use_on_screen && orientation == ORIENTATION_LANDSCAPE_R && skin && !skin->transparent)
     {
-        // Use the program object
-        glUseProgram ( programObject );
-        checkError();
-
-        glVertexAttribPointer( positionLoc, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GLfloat), controller_coords );
-        checkError();
-        glVertexAttribPointer( texCoordLoc, 2, GL_FLOAT, GL_FALSE, 2*sizeof(GLfloat), texCoords );
-
-        checkError();
-
-        glEnableVertexAttribArray( positionLoc );
-        checkError();
-        glEnableVertexAttribArray( texCoordLoc );
-        checkError();
-
-        checkError();
-
-        //sampler texture unit to 0
-        glBindTexture(GL_TEXTURE_2D, controller_tex);
-        glUniform1i( samplerLoc, 0 );
-        checkError();
-
-        glDrawElements( GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, indices );
-        checkError();
+      drawSkin();
     }
 
     /*-----------------------------------------------------------------------------
@@ -442,6 +453,15 @@ void GL_RenderPix(u8 * pix)
 
     glDrawElements( GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, indices );
     checkError();
+
+    /*-----------------------------------------------------------------------------
+     *  Skin Overlay
+     *-----------------------------------------------------------------------------*/
+    if ( use_on_screen && orientation == ORIENTATION_LANDSCAPE_R && skin && skin->transparent)
+    {
+      drawSkin();
+    }
+
 
     //Push to screen
     SDL_GL_SwapBuffers();
