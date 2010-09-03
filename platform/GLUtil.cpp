@@ -49,7 +49,7 @@ int srcHeight = -1;
 int destWidth = 320;
 int destHeight = 480;
 
-#define DEBUG_GL
+//#define DEBUG_GL
 
 #ifdef DEBUG_GL
 void checkError()
