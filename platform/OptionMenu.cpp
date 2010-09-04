@@ -605,7 +605,7 @@ void doMenu( SDL_Surface * s, menuOption * options, int numOptions )
           {
             if ( optionHitCheck( &options[i], event.button.x, event.button.y ) )
             {
-              printf( "Chose: %s\n", options[i].text );
+              //printf( "Chose: %s\n", options[i].text );
               done = true;
               //Make sure any changes to options are saved.
               writeOptions();

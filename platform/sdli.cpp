@@ -26,7 +26,7 @@ static struct {
 
 static void processMouse(unsigned int x, unsigned int y, bool pressed)
 {
-  printf( "Mouse pressed: %d, %d, pressed=%d\n", x, y, pressed );
+  //printf( "Mouse pressed: %d, %d, pressed=%d\n", x, y, pressed );
   if ( pressed )
   {
     joypads[TOUCH_JOY] |= controllerHitCheck( x, y );
@@ -42,7 +42,7 @@ static void processMouseMotion(unsigned int x, unsigned int y,
   //If we move from (x,y) to (xnew,ynew), then the effect on the controller is
   //to unpress the buttons for the old values, and press the buttons for the values
   //Note nothing reads this data while this is happening.
-  printf( "Mouse moved: (%d,%d) -> (%d,%d)\n", x, y, xnew, ynew );
+  //printf( "Mouse moved: (%d,%d) -> (%d,%d)\n", x, y, xnew, ynew );
   joypads[TOUCH_JOY] &= ~controllerHitCheck( x, y );
   joypads[TOUCH_JOY] |= controllerHitCheck( xnew, ynew );
 }
