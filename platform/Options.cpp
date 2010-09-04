@@ -37,10 +37,10 @@ game_option state_options[] =
     { "speed", &showSpeed },
     { "autosave", &autosave },
     { "transparency", &UseTransparency },
-    { "onscreen", &use_on_screen }
+    { "onscreen", &use_on_screen },
+    { "skin", &skin_index }
 #if 0
     { "autoframeskip", &autoFrameSkip },
-    { "skin", &skin_index },
     { "turbo_toggle", &turbo_toggle }
 #endif
 };

@@ -288,9 +288,6 @@ void updateOrientation()
     float screenAspect = (float)destWidth/(float)destHeight;
     float emulatedAspect = (float)srcWidth/(float)srcHeight;
     
-    //XXX: 'orientation' is invariant as far the rendering loop goes; move
-    //the corresponding invariant results (vertexCoords, etc)
-    //to be calculated outside this method
     switch( orientation )
     {
         case ORIENTATION_LANDSCAPE_R:
