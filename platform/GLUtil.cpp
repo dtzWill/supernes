@@ -258,8 +258,10 @@ void GL_InitTexture(int _srcWidth, int _srcHeight)
     }
 
     //Make sure the surface is the right format...
-    //XXX: I don't like this, but I couldn't get CreateRGBSurface to work right. :(
-    SDL_Surface * controller_surface = SDL_DisplayFormatAlpha( initial_surface );
+    SDL_Surface * controller_surface = SDL_CreateRGBSurface( SDL_SWSURFACE, initial_surface->w, initial_surface->h, 32,
+            0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000);
+    SDL_SetAlpha(initial_surface, 0, 0);
+    SDL_BlitSurface( initial_surface, NULL, controller_surface, NULL );
 
     glGenTextures(1, &controller_tex );
     glBindTexture( GL_TEXTURE_2D, controller_tex );

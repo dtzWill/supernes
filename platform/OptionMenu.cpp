@@ -296,22 +296,6 @@ void updateSkinSurface( menuOption * opt )
     //Scale the image by half:
     skin_preview = SDL_Resize( skin_preview, 0.5f, true, 1 );
 
-    //XXX: Not required anymore, will need to update when we use this code again
-    //Convert to BGR (d'oh)
-    SDL_Surface * rgb_surface = SDL_CreateRGBSurface( SDL_SWSURFACE, skin_preview->w, skin_preview->h, 24,
-            0xff0000, 0x00ff00, 0x0000ff, 0);
-    SDL_Surface * bgr_surface = SDL_CreateRGBSurface( SDL_SWSURFACE, skin_preview->w, skin_preview->h, 24,
-            0x0000ff, 0x00ff00, 0xff0000, 0);
-
-    SDL_BlitSurface( skin_preview, NULL, rgb_surface, NULL );
-    int pixels_size = 320*480 /* resolution */
-                     / 4      /* scaling */
-                     * 3;     /* bpp */
-    memcpy( bgr_surface->pixels, rgb_surface->pixels, pixels_size );
-    SDL_FreeSurface( rgb_surface );
-    SDL_FreeSurface( skin_preview );
-    skin_preview = bgr_surface;
-
     //Draw it
     int w = OPTION_WIDTH/2 - skin_preview->w/2;
     int h = OPTION_SIZE + 10 + SKIN_PREVIEW_HEIGHT/2 - skin_preview->h/2;
