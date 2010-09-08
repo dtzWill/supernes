@@ -28,6 +28,7 @@ int showSpeed = false;
 int autosave = true;
 int UseTransparency = true;
 int use_on_screen = true;
+int fullscreen = false;
 
 game_option state_options[] =
 {
@@ -38,11 +39,8 @@ game_option state_options[] =
     { "autosave", &autosave },
     { "transparency", &UseTransparency },
     { "onscreen", &use_on_screen },
-    { "skin", &skin_index }
-#if 0
-    { "autoframeskip", &autoFrameSkip },
-    { "turbo_toggle", &turbo_toggle }
-#endif
+    { "skin", &skin_index },
+    { "fullscreen", &fullscreen }
 };
 
 int atoiHex( char * s )

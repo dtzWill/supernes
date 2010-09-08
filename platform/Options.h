@@ -41,6 +41,7 @@ extern int showSpeed;
 extern int autosave;
 extern int UseTransparency;
 extern int use_on_screen;
+extern int fullscreen;
 //Defined in Controller.cpp
 extern int skin_index;
 

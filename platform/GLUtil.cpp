@@ -316,9 +316,12 @@ void updateOrientation()
         emulatedAspect = 1/emulatedAspect;//landscape has reversed aspect ratio
     }
 
-    for ( int i = 0; i < 4; i++ )
+    if (!fullscreen)
     {
+      for ( int i = 0; i < 4; i++ )
+      {
         vertexCoords[2*i+1] *= screenAspect / emulatedAspect;
+      }
     }
 
     if ( use_on_screen && skin )
@@ -339,25 +342,28 @@ void updateOrientation()
             scale_factor = ( (float)skin->controller_screen_width / effectiveWidth );
         }
 
-        for ( int i = 0; i < 4; i++ )
+        if (!fullscreen)
         {
+          for ( int i = 0; i < 4; i++ )
+          {
             //scale
             vertexCoords[2*i] *= scale_factor;
             vertexCoords[2*i+1] *= scale_factor;
-        }
+          }
 
-        float y_offset = 1.0 - vertexCoords[0];
-        float x_offset = 1.0 - vertexCoords[1];
+          float y_offset = 1.0 - vertexCoords[0];
+          float x_offset = 1.0 - vertexCoords[1];
 
-        //push the screen to the coordinates indicated
-        y_offset -= ( (float)skin->controller_screen_y_offset / (float)destWidth ) * 2;
-        x_offset -= ( (float)skin->controller_screen_x_offset / (float)destHeight ) * 2;
+          //push the screen to the coordinates indicated
+          y_offset -= ( (float)skin->controller_screen_y_offset / (float)destWidth ) * 2;
+          x_offset -= ( (float)skin->controller_screen_x_offset / (float)destHeight ) * 2;
 
-        for ( int i = 0; i < 4; i++ )
-        {
+          for ( int i = 0; i < 4; i++ )
+          {
             //translate
             vertexCoords[2*i] += y_offset;
             vertexCoords[2*i+1] += x_offset;
+          }
         }
     }
 

@@ -51,7 +51,7 @@
 
 #define TOP_LEVEL_COUNT ( Config.running ? 7 : 4 )
 
-#define OPTIONS_COUNT 7
+#define OPTIONS_COUNT 8
 
 //Colors (BGR format)
 static SDL_Color textColor = { 255, 255, 255 };
@@ -338,34 +338,20 @@ void menuSetOrientation( bool portrait )
 void menuSetSound( bool sound )   { soundMute = !sound;                          }
 void menuSetFilter( bool smooth ) { gl_filter = smooth ? GL_LINEAR : GL_NEAREST;
                                     GL_InitTexture(IMAGE_WIDTH,IMAGE_HEIGHT);    }
+void menuSetStretch( bool on )    { fullscreen = on; updateOrientation();        }
 void menuSetSpeed( bool show )    { showSpeed = show;                            }
 void menuSetAutoSave( bool on )   { autosave = on;                               }
 void menuSetTrans( bool on )      { UseTransparency = on;                        }
 void menuSetOnscreen( bool on )   { use_on_screen = on; updateOrientation();     }
-#if 0
-void menuSetAutoSkip( bool on )
-{
-  //Update autoframeskip
-  autoFrameSkip = on;
-  //Reset frameskip-related variables
-  systemFrameSkip = 0;
-  frameskipadjust = 0;
-}
-
-void menuSetTurboToggle( bool on ){ turbo_toggle = on;                           }
-#endif
 
 bool menuGetOrientation() { return orientation == ORIENTATION_PORTRAIT; }
 bool menuGetSound()       { return !soundMute;                          }
 bool menuGetFilter()      { return gl_filter == GL_LINEAR;              }
+bool menuGetStretch()     { return fullscreen;                          }
 bool menuGetSpeed()       { return showSpeed;                           }
 bool menuGetAutoSave()    { return autosave;                            }
 bool menuGetTrans()       { return UseTransparency;                     }
 bool menuGetOnscreen()    { return use_on_screen;                       }
-#if 0
-bool menuGetAutoSkip()    { return autoFrameSkip;                       }
-bool menuGetTurboToggle() { return turbo_toggle;                        }
-#endif
 
 //Call this to display the options menu...
 eMenuResponse optionsMenu()
@@ -467,18 +453,14 @@ void initializeMenu()
       menuSetSound, menuGetSound );
   optionMenu[x++] = createToggle( "Filter",        "Smooth", "Sharp", base+x*OPTION_SPACING,
       menuSetFilter, menuGetFilter );
+  optionMenu[x++] = createToggle( "Stretch",       "On",     "Off",   base+x*OPTION_SPACING,
+      menuSetStretch, menuGetStretch );
   optionMenu[x++] = createToggle( "Show Speed",    "On",     "Off",   base+x*OPTION_SPACING,
       menuSetSpeed, menuGetSpeed );
   optionMenu[x++] = createToggle( "Autosave",      "On",     "Off",   base+x*OPTION_SPACING,
       menuSetAutoSave, menuGetAutoSave );
   optionMenu[x++] = createToggle( "Transparency",  "On",     "Off",   base+x*OPTION_SPACING,
       menuSetTrans, menuGetTrans );
-#if 0
-  optionMenu[x++] = createToggle( "Autoframeskip", "On",     "Off",   base+x*OPTION_SPACING,
-      menuSetAutoSkip, menuGetAutoSkip );
-  optionMenu[x++] = createToggle( "Turbo toggles", "On",     "Off",   base+x*OPTION_SPACING,
-      menuSetTurboToggle, menuGetTurboToggle );
-#endif
   optionMenu[x++] = createButton( "Return", changeToMainState, base+x*OPTION_SPACING );
   
   //Skin menu
