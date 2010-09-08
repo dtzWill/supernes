@@ -411,8 +411,16 @@ void drawSkin()
 }
 
 
-void GL_RenderPix(u8 * pix)
+void GL_RenderPix(u8 * pix,int w, int h)
 {
+    // Update the texture dimensions/scaling depending on the rendered image size.
+    if ( srcWidth != w || srcHeight != h )
+    {
+      srcWidth = w; srcHeight = h;
+      GL_InitTexture(w,h);
+      updateOrientation();
+    }
+
     glClear( GL_COLOR_BUFFER_BIT );
     checkError();
 

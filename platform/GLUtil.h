@@ -49,7 +49,7 @@ extern float land_r_vertexCoords[];
 extern void GL_Init();
 extern void GL_InitTexture(int w, int h);
 extern void updateOrientation();
-extern void GL_RenderPix(u8 * pix);
+extern void GL_RenderPix(u8 * pix,int w, int h);
 
 enum orientation
 {

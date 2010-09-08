@@ -178,7 +178,7 @@ bool8_32 S9xInitUpdate ()
 // TODO Above.
 bool8_32 S9xDeinitUpdate (int width, int height)
 {
-  GL_RenderPix(GFX.Screen);
+  GL_RenderPix(GFX.Screen,width,height);
 #if CONF_EXIT_BUTTON
 	if (ExitBtnRequiresDraw()) {
 		ExitBtnDraw(screen);

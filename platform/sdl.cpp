@@ -294,6 +294,7 @@ int main(int argc, char ** argv) {
       updateBindingMessage();
     } while (Config.running);
 
+    S9xVideoReset();
     S9xGraphicsDeinit();
 
     // Save state
