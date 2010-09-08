@@ -482,7 +482,6 @@ void GL_RenderPix(u8 * pix,int w, int h)
 
 void SDL_DrawSurfaceAsGLTexture( SDL_Surface * s, float * coords )
 {
-
   /*-----------------------------------------------------------------------------
    *  Convert the surface to a texture, and upload it
    *-----------------------------------------------------------------------------*/

@@ -372,6 +372,9 @@ eMenuResponse optionsMenu()
   SDL_Surface * options_screen = SDL_CreateRGBSurface( SDL_SWSURFACE, surface->w, surface->h, 24, 
       0x0000ff, 0x00ff00, 0xff0000, 0);
 
+  //Portrait orientation
+  PDL_SetOrientation( PDL_ORIENTATION_BOTTOM );
+
   if (!options_screen)
   {
     fprintf( stderr, "Error creating options menu!\n" );
@@ -645,6 +648,9 @@ void doHelp( SDL_Surface * s )
 
 void doHelpExternal( SDL_Surface * s )
 {
+  //Portrait orientation
+  PDL_SetOrientation( PDL_ORIENTATION_BOTTOM );
+
   initializeMenu();
   menuState = MENU_HELP;
   doHelp( s );

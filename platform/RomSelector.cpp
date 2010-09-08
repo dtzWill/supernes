@@ -118,6 +118,9 @@ int sortCompar( const void * a, const void * b )
 
 char * romSelector()
 {
+    //Portrait orientation
+    PDL_SetOrientation( PDL_ORIENTATION_BOTTOM );
+
     // Create buffer we render selector into
     SDL_Surface * surface = SDL_GetVideoSurface();
     SDL_Surface * selector = SDL_CreateRGBSurface( SDL_SWSURFACE, surface->w, surface->h, 24, 
