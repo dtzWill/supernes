@@ -19,6 +19,7 @@
 #include "GLUtil.h"
 #include "snes9x.h"
 #include "platform.h"
+#include "cpuexec.h"
 #include "RomSelector.h"
 #include "Options.h"
 #include "Controller.h"
@@ -48,7 +49,7 @@
 #define SKIN_PREVIEW_WIDTH (NATIVE_RES_HEIGHT/2 + 20)
 #define SKIN_SPACING (SKIN_PREVIEW_HEIGHT + 10)
 
-#define TOP_LEVEL_COUNT ( Config.running ? 6 : 4 )
+#define TOP_LEVEL_COUNT ( Config.running ? 7 : 4 )
 
 #define OPTIONS_COUNT 7
 
@@ -321,6 +322,7 @@ void changeToHelpState(void)     { menuState = MENU_HELP;    }
 void exitMenu(void)              { menuDone = true;          }
 void moveToRomSelector(void);
 void handleMenuSaveState(int,bool);
+void resetGame(void);
 
 void changeToHelpROMsState(void)     { helpState = HELP_ROMS;     }
 void changeToHelpControlsState(void) { helpState = HELP_CONTROLS; }
@@ -434,15 +436,18 @@ void initializeMenu()
 
   //Top-level menu
   int x = 0;
+  int base = ( NATIVE_RES_HEIGHT - TOP_LEVEL_COUNT * OPTION_SPACING ) / 2;
   topMenu = (menuOption*)malloc( TOP_LEVEL_COUNT*sizeof(menuOption));
   if (Config.running)
-    topMenu[x++] = createButton( "Save states",           changeToSaveState,   100+x*OPTION_SPACING);
-  topMenu[x++] =   createButton( "Options",               changeToOptionsState,100+x*OPTION_SPACING);
-  topMenu[x++] =   createButton( skins_label,             changeToSkinState,   100+x*OPTION_SPACING);
-  topMenu[x++] =   createButton( "Help",                  changeToHelpState,   100+x*OPTION_SPACING);
+    topMenu[x++] = createButton( "Save states",           changeToSaveState,   base+x*OPTION_SPACING);
+  topMenu[x++] =   createButton( "Options",               changeToOptionsState,base+x*OPTION_SPACING);
+  topMenu[x++] =   createButton( skins_label,             changeToSkinState,   base+x*OPTION_SPACING);
+  topMenu[x++] =   createButton( "Help",                  changeToHelpState,   base+x*OPTION_SPACING);
   if (Config.running)
-    topMenu[x++] = createButton( "Choose different game", moveToRomSelector,   100+x*OPTION_SPACING);
-  topMenu[x++] =   createButton( "Return",                exitMenu,            100+x*OPTION_SPACING);
+    topMenu[x++] = createButton( "Choose different game", moveToRomSelector,   base+x*OPTION_SPACING);
+  if (Config.running)
+    topMenu[x++] = createButton( "Reset game",            resetGame,           base+x*OPTION_SPACING);
+  topMenu[x++] =   createButton( "Return",                exitMenu,            base+x*OPTION_SPACING);
 
   //Save menu
   x = 0;
@@ -454,34 +459,36 @@ void initializeMenu()
   
   //Options menu
   x = 0;
+  base = ( NATIVE_RES_HEIGHT - OPTIONS_COUNT * OPTION_SPACING ) / 2;
   optionMenu = (menuOption*)malloc(OPTIONS_COUNT*sizeof(menuOption));
-  optionMenu[x++] = createToggle( "Orientation",   "Port",   "Land",  50+x*OPTION_SPACING,
+  optionMenu[x++] = createToggle( "Orientation",   "Port",   "Land",  base+x*OPTION_SPACING,
       menuSetOrientation, menuGetOrientation );
-  optionMenu[x++] = createToggle( "Sound",         "On",     "Off",   50+x*OPTION_SPACING,
+  optionMenu[x++] = createToggle( "Sound",         "On",     "Off",   base+x*OPTION_SPACING,
       menuSetSound, menuGetSound );
-  optionMenu[x++] = createToggle( "Filter",        "Smooth", "Sharp", 50+x*OPTION_SPACING,
+  optionMenu[x++] = createToggle( "Filter",        "Smooth", "Sharp", base+x*OPTION_SPACING,
       menuSetFilter, menuGetFilter );
-  optionMenu[x++] = createToggle( "Show Speed",    "On",     "Off",   50+x*OPTION_SPACING,
+  optionMenu[x++] = createToggle( "Show Speed",    "On",     "Off",   base+x*OPTION_SPACING,
       menuSetSpeed, menuGetSpeed );
-  optionMenu[x++] = createToggle( "Autosave",      "On",     "Off",   50+x*OPTION_SPACING,
+  optionMenu[x++] = createToggle( "Autosave",      "On",     "Off",   base+x*OPTION_SPACING,
       menuSetAutoSave, menuGetAutoSave );
-  optionMenu[x++] = createToggle( "Transparency",  "On",     "Off",   50+x*OPTION_SPACING,
+  optionMenu[x++] = createToggle( "Transparency",  "On",     "Off",   base+x*OPTION_SPACING,
       menuSetTrans, menuGetTrans );
 #if 0
-  optionMenu[x++] = createToggle( "Autoframeskip", "On",     "Off",   50+x*OPTION_SPACING,
+  optionMenu[x++] = createToggle( "Autoframeskip", "On",     "Off",   base+x*OPTION_SPACING,
       menuSetAutoSkip, menuGetAutoSkip );
-  optionMenu[x++] = createToggle( "Turbo toggles", "On",     "Off",   50+x*OPTION_SPACING,
+  optionMenu[x++] = createToggle( "Turbo toggles", "On",     "Off",   base+x*OPTION_SPACING,
       menuSetTurboToggle, menuGetTurboToggle );
 #endif
-  optionMenu[x++] = createButton( "Return", changeToMainState, 50+x*OPTION_SPACING );
+  optionMenu[x++] = createButton( "Return", changeToMainState, base+x*OPTION_SPACING );
   
   //Skin menu
   x = 0;
+  base = (NATIVE_RES_HEIGHT - (OPTION_SPACING*3 + SKIN_SPACING))/2;
   skinMenu = (menuOption*)malloc(3*sizeof(menuOption));
-  skinMenu[x++] = createToggle( "Display skin",   "On",     "Off",   100+x*OPTION_SPACING,
+  skinMenu[x++] = createToggle( "Display skin",   "On",     "Off",   base+x*OPTION_SPACING,
       menuSetOnscreen, menuGetOnscreen );
-  skinMenu[x++] = createSkinWidget( 100+x*OPTION_SPACING );
-  skinMenu[x++] = createButton( "Return", changeToMainState, 100+x*OPTION_SPACING+SKIN_SPACING );
+  skinMenu[x++] = createSkinWidget( base+x*OPTION_SPACING );
+  skinMenu[x++] = createButton( "Return", changeToMainState, base+x*OPTION_SPACING+SKIN_SPACING );
 
   //Help menu
   x = 0;
@@ -707,6 +714,12 @@ void moveToRomSelector()
 {
   menuDone = true;
   menuResponse = MENU_RESPONSE_ROMSELECTOR;
+}
+
+void resetGame()
+{
+  S9xReset();
+  menuDone = true;
 }
 
 bool showLines( SDL_Surface * s, line * lines, int numlines, bool center )
