@@ -121,9 +121,11 @@ bool8 S9xDoScreenshot(int width, int height){
     png_color pngpal[256];
     int imgwidth;
     int imgheight;
-    const char *fname=S9xGetFilenameInc(".png");
+    const char *fname=S9xGetFilename( FILE_SCREENSHOT );
     
+#if 0
     Settings.TakeScreenshot=FALSE;
+#endif
 
     if((fp=fopen(fname, "wb"))==NULL){
         perror("Screenshot failed");
@@ -154,13 +156,17 @@ bool8 S9xDoScreenshot(int width, int height){
 
     imgwidth=width;
     imgheight=height;
+#if 0
     if(Settings.StretchScreenshots==1){
         if(width<=256 && height>SNES_HEIGHT_EXTENDED) imgwidth=width<<1;
         if(width>256 && height<=SNES_HEIGHT_EXTENDED) imgheight=height<<1;
     } else if(Settings.StretchScreenshots==2){
+#endif
         if(width<=256) imgwidth=width<<1;
         if(height<=SNES_HEIGHT_EXTENDED) imgheight=height<<1;
+#if 0
     }
+#endif
     
     png_init_io(png_ptr, fp);
     png_set_IHDR(png_ptr, info_ptr, imgwidth, imgheight, 8, 

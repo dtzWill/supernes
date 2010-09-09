@@ -9,6 +9,7 @@
 #include "Controller.h"
 #include "snes9x.h"
 #include "GLUtil.h"
+#include "screenshot.h"
 
 #if CONF_ZEEMOTE
 #include "zeemote.h"
@@ -73,6 +74,11 @@ static void checkOther( int * mapping, int key )
   {
     //Turbo presed, toggle it!
     Settings.TurboMode = !Settings.TurboMode;
+  }
+  //Special key that saves the screen to disk
+  if ( key == SDLK_HASH )
+  {
+    S9xDoScreenshot(IMAGE_WIDTH,IMAGE_HEIGHT);
   }
 }
 
