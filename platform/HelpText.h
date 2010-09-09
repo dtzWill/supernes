@@ -191,10 +191,10 @@ line helpSettings[][14] =
     {"Turning sound off can make games faster.",    textColor },
     {"Filter:"    ,                                 linkColor },
     {"When scaling the screen to fit your device",  textColor },
-    {"should we make things smooth or sharp?",      textColor },
-    {"Smooth looks nicer but can be blurry.",       textColor },
-    {"Sharp can look worse, but is more clear.",    textColor },
-    {" ",                                           textColor },
+    {"should we err on smooth and blurry or",       textColor },
+    {"sharp and pixelated?",                        textColor },
+    {"Stretch",                                     linkColor },
+    {"Enable to fullscreen ignoring aspect ratio",  textColor },
     {"(Tap to go to next screen)",                  linkColor }
 },
 {
