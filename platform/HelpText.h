@@ -90,7 +90,7 @@ line helpROMs[][14] =
     {"free to contact me for support:",             textColor },
     {"webos@wdtz.org",                              hiColor   },
     {" ",                                           textColor },
-    {"(Tap to go to return to help)",               linkColor }
+    {"(Tap to return to help)",                     linkColor }
 }
 
 };
@@ -100,14 +100,14 @@ line helpControls[][14] =
 {
     {"How do I play?",                              textColor },
     {" ",                                           textColor },
-    {"SuperNES is controlled primarily with your",  textColor },
-    {"keyboard.  There are default controls, but",  textColor },
-    {"you can also customize them to fit",          textColor },
-    {"your gaming needs!",                          textColor },
+    {"SuperNES has two ways of playing:",           textColor },
+    {"Physical/keyboard or touchscreen skins.",     textColor },
+    {"You can use physical keyboard at anytime,",   textColor },
+    {"but you have to pick and enable a skin to",   textColor },
+    {"make use of the touchscreen.",                textColor },
     {" ",                                           textColor },
-    {" ",                                           textColor },
-    {" ",                                           textColor },
-    {" ",                                           textColor },
+    {"To change your skin settings, use the",       textColor },
+    {"'Skins' menu item.",                          textColor },
     {" ",                                           textColor },
     {" ",                                           textColor },
     {" ",                                           textColor },
@@ -159,7 +159,7 @@ line helpControls[][14] =
     {" ",                                           textColor },
     {" ",                                           textColor },
     {" ",                                           textColor },
-    {"(Tap to go to return to help)",               linkColor }
+    {"(Tap to return to help)",                     linkColor }
 },
 };
 
@@ -194,7 +194,7 @@ line helpSettings[][14] =
     {"should we err on smooth and blurry or",       textColor },
     {"sharp and pixelated?",                        textColor },
     {"Stretch",                                     linkColor },
-    {"Enable to fullscreen ignoring aspect ratio",  textColor },
+    {"Enable to fullscreen (ignoring aspect ratio)",textColor },
     {"(Tap to go to next screen)",                  linkColor }
 },
 {
@@ -210,8 +210,8 @@ line helpSettings[][14] =
     {"Transparency:",                               linkColor },
     {"This is an advanced feature. Having this",    textColor },
     {"on provides more accurate graphics but",      textColor },
-    {"can be slower. (On by default)",              textColor },
-    {"(Tap to go to return to help)",               linkColor }
+    {"can be slower (on by default).",              textColor },
+    {"(Tap to return to help)",                     linkColor }
 }
 };
 
