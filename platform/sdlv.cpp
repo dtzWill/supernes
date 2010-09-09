@@ -188,3 +188,33 @@ bool8_32 S9xDeinitUpdate (int width, int height)
 	return TRUE;
 }
 
+void S9xVideoTakeScreenshot(void)
+{
+  //Get the GL-rendered screen..
+  int w = NATIVE_RES_WIDTH;
+  int h = NATIVE_RES_HEIGHT;
+  int bpp = 3;
+
+  char * buffer[h*w*bpp];
+  glReadPixels( 0, 0,
+                NATIVE_RES_WIDTH, NATIVE_RES_HEIGHT,
+                GL_RGB,
+                GL_UNSIGNED_BYTE,
+                buffer );
+  SDL_Surface * s = SDL_CreateRGBSurface( SDL_SWSURFACE, NATIVE_RES_WIDTH, NATIVE_RES_HEIGHT, 24,
+            0x0000ff, 0x00ff00, 0xff0000, 0 );
+
+  int line_size = w*bpp;
+  for ( int i = 0; i < s->h; ++i )
+  {
+    memcpy( ((char *)s->pixels) + s->pitch*i, buffer + line_size*i, line_size );
+  }
+
+  //Create the filename...
+  char filename[100];
+  static int counter = 0;
+  sprintf( filename, "screenshot-%d.bmp", counter++ );
+  int res = SDL_SaveBMP( s, filename );
+  SDL_FreeSurface( s );
+  printf( "Wrote \"%s\"? %d\n", filename, res );
+}

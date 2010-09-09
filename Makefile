@@ -10,8 +10,7 @@ LDLIBS := -lz $(shell sdl-config --libs) \
 	-lGLESv2 -lpdl -Wl,-rpath=/usr/local/lib \
 	-lSDL -lSDL_ttf -lSDL_image
 
-OPTFLAGS += -O3 -mcpu=cortex-a8 -mfpu=neon -ftree-vectorize -mfloat-abi=softfp -ffast-math \
-						-DHAVE_LIBPNG -lpng12
+OPTFLAGS += -O3 -mcpu=cortex-a8 -mfpu=neon -ftree-vectorize -mfloat-abi=softfp -ffast-math
 
 -include config.mk
 
@@ -91,7 +90,6 @@ OBJS += platform/Keyboard.o
 OBJS += platform/Options.o
 OBJS += platform/Controller.o
 OBJS += platform/resize++.o
-OBJS += screenshot.o
 
 ifeq ($(CONF_XSP), 1)
 	CPPFLAGS += -DCONF_XSP=1 $(shell pkg-config --cflags xsp)

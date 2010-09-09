@@ -78,7 +78,7 @@ static void checkOther( int * mapping, int key )
   //Special key that saves the screen to disk
   if ( key == SDLK_HASH )
   {
-    S9xDoScreenshot(IMAGE_WIDTH,IMAGE_HEIGHT);
+    S9xVideoTakeScreenshot();
   }
 }
 
