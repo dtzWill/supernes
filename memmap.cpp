@@ -2564,6 +2564,12 @@ void CMemory::ApplyROMFixes ()
     RomPatch (0x1e4, 0x50, 0xea);
     RomPatch (0x1e5, 0xfb, 0xea);
   }
+
+  if (strcmp(ROMName, "FF MYSTIC QUEST") == 0 ||
+      strcmp(ROMName, "MYSTIC QUEST LEGEND") == 0)
+  {
+    Settings.H_Max = (SNES_CYCLES_PER_SCANLINE * 120) / 100;
+  }
 }
 
 // Read variable size MSB int from a file
