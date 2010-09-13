@@ -141,6 +141,11 @@ uint32 S9xMovieGetId ();
 uint32 S9xMovieGetLength ();
 uint32 S9xMovieGetFrameCounter ();
 
+#define MOVIE_INFO_END "Movie ended"
+#define MOVIE_INFO_RERECORD "Move rerecording"
+#define MOVIE_INFO_REWIND "Movie rewind"
+#define MOVIE_INFO_STOP "Movie stopped"
+
 END_EXTERN_C
 
 #endif

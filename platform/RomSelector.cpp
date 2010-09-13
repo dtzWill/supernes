@@ -73,7 +73,8 @@ int romFilter( const struct dirent * file )
 
     return !(
             strcasecmp( extPtr, "smc" ) &&
-            strcasecmp( extPtr, "zip" ) );
+            strcasecmp( extPtr, "zip" ) &&
+            strcasecmp( extPtr, "smv" ) );
 }
 
 void apply_surface( int x, int y, int w, SDL_Surface* source, SDL_Surface* destination )

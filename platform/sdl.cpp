@@ -20,6 +20,7 @@
 #include "OptionMenu.h"
 #include "Options.h"
 #include "Keyboard.h"
+#include "movie.h"
 
 #define kPollEveryNFrames		1	//Poll input only every this many frames
 
@@ -43,6 +44,24 @@ void S9xMessage(int type, int number, const char * message)
 void S9xAutoSaveSRAM()
 {
 	Memory.SaveSRAM(S9xGetFilename(FILE_SRAM));
+}
+
+static bool handleMovie(const char * file)
+{
+  // If the movie ends in '.smv' then assume it's a, well, smv
+  // and attempt to play it.
+
+  unsigned len = strlen(file);
+  if ( len <= 4 || strncasecmp( file+len-4, ".smv", 4 ) )
+      return false;
+
+  printf( "Playing movie %s\n", file);
+  S9xMovieInit();
+  S9xMovieOpen( file, true );
+  while(S9xMovieActive())
+    S9xMovieUpdate();
+
+  return true;
 }
 
 static void S9xInit() 
@@ -269,7 +288,10 @@ int main(int argc, char ** argv) {
     S9xInit();
     S9xReset();
 
-    S9xSetRomFile(romSelector());
+    const char * selectedFile = romSelector();
+    if ( handleMovie(selectedFile) ) continue;
+
+    S9xSetRomFile(selectedFile);
 
     // Load rom and related files: state, unfreeze if needed
     loadRom();
