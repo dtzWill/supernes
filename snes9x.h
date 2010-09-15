@@ -414,7 +414,7 @@ END_EXTERN_C
 /*-----------------------------------------------------------------------------
  *  Misc stuff for the webos port
  *-----------------------------------------------------------------------------*/
-#define VERSION "0.0.8"
+#define VERSION "1.0.0"
 #define FONT "/usr/share/fonts/PreludeCondensed-Medium.ttf"
 #define TITLE "SuperNES for WebOS (" VERSION ")"
 #define AUTHOR_TAG "Support: webos@wdtz.org"
