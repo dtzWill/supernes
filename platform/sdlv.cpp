@@ -193,22 +193,26 @@ void S9xVideoTakeScreenshot(void)
   //Get the GL-rendered screen..
   int w = NATIVE_RES_WIDTH;
   int h = NATIVE_RES_HEIGHT;
-  int bpp = 3;
+  int bpp = 4;
 
-  char * buffer[h*w*bpp];
+  char * buffer = (char *)malloc(h*w*bpp);
   glReadPixels( 0, 0,
                 NATIVE_RES_WIDTH, NATIVE_RES_HEIGHT,
-                GL_RGB,
+                GL_RGBA,
                 GL_UNSIGNED_BYTE,
                 buffer );
-  SDL_Surface * s = SDL_CreateRGBSurface( SDL_SWSURFACE, NATIVE_RES_WIDTH, NATIVE_RES_HEIGHT, 24,
-            0x0000ff, 0x00ff00, 0xff0000, 0 );
+  SDL_Surface * s = SDL_CreateRGBSurface( SDL_SWSURFACE, NATIVE_RES_WIDTH, NATIVE_RES_HEIGHT, 32,
+            0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
 
   int line_size = w*bpp;
   for ( int i = 0; i < s->h; ++i )
   {
     memcpy( ((char *)s->pixels) + s->pitch*i, buffer + line_size*i, line_size );
   }
+  //while(1)
+  //{
+  //  SDL_DrawSurfaceAsGLTexture( s, portrait_vertexCoords );
+  //}
 
   //Create the filename...
   char filename[100];
@@ -216,5 +220,6 @@ void S9xVideoTakeScreenshot(void)
   sprintf( filename, "screenshot-%d.bmp", counter++ );
   int res = SDL_SaveBMP( s, filename );
   SDL_FreeSurface( s );
-  printf( "Wrote \"%s\"? %d\n", filename, res );
+  free(buffer);
+  printf( "Wrote \"%s\"? %d\n", filename, res == 0 );
 }
