@@ -72,6 +72,7 @@ void S9xDeinitDisplay();
 void S9xVideoToggleFullscreen();
 void S9xVideoReset();
 void S9xSetTitle (const char *title);
+void S9xVideoTakeScreenshot(void);
 
 // Audio output
 void S9xInitAudioOutput();
