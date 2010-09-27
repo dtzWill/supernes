@@ -419,7 +419,6 @@ END_EXTERN_C
 #define TITLE "SuperNES for WebOS (" VERSION ")"
 #define AUTHOR_TAG "Support: webos@wdtz.org"
 #define OPTIONS_TEXT "MENU"
-#define SCROLL_FACTOR 20
 #define SNES_HOME "/media/internal/snes"
 #define ROM_PATH SNES_HOME "/roms/"
 #define OPTIONS_CFG "snes9x.cfg"

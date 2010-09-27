@@ -30,6 +30,10 @@
 // However that's lame, so we use a cache for a happy middle ground.
 #define CACHE_SIZE 30
 
+#define SCROLL_FACTOR 20.0f
+#define SLOW_FACTOR 0.8f
+#define MIN_SCROLL_SPEED 1.0f
+
 char * strip_rom_name( char * rom_name );
 SDL_Surface * getSurfaceFor( char * filename );
 
@@ -126,9 +130,12 @@ int sortCompar( const void * a, const void * b )
 
 #define min(a,b) (((a) < (b)) ? (a) : (b))
 
-TTF_Font * font_small = NULL;
-TTF_Font * font_normal = NULL;
-TTF_Font * font_large = NULL;
+static TTF_Font * font_small = NULL;
+static TTF_Font * font_normal = NULL;
+static TTF_Font * font_large = NULL;
+
+static int scroll_offset = 0;
+static float scroll_offset_actual = 0.0f;
 
 char * romSelector()
 {
@@ -253,13 +260,14 @@ char * romSelector()
       filenames[i] = strip_rom_name(roms[i]->d_name);
     }
 
-    int scroll_offset = 0;
     SDL_Event event;
     bool tap = false;
     bool down = false;
     int romSelected = -1;
     SDL_EnableUNICODE( 1 );
     const int rom_height = getSurfaceFor(filenames[0])->h;
+    float scroll_speed = 0.0f;
+    int lasty;
     while( romSelected == -1 )
     {
         //Calculate scroll, etc
@@ -271,6 +279,7 @@ char * romSelector()
             {
                 case SDL_MOUSEBUTTONDOWN:
                     down = tap = true;
+                    scroll_speed = 0.0f;
                     break;
                 case SDL_MOUSEBUTTONUP:
                     down = false;
@@ -297,12 +306,10 @@ char * romSelector()
                     //If the mouse moves before going up, it's not a tap
                     tap = false;
 
-                    //scroll accordingly..
+                    // If they move the mouse, set the scroll speed accordingly.
                     if ( down )
                     {
-                        scroll_offset -= event.motion.yrel / SCROLL_FACTOR;
-                        if ( scroll_offset > filecount - num_roms_display ) scroll_offset = filecount - num_roms_display;
-                        if ( scroll_offset < 0 ) scroll_offset = 0;
+                      scroll_speed = -event.motion.yrel / SCROLL_FACTOR;
                     }
 
                     break;
@@ -337,11 +344,34 @@ char * romSelector()
                         scroll_offset = offset;
                         if ( scroll_offset > filecount - num_roms_display ) scroll_offset = filecount - num_roms_display;
                         if ( scroll_offset < 0 ) scroll_offset = 0;
+                        scroll_offset_actual = scroll_offset;
+                        scroll_speed = 0;
                     }
                 }
                 default:
                     break;
             }
+        }
+
+        if ( scroll_speed > MIN_SCROLL_SPEED || scroll_speed < MIN_SCROLL_SPEED )
+        {
+          scroll_offset_actual += scroll_speed;
+          scroll_offset = (int)scroll_offset_actual;
+          if ( scroll_offset > filecount - num_roms_display )
+          {
+            scroll_offset = filecount - num_roms_display;
+            scroll_offset_actual = scroll_offset;
+            scroll_speed = 0.0f;
+          }
+          if ( scroll_offset < 0 )
+          {
+            scroll_offset = 0;
+            scroll_offset_actual = scroll_offset;
+            scroll_speed = 0.0f;
+          }
+
+          scroll_speed *= SLOW_FACTOR;
+
         }
         if ( scroll_offset + num_roms_display > filecount )
         {
