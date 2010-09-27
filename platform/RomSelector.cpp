@@ -20,8 +20,18 @@
 #include "OptionMenu.h"
 #include "pdl.h"
 #include <SDL_ttf.h>
-
+#include <list>
+#include <sys/stat.h>
+#include <sys/types.h>
 #include <dirent.h>
+
+// We render the name of each rom, but instead of doing them all at once
+// (initially slow, and memory-consuming), we render just what is needed.
+// However that's lame 
+#define CACHE_SIZE 30
+
+char * strip_rom_name( char * rom_name );
+SDL_Surface * getSurfaceFor( char * filename );
 
 static SDL_Color textColor = { 255, 255, 255 };
 static SDL_Color hiColor = { 255, 200, 200 };
@@ -116,6 +126,10 @@ int sortCompar( const void * a, const void * b )
 
 #define min(a,b) (((a) < (b)) ? (a) : (b))
 
+TTF_Font * font_small = NULL;
+TTF_Font * font_normal = NULL;
+TTF_Font * font_large = NULL;
+
 char * romSelector()
 {
     //Portrait orientation
@@ -132,9 +146,9 @@ char * romSelector()
         exit( 1 );
     }
 
-    TTF_Font * font_small = TTF_OpenFont( FONT, 14 );
-    TTF_Font * font_normal = TTF_OpenFont( FONT, 18 );
-    TTF_Font * font_large = TTF_OpenFont( FONT, 22 );
+    font_small = TTF_OpenFont( FONT, 14 );
+    font_normal = TTF_OpenFont( FONT, 18 );
+    font_large = TTF_OpenFont( FONT, 22 );
     if ( !font_small || !font_normal || !font_large )
     {
         fprintf( stderr, "Failed to open font: %s\n", FONT );
@@ -148,15 +162,15 @@ char * romSelector()
     //XXX: This assumes /media/internal (parent directory) already exists
     int mode = S_IRWXU | S_IRWXG | S_IRWXO;
     int result = mkdir( SNES_HOME, mode );
-#ifdef FSTAB_BUG
+#ifndef FSTAB_BUG
     if ( result && ( errno != EEXIST ) )
     {
-        fprintf( stderr, "Error creating directory %s!\n", VBA_HOME );
+        fprintf( stderr, "Error creating directory %s!\n", SNES_HOME );
         exit( 1 );
     }
 #endif
     result = mkdir( ROM_PATH, mode );
-#ifdef FSTAB_BUG
+#ifndef FSTAB_BUG
     if ( result && ( errno != EEXIST ) )
     {
         fprintf( stderr, "Error creating directory %s for roms!\n", ROM_PATH );
@@ -232,54 +246,11 @@ char * romSelector()
         }
     }
 
-    //Generate text for each rom...
-    SDL_Surface ** roms_surface = new SDL_Surface*[filecount];
-    for ( int i = 0; i < filecount; i++ )
+    // Convert the rom names to something we can display
+    char * filenames[filecount];
+    for ( int i = 0; i < filecount; ++i )
     {
-        //Here we remove everything in '()'s or '[]'s
-        //which is usually annoying release information, etc
-        char buffer[100];
-        char * src = roms[i]->d_name;
-        char * dst = buffer;
-        int inParen = 0;
-        while ( *src && dst < buffer+sizeof(buffer) - 1 )
-        {
-            char c = *src;
-            if ( c == '(' || c == '[' )
-            {
-                inParen++;
-            }
-            if ( !inParen )
-            {
-                *dst++ = *src;
-            }
-            if ( c == ')' || c == ']' )
-            {
-                inParen--;
-            }
-
-            src++;
-        }
-        *dst = '\0';
-
-        //now remove the extension..
-        char * extPtr = NULL;
-        dst = buffer;
-        while ( *dst )
-        {
-            if( *dst == '.' )
-            {
-                extPtr = dst;
-            }
-            dst++;
-        }
-        //If we found an extension, end the string at that period
-        if ( extPtr )
-        {
-            *extPtr = '\0';
-        }
-
-        roms_surface[i] = TTF_RenderText_Blended( font_large, buffer, textColor );
+      filenames[i] = strip_rom_name(roms[i]->d_name);
     }
 
     int scroll_offset = 0;
@@ -288,10 +259,11 @@ char * romSelector()
     bool down = false;
     int romSelected = -1;
     SDL_EnableUNICODE( 1 );
+    const int rom_height = getSurfaceFor(filenames[0])->h;
     while( romSelected == -1 )
     {
         //Calculate scroll, etc
-        int num_roms_display = ( bottom - top + 10 ) / ( roms_surface[0]->h + 10 );
+        int num_roms_display = ( bottom - top + 10 ) / ( rom_height + 10 );
         //Get key input, process.
         while ( SDL_PollEvent( &event ) )
         {
@@ -308,7 +280,7 @@ char * romSelector()
                         if ( event.button.y >= top && event.button.y <= bottom )
                         {
                           //Calculate which rom this would be, and verify that makes sense
-                          int rom_index = ( event.button.y - top ) / ( roms_surface[0]->h + 10 );
+                          int rom_index = ( event.button.y - top ) / ( rom_height + 10 );
                           if ( rom_index >= 0 && rom_index < num_roms_display &&
                               rom_index + scroll_offset < filecount )
                           {
@@ -395,12 +367,12 @@ char * romSelector()
                int hiColor = SDL_MapRGB( selector->format, 128, 128, 0 );
                SDL_Rect hiRect;
                hiRect.x = 10;
-               hiRect.y = top+(10+roms_surface[0]->h)*i - 5;
-               hiRect.h = roms_surface[index]->h+5;
+               hiRect.y = top+(10+rom_height)*i - 5;
+               hiRect.h = rom_height+5;
                hiRect.w = selector->w - 20;
                SDL_FillRect( selector, &hiRect, hiColor );
            }
-           apply_surface( 20, top + (10+roms_surface[0]->h)*i, selector->w - 40, roms_surface[index], selector );
+           apply_surface( 20, top + (10+rom_height)*i, selector->w - 40, getSurfaceFor(filenames[index]), selector );
         }
 
         //Update screen.
@@ -418,9 +390,8 @@ char * romSelector()
     //Free all the titles of the ROMs!
     for (int i = 0; i < filecount; ++i)
     {
-      SDL_FreeSurface( roms_surface[i] );
+      free(filenames[i]);
     }
-    delete [] roms_surface;
 
     TTF_CloseFont( font_small );
     TTF_CloseFont( font_normal );
@@ -434,3 +405,103 @@ char * romSelector()
     return rom_full_path;
 }
 
+typedef struct {
+  char * name;
+  SDL_Surface * surface;
+} rom_cache_element;
+typedef std::list<rom_cache_element> rom_cache_t;
+static rom_cache_t rom_cache;
+
+SDL_Surface * getSurfaceFor( char * filename )
+{
+    // First, check cache.
+    // If we already have a surface, use that and update it in the 'LRU' policy.
+
+    rom_cache_t::iterator I = rom_cache.begin(),
+                          E = rom_cache.end();
+    for ( ; I != E; ++I )
+    {
+      if ( !strcmp(I->name, filename ) )
+      {
+        // Found it!
+        rom_cache_element result = *I;
+
+        // Move it to the front...
+        rom_cache.erase(I);
+        rom_cache.push_front(result);
+
+        return result.surface;
+      }
+    }
+
+    // Okay, so it's not in the cache.
+    // Create the surface requested:
+    rom_cache_element e;
+    e.name = strdup(filename);
+    e.surface = TTF_RenderText_Blended( font_large, filename, textColor );
+
+    // Add to front
+    rom_cache.push_front(e);
+
+    // Is the cache too large as a result of adding this element?
+    if ( rom_cache.size() > CACHE_SIZE )
+    {
+      rom_cache_element remove = rom_cache.back();
+      rom_cache.pop_back();
+
+      // Free memory for this item
+      free(remove.name);
+      SDL_FreeSurface(remove.surface);
+    }
+
+    // Return the surface we created!
+    return e.surface;
+}
+
+char * strip_rom_name( char * rom_name )
+{
+  //Here we remove everything in '()'s or '[]'s
+  //which is usually annoying release information, etc
+  char buffer[100];
+  char * src = rom_name;
+  char * dst = buffer;
+  int inParen = 0;
+  while ( *src && dst < buffer+sizeof(buffer) - 1 )
+  {
+    char c = *src;
+    if ( c == '(' || c == '[' )
+    {
+      inParen++;
+    }
+    if ( !inParen )
+    {
+      *dst++ = *src;
+    }
+    if ( c == ')' || c == ']' )
+    {
+      inParen--;
+    }
+
+    src++;
+  }
+  *dst = '\0';
+
+  //now remove the extension..
+  char * extPtr = NULL;
+  dst = buffer;
+  while ( *dst )
+  {
+    if( *dst == '.' )
+    {
+      extPtr = dst;
+    }
+    dst++;
+  }
+  //If we found an extension, end the string at that period
+  if ( extPtr )
+  {
+    *extPtr = '\0';
+  }
+
+  return strdup(buffer);
+}
