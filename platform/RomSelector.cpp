@@ -24,18 +24,23 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <dirent.h>
+#include <assert.h>
 
 // We render the name of each rom, but instead of doing them all at once
 // (initially slow, and memory-consuming), we render just what is needed.
 // However that's lame, so we use a cache for a happy middle ground.
 #define CACHE_SIZE 30
 
-#define SCROLL_FACTOR 20.0f
 #define SLOW_FACTOR 0.8f
-#define MIN_SCROLL_SPEED 1.0f
+#define MIN_SCROLL_SPEED 5.0f
+#define SCROLL_DELAY 100
+
+#define FRAME_INTERVAL 75
 
 char * strip_rom_name( char * rom_name );
 SDL_Surface * getSurfaceFor( char * filename );
+int rom_selector_event_filter( const SDL_Event * event );
+void smooth_fps();
 
 static SDL_Color textColor = { 255, 255, 255 };
 static SDL_Color hiColor = { 255, 200, 200 };
@@ -57,6 +62,22 @@ static line no_roms[] {
 { "For more information, see the help",  textColor},
 { "(click here to launch help)",         linkColor}
 };
+
+static bool tap;
+static bool down;
+static bool autoscrolling;
+static bool on_scrollbar;
+static int romSelected;
+static int rom_height;
+static int num_roms_display;
+static float scroll_speed;
+static u32 scroll_time;
+static int scroll_mouse_y;
+static int selector_w;
+static SDL_Rect drawRect;
+static int filecount;
+static int top, bottom;
+char ** filenames;
 
 int romFilter( const struct dirent * file )
 {
@@ -186,11 +207,10 @@ char * romSelector()
 #endif
 
     struct dirent ** roms;
-    int filecount = scandir( ROM_PATH, &roms, romFilter, sortComparD );
+    filecount = scandir( ROM_PATH, &roms, romFilter, sortComparD );
     printf( "Rom count: %d\n", filecount );
 
     //Display general information
-    int top, bottom;
     int borderColor = SDL_MapRGB( selector->format, 0, 0, 85 );
     SDL_Surface * title = TTF_RenderText_Blended( font_normal, TITLE, textColor );
     top = 10+title->h+10;
@@ -205,7 +225,6 @@ char * romSelector()
     apply_surface( 10, 10, title, selector );
 
     SDL_DrawSurfaceAsGLTexture( selector, portrait_vertexCoords );
-    SDL_Rect drawRect;
     drawRect.x = 10;
     drawRect.y = top;
     drawRect.h = bottom-top;
@@ -254,125 +273,66 @@ char * romSelector()
     }
 
     // Convert the rom names to something we can display
-    char * filenames[filecount];
+    char * filenames_internal[filecount];
+    filenames = filenames_internal;
     for ( int i = 0; i < filecount; ++i )
     {
       filenames[i] = strip_rom_name(roms[i]->d_name);
     }
 
-    SDL_Event event;
-    bool tap = false;
-    bool down = false;
-    int romSelected = -1;
     SDL_EnableUNICODE( 1 );
-    const int rom_height = getSurfaceFor(filenames[0])->h;
-    float scroll_speed = 0.0f;
-    int lasty;
+
+
+    // Initialize are unnecessarily long set of globals...
+    tap = false;
+    down = false;
+    autoscrolling = false;
+    on_scrollbar = false;
+    romSelected = -1;
+    rom_height = getSurfaceFor(filenames[0])->h;
+    num_roms_display = ( bottom - top + 10 ) / ( rom_height + 10 );
+    scroll_speed = 0.0f;
+    scroll_mouse_y = 0;
+    selector_w = selector->w;
+
+    //Use this functor to process events as they come in!
+    SDL_SetEventFilter(rom_selector_event_filter);
+
     while( romSelected == -1 )
     {
-        //Calculate scroll, etc
-        int num_roms_display = ( bottom - top + 10 ) / ( rom_height + 10 );
-        //Get key input, process.
-        while ( SDL_PollEvent( &event ) )
+        SDL_PumpEvents();
+
+        if (autoscrolling)
         {
-            switch( event.type )
-            {
-                case SDL_MOUSEBUTTONDOWN:
-                    down = tap = true;
-                    scroll_speed = 0.0f;
-                    break;
-                case SDL_MOUSEBUTTONUP:
-                    down = false;
-                    if ( tap )
-                    {
-                        // If tap was in the rom selection scrollbox...
-                        if ( event.button.y >= top && event.button.y <= bottom )
-                        {
-                          //Calculate which rom this would be, and verify that makes sense
-                          int rom_index = ( event.button.y - top ) / ( rom_height + 10 );
-                          if ( rom_index >= 0 && rom_index < num_roms_display &&
-                              rom_index + scroll_offset < filecount )
-                          {
-                            romSelected = rom_index+scroll_offset;
-                          }
-                        }
-                        if ( event.button.y > bottom && event.button.x < selector->w / 2 )
-                        {
-                          optionsMenu();
-                        }
-                    }
-                    break;
-                case SDL_MOUSEMOTION:
-                    //If the mouse moves before going up, it's not a tap
-                    tap = false;
-
-                    // If they move the mouse, set the scroll speed accordingly.
-                    if ( down )
-                    {
-                      scroll_speed = -event.motion.yrel / SCROLL_FACTOR;
-                    }
-
-                    break;
-                case SDL_KEYDOWN:
-                {
-                    //Filter based on letter presses.
-                    //For now, just jump to the first thing that starts at or after that letter.
-                    char c = (char)event.key.keysym.unicode;
-                    if ( 'A' <= c && c <= 'Z' )
-                    {
-                        //lowercase...
-                        c -= ( 'A' - 'a' );
-                    }
-                    if ( 'a' <= c && c <= 'z' )
-                    {
-                        //find this letter in the roms...
-                        int offset = 0;
-                        while( offset < filecount )
-                        {
-                            char c_file = *roms[offset]->d_name;
-                            if ( 'A' <= c_file && c_file <= 'Z' )
-                            {
-                                //lowercase..
-                                c_file -= ( 'A' - 'a' );
-                            }
-                            if ( c_file >= c )
-                            {
-                                break;
-                            }
-                            offset++;
-                        }
-                        scroll_offset = offset;
-                        if ( scroll_offset > filecount - num_roms_display ) scroll_offset = filecount - num_roms_display;
-                        if ( scroll_offset < 0 ) scroll_offset = 0;
-                        scroll_offset_actual = scroll_offset;
-                        scroll_speed = 0;
-                    }
-                }
-                default:
-                    break;
-            }
-        }
-
-        if ( scroll_speed > MIN_SCROLL_SPEED || scroll_speed < MIN_SCROLL_SPEED )
-        {
+          //int mouse_y;
+          //SDL_GetMouseState( NULL, &mouse_y );
+          //if ( !down )
+          //{
+          //  scroll_speed = ((float)scroll_mouse_y - mouse_y) / ((float)rom_height);
+          //  scroll_mouse_y = mouse_y;
+          //}
           scroll_offset_actual += scroll_speed;
           scroll_offset = (int)scroll_offset_actual;
           if ( scroll_offset > filecount - num_roms_display )
           {
             scroll_offset = filecount - num_roms_display;
             scroll_offset_actual = scroll_offset;
-            scroll_speed = 0.0f;
+            autoscrolling = false;
           }
           if ( scroll_offset < 0 )
           {
             scroll_offset = 0;
             scroll_offset_actual = scroll_offset;
-            scroll_speed = 0.0f;
+            autoscrolling = false;
           }
 
           scroll_speed *= SLOW_FACTOR;
 
+          if ( scroll_speed < MIN_SCROLL_SPEED &&
+              scroll_speed > MIN_SCROLL_SPEED )
+            autoscrolling = false;
         }
+
         if ( scroll_offset + num_roms_display > filecount )
         {
             num_roms_display = filecount - scroll_offset;
@@ -387,8 +347,7 @@ char * romSelector()
         //Clear middle
         SDL_FillRect(selector, &drawRect, black);
 
-        //Draw roms...
-
+        //Draw roms list
         for ( int i = 0; i < num_roms_display; i++ )
         {
            int index = scroll_offset + i;
@@ -405,13 +364,30 @@ char * romSelector()
            apply_surface( 20, top + (10+rom_height)*i, selector->w - 40, getSurfaceFor(filenames[index]), selector );
         }
 
+        //Draw scrollbar :)
+        int barColor = SDL_MapRGB(selector->format, 200, 200, 255);
+        int tabColor = SDL_MapRGB(selector->format, 255, 255, 255);
+        SDL_Rect scrollRect;
+        scrollRect.x = drawRect.x + drawRect.w - 5;
+        scrollRect.y = drawRect.y;
+        scrollRect.h = drawRect.h;
+        scrollRect.w = 10;
+        SDL_FillRect(selector, &scrollRect, barColor);
+        SDL_Rect scrollTab;
+        scrollTab.w = scrollTab.h = 20;
+        scrollTab.x = scrollRect.x + scrollRect.w/2 - 10;
+        scrollTab.y = scrollRect.y;
+        float percent = ((float)scroll_offset)/((float)(filecount - num_roms_display));
+        scrollTab.y += ((float)(scrollRect.h - scrollTab.h))*percent;
+        SDL_FillRect(selector, &scrollTab, tabColor);
+
         //Update screen.
         SDL_DrawSurfaceAsGLTexture( selector, portrait_vertexCoords );
-        if ( romSelected != -1 )
-        {
-            SDL_Delay( 20 );
-        }
+
+        smooth_fps();
     }
+    SDL_SetEventFilter(NULL);
+    SDL_Delay(20);
     SDL_FreeSurface( title );
     SDL_FreeSurface( author );
     SDL_FreeSurface( options );
@@ -534,4 +510,160 @@ char * strip_rom_name( char * rom_name )
   }
 
   return strdup(buffer);
+}
+
+int rom_selector_event_filter( const SDL_Event * event )
+{
+  switch( event->type )
+  {
+    case SDL_MOUSEBUTTONDOWN:
+      down = tap = true;
+      autoscrolling = false;
+      on_scrollbar = ( event->button.x >= selector_w - 50 );
+      break;
+    case SDL_MOUSEBUTTONUP:
+      down = false;
+      if ( tap )
+      {
+        if ( on_scrollbar )
+        {
+          int diff = event->button.y - drawRect.y;
+          float percent =  (float)diff/drawRect.h;
+          scroll_offset = (filecount - num_roms_display)*percent;
+          if ( scroll_offset > filecount - num_roms_display )
+            scroll_offset = filecount - num_roms_display;
+          if ( scroll_offset < 0 ) scroll_offset = 0;
+          scroll_offset_actual = scroll_offset;
+          autoscrolling = false;
+        }
+        else if ( event->button.y >= top && event->button.y <= bottom )
+        {
+          //Calculate which rom this would be, and verify that makes sense
+          int rom_index = ( event->button.y - top ) / ( rom_height + 10 );
+          if ( rom_index >= 0 && rom_index < num_roms_display &&
+              rom_index + scroll_offset < filecount )
+          {
+            romSelected = rom_index+scroll_offset;
+          }
+        }
+        else if ( event->button.y > bottom && event->button.x < selector_w / 2 )
+        {
+          optionsMenu();
+        }
+      }
+      if ( SDL_GetTicks() - scroll_time <= SCROLL_DELAY )
+      {
+        autoscrolling = true;
+      }
+
+      break;
+    case SDL_MOUSEMOTION:
+      if ( down )
+      {
+        //If the mouse moves before going up, it's not a tap
+        tap = false;
+
+        // If ( user is scrolling on scrollbar...)
+        if ( on_scrollbar )
+        {
+          int diff = event->motion.y - drawRect.y;
+          float percent =  (float)diff/drawRect.h;
+          scroll_offset = (filecount - num_roms_display)*percent;
+          if ( scroll_offset > filecount - num_roms_display )
+            scroll_offset = filecount - num_roms_display;
+          if ( scroll_offset < 0 ) scroll_offset = 0;
+          scroll_offset_actual = scroll_offset;
+          autoscrolling = false;
+        }
+        else
+        {
+          scroll_speed = ((float)-event->motion.yrel)/(float)rom_height;
+          scroll_time = SDL_GetTicks();
+
+          // Do the scroll
+          float diff = ((float)-event->motion.yrel)/(float)rom_height;
+          scroll_offset_actual += diff;
+          scroll_offset = (int)scroll_offset_actual;
+
+          // Make sure still in-bounds
+          if ( scroll_offset > filecount - num_roms_display )
+          {
+            scroll_offset = filecount - num_roms_display;
+            scroll_offset_actual = scroll_offset;
+            autoscrolling = false;
+          }
+          if ( scroll_offset < 0 )
+          {
+            scroll_offset = 0;
+            scroll_offset_actual = scroll_offset;
+            autoscrolling = false;
+          }
+        }
+        
+      }
+
+      break;
+    case SDL_KEYDOWN:
+      {
+        //Filter based on letter presses.
+        //For now, just jump to the first thing that starts at or after that letter.
+        char c = (char)event->key.keysym.unicode;
+        if ( 'A' <= c && c <= 'Z' )
+        {
+          //lowercase...
+          c -= ( 'A' - 'a' );
+        }
+        if ( 'a' <= c && c <= 'z' )
+        {
+          //find this letter in the roms...
+          int offset = 0;
+          while( offset < filecount )
+          {
+            char c_file = *filenames[offset];
+            if ( 'A' <= c_file && c_file <= 'Z' )
+            {
+              //lowercase..
+              c_file -= ( 'A' - 'a' );
+            }
+            if ( c_file >= c )
+            {
+              break;
+            }
+            offset++;
+          }
+          scroll_offset = offset;
+          if ( scroll_offset > filecount - num_roms_display ) scroll_offset = filecount - num_roms_display;
+          if ( scroll_offset < 0 ) scroll_offset = 0;
+          scroll_offset_actual = scroll_offset;
+          autoscrolling = false;
+        }
+      }
+    default:
+      return true;
+  }
+
+  return false;
+}
+
+void smooth_fps()
+{
+  static s32 nexttime = 0;
+  s32 now = SDL_GetTicks();
+  if (!nexttime)
+  {
+    nexttime = SDL_GetTicks() + FRAME_INTERVAL;
+    return;
+  }
+
+  s32 diff = nexttime - now;
+  if (diff > 0)
+    SDL_Delay(diff);
+
+  // If we're behind by over a frame, reset nexttime
+  if ( diff < -FRAME_INTERVAL )
+    nexttime = SDL_GetTicks() + FRAME_INTERVAL;
+  // Otherwise, calculate the next end-of-frame time
+  // relative to the previous one
+  else
+    nexttime += FRAME_INTERVAL;
 }
