@@ -39,7 +39,7 @@
 
 char * strip_rom_name( char * rom_name );
 SDL_Surface * getSurfaceFor( char * filename );
-int rom_selector_event_filter( const SDL_Event * event );
+int rom_selector_event_handler( const SDL_Event * event );
 
 static SDL_Color textColor = { 255, 255, 255 };
 static SDL_Color hiColor = { 255, 200, 200 };
@@ -294,22 +294,16 @@ char * romSelector()
     scroll_mouse_y = 0;
     selector_w = selector->w;
 
-    //Use this functor to process events as they come in!
-    SDL_SetEventFilter(rom_selector_event_filter);
-
     while( romSelected == -1 )
     {
-        SDL_PumpEvents();
+        SDL_Event e;
+        while (SDL_PollEvent(&e))
+        {
+          rom_selector_event_handler(&e);
+        }
 
         if (autoscrolling)
         {
-          //int mouse_y;
-          //SDL_GetMouseState( NULL, &mouse_y );
-          //if ( !down )
-          //{
-          //  scroll_speed = ((float)scroll_mouse_y - mouse_y) / ((float)rom_height);
-          //  scroll_mouse_y = mouse_y;
-          //}
           scroll_offset_actual += scroll_speed;
           scroll_offset = (int)scroll_offset_actual;
           if ( scroll_offset > filecount - num_roms_display )
@@ -376,15 +370,16 @@ char * romSelector()
         scrollTab.w = scrollTab.h = 20;
         scrollTab.x = scrollRect.x + scrollRect.w/2 - 10;
         scrollTab.y = scrollRect.y;
-        float percent = ((float)scroll_offset)/((float)(filecount - num_roms_display));
+        float percent = 0.0f;
+        if ( filecount > num_roms_display )
+          percent = ((float)scroll_offset)/((float)(filecount - num_roms_display));
         scrollTab.y += ((float)(scrollRect.h - scrollTab.h))*percent;
         SDL_FillRect(selector, &scrollTab, tabColor);
 
         //Update screen.
         SDL_DrawSurfaceAsGLTexture( selector, portrait_vertexCoords );
     }
-    SDL_SetEventFilter(NULL);
-    SDL_Delay(20);
+    SDL_Delay(100);
     SDL_FreeSurface( title );
     SDL_FreeSurface( author );
     SDL_FreeSurface( options );
@@ -395,6 +390,7 @@ char * romSelector()
     {
       free(filenames[i]);
     }
+    filenames = NULL;
 
     TTF_CloseFont( font_small );
     TTF_CloseFont( font_normal );
@@ -509,7 +505,7 @@ char * strip_rom_name( char * rom_name )
   return strdup(buffer);
 }
 
-int rom_selector_event_filter( const SDL_Event * event )
+int rom_selector_event_handler( const SDL_Event * event )
 {
   switch( event->type )
   {

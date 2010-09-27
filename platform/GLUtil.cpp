@@ -325,20 +325,32 @@ void updateOrientation()
 
       if ( use_on_screen && skin )
       {
-        float controller_aspect = (float)skin->controller_screen_width / (float)skin->controller_screen_height;
+        float csw = skin->controller_screen_width,
+              csh = skin->controller_screen_height;
+        float controller_aspect = csw / csh;
+        int x_offset_center = 0, y_offset_center = 0;
+
+        // Forcing b/c I know aspect ratios > 1 :(
+        float effectiveHeight = destWidth;
+        float effectiveWidth = effectiveHeight / emulatedAspect;
+
+        // So, given these, we need to scale to max csw and csh.
+        float scale_max_csw = csw/effectiveWidth;
+        float scale_max_csh = csh/effectiveHeight;
+
+        // Pick the leser, and use that to calculate centering offsets
         float scale_factor;
-        if ( (float)srcHeight * controller_aspect  > (float)skin->controller_screen_height )
+        if ( scale_max_csw < scale_max_csh )
         {
-          //width is limiting factor
-          scale_factor = ( (float)skin->controller_screen_height / (float)destWidth );
+          scale_factor = scale_max_csw;
+          //We're scaling to the width, so we need to center the height:
+          y_offset_center = (effectiveHeight * scale_max_csh - effectiveHeight * scale_max_csw) / 2;
         }
         else
         {
-          //height is limiting factor
-          //'effectiveWidth' b/c we already scaled previously
-          //and we don't fill the screen due to aspect ratio
-          float effectiveWidth = (float)destWidth / emulatedAspect;
-          scale_factor = ( (float)skin->controller_screen_width / effectiveWidth );
+          scale_factor = scale_max_csh;
+          //We're scaling to the height, so we need to center the width:
+          x_offset_center = (effectiveWidth * scale_max_csw - effectiveWidth * scale_max_csh) / 2;
         }
 
         for ( int i = 0; i < 4; i++ )
@@ -354,6 +366,10 @@ void updateOrientation()
         //push the screen to the coordinates indicated
         y_offset -= ( (float)skin->controller_screen_y_offset / (float)destWidth ) * 2;
         x_offset -= ( (float)skin->controller_screen_x_offset / (float)destHeight ) * 2;
+
+        //And account for centering...
+        y_offset -= ( y_offset_center / (float)destWidth ) * 2;
+        x_offset -= ( x_offset_center / (float)destHeight ) * 2;
 
         for ( int i = 0; i < 4; i++ )
         {
