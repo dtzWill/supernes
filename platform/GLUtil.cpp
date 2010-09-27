@@ -322,49 +322,46 @@ void updateOrientation()
       {
         vertexCoords[2*i+1] *= screenAspect / emulatedAspect;
       }
-    }
 
-    if ( use_on_screen && skin )
-    {
+      if ( use_on_screen && skin )
+      {
         float controller_aspect = (float)skin->controller_screen_width / (float)skin->controller_screen_height;
         float scale_factor;
         if ( (float)srcHeight * controller_aspect  > (float)skin->controller_screen_height )
         {
-            //width is limiting factor
-            scale_factor = ( (float)skin->controller_screen_height / (float)destWidth );
+          //width is limiting factor
+          scale_factor = ( (float)skin->controller_screen_height / (float)destWidth );
         }
         else
         {
-            //height is limiting factor
-            //'effectiveWidth' b/c we already scaled previously
-            //and we don't fill the screen due to aspect ratio
-            float effectiveWidth = (float)destWidth / emulatedAspect;
-            scale_factor = ( (float)skin->controller_screen_width / effectiveWidth );
+          //height is limiting factor
+          //'effectiveWidth' b/c we already scaled previously
+          //and we don't fill the screen due to aspect ratio
+          float effectiveWidth = (float)destWidth / emulatedAspect;
+          scale_factor = ( (float)skin->controller_screen_width / effectiveWidth );
         }
 
-        if (!fullscreen)
+        for ( int i = 0; i < 4; i++ )
         {
-          for ( int i = 0; i < 4; i++ )
-          {
-            //scale
-            vertexCoords[2*i] *= scale_factor;
-            vertexCoords[2*i+1] *= scale_factor;
-          }
-
-          float y_offset = 1.0 - vertexCoords[0];
-          float x_offset = 1.0 - vertexCoords[1];
-
-          //push the screen to the coordinates indicated
-          y_offset -= ( (float)skin->controller_screen_y_offset / (float)destWidth ) * 2;
-          x_offset -= ( (float)skin->controller_screen_x_offset / (float)destHeight ) * 2;
-
-          for ( int i = 0; i < 4; i++ )
-          {
-            //translate
-            vertexCoords[2*i] += y_offset;
-            vertexCoords[2*i+1] += x_offset;
-          }
+          //scale
+          vertexCoords[2*i] *= scale_factor;
+          vertexCoords[2*i+1] *= scale_factor;
         }
+
+        float y_offset = 1.0 - vertexCoords[0];
+        float x_offset = 1.0 - vertexCoords[1];
+
+        //push the screen to the coordinates indicated
+        y_offset -= ( (float)skin->controller_screen_y_offset / (float)destWidth ) * 2;
+        x_offset -= ( (float)skin->controller_screen_x_offset / (float)destHeight ) * 2;
+
+        for ( int i = 0; i < 4; i++ )
+        {
+          //translate
+          vertexCoords[2*i] += y_offset;
+          vertexCoords[2*i+1] += x_offset;
+        }
+      }
     }
 
     int notification_direction;
