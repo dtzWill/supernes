@@ -27,7 +27,7 @@
 
 // We render the name of each rom, but instead of doing them all at once
 // (initially slow, and memory-consuming), we render just what is needed.
-// However that's lame 
+// However that's lame, so we use a cache for a happy middle ground.
 #define CACHE_SIZE 30
 
 char * strip_rom_name( char * rom_name );
