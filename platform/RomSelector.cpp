@@ -40,7 +40,6 @@
 char * strip_rom_name( char * rom_name );
 SDL_Surface * getSurfaceFor( char * filename );
 int rom_selector_event_filter( const SDL_Event * event );
-void smooth_fps();
 
 static SDL_Color textColor = { 255, 255, 255 };
 static SDL_Color hiColor = { 255, 200, 200 };
@@ -383,8 +382,6 @@ char * romSelector()
 
         //Update screen.
         SDL_DrawSurfaceAsGLTexture( selector, portrait_vertexCoords );
-
-        smooth_fps();
     }
     SDL_SetEventFilter(NULL);
     SDL_Delay(20);
@@ -645,25 +642,3 @@ int rom_selector_event_filter( const SDL_Event * event )
   return false;
 }
 
-void smooth_fps()
-{
-  static s32 nexttime = 0;
-  s32 now = SDL_GetTicks();
-  if (!nexttime)
-  {
-    nexttime = SDL_GetTicks() + FRAME_INTERVAL;
-    return;
-  }
-
-  s32 diff = nexttime - now;
-  if (diff > 0)
-    SDL_Delay(diff);
-
-  // If we're behind by over a frame, reset nexttime
-  if ( diff < -FRAME_INTERVAL )
-    nexttime = SDL_GetTicks() + FRAME_INTERVAL;
-  // Otherwise, calculate the next end-of-frame time
-  // relative to the previous one
-  else
-    nexttime += FRAME_INTERVAL;
-}
