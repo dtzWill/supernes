@@ -142,24 +142,27 @@ char * romSelector()
     }
 
     //Don't bail here, we can't write to /media/internal on 1.4.5
-#if 0
+#define FSTAB_BUG 1
+    
     //Make sure rom dir exists
     //XXX: This assumes /media/internal (parent directory) already exists
     int mode = S_IRWXU | S_IRWXG | S_IRWXO;
-    int result = mkdir( VBA_HOME, mode );
+    int result = mkdir( SNES_HOME, mode );
+#ifdef FSTAB_BUG
     if ( result && ( errno != EEXIST ) )
     {
         fprintf( stderr, "Error creating directory %s!\n", VBA_HOME );
         exit( 1 );
     }
+#endif
     result = mkdir( ROM_PATH, mode );
+#ifdef FSTAB_BUG
     if ( result && ( errno != EEXIST ) )
     {
         fprintf( stderr, "Error creating directory %s for roms!\n", ROM_PATH );
         exit( 1 );
     }
 #endif
-
 
     struct dirent ** roms;
     int filecount = scandir( ROM_PATH, &roms, romFilter, sortComparD );
