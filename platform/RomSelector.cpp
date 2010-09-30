@@ -385,6 +385,15 @@ char * romSelector()
     SDL_FreeSurface( options );
     SDL_FreeSurface( selector );
 
+    char * rom_base = roms[romSelected]->d_name;
+    char * rom_full_path = (char *)malloc( strlen( ROM_PATH ) + strlen( rom_base ) + 2 );
+    strcpy( rom_full_path, ROM_PATH );
+    rom_full_path[strlen(ROM_PATH)] = '/';
+    strcpy( rom_full_path + strlen( ROM_PATH ) + 1, rom_base );
+
+
+    // CLEANUP :)
+
     //Free all the titles of the ROMs!
     for (int i = 0; i < filecount; ++i)
     {
@@ -392,15 +401,17 @@ char * romSelector()
     }
     filenames = NULL;
 
+    // Done with the fonts...
     TTF_CloseFont( font_small );
     TTF_CloseFont( font_normal );
     TTF_CloseFont( font_large );
+    font_small = font_normal = font_large = NULL;
 
-    char * rom_base = roms[romSelected]->d_name;
-    char * rom_full_path = (char *)malloc( strlen( ROM_PATH ) + strlen( rom_base ) + 2 );
-    strcpy( rom_full_path, ROM_PATH );
-    rom_full_path[strlen(ROM_PATH)] = '/';
-    strcpy( rom_full_path + strlen( ROM_PATH ) + 1, rom_base );
+    // Now free the scandir entries..
+    while(filecount--)
+      free(roms[filecount]);
+    free(roms);
+
     return rom_full_path;
 }
 

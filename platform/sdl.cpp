@@ -269,7 +269,9 @@ int main(int argc, char ** argv) {
     S9xInit();
     S9xReset();
 
-    S9xSetRomFile(romSelector());
+    char * rom = romSelector();
+    S9xSetRomFile(rom);
+    free(rom);
 
     // Load rom and related files: state, unfreeze if needed
     loadRom();
