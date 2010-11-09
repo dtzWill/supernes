@@ -18,6 +18,7 @@ LDLIBS := -lz $(shell sdl-config --libs) \
 # ATM statically linking seems to work and makes my life easier.
 
 OPTFLAGS += -O3 -mcpu=cortex-a8 -mfpu=neon -ftree-vectorize -mfloat-abi=softfp -ffast-math
+#OPTFLAGS += -O0 -mcpu=cortex-a8 -mfpu=neon -ftree-vectorize -mfloat-abi=softfp -ffast-math -g
 
 -include config.mk
 
