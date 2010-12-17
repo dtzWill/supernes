@@ -37,6 +37,9 @@
 
 #define FRAME_INTERVAL 75
 
+// If finger moves less than this, it's still considered a tap
+#define TAP_TOLERANCE 5
+
 char * strip_rom_name( char * rom_name );
 SDL_Surface * getSurfaceFor( char * filename );
 int rom_selector_event_handler( const SDL_Event * event );
@@ -64,6 +67,7 @@ static line no_roms[] {
 
 static bool tap;
 static bool down;
+static int mouse_down_x, mouse_down_y;
 static bool autoscrolling;
 static bool on_scrollbar;
 static int romSelected;
@@ -285,6 +289,7 @@ char * romSelector()
     // Initialize are unnecessarily long set of globals...
     tap = false;
     down = false;
+    mouse_down_x = mouse_down_y = 0;
     autoscrolling = false;
     on_scrollbar = false;
     romSelected = -1;
@@ -524,6 +529,8 @@ int rom_selector_event_handler( const SDL_Event * event )
       down = tap = true;
       autoscrolling = false;
       on_scrollbar = ( event->button.x >= selector_w - 50 );
+      mouse_down_x = event->button.x;
+      mouse_down_y = event->button.y;
       break;
     case SDL_MOUSEBUTTONUP:
       down = false;
@@ -562,7 +569,12 @@ int rom_selector_event_handler( const SDL_Event * event )
 
       break;
     case SDL_MOUSEMOTION:
-      if ( down )
+    {
+      int delta_x = (event->motion.x - mouse_down_x);
+      int delta_y = (event->motion.y - mouse_down_y);
+      bool withinTapTolerance =
+        delta_x*delta_x + delta_y*delta_y <= TAP_TOLERANCE * TAP_TOLERANCE;
+      if ( down && !withinTapTolerance )
       {
         //If the mouse moves before going up, it's not a tap
         tap = false;
@@ -603,10 +615,11 @@ int rom_selector_event_handler( const SDL_Event * event )
             autoscrolling = false;
           }
         }
-        
+
       }
 
       break;
+    }
     case SDL_KEYDOWN:
       {
         //Filter based on letter presses.
