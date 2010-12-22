@@ -61,25 +61,22 @@ INLINE uint8 S9xGetByte (uint32 Address)
 #ifdef __memcheck__
 	mem_check+=(Address>>16)+Address;
 #endif
-#if defined(VAR_CYCLES) || defined(CPU_SHUTDOWN)
-    int block;
-    uint8 *GetAddress = Memory.Map [block = (Address >> MEMMAP_SHIFT) & MEMMAP_MASK];
-#else
-    uint8 *GetAddress = Memory.Map [(Address >> MEMMAP_SHIFT) & MEMMAP_MASK];
-#endif    
-    if (GetAddress >= (uint8 *) CMemory::MAP_LAST)
-    {
+	const int block = (Address >> MEMMAP_SHIFT) & MEMMAP_MASK;
+    uint8 *GetAddress = Memory.Map[block];
+
+	if (GetAddress >= (uint8 *) CMemory::MAP_LAST)
+	{
 #ifdef VAR_CYCLES
-	CPU.Cycles += Memory.MemorySpeed [block];
+		CPU.Cycles += Memory.MemorySpeed [block];
 #endif
 #ifdef CPU_SHUTDOWN
-	if (Memory.BlockIsRAM [block])
-	    CPU.WaitAddress = CPU.PCAtOpcodeStart;
+		if (Memory.BlockIsRAM [block])
+			CPU.WaitAddress = CPU.PCAtOpcodeStart;
 #endif
-	return (*(GetAddress + (Address & 0xffff)));
-    }
+		return (*(GetAddress + (Address & 0xffff)));
+	}
 
-    switch ((int) GetAddress)
+    switch ((CMemory::Types)(intptr_t) GetAddress)
     {
     case CMemory::MAP_PPU:
 #ifdef VAR_CYCLES
@@ -147,16 +144,14 @@ INLINE uint16 S9xGetWord (uint32 Address)
 #ifdef __memcheck__
 	mem_check+=(Address>>16)+Address;
 #endif	
-    if ((Address & 0x1fff) == 0x1fff)
-    {
-	return (S9xGetByte (Address) | (S9xGetByte (Address + 1) << 8));
-    }
-#if defined(VAR_CYCLES) || defined(CPU_SHUTDOWN)
-    int block;
-    uint8 *GetAddress = Memory.Map [block = (Address >> MEMMAP_SHIFT) & MEMMAP_MASK];
-#else
-    uint8 *GetAddress = Memory.Map [(Address >> MEMMAP_SHIFT) & MEMMAP_MASK];
-#endif    
+	if ((Address & 0x1fff) == 0x1fff)
+	{
+		return (S9xGetByte (Address) | (S9xGetByte (Address + 1) << 8));
+	}
+
+	const int block = (Address >> MEMMAP_SHIFT) & MEMMAP_MASK;
+	uint8 *GetAddress = Memory.Map[block];
+
     if (GetAddress >= (uint8 *) CMemory::MAP_LAST)
     {
 #ifdef VAR_CYCLES
@@ -174,7 +169,7 @@ INLINE uint16 S9xGetWord (uint32 Address)
 #endif	
     }
 
-    switch ((int) GetAddress)
+    switch ((CMemory::Types)(intptr_t) GetAddress)
     {
     case CMemory::MAP_PPU:
 #ifdef VAR_CYCLES
@@ -256,12 +251,8 @@ INLINE void S9xSetByte (uint8 Byte, uint32 Address)
 #if defined(CPU_SHUTDOWN)
     CPU.WaitAddress = NULL;
 #endif
-#if defined(VAR_CYCLES)
-    int block;
-    uint8 *SetAddress = Memory.WriteMap [block = ((Address >> MEMMAP_SHIFT) & MEMMAP_MASK)];
-#else
-    uint8 *SetAddress = Memory.WriteMap [(Address >> MEMMAP_SHIFT) & MEMMAP_MASK];
-#endif
+	const int block = (Address >> MEMMAP_SHIFT) & MEMMAP_MASK;
+	uint8 *SetAddress = Memory.WriteMap[block];
 
     if (SetAddress >= (uint8 *) CMemory::MAP_LAST)
     {
@@ -285,7 +276,7 @@ INLINE void S9xSetByte (uint8 Byte, uint32 Address)
 	return;
     }
 
-    switch ((int) SetAddress)
+    switch ((CMemory::Types)(intptr_t) SetAddress)
     {
     case CMemory::MAP_PPU:
 #ifdef VAR_CYCLES
@@ -382,12 +373,8 @@ INLINE void S9xSetWord (uint16 Word, uint32 Address)
 #if defined(CPU_SHUTDOWN)
     CPU.WaitAddress = NULL;
 #endif
-#if defined (VAR_CYCLES)
-    int block;
-    uint8 *SetAddress = Memory.WriteMap [block = ((Address >> MEMMAP_SHIFT) & MEMMAP_MASK)];
-#else
-    uint8 *SetAddress = Memory.WriteMap [(Address >> MEMMAP_SHIFT) & MEMMAP_MASK];
-#endif
+	const int block = (Address >> MEMMAP_SHIFT) & MEMMAP_MASK;
+	uint8 *SetAddress = Memory.WriteMap[block];
 
     if (SetAddress >= (uint8 *) CMemory::MAP_LAST)
     {
@@ -412,7 +399,7 @@ INLINE void S9xSetWord (uint16 Word, uint32 Address)
 	return;
     }
 
-    switch ((int) SetAddress)
+    switch ((CMemory::Types)(intptr_t) SetAddress)
     {
     case CMemory::MAP_PPU:
 #ifdef VAR_CYCLES
@@ -517,7 +504,7 @@ INLINE uint8 *GetBasePointer (uint32 Address)
     if (GetAddress >= (uint8 *) CMemory::MAP_LAST)
 	return (GetAddress);
 
-    switch ((int) GetAddress)
+    switch ((CMemory::Types)(intptr_t) GetAddress)
     {
     case CMemory::MAP_PPU:
 	return (Memory.FillRAM - 0x2000);
@@ -553,7 +540,7 @@ INLINE uint8 *S9xGetMemPointer (uint32 Address)
     if (GetAddress >= (uint8 *) CMemory::MAP_LAST)
 	return (GetAddress + (Address & 0xffff));
 
-    switch ((int) GetAddress)
+    switch ((CMemory::Types)(intptr_t) GetAddress)
     {
     case CMemory::MAP_PPU:
 	return (Memory.FillRAM - 0x2000 + (Address & 0xffff));
@@ -604,7 +591,7 @@ INLINE void S9xSetPCBase (uint32 Address)
 	return;
     }
 
-    switch ((int) GetAddress)
+    switch ((CMemory::Types)(intptr_t) GetAddress)
     {
     case CMemory::MAP_PPU:
 #ifdef VAR_CYCLES

@@ -17,6 +17,11 @@ else ifeq ($(ARCH),i386)
 	CONF_BUILD_ASM_SPC700?=0
 	CONF_BUILD_ASM_SA1?=0
 	CONF_BUILD_MISC_ROUTINES?=misc_i386
+else ifeq ($(ARCH),amd64)
+	CONF_BUILD_ASM_CPU?=0
+	CONF_BUILD_ASM_SPC700?=0
+	CONF_BUILD_ASM_SA1?=0
+	CONF_BUILD_MISC_ROUTINES?=misc_amd64
 endif
 # Hardware pixel doubling (in N8x0)
 CONF_XSP?=0
@@ -93,6 +98,7 @@ all: drnoksnes
 clean:
 	rm -f drnoksnes *.o *.d platform/*.o platform/*.d
 	rm -f build-stamp configure-stamp
+	echo "$(OBJS)"
 
 remake: clean deps all
 

@@ -160,7 +160,7 @@ uint8 S9xSA1GetByte (uint32 address)
     if (GetAddress >= (uint8 *) CMemory::MAP_LAST)
 	return (*(GetAddress + (address & 0xffff)));
 
-    switch ((int) GetAddress)
+    switch ((CMemory::Types)(intptr_t) GetAddress)
     {
     case CMemory::MAP_PPU:
 	return (S9xGetSA1 (address & 0xffff));
@@ -199,15 +199,15 @@ uint16 S9xSA1GetWord (uint32 address)
 
 void S9xSA1SetByte (uint8 byte, uint32 address)
 {
-    uint8 *Setaddress = SA1.WriteMap [(address >> MEMMAP_SHIFT) & MEMMAP_MASK];
+    uint8 *SetAddress = SA1.WriteMap [(address >> MEMMAP_SHIFT) & MEMMAP_MASK];
 
-    if (Setaddress >= (uint8 *) CMemory::MAP_LAST)
+    if (SetAddress >= (uint8 *) CMemory::MAP_LAST)
     {
-	*(Setaddress + (address & 0xffff)) = byte;
+	*(SetAddress + (address & 0xffff)) = byte;
 	return;
     }
 
-    switch ((int) Setaddress)
+    switch ((CMemory::Types)(intptr_t) SetAddress)
     {
     case CMemory::MAP_PPU:
 	S9xSetSA1 (byte, address & 0xffff);
@@ -269,7 +269,7 @@ void S9xSA1SetPCBase (uint32 address)
 	return;
     }
 
-    switch ((int) GetAddress)
+    switch ((CMemory::Types)(intptr_t) GetAddress)
     {
     case CMemory::MAP_PPU:
 	SA1.PCBase = Memory.FillRAM - 0x2000;

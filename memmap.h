@@ -122,7 +122,7 @@ public:
     const char *ROMID ();
     const char *CompanyID ();
     
-    enum {
+    enum Types {
 	MAP_PPU, MAP_CPU, MAP_DSP, MAP_LOROM_SRAM, MAP_HIROM_SRAM,
 	MAP_NONE, MAP_DEBUG, MAP_C4, MAP_BWRAM, MAP_BWRAM_BITMAP,
 	MAP_BWRAM_BITMAP2, MAP_SA1RAM, MAP_LAST

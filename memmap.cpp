@@ -41,9 +41,7 @@
 #include <string.h>
 #include <ctype.h>
 
-#ifdef __linux
-//#include <unistd.h>
-#endif
+/* Do not reencode this file. There are special chars on it. */
 
 #include "snes9x.h"
 #include "memmap.h"
@@ -1008,34 +1006,34 @@ bool8_32 CMemory::LoadSRAM (const char *filename)
 
 bool8_32 CMemory::SaveSRAM (const char *filename)
 {
-    int size = Memory.SRAMSize ?
-	       (1 << (Memory.SRAMSize + 3)) * 128 : 0;
-    if (Settings.SRTC)
-    {
-	size += SRTC_SRAM_PAD;
-	S9xSRTCPreSaveState ();
-    }
+	size_t size = Memory.SRAMSize ?
+		(1 << (Memory.SRAMSize + 3)) * 128 : 0;
 
-    if (Settings.SDD1)
-	S9xSDD1SaveLoggedData ();
-
-    if (size > 0x20000)
-	size = 0x20000;
-
-    if (size && *Memory.ROMFilename)
-    {
-	FILE *file;
-	if ((file = fopen (filename, "wb")))
+	if (Settings.SRTC)
 	{
-	    fwrite ((char *) ::SRAM, size, 1, file);
-	    fclose (file);
-#if defined(__linux)
-	    chown (filename, getuid (), getgid ());
-#endif
-	    return (TRUE);
+		size += SRTC_SRAM_PAD;
+		S9xSRTCPreSaveState ();
 	}
+
+	if (Settings.SDD1) S9xSDD1SaveLoggedData ();
+
+	if (size > 0x20000)	size = 0x20000;
+
+	if (size && *Memory.ROMFilename)
+	{
+		FILE *file;
+		if ((file = fopen (filename, "wb")))
+		{
+			if (fwrite((char *) ::SRAM, size, 1, file) == size) {
+				fclose(file);
+				return TRUE;
+			}
+			fclose(file);
+			return FALSE;
+		}
     }
-    return (FALSE);
+
+    return FALSE;
 }
 
 void CMemory::FixROMSpeed ()
