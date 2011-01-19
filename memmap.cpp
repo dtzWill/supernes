@@ -68,17 +68,17 @@ static uint8 bytes0x2000 [0x2000];
 extern char *rom_filename;
 extern bool8 LoadZip(const char* , int32 *, int32 *);
 
-bool8_32 CMemory::AllASCII (uint8 *b, int size)
+bool CMemory::AllASCII (uint8 *b, int size)
 {
     for (int i = 0; i < size; i++)
     {
 	if (b[i] < 32 || b[i] > 126)
-	    return (FALSE);
+	    return false;
     }
-    return (TRUE);
+    return true;
 }
 
-int CMemory::ScoreHiROM (bool8_32 skip_header)
+int CMemory::ScoreHiROM (bool skip_header)
 {
     int score = 0;
     int o = skip_header ? 0xff00 + 0x200 : 0xff00;
@@ -105,7 +105,7 @@ int CMemory::ScoreHiROM (bool8_32 skip_header)
     return (score);
 }
 
-int CMemory::ScoreLoROM (bool8_32 skip_header)
+int CMemory::ScoreLoROM (bool skip_header)
 {
     int score = 0;
     int o = skip_header ? 0x7f00 + 0x200 : 0x7f00;
@@ -160,7 +160,7 @@ char *CMemory::Safe (const char *s)
 /* Init()                                                                                     */
 /* This function allocates all the memory needed by the emulator                              */
 /**********************************************************************************************/
-bool8_32 CMemory::Init ()
+bool CMemory::Init ()
 {
     RAM	    = (uint8 *) malloc (0x20000);
     SRAM    = (uint8 *) malloc (0x20000);
@@ -182,7 +182,7 @@ bool8_32 CMemory::Init ()
 	!IPPU.TileCached [TILE_4BIT] ||	!IPPU.TileCached [TILE_8BIT])
     {
 	Deinit ();
-	return (FALSE);
+	return false;
     }
  
     // FillRAM uses first 32K of ROM image area, otherwise space just
@@ -216,7 +216,7 @@ bool8_32 CMemory::Init ()
     SDD1Data = NULL;
     SDD1Index = NULL;
 
-    return (TRUE);
+    return true;
 }
 
 void CMemory::Deinit ()
@@ -315,13 +315,13 @@ int checkzip( char * fn  )
 #pragma warning(disable : 4101)
 #pragma warning(disable : 4700)
 #endif
-bool8_32 CMemory::LoadROM (const char *filename)
+bool CMemory::LoadROM (const char *filename)
 {
     unsigned long FileSize = 0;
     int retry_count = 0;
     STREAM ROMFile;
-    bool8_32 Interleaved = FALSE;
-    bool8_32 Tales = FALSE;
+    bool Interleaved = FALSE;
+    bool Tales = FALSE;
     char dir [_MAX_DIR + 1];
     char drive [_MAX_DRIVE + 1];
     char name [_MAX_FNAME + 1];
@@ -360,7 +360,7 @@ again:
 
 	HeaderCount = 0;
 	uint8 *ptr = ROM;
-	bool8_32 more = FALSE;
+	bool more = FALSE;
 
 	do
 	{
@@ -382,7 +382,7 @@ again:
 	    if (ptr - ROM < MAX_ROM_SIZE + 0x200 &&
 		(isdigit (ext [0]) && ext [1] == 0 && ext [0] < '9'))
 	    {
-			more = TRUE;
+			more = true;
 			ext [0]++;
 			PathMake(fname, drive, dir, name, ext);
 		}
@@ -393,12 +393,12 @@ again:
 		 isdigit (name [2]) && isdigit (name [3]) && isdigit (name [4]) &&
 		 isdigit (name [5]) && isalpha (name [len - 1])))
 	    {
-			more = TRUE;
+			more = true;
 			name [len - 1]++;
 			PathMake(fname, drive, dir, name, ext);
 		}
 	    else
-			more = FALSE;
+			more = false;
 	} while (more && (ROMFile = OPEN_STREAM (fname, "rb")) != NULL);
     }
 
@@ -577,7 +577,7 @@ again:
 	}
 	else
 	{
-	    bool8_32 t = LoROM;
+	    bool8 t = LoROM;
 
 	    LoROM = HiROM;
 	    HiROM = t;
@@ -640,7 +640,7 @@ again:
 
     S9xReset ();
 
-    return (TRUE);
+    return true;
 }
 
 void S9xDeinterleaveMode2 ()
@@ -687,11 +687,11 @@ void S9xDeinterleaveMode2 ()
 	}
 	free ((char *) tmp);
     }
-    Memory.InitROM (FALSE);
+    Memory.InitROM (false);
     S9xReset ();
 }
 
-void CMemory::InitROM (bool8_32 Interleaved)
+void CMemory::InitROM (bool Interleaved)
 {
 #ifndef ZSNES_FX
     SuperFX.nRomBanks = CalculatedSize >> 15;
@@ -960,7 +960,7 @@ void CMemory::InitROM (bool8_32 Interleaved)
     S9xMessage (S9X_INFO, S9X_ROM_INFO, String);
 }
 
-bool8_32 CMemory::LoadSRAM (const char *filename)
+bool CMemory::LoadSRAM (const char *filename)
 {
     int size = Memory.SRAMSize ?
 	       (1 << (Memory.SRAMSize + 3)) * 128 : 0;
@@ -992,18 +992,18 @@ bool8_32 CMemory::LoadSRAM (const char *filename)
 	    else
 		S9xHardResetSRTC ();
 
-	    return (TRUE);
+	    return true;
 	}
 	S9xHardResetSRTC ();
-	return (FALSE);
+	return false;
     }
     if (Settings.SDD1)
 	S9xSDD1LoadLoggedData ();
 
-    return (TRUE);
+    return true;
 }
 
-bool8_32 CMemory::SaveSRAM (const char *filename)
+bool CMemory::SaveSRAM (const char *filename)
 {
 	size_t size = Memory.SRAMSize ?
 		(1 << (Memory.SRAMSize + 3)) * 128 : 0;
@@ -1025,14 +1025,14 @@ bool8_32 CMemory::SaveSRAM (const char *filename)
 		{
 			if (fwrite((char *) ::SRAM, size, 1, file) == size) {
 				fclose(file);
-				return TRUE;
+				return true;
 			}
 			fclose(file);
-			return FALSE;
+			return false;
 		}
     }
 
-    return FALSE;
+    return true;
 }
 
 void CMemory::FixROMSpeed ()
@@ -1276,7 +1276,7 @@ void CMemory::HiROMMap ()
     WriteProtectROM ();
 }
 
-void CMemory::TalesROMMap (bool8_32 Interleaved)
+void CMemory::TalesROMMap (bool Interleaved)
 {
     int c;
     int i;
@@ -2569,7 +2569,7 @@ static long ReadInt (FILE *f, unsigned nbytes)
 
 #define IPS_EOF 0x00454F46l
 
-void CMemory::CheckForIPSPatch (const char *rom_filename, bool8_32 header,
+void CMemory::CheckForIPSPatch (const char *rom_filename, bool header,
 				int32 &rom_size)
 {
     char  fname [_MAX_PATH + 1];

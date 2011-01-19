@@ -79,11 +79,11 @@
 
 class CMemory {
 public:
-    bool8_32 LoadROM (const char *);
-    void  InitROM (bool8_32);
-    bool8_32 LoadSRAM (const char *);
-    bool8_32 SaveSRAM (const char *);
-    bool8_32 Init ();
+    bool LoadROM (const char *);
+    void InitROM (bool Interleaved);
+    bool LoadSRAM (const char *);
+    bool SaveSRAM (const char *);
+    bool Init ();
     void  Deinit ();
     void  FreeSDD1Data ();
     
@@ -100,17 +100,17 @@ public:
     void SufamiTurboLoROMMap ();
     void HiROMMap ();
     void SuperFXROMMap ();
-    void TalesROMMap (bool8_32);
+    void TalesROMMap (bool Interleaved);
     void AlphaROMMap ();
     void SA1ROMMap ();
     void BSHiROMMap ();
-    bool8_32 AllASCII (uint8 *b, int size);
-    int  ScoreHiROM (bool8_32 skip_header);
-    int  ScoreLoROM (bool8_32 skip_header);
+    bool AllASCII (uint8 *b, int size);
+    int  ScoreHiROM (bool skip_header);
+    int  ScoreLoROM (bool skip_header);
     void ApplyROMFixes ();
-    void CheckForIPSPatch (const char *rom_filename, bool8_32 header,
-			   int32 &rom_size);
-    
+    void CheckForIPSPatch (const char *rom_filename, bool header,
+                           int32 &rom_size);
+
     const char *TVStandard ();
     const char *Speed ();
     const char *StaticRAMSize ();
@@ -136,8 +136,8 @@ public:
     uint8 *BWRAM;
     uint8 *FillRAM;
     uint8 *C4RAM;
-    bool8_32 HiROM;
-    bool8_32 LoROM;
+    bool8 HiROM;
+    bool8 LoROM;
     uint16 SRAMMask;
     uint8 SRAMSize;
     uint8 *Map [MEMMAP_NUM_BLOCKS];

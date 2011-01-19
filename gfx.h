@@ -82,7 +82,7 @@ struct SGFX {
     uint8  r212d;
     uint8  r2130;
     uint8  r2131;
-    bool8_32  Pseudo;
+    bool8  Pseudo;
     
 #ifdef GFX_MULTI_FORMAT
     uint32 PixelFormat;
@@ -119,7 +119,7 @@ struct SBG
     
 	uint8 *Buffer;
     uint8 *Buffered;
-    bool8_32  DirectColourMode;
+    bool8  DirectColourMode;
 };
 
 struct SLineMatrixData
@@ -232,7 +232,7 @@ bool8 S9xDeinitUpdate (int Width, int Height);
 void S9xSyncSpeed ();
 
 #ifdef GFX_MULTI_FORMAT
-bool8_32 S9xSetRenderPixelFormat (int format);
+bool8 S9xSetRenderPixelFormat (int format);
 #endif
 
 void S9xSetInfoString(const char * fmt, ...);

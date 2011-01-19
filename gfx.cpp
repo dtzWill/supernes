@@ -555,7 +555,7 @@ void S9xSetInfoString (const char * fmt, ...)
     va_end(ap);
 }
 
-INLINE void SelectTileRenderer (bool8_32 normal)
+static inline void SelectTileRenderer (bool normal)
 {
     if (normal)
     {
@@ -681,7 +681,7 @@ void S9xSetupOBJ ()
     IPPU.OBJChanged = FALSE;
 }
 
-void DrawOBJS (bool8_32 OnMain = FALSE, uint8 D = 0)
+static void DrawOBJS (bool OnMain = FALSE, uint8 D = 0)
 {
 	uint32 O;
     uint32 BaseTile, Tile;
@@ -833,7 +833,7 @@ void DrawOBJS (bool8_32 OnMain = FALSE, uint8 D = 0)
     }
 }
 
-void DrawBackgroundMosaic (uint32 BGMode, uint32 bg, uint8 Z1, uint8 Z2)
+static void DrawBackgroundMosaic (uint32 BGMode, uint32 bg, uint8 Z1, uint8 Z2)
 {
     CHECK_SOUND();
 
@@ -1044,7 +1044,7 @@ void DrawBackgroundMosaic (uint32 BGMode, uint32 bg, uint8 Z1, uint8 Z2)
     }
 }
 
-void DrawBackgroundOffset (uint32 BGMode, uint32 bg, uint8 Z1, uint8 Z2)
+static void DrawBackgroundOffset (uint32 BGMode, uint32 bg, uint8 Z1, uint8 Z2)
 {
     CHECK_SOUND();
 
@@ -1172,7 +1172,7 @@ void DrawBackgroundOffset (uint32 BGMode, uint32 bg, uint8 Z1, uint8 Z2)
 	    uint32 MaxCount = 8;
 
 	    uint32 s = Left * GFX_PIX_SIZE + Y * GFX.PPL;
-	    bool8_32 left_hand_edge = (Left == 0);
+	    bool left_hand_edge = (Left == 0);
 	    Width = Right - Left;
 
 	    if (Left & 7)
@@ -1187,7 +1187,7 @@ void DrawBackgroundOffset (uint32 BGMode, uint32 bg, uint8 Z1, uint8 Z2)
 		    // for the tile at the left-hand edge of the screen.
 		    VOffset = LineData [Y].BG[bg].VOffset;
 					HOffset = LineHOffset;
-		    left_hand_edge = FALSE;
+		    left_hand_edge = false;
 		}
 		else
 		{
@@ -1325,7 +1325,7 @@ void DrawBackgroundOffset (uint32 BGMode, uint32 bg, uint8 Z1, uint8 Z2)
     }
 }
 
-void DrawBackgroundMode5 (uint32 /* BGMODE */, uint32 bg, uint8 Z1, uint8 Z2)
+static void DrawBackgroundMode5 (uint32 /*BGMODE*/, uint32 bg, uint8 Z1, uint8 Z2)
 {
     CHECK_SOUND();
 
@@ -1634,7 +1634,7 @@ void DrawBackgroundMode5 (uint32 /* BGMODE */, uint32 bg, uint8 Z1, uint8 Z2)
     }
 }
 
-void DrawBackground (uint32 BGMode, uint32 bg, uint8 Z1, uint8 Z2)
+static void DrawBackground (uint32 BGMode, uint32 bg, uint8 Z1, uint8 Z2)
 {
     BG.TileSize = BGSizes [PPU.BG[bg].BGSize];
     BG.BitShift = BitShifts[BGMode][bg];
@@ -2177,18 +2177,12 @@ void DrawBackground (uint32 BGMode, uint32 bg, uint8 Z1, uint8 Z2)
     RENDER_BACKGROUND_MODE7_LINE(TYPE,FUNC) \
 \
 
-
-void DrawBGMode7Background (uint8 *Screen, int bg)
-{
-    RENDER_BACKGROUND_MODE7 (uint8, (uint8) (b & bmask))
-}
-
-void DrawBGMode7Background16 (uint8 *Screen, int bg)
+static void DrawBGMode7Background16 (uint8 *Screen, int bg)
 {
     RENDER_BACKGROUND_MODE7 (uint16, GFX.ScreenColors [b & bmask]);
 }
 
-void DrawBGMode7Background16Add (uint8 *Screen, int bg)
+static void DrawBGMode7Background16Add (uint8 *Screen, int bg)
 {
     RENDER_BACKGROUND_MODE7 (uint16, *(d + GFX.DepthDelta) ?
 					(*(d + GFX.DepthDelta) != 1 ?
@@ -2199,7 +2193,7 @@ void DrawBGMode7Background16Add (uint8 *Screen, int bg)
 					 GFX.ScreenColors [b & bmask]);
 }
 
-void DrawBGMode7Background16Add1_2 (uint8 *Screen, int bg)
+static void DrawBGMode7Background16Add1_2 (uint8 *Screen, int bg)
 {
     RENDER_BACKGROUND_MODE7 (uint16, *(d + GFX.DepthDelta) ?
 					(*(d + GFX.DepthDelta) != 1 ?
@@ -2210,7 +2204,7 @@ void DrawBGMode7Background16Add1_2 (uint8 *Screen, int bg)
 					 GFX.ScreenColors [b & bmask]);
 }
 
-void DrawBGMode7Background16Sub (uint8 *Screen, int bg)
+static void DrawBGMode7Background16Sub (uint8 *Screen, int bg)
 {
     RENDER_BACKGROUND_MODE7 (uint16, *(d + GFX.DepthDelta) ?
 					(*(d + GFX.DepthDelta) != 1 ?
@@ -2221,7 +2215,7 @@ void DrawBGMode7Background16Sub (uint8 *Screen, int bg)
 					 GFX.ScreenColors [b & bmask]);
 }
 
-void DrawBGMode7Background16Sub1_2 (uint8 *Screen, int bg)
+static void DrawBGMode7Background16Sub1_2 (uint8 *Screen, int bg)
 {
     RENDER_BACKGROUND_MODE7 (uint16, *(d + GFX.DepthDelta) ?
 					(*(d + GFX.DepthDelta) != 1 ?
@@ -2258,12 +2252,12 @@ void DrawBGMode7Background16Sub1_2 (uint8 *Screen, int bg)
     Screen += GFX.StartY * GFX.Pitch; \
     uint8 *Depth = GFX.DB + GFX.StartY * GFX.PPL; \
     struct SLineMatrixData *l = &LineMatrixData [GFX.StartY]; \
-    bool8_32 allowSimpleCase = FALSE; \
+    bool allowSimpleCase = false; \
     if (!l->MatrixB && !l->MatrixC && (l->MatrixA == 0x0100) && (l->MatrixD == 0x0100) \
         && !LineMatrixData[GFX.EndY].MatrixB && !LineMatrixData[GFX.EndY].MatrixC \
         && (LineMatrixData[GFX.EndY].MatrixA == 0x0100) && (LineMatrixData[GFX.EndY].MatrixD == 0x0100) \
         ) \
-        allowSimpleCase = TRUE;  \
+        allowSimpleCase = true;  \
     \
     for (uint32 Line = GFX.StartY; Line <= GFX.EndY; Line++, Screen += GFX.Pitch, Depth += GFX.PPL, l++) \
     { \
@@ -2284,7 +2278,7 @@ void DrawBGMode7Background16Sub1_2 (uint8 *Screen, int bg)
 	    yy += (VOffset - CentreY) % 1023; \
 	else \
 	    yy += VOffset - CentreY; \
-        bool8_32 simpleCase = FALSE; \
+        bool simpleCase = false; \
         int BB; \
         int DD; \
         /* Make a special case for the identity matrix, since it's a common case and */ \
@@ -2293,7 +2287,7 @@ void DrawBGMode7Background16Sub1_2 (uint8 *Screen, int bg)
         { \
             BB = CentreX << 8; \
             DD = (yy + CentreY) << 8; \
-            simpleCase = TRUE; \
+            simpleCase = true; \
         } \
         else \
         { \
@@ -2608,7 +2602,7 @@ void DrawBGMode7Background16Sub1_2 (uint8 *Screen, int bg)
         } \
     }
 
-STATIC uint32 Q_INTERPOLATE(uint32 A, uint32 B, uint32 C, uint32 D)
+static inline uint32 Q_INTERPOLATE(uint32 A, uint32 B, uint32 C, uint32 D)
 {
     register uint32 x = ((A >> 2) & HIGH_BITS_SHIFTED_TWO_MASK) +
                             ((B >> 2) & HIGH_BITS_SHIFTED_TWO_MASK) +
@@ -2622,12 +2616,12 @@ STATIC uint32 Q_INTERPOLATE(uint32 A, uint32 B, uint32 C, uint32 D)
     return x+y;
 }
 
-void DrawBGMode7Background16_i (uint8 *Screen, int bg)
+static void DrawBGMode7Background16_i (uint8 *Screen, int bg)
 {
     RENDER_BACKGROUND_MODE7_i (uint16, theColor, (GFX.ScreenColors[b & GFX.Mode7Mask]));
 }
 
-void DrawBGMode7Background16Add_i (uint8 *Screen, int bg)
+static void DrawBGMode7Background16Add_i (uint8 *Screen, int bg)
 {
     RENDER_BACKGROUND_MODE7_i (uint16, *(d + GFX.DepthDelta) ?
 					(*(d + GFX.DepthDelta) != 1 ?
@@ -2638,7 +2632,7 @@ void DrawBGMode7Background16Add_i (uint8 *Screen, int bg)
 					 theColor, (GFX.ScreenColors[b & GFX.Mode7Mask]));
 }
 
-void DrawBGMode7Background16Add1_2_i (uint8 *Screen, int bg)
+static void DrawBGMode7Background16Add1_2_i (uint8 *Screen, int bg)
 {
     RENDER_BACKGROUND_MODE7_i (uint16, *(d + GFX.DepthDelta) ?
 					(*(d + GFX.DepthDelta) != 1 ?
@@ -2649,7 +2643,7 @@ void DrawBGMode7Background16Add1_2_i (uint8 *Screen, int bg)
 					 theColor, (GFX.ScreenColors[b & GFX.Mode7Mask]));
 }
 
-void DrawBGMode7Background16Sub_i (uint8 *Screen, int bg)
+static void DrawBGMode7Background16Sub_i (uint8 *Screen, int bg)
 {
     RENDER_BACKGROUND_MODE7_i (uint16, *(d + GFX.DepthDelta) ?
 					(*(d + GFX.DepthDelta) != 1 ?
@@ -2660,7 +2654,7 @@ void DrawBGMode7Background16Sub_i (uint8 *Screen, int bg)
 					 theColor, (GFX.ScreenColors[b & GFX.Mode7Mask]));
 }
 
-void DrawBGMode7Background16Sub1_2_i (uint8 *Screen, int bg)
+static void DrawBGMode7Background16Sub1_2_i (uint8 *Screen, int bg)
 {
     RENDER_BACKGROUND_MODE7_i (uint16, *(d + GFX.DepthDelta) ?
 					(*(d + GFX.DepthDelta) != 1 ?
@@ -2705,13 +2699,9 @@ TWO_LOW_BITS_MASK = RGB_LOW_BITS_MASK | (RGB_LOW_BITS_MASK << 1); \
 HIGH_BITS_SHIFTED_TWO_MASK = (( (FIRST_COLOR_MASK | SECOND_COLOR_MASK | THIRD_COLOR_MASK) & \
                                 ~TWO_LOW_BITS_MASK ) >> 2);
 
-void RenderScreen (uint8 *Screen, bool8_32 sub, bool8_32 force_no_add, uint8 D)
+static void RenderScreen(uint8 *Screen, bool sub, bool force_no_add, uint8 D)
 {
-    bool8_32 BG0;
-    bool8_32 BG1;
-    bool8_32 BG2;
-    bool8_32 BG3;
-    bool8_32 OB;
+    bool BG0, BG1, BG2, BG3, OB;
 
     GFX.S = Screen;
 
@@ -3795,7 +3785,7 @@ _BUILD_PIXEL(GBR565)
 _BUILD_PIXEL(GBR555)
 _BUILD_PIXEL(RGB5551)
 
-bool8_32 S9xSetRenderPixelFormat (int format)
+bool8 S9xSetRenderPixelFormat (int format)
 {
     extern uint32 current_graphic_format;
 
