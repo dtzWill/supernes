@@ -14,7 +14,6 @@
 #endif
 
 #include "snes9x.h"
-#include "display.h"
 #include "platform.h"
 #include "sdlv.h"
 

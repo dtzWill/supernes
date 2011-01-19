@@ -6,7 +6,6 @@
 #include "platform.h"
 #include "port.h"
 #include "snes9x.h"
-#include "display.h"
 
 #if CONF_GUI
 #include "osso.h"

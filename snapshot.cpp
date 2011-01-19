@@ -55,7 +55,6 @@
 #include "65c816.h"
 #include "ppu.h"
 #include "cpuexec.h"
-#include "display.h"
 #include "apu.h"
 #include "soundux.h"
 #ifdef USE_SA1
@@ -473,7 +472,7 @@ static void Freeze ()
     }
     sprintf (buffer, "%s:%04d\n", SNAPSHOT_MAGIC, SNAPSHOT_VERSION);
     WRITE_STREAM(buffer, strlen(buffer), ss_st);
-    sprintf (buffer, "NAM:%06d:%s%c", strlen (Memory.ROMFilename) + 1,
+    sprintf (buffer, "NAM:%06zu:%s%c", strlen(Memory.ROMFilename) + 1,
 	     Memory.ROMFilename, 0);
     WRITE_STREAM(buffer, strlen(buffer) + 1, ss_st);
     FreezeStruct ("CPU", &CPU, SnapCPU, COUNT (SnapCPU));

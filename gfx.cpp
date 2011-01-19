@@ -46,7 +46,6 @@
 #include "memmap.h"
 #include "ppu.h"
 #include "cpuexec.h"
-#include "display.h"
 #include "gfx.h"
 #include "apu.h"
 #include "cheats.h"
@@ -107,7 +106,7 @@ extern uint8  Mode7Depths [2];
 
 #define BLACK BUILD_PIXEL(0,0,0)
 
-bool8_32 S9xGraphicsInit ()
+bool8 S9xGraphicsInit ()
 {
     register uint32 PixelOdd = 1;
     register uint32 PixelEven = 2;
@@ -368,7 +367,7 @@ bool8_32 S9xGraphicsInit ()
 	    }
 	}
 
-    return (TRUE);
+    return TRUE;
 }
 
 void S9xGraphicsDeinit (void)

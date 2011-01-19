@@ -46,11 +46,7 @@
 #include "apu.h"
 #include "dma.h"
 #include "gfx.h"
-#include "display.h"
 #include "sa1.h"
-#ifndef _SNESPPC
-//#include "netplay.h"
-#endif
 #include "sdd1.h"
 #include "srtc.h"
 
@@ -2399,7 +2395,7 @@ void S9xProcessMouse(int which1)
 
 	if ((IPPU.Controller == SNES_MOUSE
 		|| IPPU.Controller == SNES_MOUSE_SWAPPED)
-		&& S9xReadMousePosition(which1, x, y, buttons))
+		&& S9xReadMousePosition(which1, &x, &y, &buttons))
 	{
 		int delta_x, delta_y;
 #define MOUSE_SIGNATURE 0x1
@@ -2467,7 +2463,7 @@ void ProcessSuperScope()
 	uint32 buttons;
 
 	if (IPPU.Controller == SNES_SUPERSCOPE
-		&& S9xReadSuperScopePosition(x, y, buttons))
+		&& S9xReadSuperScopePosition(&x, &y, &buttons))
 	{
 #define SUPERSCOPE_SIGNATURE 0x00ff
 		uint32 scope;

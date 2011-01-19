@@ -40,7 +40,6 @@
  */
 #include "snes9x.h"
 #include "memmap.h"
-#include "display.h"
 #include "cpuexec.h"
 #include "apu.h"
 #include "spc700.h"

@@ -237,6 +237,8 @@ struct SDMA {
 };
 
 START_EXTERN_C
+void S9xNextController ();
+
 void S9xUpdateScreen ();
 void S9xResetPPU ();
 void S9xFixColourBrightness ();

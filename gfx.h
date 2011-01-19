@@ -225,15 +225,17 @@ void S9xBuildDirectColourMaps ();
 // port.
 extern struct SGFX GFX;
 
-bool8_32 S9xGraphicsInit ();
+bool8 S9xGraphicsInit ();
 void S9xGraphicsDeinit();
-bool8_32 S9xInitUpdate (void);
-bool8_32 S9xDeinitUpdate (int Width, int Height);
+bool8 S9xInitUpdate (void);
+bool8 S9xDeinitUpdate (int Width, int Height);
 void S9xSyncSpeed ();
 
 #ifdef GFX_MULTI_FORMAT
 bool8_32 S9xSetRenderPixelFormat (int format);
 #endif
+
+void S9xSetInfoString(const char * fmt, ...);
 
 END_EXTERN_C
 

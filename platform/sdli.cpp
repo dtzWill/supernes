@@ -3,7 +3,6 @@
 
 #include "platform.h"
 #include "snes9x.h"
-#include "display.h"
 #include "sdlv.h" // Dispatching video-related events
 
 #if CONF_ZEEMOTE
@@ -194,22 +193,22 @@ uint32 S9xReadJoypad (int which)
 	@param buttons The buttons return value is a bit-wise mask of the two SNES
 		mouse buttons, bit 0 for button 1 (left) and bit 1 for button 2 (right).
 */
-bool8 S9xReadMousePosition(int which1, int& x, int& y, uint32& buttons)
+bool8 S9xReadMousePosition(int which, int *x, int *y, uint32 *buttons)
 {
-	if (which1 != 0) return FALSE;
+	if (which != 0) return FALSE;
 
-	x = mouse.x;
-	y = mouse.y;
-	buttons = mouse.pressed ? 1 : 0;
+	*x = mouse.x;
+	*y = mouse.y;
+	*buttons = mouse.pressed ? 1 : 0;
 
 	return TRUE;
 }
 
-bool8 S9xReadSuperScopePosition(int& x, int& y, uint32& buttons)
+bool8 S9xReadSuperScopePosition(int *x, int *y, uint32 *buttons)
 {
-	x = mouse.x;
-	y = mouse.y;
-	buttons = mouse.pressed ? 8 : 0;
+	*x = mouse.x;
+	*y = mouse.y;
+	*buttons = mouse.pressed ? 8 : 0;
 
 	return TRUE;
 }

@@ -151,7 +151,8 @@ void S9xHacksLoadFile(const char * file)
 
 	line = (char*) malloc(kLineBufferSize + 1);
 	do {
-		fgets(line, kLineBufferSize, fp);
+		line = fgets(line, kLineBufferSize, fp);
+		if (!line) break;
 
 		char *pos = strchr(line, '|');
 		if (!pos) continue;

@@ -9,7 +9,6 @@
 #include "cpuexec.h"
 #include "gfx.h"
 #include "ppu.h"
-#include "display.h"
 #include "memmap.h"
 #include "soundux.h"
 #include "hacks.h"

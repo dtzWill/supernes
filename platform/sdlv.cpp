@@ -7,7 +7,6 @@
 
 #include "snes9x.h"
 #include "platform.h"
-#include "display.h"
 #include "gfx.h"
 #include "ppu.h"
 #include "sdlv.h"
@@ -228,7 +227,7 @@ bool videoEventFilter(const SDL_Event& event)
 	while initializing video output.
 	@return TRUE if we should render the frame.
  */
-bool8_32 S9xInitUpdate ()
+bool8 S9xInitUpdate ()
 {
 	scaler->prepare();
 
@@ -247,7 +246,7 @@ bool8_32 S9xInitUpdate ()
 	478 if hi-res. SNES screen modes are being supported.
  */
 // TODO Above.
-bool8_32 S9xDeinitUpdate (int width, int height)
+bool8 S9xDeinitUpdate (int width, int height)
 {
 	scaler->finish();
 

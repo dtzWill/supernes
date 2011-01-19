@@ -47,7 +47,6 @@
 #include "memmap.h"
 #include "cpuexec.h"
 #include "ppu.h"
-#include "display.h"
 #include "cheats.h"
 #include "apu.h"
 #include "sa1.h"

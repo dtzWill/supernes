@@ -73,13 +73,7 @@ typedef int16_t			int16;
 typedef int32_t			int32;
 typedef int64_t			int64;
 
-//For Debugging Purposes:
-
 typedef uint8_t			bool8_32;
-typedef uint8_t			uint8_32;
-typedef uint16_t		uint16_32;
-typedef int8_t			int8_32;
-typedef int16_t			int16_32;
 
 //Defines for Extern C
 #ifdef __cplusplus
@@ -147,6 +141,13 @@ void PathMake(char *path, const char *drive, const char *dir,
 void PathSplit(const char *path, char *drive, char *dir, char *fname, char *ext);
 /** A simplified basename function returning a pointer inside the src string */
 const char * PathBasename(const char * path);
+END_EXTERN_C
+
+// Input / output functions
+START_EXTERN_C
+uint32 S9xReadJoypad(int which1_0_to_4);
+bool8 S9xReadMousePosition(int which1_0_to_1, int *x, int *y, uint32 *buttons);
+bool8 S9xReadSuperScopePosition(int *x, int *y, uint32 *buttons);
 END_EXTERN_C
 
 // Stream functions, used when opening ROMs and snapshots.

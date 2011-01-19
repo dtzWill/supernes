@@ -46,7 +46,6 @@
 #include "memmap.h"
 #include "ppu.h"
 #include "sdd1.h"
-#include "display.h"
 
 static int S9xCompareSDD1IndexEntries (const void *p1, const void *p2)
 {
@@ -123,7 +122,7 @@ void S9xLoadSDD1Data ()
 
 	if (strlen (index) && strlen (data)) {
 		FILE *fs = fopen (index, "rb");
-		int len = 0;
+		size_t len = 0;
 
 		if (fs)	{
 			// Index is stored as a sequence of entries, each entry being
@@ -136,7 +135,10 @@ void S9xLoadSDD1Data ()
 			len = ftell (fs);
 			rewind (fs);
 			Memory.SDD1Index = (uint8 *) malloc (len);
-			fread (Memory.SDD1Index, 1, len, fs);
+			if (fread (Memory.SDD1Index, 1, len, fs) < len) {
+				fprintf(stderr, "Failed to fully read SDD1 index file %s\n",
+					data);
+			}
 			fclose (fs);
 			Memory.SDD1Entries = len / 12;
 		} else {
@@ -156,7 +158,10 @@ void S9xLoadSDD1Data ()
 			len = ftell (fs);
 			rewind (fs);
 			Memory.SDD1Data = (uint8 *) malloc (len);
-			fread (Memory.SDD1Data, 1, len, fs);
+			if (fread (Memory.SDD1Data, 1, len, fs) < len) {
+				fprintf(stderr, "Failed to fully read SDD1 data file %s\n",
+					data);
+			}
 			fclose (fs);
 		}
 		printf("SDD1: data pack: %s\n", PathBasename(data));
@@ -242,16 +247,16 @@ void S9xSDD1SaveLoggedData ()
 	       S9xCompareSDD1LoggedDataEntries);
 
 	const char * sdd1_dat_file = S9xGetFilename(FILE_SDD1_DAT);
-	FILE *fs = fopen (sdd1_dat_file, "wb");
+	FILE *fs = fopen(sdd1_dat_file, "wb");
 
 	if (fs)
 	{
-	    fwrite (Memory.SDD1LoggedData, 8,
-		    Memory.SDD1LoggedDataCount, fs);
-	    fclose (fs);
-#if defined(__linux)
-	    chown (sdd1_dat_file, getuid (), getgid ());
-#endif
+	    long c = fwrite(Memory.SDD1LoggedData, 8,
+		                Memory.SDD1LoggedDataCount, fs);
+		if (c < Memory.SDD1LoggedDataCount) {
+			fprintf(stderr, "Failed to write sdd1 log data\n");
+		}
+	    fclose(fs);
 	}
 	Memory.SDD1LoggedDataCountPrev = Memory.SDD1LoggedDataCount;
     }
@@ -265,8 +270,8 @@ void S9xSDD1LoadLoggedData ()
 
     if (fs)
     {
-	int c = fread (Memory.SDD1LoggedData, 8, 
-		       MEMMAP_MAX_SDD1_LOGGED_ENTRIES, fs);
+	long c = fread (Memory.SDD1LoggedData, 8, 
+		            MEMMAP_MAX_SDD1_LOGGED_ENTRIES, fs);
 
 	if (c != EOF)
 	    Memory.SDD1LoggedDataCount = Memory.SDD1LoggedDataCountPrev = c;

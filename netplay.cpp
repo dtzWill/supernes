@@ -191,7 +191,6 @@
 #include "netplay.h"
 #include "memmap.h"
 #include "snapshot.h"
-#include "display.h"
 
 void S9xNPClientLoop (void *);
 bool8 S9xNPLoadROM (uint32 len);

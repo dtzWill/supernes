@@ -81,8 +81,8 @@ Index Description     Range (nibble)
 
 typedef struct
 {
-    bool8_32 needs_init;
-    bool8_32 count_enable;	// Does RTC mark time or is it frozen
+    bool8 needs_init;
+    bool8 count_enable;	// Does RTC mark time or is it frozen
     uint8 data [MAX_RTC_INDEX+1];
     int8  index;
     uint8 mode;

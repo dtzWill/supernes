@@ -42,7 +42,6 @@
 
 #include "memmap.h"
 #include "ppu.h"
-#include "display.h"
 #include "gfx.h"
 #include "tile.h"
 

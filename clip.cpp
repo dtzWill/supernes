@@ -156,7 +156,7 @@ void ComputeClipWindows ()
 		    struct Band Win2[3];
 		    uint32 Window1Enabled = 0;
 		    uint32 Window2Enabled = 0;
-		    bool8_32 invert = (w == 5 && 
+		    bool invert = (w == 5 &&
 				    ((c == 1 && (Memory.FillRAM [0x2130] & 0x30) == 0x10) ||
 				     (c == 0 && (Memory.FillRAM [0x2130] & 0xc0) == 0x40)));
 
