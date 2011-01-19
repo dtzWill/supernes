@@ -129,13 +129,11 @@ static void setupVideoSurface()
 	if (gameHeight > GUI.Height || gameWidth > GUI.Width)
 		DIE("Video is larger than window size!");
 
-	const ScalerFactory* sFactory =
-		searchForScaler(Settings.SixteenBit ? 16 : 8, gameWidth, gameHeight);
+	const ScalerFactory* sFactory = searchForScaler(16, gameWidth, gameHeight);
 
-	screen = SDL_SetVideoMode(GUI.Width, GUI.Height,
-								Settings.SixteenBit ? 16 : 8,
-								SDL_SWSURFACE |
-								(Config.fullscreen ? SDL_FULLSCREEN : 0));
+	screen = SDL_SetVideoMode(GUI.Width, GUI.Height, 16,
+		SDL_SWSURFACE | (Config.fullscreen ? SDL_FULLSCREEN : 0));
+
 	if (!screen)
 		DIE("SDL_SetVideoMode: %s", SDL_GetError());
 	
@@ -177,8 +175,7 @@ static void drawOnscreenControls()
 	if (Config.touchscreenShow) {
 		scaler->pause();
 		SDL_FillRect(screen, NULL, 0);
-		S9xInputScreenDraw(Settings.SixteenBit ? 2 : 1,
-							screen->pixels, screen->pitch);
+		S9xInputScreenDraw(screen->pixels, screen->pitch);
 		SDL_Flip(screen);
 		scaler->resume();
 	}
@@ -226,23 +223,6 @@ bool videoEventFilter(const SDL_Event& event)
 		return false;
 }
 
-// This is here for completeness, but palette mode is mostly useless (slow).
-void S9xSetPalette ()
-{
-	if (Settings.SixteenBit) return;
-	
-	SDL_Color colors[256];
-	int brightness = IPPU.MaxBrightness *138;
-	for (int i = 0; i < 256; i++)
-	{
-		colors[i].r = ((PPU.CGDATA[i] >> 0) & 0x1F) * brightness;
-		colors[i].g = ((PPU.CGDATA[i] >> 5) & 0x1F) * brightness;
-		colors[i].b = ((PPU.CGDATA[i] >> 10) & 0x1F) * brightness;
-	}
-	
-	SDL_SetColors(screen, colors, 0, 256);
-}
-
 /** Called before rendering a frame.
 	This function must ensure GFX.Screen points to something, but we did that
 	while initializing video output.
@@ -267,7 +247,7 @@ bool8_32 S9xInitUpdate ()
 	478 if hi-res. SNES screen modes are being supported.
  */
 // TODO Above.
-bool8_32 S9xDeinitUpdate (int width, int height, bool8_32 sixteenBit)
+bool8_32 S9xDeinitUpdate (int width, int height)
 {
 	scaler->finish();
 

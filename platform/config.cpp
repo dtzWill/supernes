@@ -208,7 +208,6 @@ static void loadDefaults()
 
 	Settings.ForceTransparency = FALSE;	// We'll enable those later
 	Settings.Transparency = FALSE;
-	Settings.SixteenBit = TRUE;
 
 	Settings.SupportHiRes = FALSE;
 	Settings.ApplyCheats = FALSE;
@@ -304,7 +303,6 @@ static void parseArgs(poptContext optCon)
 				Config.fullscreen = true;
 				break;
 			case 5:
-				Settings.SixteenBit = TRUE;
 				Settings.Transparency = TRUE;
 				break;
 			case 6:

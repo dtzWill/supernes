@@ -221,8 +221,6 @@ bool8_32 S9xGraphicsInit ()
 	DrawHiResClippedTilePtr = DrawHiResClippedTile16;
     S9xFixColourBrightness();
 
-    if (Settings.SixteenBit)
-    {
 	if (!(GFX.X2 = (uint16 *) malloc (sizeof (uint16) * 0x10000)))
 	    return (FALSE);
 
@@ -369,13 +367,6 @@ bool8_32 S9xGraphicsInit ()
 		}
 	    }
 	}
-    }
-    else
-    {
-	GFX.X2 = NULL;
-	GFX.ZERO_OR_X2 = NULL;
-	GFX.ZERO = NULL;
-    }
 
     return (TRUE);
 }
@@ -497,24 +488,7 @@ void S9xEndScreenRefresh()
 		IPPU.RenderedFramesCount++;
 
 		if (IPPU.ColorsChanged) {
-			uint32 saved = PPU.CGDATA[0];
-
-			if (!Settings.SixteenBit) {
-				// Hack for Super Mario World - to get its sky blue
-				// (It uses Fixed colour addition on the backdrop colour)
-				if (!(Memory.FillRAM [0x2131] & 0x80) &&
-					(Memory.FillRAM[0x2131] & 0x20) &&
-					(PPU.FixedColourRed || PPU.FixedColourGreen ||
-					 PPU.FixedColourBlue)) {
-					PPU.CGDATA[0] = PPU.FixedColourRed |
-							(PPU.FixedColourGreen << 5) |
-							(PPU.FixedColourBlue << 10);
-				}
-			}
-
 			IPPU.ColorsChanged = FALSE;
-		    S9xSetPalette();
-			PPU.CGDATA[0] = saved;
 		}
 
 		if (Settings.DisplayFrameRate) {
@@ -525,9 +499,7 @@ void S9xEndScreenRefresh()
 			S9xDisplayString(GFX.InfoString);
 		}
 
-		S9xDeinitUpdate(
-			IPPU.RenderedScreenWidth, IPPU.RenderedScreenHeight,
-			Settings.SixteenBit);
+		S9xDeinitUpdate(IPPU.RenderedScreenWidth, IPPU.RenderedScreenHeight);
     }
 
 #ifndef RC_OPTIMIZED
@@ -2893,10 +2865,7 @@ static void DisplayChar(uint8 *Screen, uint8 c)
 {
     int line = (((c & 0x7f) - 32) >> 4) * font_height;
     int offset = (((c & 0x7f) - 32) & 15) * font_width;
-#ifndef _SNESPPC
-    if (Settings.SixteenBit)
-#endif
-    {
+
 	int h, w;
 	uint16 *s = (uint16 *) Screen;
 	for (h = 0; h < font_height; h++, line++,
@@ -2913,39 +2882,15 @@ static void DisplayChar(uint8 *Screen, uint8 c)
 		    *s = BLACK;
 	    }
 	}
-    }
-#ifndef _SNESPPC
-    else
-    {
-	int h, w;
-	uint8 *s = Screen;
-	for (h = 0; h < font_height; h++, line++,
-	     s += GFX.PPL - font_width)
-	{
-	    for (w = 0; w < font_width; w++, s++)
-	    {
-		uint8 p = font [line][offset + w];
-
-		if (p == '#')
-		    *s = 255;
-		else
-		if (p == '.')
-		    *s = BLACK;
-	    }
-	}
-    }
-#endif
 }
 
 static void S9xDisplayFrameRate()
 {
+    const unsigned int char_width = (font_width - 1) * sizeof (uint16);
 	uint8 *Screen = GFX.Screen + 2 +
 		(IPPU.RenderedScreenHeight - font_height - 1) * GFX.Pitch;
 	char string[12];
     int len;
-    const unsigned int char_width = Settings.SixteenBit ? 
-				(font_width - 1) * sizeof (uint16) : 
-				(font_width - 1);
 
 	if (Settings.TurboMode) {
 		len = sprintf(string, "%u",
@@ -2964,6 +2909,7 @@ static void S9xDisplayFrameRate()
 
 static void S9xDisplayString(const char *string)
 {
+    const unsigned int char_width = (font_width - 1) * sizeof (uint16);
     uint8 *Screen = GFX.Screen + 2 +
 		    (IPPU.RenderedScreenHeight - font_height * 5) * GFX.Pitch;
     int len = strlen (string);
@@ -2975,9 +2921,7 @@ static void S9xDisplayString(const char *string)
     {
 	if (char_count >= max_chars || string [i] < 32)
 	{
-	    Screen -= Settings.SixteenBit ? 
-			(font_width - 1) * sizeof (uint16) * max_chars :
-			(font_width - 1) * max_chars;
+	    Screen -= char_width * max_chars;
 	    Screen += font_height * GFX.Pitch;
 	    if (Screen >= GFX.Screen + GFX.Pitch * IPPU.RenderedScreenHeight)
 		break;
@@ -2986,8 +2930,7 @@ static void S9xDisplayString(const char *string)
 	if (string [i] < 32)
 	    continue;
 	DisplayChar (Screen, string [i]);
-	Screen += Settings.SixteenBit ? (font_width - 1) * sizeof (uint16) : 
-		  (font_width - 1);
+	Screen += char_width;
     }
 }
 
@@ -3050,27 +2993,15 @@ void S9xUpdateScreen () // ~30-50ms! (called from FLUSH_REDRAW())
 		if (!IPPU.DoubleWidthPixels) {
 			// The game has switched from lo-res to hi-res mode part way down
 			// the screen. Scale any existing lo-res pixels on screen
-			if (Settings.SixteenBit) {
-				for (register uint32 y = 0; y < GFX.StartY; y++) {
-					register uint16 *p =
-						(uint16 *) (GFX.Screen + y * GFX.Pitch) + 255;
-					register uint16 *q =
-						(uint16 *) (GFX.Screen + y * GFX.Pitch) + 510;
-					for (register int x = 255; x >= 0; x--, p--, q -= 2) {
-						*q = *(q + 1) = *p;
-					}
+			for (register uint32 y = 0; y < GFX.StartY; y++) {
+				register uint16 *p =
+					(uint16 *) (GFX.Screen + y * GFX.Pitch) + 255;
+				register uint16 *q =
+					(uint16 *) (GFX.Screen + y * GFX.Pitch) + 510;
+				for (register int x = 255; x >= 0; x--, p--, q -= 2) {
+					*q = *(q + 1) = *p;
 				}
-		    } else {
-				for (register uint32 y = 0; y < GFX.StartY; y++) {
-					register uint8 *p =
-						GFX.Screen + y * GFX.Pitch + 255;
-					register uint8 *q =
-						GFX.Screen + y * GFX.Pitch + 510;
-					for (register int x = 255; x >= 0; x--, p--, q -= 2) {
-						*q = *(q + 1) = *p;
-					}
-				}
-		    }
+			}
 
 			IPPU.DoubleWidthPixels = TRUE;
 		}
@@ -3080,7 +3011,7 @@ void S9xUpdateScreen () // ~30-50ms! (called from FLUSH_REDRAW())
     uint32 black = BLACK | (BLACK << 16);
 
 	// Are we worrying about transparencies?
-    if (Settings.Transparency && Settings.SixteenBit)
+    if (Settings.Transparency)
     {
 		if (GFX.Pseudo)
 		{
@@ -3651,57 +3582,39 @@ void S9xUpdateScreen () // ~30-50ms! (called from FLUSH_REDRAW())
     }
     else // Transparencys are disabled, ahh lovely ... nice and easy.
 	{
-#ifndef _SNESPPC
-		if (Settings.SixteenBit)
-#endif
+	    // get back colour to be used in clearing the screen
+		register uint32 back;
+		if (!(Memory.FillRAM [0x2131] & 0x80) &&(Memory.FillRAM[0x2131] & 0x20) &&
+				(PPU.FixedColourRed || PPU.FixedColourGreen || PPU.FixedColourBlue))
 		{
-		    // get back colour to be used in clearing the screen
-			register uint32 back;
-			if (!(Memory.FillRAM [0x2131] & 0x80) &&(Memory.FillRAM[0x2131] & 0x20) &&
-					(PPU.FixedColourRed || PPU.FixedColourGreen || PPU.FixedColourBlue))
-			{
-				back = (IPPU.XB[PPU.FixedColourRed]<<11) |
-					   (IPPU.XB[PPU.FixedColourGreen] << 6) | 
-					   (IPPU.XB[PPU.FixedColourBlue] << 1) | 1;
-				back = (back << 16) | back;
-			}
-			else
-			{
-				back = IPPU.ScreenColors [0] | (IPPU.ScreenColors [0] << 16);
-			}
-    
-		    // if Forcedblanking in use then back colour becomes black
-			if (PPU.ForcedBlanking)
-				back = black;
-		    else
-			{
-				SelectTileRenderer (TRUE);  //selects the tile renderers to be used
-											// TRUE means to use the default
-											// FALSE means use best renderer based on current
-											// graphics register settings
-			}
-		    
-			// now clear all graphics lines which are being updated using the back colour
-			for (register uint32 y = starty; y <= endy; y++)
-		    {
-				memset32 ((uint32_t*)(GFX.Screen + y * GFX.Pitch), back,
-					IPPU.RenderedScreenWidth>>1);
-		    }
+			back = (IPPU.XB[PPU.FixedColourRed]<<11) |
+				   (IPPU.XB[PPU.FixedColourGreen] << 6) |
+				   (IPPU.XB[PPU.FixedColourBlue] << 1) | 1;
+			back = (back << 16) | back;
 		}
-#ifndef _SNESPPC
-		else // Settings.SixteenBit == false
+		else
 		{
-		    // because we are in 8 bit we can just use 0 to clear the screen
-			// this means we can use the Zero Memory function
-			
-			// Loop through all lines being updated and clear the pixels to 0
-			for (uint32 y = starty; y <= endy; y++)
-		    {
-			ZeroMemory (GFX.Screen + y * GFX.Pitch,
-				    IPPU.RenderedScreenWidth);
-		    }
+			back = IPPU.ScreenColors [0] | (IPPU.ScreenColors [0] << 16);
 		}
-#endif
+
+		// if Forcedblanking in use then back colour becomes black
+		if (PPU.ForcedBlanking)
+			back = black;
+		else
+		{
+			SelectTileRenderer (TRUE);  //selects the tile renderers to be used
+										// TRUE means to use the default
+										// FALSE means use best renderer based on current
+										// graphics register settings
+		}
+
+		// now clear all graphics lines which are being updated using the back colour
+		for (register uint32 y = starty; y <= endy; y++)
+		{
+			memset32 ((uint32_t*)(GFX.Screen + y * GFX.Pitch), back,
+				IPPU.RenderedScreenWidth>>1);
+		}
+
 		if (!PPU.ForcedBlanking)
 		{
 			// Loop through all lines being updated and clear the
@@ -3815,12 +3728,6 @@ else \
 					bg = 0;
 				    }
 
-#ifndef _SNESPPC
-				    if (!Settings.SixteenBit)
-					DrawBGMode7Background (GFX.Screen, bg);
-				    else
-#endif
-				    {
 					if (!Settings.Mode7Interpolate)
 					{	
 					    DrawBGMode7Background16 (GFX.Screen, bg);
@@ -3829,7 +3736,6 @@ else \
 					{	
 					    DrawBGMode7Background16_i (GFX.Screen, bg);
 					}
-				  }
 				}
 		    }
 		}
@@ -3841,10 +3747,6 @@ else \
 	{
 	    // Mixure of background modes used on screen - scale width
 	    // of all non-mode 5 and 6 pixels.
-#ifndef _SNESPPC
-		if (Settings.SixteenBit)
-#endif
-	    {
 		for (register uint32 y = GFX.StartY; y <= GFX.EndY; y++)
 		{
 		    register uint16 *p = (uint16 *) (GFX.Screen + y * GFX.Pitch) + 255;
@@ -3852,19 +3754,6 @@ else \
 		    for (register int x = 255; x >= 0; x--, p--, q -= 2)
 			*q = *(q + 1) = *p;
 		}
-	    }
-#ifndef _SNESPPC
-	    else
-	    {
-		for (register uint32 y = GFX.StartY; y <= GFX.EndY; y++)
-		{
-		    register uint8 *p = GFX.Screen + y * GFX.Pitch + 255;
-		    register uint8 *q = GFX.Screen + y * GFX.Pitch + 510;
-		    for (register int x = 255; x >= 0; x--, p--, q -= 2)
-			*q = *(q + 1) = *p;
-		}
-	    }
-#endif
 	}
 
 	if (IPPU.LatchedInterlace)

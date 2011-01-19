@@ -328,16 +328,8 @@ static void drawControls(T * buffer, const int pitch)
 	}
 }
 
-void S9xInputScreenDraw(int pixelSize, void * buffer, int pitch)
+void S9xInputScreenDraw(void * buffer, int pitch)
 {
-	switch (pixelSize)
-	{
-		case 1:
-			drawControls(reinterpret_cast<uint8*>(buffer), pitch);
-			break;
-		case 2:
-			drawControls(reinterpret_cast<uint16*>(buffer), pitch / 2);
-			break;
-	}
+	drawControls(reinterpret_cast<uint16*>(buffer), pitch / 2);
 }
 

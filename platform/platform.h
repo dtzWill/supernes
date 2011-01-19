@@ -62,7 +62,7 @@ void S9xAudioOutputEnable(bool enable);
 void S9xInitInputDevices();
 void S9xDeinitInputDevices();
 void S9xInputScreenChanged();
-void S9xInputScreenDraw(int pixelSize, void * buffer, int pitch);
+void S9xInputScreenDraw(void * buffer, int pitch);
 void S9xProcessEvents(bool block);
 
 // Input actions

@@ -484,22 +484,18 @@ STATIC INLINE void REGISTER_2122(uint8 Byte)
     {
 	if ((Byte & 0x7f) != (PPU.CGDATA[PPU.CGADD] >> 8))
 	{
-	    if (Settings.SixteenBit&& !(Settings.os9x_hack&PPU_IGNORE_PALWRITE)){
+	    if (!(Settings.os9x_hack&PPU_IGNORE_PALWRITE)){
 		FLUSH_REDRAW ();
 			}
 	    PPU.CGDATA[PPU.CGADD] &= 0x00FF;
 	    PPU.CGDATA[PPU.CGADD] |= (Byte & 0x7f) << 8;
 	    IPPU.ColorsChanged = TRUE;
-#ifndef _SNESPPC
-	    if (Settings.SixteenBit)
-#endif
-		{
+
 		IPPU.Blue [PPU.CGADD] = IPPU.XB [(Byte >> 2) & 0x1f];
 		IPPU.Green [PPU.CGADD] = IPPU.XB [(PPU.CGDATA[PPU.CGADD] >> 5) & 0x1f];
 		IPPU.ScreenColors [PPU.CGADD] = (uint16) BUILD_PIXEL (IPPU.Red [PPU.CGADD],
 							     IPPU.Green [PPU.CGADD],
 							     IPPU.Blue [PPU.CGADD]);
-	    }
 	}
 	PPU.CGADD++;
     }
@@ -507,22 +503,18 @@ STATIC INLINE void REGISTER_2122(uint8 Byte)
     {
 	if (Byte != (uint8) (PPU.CGDATA[PPU.CGADD] & 0xff))
 	{
-	    if (Settings.SixteenBit&& !(Settings.os9x_hack&PPU_IGNORE_PALWRITE)){
+	    if (!(Settings.os9x_hack&PPU_IGNORE_PALWRITE)){
 		FLUSH_REDRAW ();
 			}
 	    PPU.CGDATA[PPU.CGADD] &= 0x7F00;
 	    PPU.CGDATA[PPU.CGADD] |= Byte;
 	    IPPU.ColorsChanged = TRUE;
-#ifndef _SNESPPC
-	    if (Settings.SixteenBit)
-#endif
-	    {
+
 		IPPU.Red [PPU.CGADD] = IPPU.XB [Byte & 0x1f];
 		IPPU.Green [PPU.CGADD] = IPPU.XB [(PPU.CGDATA[PPU.CGADD] >> 5) & 0x1f];
 		IPPU.ScreenColors [PPU.CGADD] = (uint16) BUILD_PIXEL (IPPU.Red [PPU.CGADD],
 							     IPPU.Green [PPU.CGADD],
 							     IPPU.Blue [PPU.CGADD]);
-	    }
 	}
     }
     PPU.CGFLIP ^= 1;

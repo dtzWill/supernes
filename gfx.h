@@ -228,8 +228,7 @@ extern struct SGFX GFX;
 bool8_32 S9xGraphicsInit ();
 void S9xGraphicsDeinit();
 bool8_32 S9xInitUpdate (void);
-bool8_32 S9xDeinitUpdate (int Width, int Height, bool8_32 sixteen_bit);
-void S9xSetPalette ();
+bool8_32 S9xDeinitUpdate (int Width, int Height);
 void S9xSyncSpeed ();
 
 #ifdef GFX_MULTI_FORMAT

@@ -128,10 +128,6 @@ void S9xUpdateHTimer ()
 void S9xFixColourBrightness ()
 {
     IPPU.XB = mul_brightness [PPU.Brightness];
-#ifndef _SNESPPC
-    if (Settings.SixteenBit)
-#endif
-    {
 	for (int i = 0; i < 256; i++)
 	{
 	    IPPU.Red [i] = IPPU.XB [PPU.CGDATA [i] & 0x1f];
@@ -140,7 +136,6 @@ void S9xFixColourBrightness ()
 	    IPPU.ScreenColors [i] = BUILD_PIXEL (IPPU.Red [i], IPPU.Green [i],
 						 IPPU.Blue [i]);
 	}
-    }
 }
 
 /**********************************************************************************************/
