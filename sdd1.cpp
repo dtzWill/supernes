@@ -251,7 +251,7 @@ void S9xSDD1SaveLoggedData ()
 
 	if (fs)
 	{
-	    long c = fwrite(Memory.SDD1LoggedData, 8,
+	    size_t c = fwrite(Memory.SDD1LoggedData, 8,
 		                Memory.SDD1LoggedDataCount, fs);
 		if (c < Memory.SDD1LoggedDataCount) {
 			fprintf(stderr, "Failed to write sdd1 log data\n");
@@ -270,10 +270,10 @@ void S9xSDD1LoadLoggedData ()
 
     if (fs)
     {
-	long c = fread (Memory.SDD1LoggedData, 8, 
+	size_t c = fread (Memory.SDD1LoggedData, 8,
 		            MEMMAP_MAX_SDD1_LOGGED_ENTRIES, fs);
 
-	if (c != EOF)
+	if (c > 0)
 	    Memory.SDD1LoggedDataCount = Memory.SDD1LoggedDataCountPrev = c;
 	fclose (fs);
     }
