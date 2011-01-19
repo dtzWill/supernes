@@ -200,12 +200,15 @@ GFX.X2 [((((C1) & RGB_REMOVE_LOW_BITS_MASK) + \
 	GFX.ZERO [(((C1) | RGB_HI_BITS_MASKx2) - \
 	   ((C2) & RGB_REMOVE_LOW_BITS_MASK)) >> 1]
 
-typedef void (*NormalTileRenderer) (uint32 Tile, uint32 Offset, 
+
+typedef intptr_t tile_offset_t;
+
+typedef void (*NormalTileRenderer) (uint32 Tile, tile_offset_t Offset,
 				    uint32 StartLine, uint32 LineCount);
-typedef void (*ClippedTileRenderer) (uint32 Tile, uint32 Offset,
+typedef void (*ClippedTileRenderer) (uint32 Tile, tile_offset_t Offset,
 				     uint32 StartPixel, uint32 Width,
 				     uint32 StartLine, uint32 LineCount);
-typedef void (*LargePixelRenderer) (uint32 Tile, uint32 Offset,
+typedef void (*LargePixelRenderer) (uint32 Tile, tile_offset_t Offset,
 				    uint32 StartPixel, uint32 Pixels,
 				    uint32 StartLine, uint32 LineCount);
 

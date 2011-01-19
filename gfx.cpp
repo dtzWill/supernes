@@ -212,23 +212,13 @@ bool8_32 S9xGraphicsInit ()
 
     PPU.BG_Forced = 0;
     IPPU.OBJChanged = TRUE;
-    if (Settings.Transparency)
-	Settings.SixteenBit = TRUE;
 
 	IPPU.DirectColourMapsNeedRebuild = TRUE;
-	if (Settings.SixteenBit) {
-		DrawTilePtr = DrawTile16;
-		DrawClippedTilePtr = DrawClippedTile16;
-		DrawLargePixelPtr = DrawLargePixel16;
-		DrawHiResTilePtr= DrawHiResTile16;
-		DrawHiResClippedTilePtr = DrawHiResClippedTile16;
-	} else {
-		DrawTilePtr = DrawTile;
-		DrawClippedTilePtr = DrawClippedTile;
-		DrawLargePixelPtr = DrawLargePixel;
-		DrawHiResTilePtr = DrawTile;
-		DrawHiResClippedTilePtr = DrawClippedTile;
-	}
+	DrawTilePtr = DrawTile16;
+	DrawClippedTilePtr = DrawClippedTile16;
+	DrawLargePixelPtr = DrawLargePixel16;
+	DrawHiResTilePtr= DrawHiResTile16;
+	DrawHiResClippedTilePtr = DrawHiResClippedTile16;
     S9xFixColourBrightness();
 
     if (Settings.SixteenBit)
@@ -1474,7 +1464,7 @@ void DrawBackgroundMode5 (uint32 /* BGMODE */, uint32 bg, uint8 Z1, uint8 Z2)
 		    continue;
 	    }
 
-	    uint32 s = (Left>>1) * GFX_PIX_SIZE + Y * GFX.PPL;
+	    intptr_t s = (Left>>1) * GFX_PIX_SIZE + Y * GFX.PPL;
 	    uint32 HPos = (HOffset + Left * GFX_PIX_SIZE) & 0x3ff;
 
 	    uint32 Quot = HPos >> 3;
@@ -1494,8 +1484,7 @@ void DrawBackgroundMode5 (uint32 /* BGMODE */, uint32 bg, uint8 Z1, uint8 Z2)
 		Count = 8 - Offset;
 		if (Count > Width)
 		    Count = Width;
-		if (s) // XXX: Workaround for underflow (Secret of MANA)
-			s -= (Offset>>1);
+		s -= (Offset>>1);
 		Tile = READ_2BYTES (t);
 		GFX.Z1 = GFX.Z2 = depths [(Tile & 0x2000) >> 13];
 
@@ -1822,7 +1811,7 @@ void DrawBackground (uint32 BGMode, uint32 bg, uint8 Z1, uint8 Z2)
 			    continue;
 		    }
 
-		    uint32 s = Left * GFX_PIX_SIZE + Y * GFX.PPL;
+		    intptr_t s = Left * GFX_PIX_SIZE + Y * GFX.PPL;
 		    uint32 HPos = (HOffset + Left) & OffsetMask;
 
 		    uint32 Quot = HPos >> 3;

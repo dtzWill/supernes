@@ -41,87 +41,84 @@
 #ifndef _TILE_H_
 #define _TILE_H_
 
-void DrawTile (uint32 Tile, uint32 Offset, uint32 StartLine,
-	       uint32 LineCount);
-void DrawClippedTile (uint32 Tile, uint32 Offset,
-		      uint32 StartPixel, uint32 Width,
-		      uint32 StartLine, uint32 LineCount);
-void DrawLargePixel (uint32 Tile, uint32 Offset,
-		     uint32 StartPixel, uint32 Pixels,
-		     uint32 StartLine, uint32 LineCount);
+#include "gfx.h"
 
-void DrawTile16 (uint32 Tile, uint32 Offset, uint32 StartLine,
+START_EXTERN_C
+
+void DrawTile16 (uint32 Tile, tile_offset_t Offset, uint32 StartLine,
 	         uint32 LineCount);
-void DrawClippedTile16 (uint32 Tile, uint32 Offset,
+void DrawClippedTile16 (uint32 Tile, tile_offset_t Offset,
 		        uint32 StartPixel, uint32 Width,
 		        uint32 StartLine, uint32 LineCount);
-void DrawLargePixel16 (uint32 Tile, uint32 Offset,
+void DrawLargePixel16 (uint32 Tile, tile_offset_t Offset,
 		       uint32 StartPixel, uint32 Pixels,
 		       uint32 StartLine, uint32 LineCount);
 
-void DrawTile16Add (uint32 Tile, uint32 Offset, uint32 StartLine,
+void DrawTile16Add (uint32 Tile, tile_offset_t Offset, uint32 StartLine,
 		    uint32 LineCount);
 
-void DrawClippedTile16Add (uint32 Tile, uint32 Offset,
+void DrawClippedTile16Add (uint32 Tile, tile_offset_t Offset,
 			   uint32 StartPixel, uint32 Width,
 			   uint32 StartLine, uint32 LineCount);
 
-void DrawTile16Add1_2 (uint32 Tile, uint32 Offset, uint32 StartLine,
+void DrawTile16Add1_2 (uint32 Tile, tile_offset_t Offset, uint32 StartLine,
 		       uint32 LineCount);
 
-void DrawClippedTile16Add1_2 (uint32 Tile, uint32 Offset,
+void DrawClippedTile16Add1_2 (uint32 Tile, tile_offset_t Offset,
 			      uint32 StartPixel, uint32 Width,
 			      uint32 StartLine, uint32 LineCount);
 
-void DrawTile16FixedAdd1_2 (uint32 Tile, uint32 Offset, uint32 StartLine,
+void DrawTile16FixedAdd1_2 (uint32 Tile, tile_offset_t Offset, uint32 StartLine,
 			    uint32 LineCount);
 
-void DrawClippedTile16FixedAdd1_2 (uint32 Tile, uint32 Offset,
+void DrawClippedTile16FixedAdd1_2 (uint32 Tile, tile_offset_t Offset,
 				   uint32 StartPixel, uint32 Width,
 				   uint32 StartLine, uint32 LineCount);
 
-void DrawTile16Sub (uint32 Tile, uint32 Offset, uint32 StartLine,
+void DrawTile16Sub (uint32 Tile, tile_offset_t Offset, uint32 StartLine,
 		    uint32 LineCount);
 
-void DrawClippedTile16Sub (uint32 Tile, uint32 Offset,
+void DrawClippedTile16Sub (uint32 Tile, tile_offset_t Offset,
 			   uint32 StartPixel, uint32 Width,
 			   uint32 StartLine, uint32 LineCount);
 
-void DrawTile16Sub1_2 (uint32 Tile, uint32 Offset, uint32 StartLine,
+void DrawTile16Sub1_2 (uint32 Tile, tile_offset_t Offset, uint32 StartLine,
 		       uint32 LineCount);
 
-void DrawClippedTile16Sub1_2 (uint32 Tile, uint32 Offset,
+void DrawClippedTile16Sub1_2 (uint32 Tile, tile_offset_t Offset,
 			      uint32 StartPixel, uint32 Width,
 			      uint32 StartLine, uint32 LineCount);
 
-void DrawTile16FixedSub1_2 (uint32 Tile, uint32 Offset, uint32 StartLine,
+void DrawTile16FixedSub1_2 (uint32 Tile, tile_offset_t Offset, uint32 StartLine,
 			    uint32 LineCount);
 
-void DrawClippedTile16FixedSub1_2 (uint32 Tile, uint32 Offset,
+void DrawClippedTile16FixedSub1_2 (uint32 Tile, tile_offset_t Offset,
 				   uint32 StartPixel, uint32 Width,
 				   uint32 StartLine, uint32 LineCount);
 
-void DrawLargePixel16Add (uint32 Tile, uint32 Offset,
+void DrawLargePixel16Add (uint32 Tile, tile_offset_t Offset,
 			  uint32 StartPixel, uint32 Pixels,
 			  uint32 StartLine, uint32 LineCount);
 
-void DrawLargePixel16Add1_2 (uint32 Tile, uint32 Offset,
+void DrawLargePixel16Add1_2 (uint32 Tile, tile_offset_t Offset,
 			     uint32 StartPixel, uint32 Pixels,
 			     uint32 StartLine, uint32 LineCount);
 
-void DrawLargePixel16Sub (uint32 Tile, uint32 Offset,
+void DrawLargePixel16Sub (uint32 Tile, tile_offset_t Offset,
 			  uint32 StartPixel, uint32 Pixels,
 			  uint32 StartLine, uint32 LineCount);
 
-void DrawLargePixel16Sub1_2 (uint32 Tile, uint32 Offset,
+void DrawLargePixel16Sub1_2 (uint32 Tile, tile_offset_t Offset,
 			     uint32 StartPixel, uint32 Pixels,
 			     uint32 StartLine, uint32 LineCount);
 
-void DrawHiResClippedTile16 (uint32 Tile, uint32 Offset,
+void DrawHiResClippedTile16 (uint32 Tile, tile_offset_t Offset,
 			uint32 StartPixel, uint32 Width,
 			uint32 StartLine, uint32 LineCount);
 
-void DrawHiResTile16 (uint32 Tile, uint32 Offset,
+void DrawHiResTile16 (uint32 Tile, tile_offset_t Offset,
 			uint32 StartLine, uint32 LineCount);
+
+END_EXTERN_C
 
 #endif
