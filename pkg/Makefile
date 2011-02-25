@@ -27,7 +27,7 @@ pkg: update
 	cp pkg_base pkg_build -r
 	cp ../binaries/armv7/drnoksnes pkg_build/
 	sed -i s/@APPID@/$(ID)/ pkg_build/appinfo.json
-	palm-package pkg_build
+	palm-package --use-v1-format pkg_build
 	rm -rf pkg_build
 	mkdir -p ipk
 	mv *.ipk ipk
