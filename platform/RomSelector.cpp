@@ -38,7 +38,7 @@
 #define FRAME_INTERVAL 75
 
 // If finger moves less than this, it's still considered a tap
-#define TAP_TOLERANCE 5
+#define TAP_TOLERANCE 15
 
 char * strip_rom_name( char * rom_name );
 SDL_Surface * getSurfaceFor( char * filename );
