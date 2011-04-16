@@ -1,0 +1,7 @@
+The Debian Package drnoksnes
+----------------------------
+
+This is DrNokSnes, a dirty port to the N8x0 of DrPocketSnes, a Super Nintendo 
+emulator for the GP2X and Gizmondo, with bits from PocketSnes and SquidgeSnes.
+
+ -- Javier S. Pedro <maemo@javispedro.com>  Tue, 11 Aug 2009 22:31:10 +0200

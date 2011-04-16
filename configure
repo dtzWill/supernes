@@ -1,0 +1,27 @@
+#!/bin/bash
+
+if [ -r /etc/maemo_version ]; then
+	#We are on Maemo
+	fakeroot debian/rules clean > /dev/null
+	debian/rules configure > /dev/null
+	echo "Configured for Maemo build. You can dpkg-buildpackage now."
+	exit 0
+fi
+
+ARCH=$(dpkg-architecture -qDEB_BUILD_ARCH)
+GAME_VERSION=$(head -n 1 debian/changelog | sed 's/[^0-9.-]//g')
+
+echo ARCH="${ARCH}" > config.mk
+echo CONF_GUI=0 >> config.mk
+echo CONF_XSP=0 >> config.mk
+echo ASFLAGS="" >> config.mk
+echo CFLAGS="-Wall -g -O2 -ffast-math" >> config.mk
+echo CXXFLAGS="-Wall -g -O2 -ffast-math -fno-exceptions -fno-rtti" >> config.mk
+echo LDFLAGS="-Wl,-z,defs" >> config.mk
+
+make clean > /dev/null
+
+echo "Configured for non-Maemo $ARCH build. You can make now."
+
+exit 0
+

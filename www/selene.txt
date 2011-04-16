@@ -1,0 +1,38 @@
+display-framerate
+hacks-file=snesadvance.dat
+
+scancode=48
+	button=A
+scancode=20
+	button=B
+scancode=32
+	button=X
+scancode=45
+	button=Y
+scancode=24
+	button=L
+scancode=22
+	button=R
+scancode=65
+	button=START
+scancode=135
+	button=SELECT
+scancode=111
+	button=UP
+scancode=116
+	button=DOWN
+scancode=113
+	button=LEFT
+scancode=114
+	button=RIGHT
+
+#Uber combo
+scancode=36
+	button=R
+	button=B
+
+scancode=9
+	action=quit
+scancode=72
+	action=fullscreen
+

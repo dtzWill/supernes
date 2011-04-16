@@ -1,0 +1,14 @@
+{
+       "title": "SuperNES",
+       "id": "@APPID@",
+       "version": "1.0.4",
+       "release_date": "18-Sep-2010",
+       "vendor": "WebOS Internals",
+       "vendor_email": "webos@wdtz.org",
+       "vendor_url": "http://www.webos-internals.org/wiki/Application:SuperNES",
+       "type": "pdk",
+       "main": "drnoksnes",
+       "icon": "icon.png",
+       "removable": "true",
+       "requiredMemory" : 40
+}

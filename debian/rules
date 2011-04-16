@@ -1,0 +1,143 @@
+#!/usr/bin/make -f
+# -*- makefile -*-
+# Sample debian/rules that uses debhelper.
+# This file was originally written by Joey Hess and Craig Small.
+# As a special exception, when this file is copied by dh-make into a
+# dh-make output file, you may use that output file without restriction.
+# This special exception was added by Craig Small in version 0.37 of dh-make.
+
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
+
+# These are used for cross-compiling and for saving the configure script
+# from having to guess our platform (since we know it already)
+DEB_HOST_GNU_TYPE   ?= $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
+DEB_BUILD_GNU_TYPE  ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
+ARCH				?= $(shell dpkg-architecture -qDEB_BUILD_ARCH)
+
+# Determine Maemo version
+MAEMO_VERSION := $(shell cut -d"." -f1 /etc/maemo_version)
+
+# Determine app version from debian changelog
+GAME_VERSION := $(shell head -n 1 debian/changelog | sed 's/[^0-9.-]//g')
+
+# Default CFLAGS
+CFLAGS := -Wall -g -DMAEMO -DMAEMO_VERSION=$(MAEMO_VERSION)
+CXXFLAGS := -Wall -g -DMAEMO -DMAEMO_VERSION=$(MAEMO_VERSION)
+GUI_CFLAGS := -std=c99 -fPIC -shared $(CFLAGS)
+LDFLAGS := -Wl,-z,defs -Wl,-O1
+GUI_LDFLAGS := -export-dynamic -avoid-version -module -shared $(LDFLAGS)
+ASFLAGS := -g
+
+# Compiler optimization settings
+OPT_CFLAGS := -O2 -fomit-frame-pointer -ffast-math
+OPT_CXXFLAGS := $(OPT_CFLAGS) -fno-exceptions -fno-rtti
+
+M4=m4
+M4DEFS=-DMAEMO_MAJOR=$(MAEMO_VERSION)
+
+# Architecture specific CFLAGS
+ifneq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))
+	CFLAGS += -O0
+	CXXFLAGS += -O0
+	GUI_CFLAGS += -O0
+else ifneq (,$(findstring armel,$(ARCH)))
+	CFLAGS += $(OPT_CFLAGS)
+	CXXFLAGS += $(OPT_CXXFLAGS)
+	GUI_CFLAGS += -Os
+	ifneq (,$(findstring vfp,$(DEB_BUILD_OPTIONS)))
+		CFLAGS += -march=armv6j -mtune=arm1136jf-s -mfpu=vfp -mfloat-abi=softfp
+		ASFLAGS += -march=armv6j -mfpu=vfp -mfloat-abi=softfp
+	endif
+	ifeq ($(shell expr "$(MAEMO_VERSION)" "<" 5), 1)
+		# Fixes hang while exiting in Diablo.
+		CFLAGS += -static-libgcc
+	endif
+else ifneq (,$(findstring i386,$(ARCH)))
+	CFLAGS += $(OPT_CFLAGS)
+	CXXFLAGS += $(OPT_CXXFLAGS)
+	GUI_CFLAGS += -O2
+else
+	# Don't support anything else
+	crash
+endif
+
+debian/control: debian/control.m4
+	$(M4) $(M4DEFS) debian/control.m4 > debian/control
+
+configure: configure-stamp
+configure-stamp:
+	dh_testdir
+	$(M4) $(M4DEFS) debian/control.m4 > debian/control
+	$(M4) $(M4DEFS) debian/drnoksnes.postinst.m4 > debian/drnoksnes.postinst
+	
+	echo ARCH="$(ARCH)" > config.mk
+	echo CONF_GUI=1 >> config.mk
+ifeq ($(shell expr "$(MAEMO_VERSION)" ">" 4), 1)
+	# Maemo 5 devices do not support Xsp
+	# But they support hildon compositing stuff
+	echo CONF_HD=1 >> config.mk
+else
+	echo CONF_XSP=1 >> config.mk
+endif
+	echo ASFLAGS="$(ASFLAGS)" >> config.mk
+	echo CFLAGS="$(CFLAGS)" >> config.mk
+	echo CXXFLAGS="$(CXXFLAGS)" >> config.mk
+	echo LDFLAGS="$(LDFLAGS)" >> config.mk
+	
+	echo CONF_NLS=1 > gui/config.mk
+	echo CFLAGS="$(GUI_CFLAGS)" >> gui/config.mk
+	echo LDFLAGS="$(GUI_LDFLAGS)" >> gui/config.mk
+	echo MAEMO_VERSION="$(MAEMO_VERSION)" >> gui/config.mk
+	echo GAME_VERSION="$(GAME_VERSION)" >> gui/config.mk
+	
+	touch configure-stamp
+
+build: build-stamp
+build-stamp: configure-stamp 
+	dh_testdir
+	$(MAKE)
+	touch $@
+
+clean:
+	dh_testdir
+	dh_testroot
+	rm -f build-stamp configure-stamp
+	-$(MAKE) clean
+	rm -f config.mk gui/config.mk
+	dh_clean
+
+install: build
+	dh_testdir
+	dh_testroot
+	dh_clean -k 
+	dh_installdirs
+	$(MAKE) DESTDIR=$(CURDIR)/debian/drnoksnes GCONF_DISABLE_MAKEFILE_SCHEMA_INSTALL=1 install
+
+# Build architecture-independent files here.
+binary-indep: build install
+# We have nothing to do by default.
+
+# Build architecture-dependent files here.
+binary-arch: build install
+	dh_testdir
+	dh_testroot
+#	dh_installchangelogs 
+#	dh_installdocs
+#	dh_installexamples
+#	dh_installman
+	dh_gconf
+#	Fixes a nasty bug with dh_gconf & busybox
+	rm -f $(CURDIR)/debian/drnoksnes.postrm.debhelper
+	dh_link
+	dh_strip --dbg-package=drnoksnes-dbg
+	dh_compress
+	dh_fixperms
+	dh_installdeb
+	dh_shlibdeps
+	dh_gencontrol
+	dh_md5sums
+	dh_builddeb
+
+binary: binary-indep binary-arch
+.PHONY: build clean binary-indep binary-arch binary install configure

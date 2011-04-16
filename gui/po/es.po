@@ -1,0 +1,257 @@
+# Spanish translations for DrNokSnes
+# Traducciones al español para DrNokSnes
+# This file is distributed under the same license as the DrNokSnes package.
+# Javier <maemo@javispedro.com>, 2009.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: DrNokSnes 1.3.2\n"
+"Report-Msgid-Bugs-To: maemo@javispedro.com\n"
+"POT-Creation-Date: 2010-03-22 23:23+0100\n"
+"PO-Revision-Date: 2010-02-08 20:56+0100\n"
+"Last-Translator: Javier <javier@javispedro.com>\n"
+"Language-Team: Spanish <maemo@javispedro.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Poedit-Language: Spanish\n"
+"X-Poedit-Country: SPAIN\n"
+
+#: plugin.c:106
+msgid "<no rom selected>"
+msgstr "<sin rom seleccionada>"
+
+#: plugin.c:212
+msgid "ROM"
+msgstr "ROM"
+
+#: plugin.c:230
+msgid "Select ROM…"
+msgstr "Seleccionar ROM…"
+
+#: plugin.c:247
+msgid "Sound"
+msgstr "Sonido"
+
+#: plugin.c:253
+msgid "Target framerate"
+msgstr "Velocidad objetivo"
+
+#: plugin.c:270
+msgid "Show while in game"
+msgstr "Mostrar durante el juego"
+
+#: plugin.c:274 plugin.c:292
+msgid "Turbo mode"
+msgstr "Modo Turbo"
+
+#: plugin.c:289
+msgid "Enable sound"
+msgstr "Activar sonido"
+
+#: plugin.c:294
+msgid "Display framerate"
+msgstr "Mostrar velocidad"
+
+#: plugin.c:313 settings.c:237
+msgid "Accurate graphics"
+msgstr "Mejores gráficos"
+
+#: plugin.c:317
+msgid "Framerate:"
+msgstr "Velocidad:"
+
+#: plugin.c:326 settings.c:269
+msgid "No speedhacks"
+msgstr "Sin speedhacks"
+
+#: plugin.c:327 settings.c:270
+msgid "Safe hacks only"
+msgstr "Sólo hacks seguros"
+
+#: plugin.c:328 settings.c:271
+msgid "All speedhacks"
+msgstr "Todos los hacks"
+
+#: plugin.c:420
+msgid "Settings…"
+msgstr "Ajustes…"
+
+#: plugin.c:422 plugin.c:431
+msgid "About…"
+msgstr "Acerca de…"
+
+#: plugin.c:430 settings.c:190
+msgid "Settings"
+msgstr "Ajustes"
+
+#: plugin.c:440 settings.c:209
+msgid "Controls"
+msgstr "Controles"
+
+#: plugin.c:445
+msgid "Advanced…"
+msgstr "Avanzados…"
+
+#: plugin.c:449
+msgid "Player 1…"
+msgstr "Jugador 1…"
+
+#: plugin.c:452
+msgid "Player 2…"
+msgstr "Jugador 2…"
+
+#: plugin.c:516
+msgid "No ROM selected"
+msgstr "Sin ROM seleccionada"
+
+#: plugin.c:521
+msgid "ROM file does not exist"
+msgstr "El archivo ROM no existe"
+
+#: controls.c:195
+msgid "Keyboard"
+msgstr "Teclado"
+
+#: controls.c:202 controls.c:267
+msgid "Touchscreen"
+msgstr "Pantalla táctil"
+
+#: controls.c:210 controls.c:295
+msgid "Zeemote"
+msgstr "Zeemote"
+
+#: controls.c:217
+msgid "Disabled"
+msgstr "Desactivado"
+
+#: controls.c:225
+#, c-format
+msgid "Player %d controls"
+msgstr "Controles del jugador %d"
+
+#: controls.c:248
+msgid "Keys"
+msgstr "Teclas"
+
+#: controls.c:254 controls.c:340
+msgid "Enable keyboard"
+msgstr "Activar teclado"
+
+#: controls.c:261 controls.c:341
+msgid "Configure keys…"
+msgstr "Configurar teclas…"
+
+#: controls.c:274 controls.c:352
+msgid "Enable touchscreen buttons"
+msgstr "Activar controles en pantalla"
+
+#: controls.c:281 controls.c:354
+msgid "Show on-screen button grid"
+msgstr "Mostrar controles en pantalla"
+
+#: controls.c:286
+msgid "Accelerometer"
+msgstr "Accelerómetro"
+
+#: controls.c:290
+msgid "Wiimote"
+msgstr "Wiimote"
+
+#: controls.c:301 controls.c:362
+msgid "Enable Zeemote joystick"
+msgstr "Activar Zeemote"
+
+#: keys.c:266
+#, c-format
+msgid "Player %d keys"
+msgstr "Teclas del jugador %d"
+
+#: keys.c:269
+msgid "Defaults"
+msgstr "Por defecto"
+
+#: keys.c:292
+msgid "Button"
+msgstr "Botón"
+
+#: keys.c:301
+msgid "Key"
+msgstr "Tecla"
+
+#: settings.c:51 settings.c:58 settings.c:60
+msgid "2x zoom"
+msgstr "Zoom 2x"
+
+#: settings.c:53
+msgid "Scale to fit"
+msgstr "Ajustar a la pantalla"
+
+#: settings.c:54
+msgid "Fill the entire screen"
+msgstr "Rellenar toda la pantalla"
+
+#: settings.c:57
+msgid "Antialiased 2x zoom"
+msgstr "Zoom 2x suavizado"
+
+#: settings.c:63
+msgid "No zoom"
+msgstr "Sin zoom"
+
+#: settings.c:216
+msgid "Player 1"
+msgstr "Jugador 1"
+
+#: settings.c:225
+msgid "Player 2"
+msgstr "Jugador 2"
+
+#: settings.c:231
+msgid "Advanced"
+msgstr "Avanzado"
+
+#: settings.c:244 settings.c:309
+msgid "Pause game in the background"
+msgstr "Pausar juego en segundo plano"
+
+#: settings.c:251 settings.c:304
+msgid "Zoom"
+msgstr "Zoom"
+
+#: settings.c:263
+msgid "Speedhacks"
+msgstr "Speedhacks"
+
+#: about.c:55
+msgid "About"
+msgstr "Acerca de"
+
+#: cellrendererkey.c:10
+msgid "Press key or…"
+msgstr "Pulsa tecla o…"
+
+#: buttons.inc:22
+msgid "Return to launcher"
+msgstr "Volver a la pantalla de inicio"
+
+#: buttons.inc:23
+msgid "Fullscreen"
+msgstr "Pantalla completa"
+
+#: buttons.inc:24
+msgid "Quick Load 1"
+msgstr "Carga rápida 1"
+
+#: buttons.inc:25
+msgid "Quick Save 1"
+msgstr "Guardado rápido 1"
+
+#: buttons.inc:26
+msgid "Quick Load 2"
+msgstr "Carga rápida 2"
+
+#: buttons.inc:27
+msgid "Quick Save 2"
+msgstr "Guardado rápido 2"
