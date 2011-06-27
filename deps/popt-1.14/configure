@@ -20201,7 +20201,8 @@ else
 See \`config.log' for more details." >&5
 echo "$as_me: error: cannot run test program while cross compiling
 See \`config.log' for more details." >&2;}
-   { (exit 1); exit 1; }; }
+   #{ (exit 1); exit 1; }; }
+   }
 else
   cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
@@ -20282,7 +20283,8 @@ fi
 See \`config.log' for more details." >&5
 echo "$as_me: error: cannot run test program while cross compiling
 See \`config.log' for more details." >&2;}
-   { (exit 1); exit 1; }; }
+   #{ (exit 1); exit 1; }; }
+   }
 else
   cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
@@ -20363,7 +20365,8 @@ fi
 See \`config.log' for more details." >&5
 echo "$as_me: error: cannot run test program while cross compiling
 See \`config.log' for more details." >&2;}
-   { (exit 1); exit 1; }; }
+   #{ (exit 1); exit 1; }; }
+   }
 else
   cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
@@ -20444,7 +20447,8 @@ fi
 See \`config.log' for more details." >&5
 echo "$as_me: error: cannot run test program while cross compiling
 See \`config.log' for more details." >&2;}
-   { (exit 1); exit 1; }; }
+   #{ (exit 1); exit 1; }; }
+   }
 else
   cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
@@ -20525,7 +20529,8 @@ fi
 See \`config.log' for more details." >&5
 echo "$as_me: error: cannot run test program while cross compiling
 See \`config.log' for more details." >&2;}
-   { (exit 1); exit 1; }; }
+   #{ (exit 1); exit 1; }; }
+   }
 else
   cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
@@ -20606,7 +20611,8 @@ fi
 See \`config.log' for more details." >&5
 echo "$as_me: error: cannot run test program while cross compiling
 See \`config.log' for more details." >&2;}
-   { (exit 1); exit 1; }; }
+   #{ (exit 1); exit 1; }; }
+   }
 else
   cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
@@ -20687,7 +20693,8 @@ fi
 See \`config.log' for more details." >&5
 echo "$as_me: error: cannot run test program while cross compiling
 See \`config.log' for more details." >&2;}
-   { (exit 1); exit 1; }; }
+   #{ (exit 1); exit 1; }; }
+   }
 else
   cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
@@ -20768,7 +20775,8 @@ fi
 See \`config.log' for more details." >&5
 echo "$as_me: error: cannot run test program while cross compiling
 See \`config.log' for more details." >&2;}
-   { (exit 1); exit 1; }; }
+   #{ (exit 1); exit 1; }; }
+   }
 else
   cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
@@ -20843,7 +20851,8 @@ fi
     if test ".$ac_cv_va_copy" = .; then
         { { echo "$as_me:$LINENO: error: no working implementation found" >&5
 echo "$as_me: error: no working implementation found" >&2;}
-   { (exit 1); exit 1; }; }
+   #{ (exit 1); exit 1; }; }
+   }
     fi
 
 fi
