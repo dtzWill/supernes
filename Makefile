@@ -18,13 +18,11 @@ LDLIBS := -lz -L$(WEBOS_PDK)/device/lib \
 	-lpopt -L$(shell pwd) \
 	-lGLESv2 -lpdl -Wl,-rpath=/usr/local/lib \
 	-lSDL -lSDL_ttf -lSDL_image \
-	-Wl,--allow-shlib-undefined
-# Yes, we statically link libstdc++ into our binary.
-# This is because we build with cs2010q1 due to bug in their 2008/2007 toolchains that *prevents snes9x* from compiling.
-# Downside is that it's newer and so we statically link this newer
-# libstdc++ to prevent that issue.
-# I've avoided the issue so far by not using c++ containers, but
-# ATM statically linking seems to work and makes my life easier.
+	-Wl,--allow-shlib-undefined \
+	$(WEBOS_PDK)/arm-gcc/arm-none-linux-gnueabi/libc/usr/lib/libstdc++.a
+# Above we statically link in libstdc++.
+# This is due to a combination of using cs2011.03
+# and my desire to use c++ ADT's to make my life easier.
 
 OPTFLAGS += -O3 -mcpu=cortex-a8 -mfpu=neon -ftree-vectorize -mfloat-abi=softfp -ffast-math
 #OPTFLAGS += -O0 -mcpu=cortex-a8 -mfpu=neon -ftree-vectorize -mfloat-abi=softfp -ffast-math -g
