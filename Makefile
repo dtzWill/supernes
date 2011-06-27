@@ -1,15 +1,24 @@
 #!/usr/bin/make
 
-CC=gcc
-CXX=g++
+WEBOS_PDK=/opt/PalmPDK
+WEBOS_SDK=/opt/PalmSDK
 
-CPPFLAGS := -I. $(shell sdl-config --cflags) \
+TOOL_PREFIX=$(WEBOS_PDK)/arm-gcc/bin/arm-none-linux-gnueabi-
+
+CC=$(TOOL_PREFIX)gcc
+CXX=$(TOOL_PREFIX)g++
+AS=$(TOOL_PREFIX)as
+LD=$(TOOL_PREFIX)ld
+STRIP=$(TOOL_PREFIX)strip
+
+CPPFLAGS := -I. \
+	-I$(WEBOS_PDK)/include -I$(WEBOS_PDK)/include/SDL \
 	-Ideps/popt-1.14
-LDLIBS := -lz $(shell sdl-config --libs) \
+LDLIBS := -lz -L$(WEBOS_PDK)/device/lib \
 	-lpopt -L$(shell pwd) \
 	-lGLESv2 -lpdl -Wl,-rpath=/usr/local/lib \
 	-lSDL -lSDL_ttf -lSDL_image \
-	/usr/lib/libstdc++.a
+	-Wl,--allow-shlib-undefined
 # Yes, we statically link libstdc++ into our binary.
 # This is because we build with cs2010q1 due to bug in their 2008/2007 toolchains that *prevents snes9x* from compiling.
 # Downside is that it's newer and so we statically link this newer
@@ -142,8 +151,8 @@ drnoksnes: $(OBJS) libpopt.a
 
 libpopt.a:
 	cd deps/popt-1.14 && \
-	./configure && \
-	$(MAKE) -j8;
+	PATH=$(WEBOS_PDK)/arm-gcc/bin:$(PATH) ./configure --host=arm-none-linux-gnueabi &&\
+	PATH=$(WEBOS_PDK)/arm-gcc/bin:$(PATH) $(MAKE) -j8;
 	cp deps/popt-1.14/.libs/libpopt.a $@
 
 #libpopt.so.0: libpopt.so
