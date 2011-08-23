@@ -110,6 +110,7 @@ int romFilter( const struct dirent * file )
     extPtr++;
 
     return !(
+            strcasecmp( extPtr, "sfc" ) &&
             strcasecmp( extPtr, "smc" ) &&
             strcasecmp( extPtr, "zip" ) );
 }
