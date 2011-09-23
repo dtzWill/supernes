@@ -20,6 +20,7 @@
 #include "GLUtil.h"
 #include "OptionMenu.h"
 #include "ApplySurface.h"
+#include "Scroller.h"
 #include "pdl.h"
 #include <assert.h>
 
@@ -31,7 +32,6 @@
 #define TAP_TOLERANCE 15
 
 int rom_selector_event_handler( const SDL_Event * event );
-
 
 typedef struct
 {
@@ -186,96 +186,30 @@ char * romSelector()
   tap = false;
   down = false;
   mouse_down_x = mouse_down_y = 0;
-  autoscrolling = false;
-  on_scrollbar = false;
   romSelected = -1;
-  rom_height = getSurfaceFor(filenames[0])->h;
-  num_roms_display = ( bottom - top + 10 ) / ( rom_height + 10 );
-  scroll_speed = 0.0f;
-  scroll_mouse_y = 0;
   selector_w = selector->w;
+
+  Scroller::RenderInfo RI = {
+    selector->w - 20,
+    bottom - top + 10,
+    textColor,
+    font_large
+  };
+  Scroller * scroll = new Scroller(filenames, filecount, RI);
 
   while( romSelected == -1 )
   {
     SDL_Event e;
     while (SDL_PollEvent(&e))
     {
-      rom_selector_event_handler(&e);
-    }
-
-    if (autoscrolling)
-    {
-      scroll_offset_actual += scroll_speed;
-      scroll_offset = (int)scroll_offset_actual;
-      if ( scroll_offset > filecount - num_roms_display )
+      if (rom_selector_event_handler(&e))
       {
-        scroll_offset = filecount - num_roms_display;
-        scroll_offset_actual = scroll_offset;
-        autoscrolling = false;
+        romSelected = scroll->event(&e, 20, 10);
       }
-      if ( scroll_offset < 0 )
-      {
-        scroll_offset = 0;
-        scroll_offset_actual = scroll_offset;
-        autoscrolling = false;
-      }
-
-      scroll_speed *= SLOW_FACTOR;
-
-      if ( scroll_speed < MIN_SCROLL_SPEED &&
-          scroll_speed > -MIN_SCROLL_SPEED )
-        autoscrolling = false;
     }
 
-    if ( scroll_offset + num_roms_display > filecount )
-    {
-      num_roms_display = filecount - scroll_offset;
-    }
-
-    //Draw border/text
-    SDL_FillRect( selector, NULL, borderColor );
-    apply_surface( selector->w - author->w - 10, selector->h - author->h - 10, author, selector );
-    apply_surface( 20, selector->h - options->h - 10, options, selector );
-    apply_surface( 10, 10, title, selector );
-
-    //Clear middle
-    SDL_FillRect(selector, &drawRect, black);
-
-    //Draw roms list
-    for ( int i = 0; i < num_roms_display; i++ )
-    {
-      int index = scroll_offset + i;
-      if ( index == romSelected )
-      {
-        int hiColor = SDL_MapRGB( selector->format, 128, 128, 0 );
-        SDL_Rect hiRect;
-        hiRect.x = 10;
-        hiRect.y = top+(10+rom_height)*i - 5;
-        hiRect.h = rom_height+5;
-        hiRect.w = selector->w - 20;
-        SDL_FillRect( selector, &hiRect, hiColor );
-      }
-      apply_surface( 20, top + (10+rom_height)*i, selector->w - 40, getSurfaceFor(filenames[index]), selector );
-    }
-
-    //Draw scrollbar :)
-    int barColor = SDL_MapRGB(selector->format, 200, 200, 255);
-    int tabColor = SDL_MapRGB(selector->format, 255, 255, 255);
-    SDL_Rect scrollRect;
-    scrollRect.x = drawRect.x + drawRect.w - 5;
-    scrollRect.y = drawRect.y;
-    scrollRect.h = drawRect.h;
-    scrollRect.w = 10;
-    SDL_FillRect(selector, &scrollRect, barColor);
-    SDL_Rect scrollTab;
-    scrollTab.w = scrollTab.h = 20;
-    scrollTab.x = scrollRect.x + scrollRect.w/2 - 10;
-    scrollTab.y = scrollRect.y;
-    float percent = 0.0f;
-    if ( filecount > num_roms_display )
-      percent = ((float)scroll_offset)/((float)(filecount - num_roms_display));
-    scrollTab.y += ((float)(scrollRect.h - scrollTab.h))*percent;
-    SDL_FillRect(selector, &scrollTab, tabColor);
+    scroll->update();
+    scroll->drawToSurface(selector, 20, 10);
 
     //Update screen.
     SDL_DrawSurfaceAsGLTexture( selector, portrait_vertexCoords );
@@ -294,6 +228,8 @@ char * romSelector()
 
 
   // CLEANUP :)
+
+  delete scroll;
 
   //Free all the titles of the ROMs!
   for (int i = 0; i < filecount; ++i)

@@ -14,7 +14,6 @@
  * ===========================================================================
  */
 
-#include <list>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <dirent.h>
@@ -23,11 +22,6 @@
 
 #ifndef _ROM_SELECTOR_UTIL_H_
 #define _ROM_SELECTOR_UTIL_H_
-
-// We render the name of each rom, but instead of doing them all at once
-// (initially slow, and memory-consuming), we render just what is needed.
-// However that's lame, so we use a cache for a happy middle ground.
-#define CACHE_SIZE 50
 
 extern TTF_Font * font_small;
 extern TTF_Font * font_normal;
@@ -92,58 +86,7 @@ char * strip_rom_name( const char * rom_name )
   return strdup(buffer);
 }
 
-typedef struct {
-  char * name;
-  SDL_Surface * surface;
-} rom_cache_element;
-typedef std::list<rom_cache_element> rom_cache_t;
-static rom_cache_t rom_cache;
 
-SDL_Surface * getSurfaceFor( const char * filename )
-{
-  // First, check cache.
-  // If we already have a surface, use that and update it in the 'LRU' policy.
-
-  rom_cache_t::iterator I = rom_cache.begin(),
-    E = rom_cache.end();
-  for ( ; I != E; ++I )
-  {
-    if ( !strcmp(I->name, filename ) )
-    {
-      // Found it!
-      rom_cache_element result = *I;
-
-      // Move it to the front...
-      rom_cache.erase(I);
-      rom_cache.push_front(result);
-
-      return result.surface;
-    }
-  }
-
-  // Okay, so it's not in the cache.
-  // Create the surface requested:
-  rom_cache_element e;
-  e.name = strdup(filename);
-  e.surface = TTF_RenderText_Blended( font_large, filename, textColor );
-
-  // Add to front
-  rom_cache.push_front(e);
-
-  // Is the cache too large as a result of adding this element?
-  if ( rom_cache.size() > CACHE_SIZE )
-  {
-    rom_cache_element remove = rom_cache.back();
-    rom_cache.pop_back();
-
-    // Free memory for this item
-    free(remove.name);
-    SDL_FreeSurface(remove.surface);
-  }
-
-  // Return the surface we created!
-  return e.surface;
-}
 
 void ensureRomPathExists(void)
 {
