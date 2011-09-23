@@ -19,6 +19,7 @@
 #include "RomSelectorUtil.h"
 #include "GLUtil.h"
 #include "OptionMenu.h"
+#include "ApplySurface.h"
 #include "pdl.h"
 #include <assert.h>
 

@@ -201,31 +201,6 @@ int romFilter( const struct dirent * file )
       strcasecmp( extPtr, "zip" ) );
 }
 
-void apply_surface( int x, int y, int w, SDL_Surface* source, SDL_Surface* destination )
-{
-  //Holds offsets
-  SDL_Rect offset;
-
-  //Source rect
-  SDL_Rect src;
-
-  //Get offsets
-  offset.x = x;
-  offset.y = y;
-
-  src.x = 0;
-  src.y = 0;
-  src.w = w;
-  src.h = source->h;
-
-  //Blit
-  SDL_BlitSurface( source, &src, destination, &offset );
-}
-
-void apply_surface( int x, int y, SDL_Surface* source, SDL_Surface* destination )
-{
-  apply_surface( x, y, source->w, source, destination );
-}
 
 //XXX: Figure out if there isn't something we can #ifdef for these
 //autoconf maybe?

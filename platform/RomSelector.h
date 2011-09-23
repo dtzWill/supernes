@@ -20,7 +20,5 @@
 #include <SDL.h>
 
 char * romSelector();
-//FIXME: This doesn't really belong public from 'RomSelector'
-void apply_surface( int x, int y, SDL_Surface* source, SDL_Surface* destination );
 
 #endif //_ROM_SELECTOR_H_
