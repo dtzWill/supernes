@@ -35,8 +35,6 @@
 #define MIN_SCROLL_SPEED 5.0f
 #define SCROLL_DELAY 100
 
-#define FRAME_INTERVAL 75
-
 // If finger moves less than this, it's still considered a tap
 #define TAP_TOLERANCE 15
 
@@ -328,7 +326,7 @@ char * romSelector()
           scroll_speed *= SLOW_FACTOR;
 
           if ( scroll_speed < MIN_SCROLL_SPEED &&
-              scroll_speed > MIN_SCROLL_SPEED )
+              scroll_speed > -MIN_SCROLL_SPEED )
             autoscrolling = false;
         }
 
