@@ -19,12 +19,12 @@
 
 typedef struct
 {
-    char * name;
+    const char * name;
     int * value;
 } game_option;
 
-bool writeOptions( char * cfgfile, game_option * option_list, int option_count, bool useHex );
-int readOptions( char * cfgfile, game_option * option_list, int option_count, bool useHex );
+bool writeOptions( const char * cfgfile, game_option * option_list, int option_count, bool useHex );
+int readOptions( const char * cfgfile, game_option * option_list, int option_count, bool useHex );
 
 extern void writeOptions();
 extern void readOptions();

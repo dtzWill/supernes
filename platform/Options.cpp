@@ -43,14 +43,14 @@ game_option state_options[] =
     { "fullscreen", &fullscreen }
 };
 
-int atoiHex( char * s )
+int atoiHex( const char * s )
 {
     int value;
     sscanf( s, "%x", &value );
     return value;
 }
 
-bool writeOptions( char * cfgfile, game_option * option_list, int option_count, bool useHex )
+bool writeOptions( const char * cfgfile, game_option * option_list, int option_count, bool useHex )
 {
    FILE * f = fopen( cfgfile, "w" );
    if ( !f )
@@ -74,7 +74,7 @@ bool writeOptions( char * cfgfile, game_option * option_list, int option_count, 
    return fclose( f ) == 0;
 }
 
-int readOptions( char * cfgfile, game_option * option_list, int option_count, bool useHex )
+int readOptions( const char * cfgfile, game_option * option_list, int option_count, bool useHex )
 {
     FILE * f = fopen( cfgfile, "r" );
     int options_read = 0;

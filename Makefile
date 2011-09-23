@@ -29,8 +29,8 @@ OPTFLAGS += -O3 -mcpu=cortex-a8 -mfpu=neon -ftree-vectorize -mfloat-abi=softfp -
 
 -include config.mk
 
-CXXFLAGS += $(OPTFLAGS)
-CPPFLAGS += $(OPTFLAGS)
+CXXFLAGS += $(OPTFLAGS) -Werror
+CPPFLAGS += $(OPTFLAGS) -Werror
 CFLAGS += $(OPTFLAGS)
 LDFLAGS += -s #strip the binary
 LDFLAGS += #-flto

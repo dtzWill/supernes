@@ -18,7 +18,7 @@
 
 typedef struct
 {
-  char * msg;
+  const char * msg;
   SDL_Color color;
 } line;
 

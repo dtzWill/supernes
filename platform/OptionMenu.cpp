@@ -147,7 +147,7 @@ void updateSkinSurface( menuOption * opt );
 /*-----------------------------------------------------------------------------
  *  Constructors for menu items
  *-----------------------------------------------------------------------------*/
-menuOption createButton( char * text, void (*action)(void), int y )
+menuOption createButton( const char * text, void (*action)(void), int y )
 {
   menuOption opt;
   opt.text = strdup( text );
@@ -175,7 +175,7 @@ menuOption createButton( char * text, void (*action)(void), int y )
   return opt;
 }
 
-menuOption createToggle( char * text, char * on, char * off, int y, void (*set)(bool), bool (*get)(void) )
+menuOption createToggle( const char * text, const char * on, const char * off, int y, void (*set)(bool), bool (*get)(void) )
 {
   menuOption opt;
   opt.text = strdup( text );

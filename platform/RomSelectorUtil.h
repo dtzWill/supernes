@@ -39,10 +39,10 @@ static const SDL_Color linkColor = { 200, 200, 255 };
 
 // Here we remove everything in '()'s or '[]'s
 // which is usually annoying release information, etc
-char * strip_rom_name( char * rom_name )
+char * strip_rom_name( const char * rom_name )
 {
-  char buffer[100];
-  char * src = rom_name;
+  char buffer[300];
+  const char * src = rom_name;
   char * dst = buffer;
   int inParen = 0;
 
@@ -99,7 +99,7 @@ typedef struct {
 typedef std::list<rom_cache_element> rom_cache_t;
 static rom_cache_t rom_cache;
 
-SDL_Surface * getSurfaceFor( char * filename )
+SDL_Surface * getSurfaceFor( const char * filename )
 {
   // First, check cache.
   // If we already have a surface, use that and update it in the 'LRU' policy.

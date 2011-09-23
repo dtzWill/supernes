@@ -63,7 +63,7 @@ void checkError()
         exit( 1 );
     }
 
-    char * sdl_error = SDL_GetError( );
+    const char * sdl_error = SDL_GetError( );
 
     if( sdl_error[0] != '\0' ) {
         fprintf(stderr, "SNES9X: SDL error '%s'\n", sdl_error);
@@ -183,7 +183,7 @@ void GL_Init()
         "}                                                   \n";
 
     // Load the shaders and get a linked program object
-    programObject = esLoadProgram ( ( char *)vShaderStr, (char *)fShaderStr );
+    programObject = esLoadProgram ( (char *)vShaderStr, (char *)fShaderStr );
     checkError();
 
     // Get the attribute locations

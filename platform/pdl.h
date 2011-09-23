@@ -23,4 +23,4 @@
 
 extern "C" void PDL_SetOrientation( int direction );
 
-extern "C" void PDL_LaunchBrowser( char * url );
+extern "C" void PDL_LaunchBrowser( const char * url );

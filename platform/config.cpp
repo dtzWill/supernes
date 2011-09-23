@@ -282,7 +282,7 @@ void S9xSetRomFile(const char * path)
 	}
 
   //Relocate to appdir, instead of /media/internal/.../
-  char * sav_path = "savs/";
+  const char * sav_path = "savs/";
   char * baseName = FileBasename(noext);
   basePath = (char *)malloc(strlen(sav_path)+strlen(baseName)+1);
   strcpy(basePath, sav_path);

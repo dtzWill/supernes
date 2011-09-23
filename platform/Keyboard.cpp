@@ -27,7 +27,7 @@
 //Note these next arrays have to match the SNES_KEY enum
 
 //User-friendly names while walking them through the config process.
-char * bindingNames[]= 
+const char * bindingNames[]= 
 {
     "Press key for Up",
     "Press key for Down",

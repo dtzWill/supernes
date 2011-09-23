@@ -191,21 +191,21 @@ game_option controller_options[] =
  *-----------------------------------------------------------------------------*/
 
 //Returns the skin name w/o the leading period, doesn't allocate anything
-char * strip_leading_period( char * str )
+const char * strip_leading_period( const char * str )
 {
-    char * ret = str; 
+    const char * ret = str; 
 
     if( ret && *ret == '.' ) ret++;
 
     return ret;
 }
 
-char * getSkinName( controller_skin * skin )
+const char * getSkinName( controller_skin * skin )
 {
   return strip_leading_period( skin->name );
 }
 
-void load_skin( char * skin_cfg, char * skin_img, char * skin_name, char * skin_folder, controller_skin ** skin )
+void load_skin( const char * skin_cfg, const char * skin_img, const char * skin_name, const char * skin_folder, controller_skin ** skin )
 {
     bool success = false;
 
@@ -322,7 +322,7 @@ int controllerHitCheck( int x, int y )
 /*-----------------------------------------------------------------------------
  *  Skin loading logic
  *-----------------------------------------------------------------------------*/
-void scanForSkins( char * folder )
+void scanForSkins( const char * folder )
 {
     fprintf( stderr, "Scanning \"%s\" for skins...\n", folder );
     DIR * d = opendir( folder );

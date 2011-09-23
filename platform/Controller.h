@@ -95,6 +95,6 @@ extern int controllerHitCheck( int x, int y );
 extern void loadSkins();
 
 extern void nextSkin();
-extern char * getSkinName( controller_skin * skin );
+extern const char * getSkinName( controller_skin * skin );
 
 #endif //_CONTROLLER_H_
