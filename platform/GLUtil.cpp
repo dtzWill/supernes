@@ -46,8 +46,8 @@ SDL_Rect overlay_rect;
 int srcWidth = -1;
 int srcHeight = -1;
 
-int destWidth = 320;
-int destHeight = 480;
+int destWidth = 1024;
+int destHeight = 768;
 
 //#define DEBUG_GL
 
@@ -133,7 +133,7 @@ void GL_Init()
     assert( !SDL_GL_SetAttribute( SDL_GL_ACCELERATED_VISUAL, 1 ) );
     assert( !SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, 2 ) );
 
-    surface = SDL_SetVideoMode( 320, 480, 32,
+    surface = SDL_SetVideoMode( 0, 0, 32,
         SDL_OPENGL);
 
     if(surface == NULL) {
@@ -397,7 +397,7 @@ void updateOrientation()
             notification_direction = PDL_ORIENTATION_BOTTOM;
             break;
     }
-    PDL_SetOrientation( notification_direction );
+    //PDL_SetOrientation( notification_direction );
 }
 
 void drawSkin()

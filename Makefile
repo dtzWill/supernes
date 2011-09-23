@@ -24,7 +24,7 @@ LDLIBS := -lz -L$(WEBOS_PDK)/device/lib \
 # This is due to a combination of using cs2011.03
 # and my desire to use c++ ADT's to make my life easier.
 
-OPTFLAGS += -O3 -mcpu=cortex-a8 -mfpu=neon -ftree-vectorize -mfloat-abi=softfp -ffast-math -flto
+OPTFLAGS += -O3 -mcpu=cortex-a8 -mfpu=neon -ftree-vectorize -mfloat-abi=softfp -ffast-math #-flto
 #OPTFLAGS += -O0 -mcpu=cortex-a8 -mfpu=neon -ftree-vectorize -mfloat-abi=softfp -ffast-math -g -flto
 
 -include config.mk
@@ -33,7 +33,7 @@ CXXFLAGS += $(OPTFLAGS)
 CPPFLAGS += $(OPTFLAGS)
 CFLAGS += $(OPTFLAGS)
 LDFLAGS += -s #strip the binary
-LDFLAGS += -flto
+LDFLAGS += #-flto
 
 #Enabling this breaks SA-1 support, which is important
 #for games such as Kirby Super Star and Super Mario RPG :(

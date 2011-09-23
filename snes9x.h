@@ -414,7 +414,7 @@ END_EXTERN_C
 /*-----------------------------------------------------------------------------
  *  Misc stuff for the webos port
  *-----------------------------------------------------------------------------*/
-#define VERSION "1.0.4"
+#define VERSION "1.1.0"
 #define FONT "/usr/share/fonts/PreludeCondensed-Medium.ttf"
 #define TITLE "SuperNES for WebOS (" VERSION ")"
 #define AUTHOR_TAG "Support: webos@wdtz.org"
@@ -427,7 +427,7 @@ END_EXTERN_C
 #define SKIN_CFG_NAME "controller.cfg"
 #define SKIN_IMG_NAME "controller.png"
 
-#define NATIVE_RES_WIDTH 320
-#define NATIVE_RES_HEIGHT 480
+#define NATIVE_RES_WIDTH 1024
+#define NATIVE_RES_HEIGHT 768
 
 #endif
