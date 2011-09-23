@@ -16,13 +16,48 @@
 
 #include "Scroller.h"
 #include <SDL_ttf.h>
+#include "ApplySurface.h"
 
 const int Scroller::CACHE_SIZE = 50;
+Scroller::rom_cache_t Scroller::rom_cache;
+
+void Scroller::init()
+{
+  // Light sanity checking
+  assert(names);
+  assert(count > 0);
+
+  text_height = cacheLookup(names[0])->h;
+}
 
 void Scroller::drawToSurface(SDL_Surface *s, int x, int y)
 {
-  // TODO: Implement me!
+  // TODO: Refactor some of these colors to be parameterized?
 
+  if (!buffer) {
+    buffer = SDL_CreateRGBSurface(SDL_SWSURFACE, RI.width, RI.height,
+        s->format->BitsPerPixel,
+        s->format->Rmask,
+        s->format->Gmask,
+        s->format->Bmask,
+        s->format->Amask);
+  }
+
+  // Fill background
+  int black = SDL_MapRGB(buffer->format, 0, 0, 0);
+  SDL_FillRect(buffer, 0, black);
+
+  int rom_offset = (offset / 100.0f) * count - 1;
+
+  //for ( int i = rom_offset
+  //{
+  //  int index = scroll_offset + i;
+  //  apply_surface(0, (10 + rom_height)*i, RI.width,
+  //      getSurfaceFor(names[index]), buffer);
+  //}
+
+  // Blit to the requrested surface
+  apply_surface(x, y, buffer, s);
 }
 
 void Scroller::update()
@@ -34,6 +69,11 @@ int Scroller::event(SDL_Event *e, int x_offset, int y_offset)
 {
   // TODO: Implement me!
   return -1;
+}
+
+Scroller::~Scroller()
+{
+  SDL_FreeSurface(buffer);
 }
 
 SDL_Surface * Scroller::cacheLookup( const char * text )
@@ -62,7 +102,7 @@ SDL_Surface * Scroller::cacheLookup( const char * text )
   // Create the surface requested:
   rom_cache_element e;
   e.name = strdup(text);
-  e.surface = TTF_RenderText_Blended( renderInfo.textFont, text, renderInfo.textColor );
+  e.surface = TTF_RenderText_Blended( RI.textFont, text, RI.textColor );
 
   // Add to front
   rom_cache.push_front(e);

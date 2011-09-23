@@ -191,7 +191,7 @@ char * romSelector()
 
   Scroller::RenderInfo RI = {
     selector->w - 20,
-    bottom - top + 10,
+    bottom - top,
     textColor,
     font_large
   };
@@ -204,12 +204,18 @@ char * romSelector()
     {
       if (rom_selector_event_handler(&e))
       {
-        romSelected = scroll->event(&e, 20, 10);
+        romSelected = scroll->event(&e, 20, top);
       }
     }
 
+    //Draw border/text
+    SDL_FillRect( selector, NULL, borderColor );
+    apply_surface( selector->w - author->w - 10, selector->h - author->h - 10, author, selector );
+    apply_surface( 20, selector->h - options->h - 10, options, selector );
+    apply_surface( 10, 10, title, selector );
+
     scroll->update();
-    scroll->drawToSurface(selector, 20, 10);
+    scroll->drawToSurface(selector, 20, top);
 
     //Update screen.
     SDL_DrawSurfaceAsGLTexture( selector, portrait_vertexCoords );
