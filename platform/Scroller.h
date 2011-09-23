@@ -41,25 +41,41 @@ private:
   RenderInfo RI;
   int text_height;
 
-  // Internal state
+  // Scrolling state
   float offset;       // [0,1], 'percent' scrolled
   Uint32 last_update; // Time of last update
-  float accel;        // Scroll acceleration
+  float vel;          // Scroll velocity
 
+  // Cache of rendered text titles;
   typedef struct {
     char * name;
     SDL_Surface * surface;
-  } rom_cache_element;
-  typedef std::list<rom_cache_element> rom_cache_t;
+  } text_cache_element;
+  typedef std::list<text_cache_element> text_cache_t;
   static const int CACHE_SIZE;
-  static rom_cache_t rom_cache;
+  static text_cache_t text_cache;
 
+  // Internal rendering buffer
+  // Mostly used just to auto-handle clipping
   SDL_Surface * buffer;
+
+  // Event state
+  bool e_tap;
+  bool e_down;
+  int e_mouse_x, e_mouse_y;
+  typedef struct {
+    int x;
+    int y;
+    Uint32 time;
+  } pt_event_t;
+  std::list<pt_event_t> pt_history;
 
   public:
     Scroller(char ** n, int c, RenderInfo R) :
       names(n), count(c), RI(R),
-      offset(0.0f), last_update(0) { init(); }
+      offset(0.0f), last_update(0),
+      vel(0.0f), buffer(0)
+    { init(); }
 
     // Draw ourselves to the specified surface at the specified offsets.
     void drawToSurface(SDL_Surface *s, int x, int y);
@@ -75,6 +91,8 @@ private:
   private:
     SDL_Surface * cacheLookup(const char * text);
     void init();
+    void recordPtEvent(int x, int y);
+
 };
 
 #endif // _SCROLLER_H_

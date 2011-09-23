@@ -17,9 +17,15 @@
 #include "Scroller.h"
 #include <SDL_ttf.h>
 #include "ApplySurface.h"
+#include "RegionTimer.h"
 
 const int Scroller::CACHE_SIZE = 50;
-Scroller::rom_cache_t Scroller::rom_cache;
+Scroller::text_cache_t Scroller::text_cache;
+
+// If finger moves less than this, it's still considered a tap
+static const int TAP_TOLERANCE = 15;
+
+static const int POINT_HISTORY_SIZE = 5;
 
 #define min(a,b) (((a) < (b)) ? (a) : (b))
 
@@ -34,6 +40,8 @@ void Scroller::init()
 
 void Scroller::drawToSurface(SDL_Surface *s, int x, int y)
 {
+  RegionTimer T("drawToSurface");
+
   if (!buffer) {
     buffer = SDL_CreateRGBSurface(SDL_SWSURFACE, RI.width, RI.height,
         s->format->BitsPerPixel,
@@ -45,8 +53,11 @@ void Scroller::drawToSurface(SDL_Surface *s, int x, int y)
 
   // Fill background
   // TODO: make the background set externally?
-  int black = SDL_MapRGB(buffer->format, 0, 0, 0);
-  SDL_FillRect(buffer, 0, black);
+  {
+    RegionTimer T("fillrect");
+    int black = SDL_MapRGB(buffer->format, 0, 0, 0);
+    SDL_FillRect(buffer, 0, black);
+  }
 
   float total_height = count * text_height;
   float y_offset = 0.0f;
@@ -54,15 +65,18 @@ void Scroller::drawToSurface(SDL_Surface *s, int x, int y)
     y_offset = offset * (total_height - (float)RI.height);
 
   // Now render the items
-  for(int cur = 0; cur < RI.height; cur += text_height)
   {
-    int index = (cur + y_offset) / total_height * count;
-    if (index >= 0 && index < count)
+    RegionTimer T("loop");
+    for(int cur = 0; cur < RI.height; cur += text_height)
     {
-      float actual_text_y = ((float)index / (float)count) * total_height;
-      int text_y = actual_text_y - y_offset;
-      apply_surface(0, text_y, RI.width,
-          cacheLookup(names[index]), buffer);
+      int index = (cur + y_offset) / total_height * count;
+      if (index >= 0 && index < count)
+      {
+        float actual_text_y = ((float)index / (float)count) * total_height;
+        int text_y = actual_text_y - y_offset;
+        apply_surface(0, text_y, RI.width,
+            cacheLookup(names[index]), buffer);
+      }
     }
   }
 
@@ -77,8 +91,74 @@ void Scroller::update()
 
 int Scroller::event(SDL_Event *e, int x_offset, int y_offset)
 {
+  // TODO: Refactor out the event conversion state machine?
+  switch(e->type)
+  {
+    case SDL_MOUSEBUTTONDOWN:
+      // Update event state
+      e_down = e_tap = true;
+      e_mouse_x = e->button.x;
+      e_mouse_y = e->button.y;
+
+      // When there's a tap, set scroll speed immediately to zero.
+      vel = 0;
+      pt_history.clear();
+      recordPtEvent(e_mouse_x, e_mouse_y);
+      break;
+    case SDL_MOUSEMOTION:
+    {
+      // Update event state
+      int delta_x = (e->motion.x - e_mouse_x);
+      int delta_y = (e->motion.y - e_mouse_y);
+      bool withinTapTolerance =
+        delta_x*delta_x + delta_y*delta_y <= TAP_TOLERANCE * TAP_TOLERANCE;
+      if ( e_down && !withinTapTolerance) e_tap = false;
+
+      if (e_down && !e_tap)
+      {
+        // drag event
+
+        // Move the text accordingly
+        float dy = pt_history.back().y - e->motion.y;
+        float effective_count = (float)count - (float)RI.height / (float)text_height;
+        float delta_items = dy / (float)text_height;
+        offset += delta_items / effective_count;
+        if (offset > 1.0f ) offset = 1.0f;
+        if (offset < 0.0f ) offset = 0.0f;
+
+        recordPtEvent(e->motion.x, e->motion.y);
+      }
+      break;
+    }
+    case SDL_MOUSEBUTTONUP:
+      // Update event state
+      e_down = e_tap = false;
+
+      if (e_tap)
+      {
+        // XXX: Handle click event here!
+      } else {
+        // XXX: Handle scroll event here!
+      }
+      break;
+    case SDL_KEYDOWN:
+      fprintf(stderr, "HANDLE ME! Make this jump to the specified letter!");
+      //char c = (char)e->key.keysym.unicode;
+      break;
+    default:
+      break;
+  }
+
   // TODO: Implement me!
   return -1;
+}
+
+void Scroller::recordPtEvent(int x, int y)
+{
+  pt_event_t p = { x, y, SDL_GetTicks() };
+  pt_history.push_back(p);
+  if (pt_history.size() > POINT_HISTORY_SIZE)
+    pt_history.pop_front();
 }
 
 Scroller::~Scroller()
@@ -91,18 +171,18 @@ SDL_Surface * Scroller::cacheLookup( const char * text )
   // First, check cache.
   // If we already have a surface, use that and update it in the 'LRU' policy.
 
-  rom_cache_t::iterator I = rom_cache.begin(),
-    E = rom_cache.end();
+  text_cache_t::iterator I = text_cache.begin(),
+    E = text_cache.end();
   for ( ; I != E; ++I )
   {
     if ( !strcmp(I->name, text ) )
     {
       // Found it!
-      rom_cache_element result = *I;
+      text_cache_element result = *I;
 
       // Move it to the front...
-      rom_cache.erase(I);
-      rom_cache.push_front(result);
+      text_cache.erase(I);
+      text_cache.push_front(result);
 
       return result.surface;
     }
@@ -110,18 +190,18 @@ SDL_Surface * Scroller::cacheLookup( const char * text )
 
   // Okay, so it's not in the cache.
   // Create the surface requested:
-  rom_cache_element e;
+  text_cache_element e;
   e.name = strdup(text);
   e.surface = TTF_RenderText_Blended( RI.textFont, text, RI.textColor );
 
   // Add to front
-  rom_cache.push_front(e);
+  text_cache.push_front(e);
 
   // Is the cache too large as a result of adding this element?
-  if ( rom_cache.size() > CACHE_SIZE )
+  if ( text_cache.size() > CACHE_SIZE )
   {
-    rom_cache_element remove = rom_cache.back();
-    rom_cache.pop_back();
+    text_cache_element remove = text_cache.back();
+    text_cache.pop_back();
 
     // Free memory for this item
     free(remove.name);

@@ -24,13 +24,6 @@
 #include "pdl.h"
 #include <assert.h>
 
-#define SLOW_FACTOR 0.8f
-#define MIN_SCROLL_SPEED 5.0f
-#define SCROLL_DELAY 100
-
-// If finger moves less than this, it's still considered a tap
-#define TAP_TOLERANCE 15
-
 int rom_selector_event_handler( const SDL_Event * event );
 
 typedef struct
