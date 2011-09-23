@@ -42,7 +42,7 @@ private:
   int text_height;
 
   // Internal state
-  float offset;       // [0,100], percent scrolled
+  float offset;       // [0,1], 'percent' scrolled
   Uint32 last_update; // Time of last update
   float accel;        // Scroll acceleration
 

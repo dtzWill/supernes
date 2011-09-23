@@ -94,9 +94,9 @@ char * romSelector()
     exit( 1 );
   }
 
-  font_small = TTF_OpenFont( FONT, 14 );
-  font_normal = TTF_OpenFont( FONT, 18 );
-  font_large = TTF_OpenFont( FONT, 22 );
+  font_small = TTF_OpenFont( FONT, 18 );
+  font_normal = TTF_OpenFont( FONT, 24 );
+  font_large = TTF_OpenFont( FONT, 50 ); // FOR TESTING
   if ( !font_small || !font_normal || !font_large )
   {
     fprintf( stderr, "Failed to open font: %s\n", FONT );

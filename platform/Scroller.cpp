@@ -21,19 +21,19 @@
 const int Scroller::CACHE_SIZE = 50;
 Scroller::rom_cache_t Scroller::rom_cache;
 
+#define min(a,b) (((a) < (b)) ? (a) : (b))
+
 void Scroller::init()
 {
   // Light sanity checking
   assert(names);
   assert(count > 0);
 
-  text_height = cacheLookup(names[0])->h;
+  text_height = cacheLookup(names[0])->h + 10;
 }
 
 void Scroller::drawToSurface(SDL_Surface *s, int x, int y)
 {
-  // TODO: Refactor some of these colors to be parameterized?
-
   if (!buffer) {
     buffer = SDL_CreateRGBSurface(SDL_SWSURFACE, RI.width, RI.height,
         s->format->BitsPerPixel,
@@ -44,17 +44,27 @@ void Scroller::drawToSurface(SDL_Surface *s, int x, int y)
   }
 
   // Fill background
+  // TODO: make the background set externally?
   int black = SDL_MapRGB(buffer->format, 0, 0, 0);
   SDL_FillRect(buffer, 0, black);
 
-  int rom_offset = (offset / 100.0f) * count - 1;
+  float total_height = count * text_height;
+  float y_offset = 0.0f;
+  if (total_height > RI.height)
+    y_offset = offset * (total_height - (float)RI.height);
 
-  //for ( int i = rom_offset
-  //{
-  //  int index = scroll_offset + i;
-  //  apply_surface(0, (10 + rom_height)*i, RI.width,
-  //      getSurfaceFor(names[index]), buffer);
-  //}
+  // Now render the items
+  for(int cur = 0; cur < RI.height; cur += text_height)
+  {
+    int index = (cur + y_offset) / total_height * count;
+    if (index >= 0 && index < count)
+    {
+      float actual_text_y = ((float)index / (float)count) * total_height;
+      int text_y = actual_text_y - y_offset;
+      apply_surface(0, text_y, RI.width,
+          cacheLookup(names[index]), buffer);
+    }
+  }
 
   // Blit to the requrested surface
   apply_surface(x, y, buffer, s);
