@@ -16,20 +16,11 @@
 
 #include "snes9x.h"
 #include "RomSelector.h"
+#include "RomSelectorUtil.h"
 #include "GLUtil.h"
 #include "OptionMenu.h"
 #include "pdl.h"
-#include <SDL_ttf.h>
-#include <list>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <dirent.h>
 #include <assert.h>
-
-// We render the name of each rom, but instead of doing them all at once
-// (initially slow, and memory-consuming), we render just what is needed.
-// However that's lame, so we use a cache for a happy middle ground.
-#define CACHE_SIZE 50
 
 #define SLOW_FACTOR 0.8f
 #define MIN_SCROLL_SPEED 5.0f
@@ -38,13 +29,8 @@
 // If finger moves less than this, it's still considered a tap
 #define TAP_TOLERANCE 15
 
-char * strip_rom_name( char * rom_name );
-SDL_Surface * getSurfaceFor( char * filename );
 int rom_selector_event_handler( const SDL_Event * event );
 
-static SDL_Color textColor = { 255, 255, 255 };
-static SDL_Color hiColor = { 255, 200, 200 };
-static SDL_Color linkColor = { 200, 200, 255 };
 
 typedef struct
 {
@@ -80,86 +66,17 @@ static int filecount;
 static int top, bottom;
 char ** filenames;
 
-int romFilter( const struct dirent * file )
-{
-  const char * curPtr = file->d_name;
-  const char * extPtr = NULL;
-  //Don't show 'hidden' files (that start with a '.')
-  if ( *curPtr == '.' )
-  {
-    return false;
-  }
-
-  //Find the last period
-  while ( *curPtr )
-  {
-    if( *curPtr == '.' )
-    {
-      extPtr = curPtr;
-    }
-    curPtr++;
-  }
-  if ( !extPtr )
-  {
-    //No extension, not allowed.
-    return 0;
-  }
-  //We don't want the period...
-  extPtr++;
-
-  return !(
-      strcasecmp( extPtr, "sfc" ) &&
-      strcasecmp( extPtr, "smc" ) &&
-      strcasecmp( extPtr, "zip" ) );
-}
-
-void apply_surface( int x, int y, int w, SDL_Surface* source, SDL_Surface* destination )
-{
-  //Holds offsets
-  SDL_Rect offset;
-
-  //Source rect
-  SDL_Rect src;
-
-  //Get offsets
-  offset.x = x;
-  offset.y = y;
-
-  src.x = 0;
-  src.y = 0;
-  src.w = w;
-  src.h = source->h;
-
-  //Blit
-  SDL_BlitSurface( source, &src, destination, &offset );
-}
-
-void apply_surface( int x, int y, SDL_Surface* source, SDL_Surface* destination )
-{
-  apply_surface( x, y, source->w, source, destination );
-}
-
-//XXX: Figure out if there isn't something we can #ifdef for these
-//autoconf maybe?
-int sortComparD( const struct dirent ** a, const struct dirent ** b )
-{
-  return strcasecmp( (*a)->d_name, (*b)->d_name );
-}
-
-int sortCompar( const void * a, const void * b )
-{
-  return sortComparD( (const struct dirent **)a, (const struct dirent**)b );
-}
 
 #define min(a,b) (((a) < (b)) ? (a) : (b))
 
-static TTF_Font * font_small = NULL;
-static TTF_Font * font_normal = NULL;
-static TTF_Font * font_large = NULL;
+TTF_Font * font_small = NULL;
+TTF_Font * font_normal = NULL;
+TTF_Font * font_large = NULL;
 
 static int scroll_offset = 0;
 static float scroll_offset_actual = 0.0f;
 
+// Display rom selector GUI, and return a string indicating the selection.
 char * romSelector()
 {
   //Portrait orientation
@@ -185,28 +102,7 @@ char * romSelector()
     exit( 1 );
   }
 
-  //Don't bail here, we can't write to /media/internal on 1.4.5
-#define FSTAB_BUG 1
-
-  //Make sure rom dir exists
-  //XXX: This assumes /media/internal (parent directory) already exists
-  int mode = S_IRWXU | S_IRWXG | S_IRWXO;
-  int result = mkdir( SNES_HOME, mode );
-#ifndef FSTAB_BUG
-  if ( result && ( errno != EEXIST ) )
-  {
-    fprintf( stderr, "Error creating directory %s!\n", SNES_HOME );
-    exit( 1 );
-  }
-#endif
-  result = mkdir( ROM_PATH, mode );
-#ifndef FSTAB_BUG
-  if ( result && ( errno != EEXIST ) )
-  {
-    fprintf( stderr, "Error creating directory %s for roms!\n", ROM_PATH );
-    exit( 1 );
-  }
-#endif
+  ensureRomPathExists();
 
   struct dirent ** roms;
   filecount = scandir( ROM_PATH, &roms, romFilter, sortComparD );
@@ -419,106 +315,7 @@ char * romSelector()
   return rom_full_path;
 }
 
-typedef struct {
-  char * name;
-  SDL_Surface * surface;
-} rom_cache_element;
-typedef std::list<rom_cache_element> rom_cache_t;
-static rom_cache_t rom_cache;
 
-SDL_Surface * getSurfaceFor( char * filename )
-{
-  // First, check cache.
-  // If we already have a surface, use that and update it in the 'LRU' policy.
-
-  rom_cache_t::iterator I = rom_cache.begin(),
-    E = rom_cache.end();
-  for ( ; I != E; ++I )
-  {
-    if ( !strcmp(I->name, filename ) )
-    {
-      // Found it!
-      rom_cache_element result = *I;
-
-      // Move it to the front...
-      rom_cache.erase(I);
-      rom_cache.push_front(result);
-
-      return result.surface;
-    }
-  }
-
-  // Okay, so it's not in the cache.
-  // Create the surface requested:
-  rom_cache_element e;
-  e.name = strdup(filename);
-  e.surface = TTF_RenderText_Blended( font_large, filename, textColor );
-
-  // Add to front
-  rom_cache.push_front(e);
-
-  // Is the cache too large as a result of adding this element?
-  if ( rom_cache.size() > CACHE_SIZE )
-  {
-    rom_cache_element remove = rom_cache.back();
-    rom_cache.pop_back();
-
-    // Free memory for this item
-    free(remove.name);
-    SDL_FreeSurface(remove.surface);
-  }
-
-  // Return the surface we created!
-  return e.surface;
-}
-
-char * strip_rom_name( char * rom_name )
-{
-  //Here we remove everything in '()'s or '[]'s
-  //which is usually annoying release information, etc
-  char buffer[100];
-  char * src = rom_name;
-  char * dst = buffer;
-  int inParen = 0;
-  while ( *src && dst < buffer+sizeof(buffer) - 1 )
-  {
-    char c = *src;
-    if ( c == '(' || c == '[' )
-    {
-      inParen++;
-    }
-    if ( !inParen )
-    {
-      *dst++ = *src;
-    }
-    if ( c == ')' || c == ']' )
-    {
-      inParen--;
-    }
-
-    src++;
-  }
-  *dst = '\0';
-
-  //now remove the extension..
-  char * extPtr = NULL;
-  dst = buffer;
-  while ( *dst )
-  {
-    if( *dst == '.' )
-    {
-      extPtr = dst;
-    }
-    dst++;
-  }
-  //If we found an extension, end the string at that period
-  if ( extPtr )
-  {
-    *extPtr = '\0';
-  }
-
-  return strdup(buffer);
-}
 
 int rom_selector_event_handler( const SDL_Event * event )
 {
