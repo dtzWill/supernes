@@ -207,3 +207,42 @@ SDL_Surface * Scroller::cacheLookup( const char * text )
     scrollTab.y += ((float)(scrollRect.h - scrollTab.h))*percent;
     SDL_FillRect(selector, &scrollTab, tabColor);
 #endif
+
+#if 0
+    case SDL_KEYDOWN:
+      {
+        //Filter based on letter presses.
+        //For now, just jump to the first thing that starts at or after that letter.
+        char c = (char)event->key.keysym.unicode;
+        if ( 'A' <= c && c <= 'Z' )
+        {
+          //lowercase...
+          c -= ( 'A' - 'a' );
+        }
+        if ( 'a' <= c && c <= 'z' )
+        {
+          //find this letter in the roms...
+          int offset = 0;
+          while( offset < filecount )
+          {
+            char c_file = *filenames[offset];
+            if ( 'A' <= c_file && c_file <= 'Z' )
+            {
+              //lowercase..
+              c_file -= ( 'A' - 'a' );
+            }
+            if ( c_file >= c )
+            {
+              break;
+            }
+            offset++;
+          }
+          scroll_offset = offset;
+          if ( scroll_offset > filecount - num_roms_display ) scroll_offset = filecount - num_roms_display;
+          if ( scroll_offset < 0 ) scroll_offset = 0;
+          scroll_offset_actual = scroll_offset;
+          autoscrolling = false;
+        }
+      }
+#endif
+
