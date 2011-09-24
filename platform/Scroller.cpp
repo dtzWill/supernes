@@ -91,6 +91,18 @@ void Scroller::drawToSurface(SDL_Surface *s, int x, int y)
       }
     }
   }
+
+  // Scrollbar!
+  int barColor = SDL_MapRGB(s->format, 200, 200, 255);
+  int tabColor = SDL_MapRGB(s->format, 255, 255, 255);
+  SDL_Rect scrollRect = { x + RI.width - 10, y, 10, RI.height };
+  SDL_FillRect(s, &scrollRect, barColor);
+  SDL_Rect scrollTab;
+  scrollTab.w = scrollTab.h = 20;
+  scrollTab.x = scrollRect.x + scrollRect.w/2 - 10;
+  scrollTab.y = scrollRect.y;
+  scrollTab.y += ((float)(scrollRect.h - scrollTab.h))*offset;
+  SDL_FillRect(s, &scrollTab, tabColor);
 }
 
 void Scroller::update()
