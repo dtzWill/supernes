@@ -78,9 +78,28 @@ char * romSelector()
     exit( 1 );
   }
 
-  font_small = TTF_OpenFont( FONT, 18 );
-  font_normal = TTF_OpenFont( FONT, 24 );
-  font_large = TTF_OpenFont( FONT, 30 ); // FOR TESTING
+  switch(NATIVE_RES_HEIGHT) {
+    case 768:
+      font_small = TTF_OpenFont( FONT, 18 );
+      font_normal = TTF_OpenFont( FONT, 24 );
+      font_large = TTF_OpenFont( FONT, 30 );
+      break;
+    case 480:
+      font_small = TTF_OpenFont( FONT, 14 );
+      font_normal = TTF_OpenFont( FONT, 18 );
+      font_large = TTF_OpenFont( FONT, 22 );
+      break;
+    case 400:
+      font_small = TTF_OpenFont( FONT, 12 );
+      font_normal = TTF_OpenFont( FONT, 16 );
+      font_large = TTF_OpenFont( FONT, 20 );
+      break;
+    default:
+      fprintf( stderr, "Unsupported resolution!\n");
+      exit(1);
+      break;
+  }
+
   if ( !font_small || !font_normal || !font_large )
   {
     fprintf( stderr, "Failed to open font: %s\n", FONT );

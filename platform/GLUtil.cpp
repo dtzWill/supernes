@@ -47,8 +47,8 @@ SDL_Rect overlay_rect;
 int srcWidth = -1;
 int srcHeight = -1;
 
-int destWidth = 1024;
-int destHeight = 768;
+int destWidth = -1;
+int destHeight = -1;
 
 //#define DEBUG_GL
 
@@ -136,6 +136,8 @@ void GL_Init()
 
     surface = SDL_SetVideoMode( 0, 0, 32,
         SDL_OPENGL);
+    destWidth = surface->w;
+    destHeight = surface->h;
 
     if(surface == NULL) {
       //systemMessage(0, "Failed to set video mode");
@@ -581,4 +583,12 @@ void SDL_DrawSurfaceAsGLTexture( SDL_Surface * s, float * coords )
   checkError();
 }
 
+int GL_GetNativeWidth()
+{
+  return destWidth;
+}
 
+int GL_GetNativeHeight()
+{
+  return destHeight;
+}

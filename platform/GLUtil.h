@@ -51,6 +51,9 @@ extern void GL_InitTexture(int w, int h);
 extern void updateOrientation();
 extern void GL_RenderPix(u8 * pix,int w, int h);
 
+extern int GL_GetNativeWidth();
+extern int GL_GetNativeHeight();
+
 enum orientation
 {
     ORIENTATION_PORTRAIT,    // default mode, portrait
