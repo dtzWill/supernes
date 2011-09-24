@@ -39,7 +39,7 @@ private:
 
   // Rendering information
   RenderInfo RI;
-  int text_height;
+  float text_height;
 
   // Scrolling state
   float offset;       // [0,1], 'percent' scrolled
@@ -54,10 +54,6 @@ private:
   typedef std::list<text_cache_element> text_cache_t;
   static const int CACHE_SIZE;
   static text_cache_t text_cache;
-
-  // Internal rendering buffer
-  // Mostly used just to auto-handle clipping
-  SDL_Surface * buffer;
 
   // Event state
   bool e_tap;
@@ -74,7 +70,7 @@ private:
     Scroller(char ** n, int c, RenderInfo R) :
       names(n), count(c), RI(R),
       offset(0.0f), last_update(0),
-      vel(0.0f), buffer(0)
+      vel(0.0f)
     { init(); }
 
     // Draw ourselves to the specified surface at the specified offsets.

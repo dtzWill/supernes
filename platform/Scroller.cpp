@@ -25,7 +25,12 @@ Scroller::text_cache_t Scroller::text_cache;
 // If finger moves less than this, it's still considered a tap
 static const int TAP_TOLERANCE = 15;
 
-static const int POINT_HISTORY_SIZE = 5;
+static const int POINT_HISTORY_SIZE = 10;
+
+static const float MIN_VEL = 0.5f;
+static const float MAX_VEL = 3.0f;
+
+static const float SCROLL_ACCEL = 1.0f;
 
 #define min(a,b) (((a) < (b)) ? (a) : (b))
 
@@ -42,21 +47,13 @@ void Scroller::drawToSurface(SDL_Surface *s, int x, int y)
 {
   RegionTimer T("drawToSurface");
 
-  if (!buffer) {
-    buffer = SDL_CreateRGBSurface(SDL_SWSURFACE, RI.width, RI.height,
-        s->format->BitsPerPixel,
-        s->format->Rmask,
-        s->format->Gmask,
-        s->format->Bmask,
-        s->format->Amask);
-  }
-
   // Fill background
   // TODO: make the background set externally?
   {
     RegionTimer T("fillrect");
-    int black = SDL_MapRGB(buffer->format, 0, 0, 0);
-    SDL_FillRect(buffer, 0, black);
+    int black = SDL_MapRGB(s->format, 0, 0, 0);
+    SDL_Rect drawRect = {x, y, RI.width, RI.height};
+    SDL_FillRect(s, &drawRect, black);
   }
 
   float total_height = count * text_height;
@@ -67,26 +64,72 @@ void Scroller::drawToSurface(SDL_Surface *s, int x, int y)
   // Now render the items
   {
     RegionTimer T("loop");
-    for(int cur = 0; cur < RI.height; cur += text_height)
+    for(int cur = 0; cur < RI.height; )
     {
       int index = (cur + y_offset) / total_height * count;
+      float actual_text_y = ((float)index / (float)count) * total_height;
+      int text_y = actual_text_y - y_offset;
+      cur = text_y + text_height + 1;
+
       if (index >= 0 && index < count)
       {
-        float actual_text_y = ((float)index / (float)count) * total_height;
-        int text_y = actual_text_y - y_offset;
-        apply_surface(0, text_y, RI.width,
-            cacheLookup(index), buffer);
+        // Render it
+        SDL_Surface * txt = cacheLookup(index);
+        SDL_Rect srcRect = {0, 0, txt->w, txt->h };
+        SDL_Rect destRect = { x, y + text_y, RI.width, text_height };
+        if (text_y < 0)
+        {
+          destRect.y = y;
+          srcRect.y = -text_y;
+          srcRect.h += text_y;
+        } else if (text_y + txt->h > RI.height)
+        {
+          destRect.h -= text_y + txt->h - RI.height;
+          srcRect.h -= text_y + txt->h - RI.height;
+        }
+        SDL_BlitSurface( txt, &srcRect, s, &destRect);
       }
     }
   }
-
-  // Blit to the requrested surface
-  apply_surface(x, y, buffer, s);
 }
 
 void Scroller::update()
 {
-  // TODO: Implement me!
+  if (vel < MIN_VEL && vel > -MIN_VEL) {
+    vel = 0.0f;
+    return;
+  }
+
+  int time = SDL_GetTicks();
+  float dt = (time - last_update);
+  last_update = time;
+
+  float adjust = ((float)1) / (float)count;
+
+  // Clamp velocty to some multiple of screen's worth of listing.
+  float dx = vel * dt;
+  float max_speed = (float)RI.height / text_height * 1.5f;
+  if (dx > max_speed) dx = max_speed;
+  if (dx < -max_speed) dx = -max_speed;
+
+  // Update offset, and bound check
+  offset += dx * adjust;
+  if (offset <= 0.0f ) {
+    offset = 0.0f;
+    vel = 0.0f;
+  } else if (offset >= 1.0f ) {
+    offset = 1.0f;
+    vel = 0.0f;
+  } else {
+    // Update velocity
+    if (vel > 0.0f) {
+      vel -= SCROLL_ACCEL * dt * adjust;
+      if (vel < 0.0f) vel = 0.0f;
+    } else {
+      vel += SCROLL_ACCEL * dt * adjust;
+      if (vel > 0.0f) vel = 0.0f;
+    }
+  }
 }
 
 int Scroller::event(SDL_Event *e, int x_offset, int y_offset)
@@ -108,6 +151,8 @@ int Scroller::event(SDL_Event *e, int x_offset, int y_offset)
     case SDL_MOUSEMOTION:
     {
       // Update event state
+      // This is intentionally the total distance traveled from original finger down
+      // (Not from previous event)
       int delta_x = (e->motion.x - e_mouse_x);
       int delta_y = (e->motion.y - e_mouse_y);
       bool withinTapTolerance =
@@ -120,27 +165,45 @@ int Scroller::event(SDL_Event *e, int x_offset, int y_offset)
 
         // Move the text accordingly
         float dy = pt_history.back().y - e->motion.y;
-        float effective_count = (float)count - (float)RI.height / (float)text_height;
-        float delta_items = dy / (float)text_height;
+        float effective_count = (float)count - (float)RI.height / text_height;
+        float delta_items = dy / text_height;
         offset += delta_items / effective_count;
         if (offset > 1.0f ) offset = 1.0f;
         if (offset < 0.0f ) offset = 0.0f;
-
-        recordPtEvent(e->motion.x, e->motion.y);
       }
+
+      recordPtEvent(e->motion.x, e->motion.y);
       break;
     }
     case SDL_MOUSEBUTTONUP:
+    {
       // Update event state
+      bool was_tap = e_tap;
       e_down = e_tap = false;
 
-      if (e_tap)
+      if (was_tap)
       {
-        // XXX: Handle click event here!
+        // TODO: Convert tap to index, validate it, return that value!
       } else {
-        // XXX: Handle scroll event here!
+        // Scroll event!
+        if (pt_history.empty()) break; // really shouldn't happen
+
+        pt_event_t p = pt_history.front();
+        int time = SDL_GetTicks();
+        if (time <= p.time + 1) break; // too fast
+
+        float dy = e->button.y - p.y;
+        float dt = time - p.time;
+
+        vel = -dy/dt;
+
+        if (vel > MAX_VEL) vel = MAX_VEL;
+        if (vel < -MAX_VEL) vel = -MAX_VEL;
+
+        last_update = time;
       }
       break;
+    }
     case SDL_KEYDOWN:
       fprintf(stderr, "HANDLE ME! Make this jump to the specified letter!");
       //char c = (char)e->key.keysym.unicode;
@@ -163,7 +226,6 @@ void Scroller::recordPtEvent(int x, int y)
 
 Scroller::~Scroller()
 {
-  SDL_FreeSurface(buffer);
 }
 
 SDL_Surface * Scroller::cacheLookup( int index )

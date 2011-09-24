@@ -80,7 +80,7 @@ char * romSelector()
 
   font_small = TTF_OpenFont( FONT, 18 );
   font_normal = TTF_OpenFont( FONT, 24 );
-  font_large = TTF_OpenFont( FONT, 50 ); // FOR TESTING
+  font_large = TTF_OpenFont( FONT, 30 ); // FOR TESTING
   if ( !font_small || !font_normal || !font_large )
   {
     fprintf( stderr, "Failed to open font: %s\n", FONT );

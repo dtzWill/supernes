@@ -20,7 +20,7 @@
 #include <SDL.h>
 #include <iostream>
 
-#define USE_TIMER
+// #define USE_TIMER
 
 #ifdef USE_TIMER
 struct RegionTimer {
