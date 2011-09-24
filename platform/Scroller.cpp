@@ -183,7 +183,17 @@ int Scroller::event(SDL_Event *e, int x_offset, int y_offset)
 
       if (was_tap)
       {
-        // TODO: Convert tap to index, validate it, return that value!
+        // Convert tap to index, validate it, return that value!
+        float total_height = count * text_height;
+        float scroll_offset = 0.0f;
+        if (total_height > RI.height)
+          scroll_offset = offset * (total_height - (float)RI.height);
+        int index = ( (e->button.y - y_offset) + scroll_offset ) / total_height * count;
+
+        if (index >= 0 && index < count) {
+          // TODO: Highlight the item like we did before?
+          return index;
+        }
       } else {
         // Scroll event!
         if (pt_history.empty()) break; // really shouldn't happen
