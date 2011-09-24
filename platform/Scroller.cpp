@@ -76,7 +76,7 @@ void Scroller::drawToSurface(SDL_Surface *s, int x, int y)
         // Render it
         SDL_Surface * txt = cacheLookup(index);
         SDL_Rect srcRect = {0, 0, txt->w, txt->h };
-        SDL_Rect destRect = { x, y + text_y, RI.width, text_height };
+        SDL_Rect destRect = { x + 5, y + text_y, RI.width - 5, text_height };
         if (text_y < 0)
         {
           destRect.y = y;
