@@ -35,7 +35,7 @@ void Scroller::init()
   assert(names);
   assert(count > 0);
 
-  text_height = cacheLookup(names[0])->h + 10;
+  text_height = cacheLookup(0)->h + 10;
 }
 
 void Scroller::drawToSurface(SDL_Surface *s, int x, int y)
@@ -75,7 +75,7 @@ void Scroller::drawToSurface(SDL_Surface *s, int x, int y)
         float actual_text_y = ((float)index / (float)count) * total_height;
         int text_y = actual_text_y - y_offset;
         apply_surface(0, text_y, RI.width,
-            cacheLookup(names[index]), buffer);
+            cacheLookup(index), buffer);
       }
     }
   }
@@ -166,7 +166,7 @@ Scroller::~Scroller()
   SDL_FreeSurface(buffer);
 }
 
-SDL_Surface * Scroller::cacheLookup( const char * text )
+SDL_Surface * Scroller::cacheLookup( int index )
 {
   // First, check cache.
   // If we already have a surface, use that and update it in the 'LRU' policy.
@@ -175,7 +175,7 @@ SDL_Surface * Scroller::cacheLookup( const char * text )
     E = text_cache.end();
   for ( ; I != E; ++I )
   {
-    if ( !strcmp(I->name, text ) )
+    if ( I->index == index )
     {
       // Found it!
       text_cache_element result = *I;
@@ -191,8 +191,8 @@ SDL_Surface * Scroller::cacheLookup( const char * text )
   // Okay, so it's not in the cache.
   // Create the surface requested:
   text_cache_element e;
-  e.name = strdup(text);
-  e.surface = TTF_RenderText_Blended( RI.textFont, text, RI.textColor );
+  e.index = index;
+  e.surface = TTF_RenderText_Blended( RI.textFont, names[index], RI.textColor );
 
   // Add to front
   text_cache.push_front(e);
@@ -204,7 +204,6 @@ SDL_Surface * Scroller::cacheLookup( const char * text )
     text_cache.pop_back();
 
     // Free memory for this item
-    free(remove.name);
     SDL_FreeSurface(remove.surface);
   }
 

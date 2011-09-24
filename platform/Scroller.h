@@ -48,7 +48,7 @@ private:
 
   // Cache of rendered text titles;
   typedef struct {
-    char * name;
+    int index;
     SDL_Surface * surface;
   } text_cache_element;
   typedef std::list<text_cache_element> text_cache_t;
@@ -89,7 +89,7 @@ private:
 
     ~Scroller();
   private:
-    SDL_Surface * cacheLookup(const char * text);
+    SDL_Surface * cacheLookup( int index );
     void init();
     void recordPtEvent(int x, int y);
 
