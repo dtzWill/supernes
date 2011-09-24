@@ -21,6 +21,7 @@
 #include <assert.h>
 #include "Controller.h"
 #include "Options.h"
+#include "RegionTimer.h"
 #include <SDL_image.h>
 
 /*-----------------------------------------------------------------------------
@@ -504,30 +505,43 @@ void SDL_DrawSurfaceAsGLTexture( SDL_Surface * s, float * coords )
   /*-----------------------------------------------------------------------------
    *  Convert the surface to a texture, and upload it
    *-----------------------------------------------------------------------------*/
+  RegionTimer T("DrawSurfaceAsGLTexture");
   static GLuint surface_tex;
-  glGenTextures( 1, &surface_tex );
-  checkError();
-  glBindTexture( GL_TEXTURE_2D, surface_tex );
-  checkError();
+  static int w = -1, h = -1;
 
-  int num;
-  glGetIntegerv( GL_ACTIVE_TEXTURE, &num );
-  assert( num == GL_TEXTURE0 );
-  checkError();
+  if ( (w != s->w) || (h != s->h) ) {
 
 
-  // XXX: We assume things about the surface's format that could be incorrect.
-  // Add some kinda assertion
+    // Remove the texture
+    if (surface_tex)
+      glDeleteTextures( 1, &surface_tex );
 
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gl_filter );
-  checkError();
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gl_filter );
-  checkError();
+    glGenTextures( 1, &surface_tex );
+    checkError();
+    glBindTexture( GL_TEXTURE_2D, surface_tex );
+    checkError();
 
-  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
-  checkError();
-  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
-  checkError();
+    int num;
+    glGetIntegerv( GL_ACTIVE_TEXTURE, &num );
+    assert( num == GL_TEXTURE0 );
+    checkError();
+
+
+    // XXX: We assume things about the surface's format that could be incorrect.
+    // Add some kinda assertion
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gl_filter );
+    checkError();
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gl_filter );
+    checkError();
+
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+    checkError();
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+    checkError();
+
+    w = s->w; h = s->h;
+  }
 
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, s->w, s->h, 0, GL_RGB,
       GL_UNSIGNED_BYTE, s->pixels );
@@ -537,7 +551,7 @@ void SDL_DrawSurfaceAsGLTexture( SDL_Surface * s, float * coords )
   /*-----------------------------------------------------------------------------
    *  Now actually render it
    *-----------------------------------------------------------------------------*/
-  
+
   glUseProgram ( programObject );
   checkError();
 
@@ -565,9 +579,6 @@ void SDL_DrawSurfaceAsGLTexture( SDL_Surface * s, float * coords )
   //Push to screen
   SDL_GL_SwapBuffers();
   checkError();
-
-  // Remove the texture
-  glDeleteTextures( 1, &surface_tex );
 }
 
 
