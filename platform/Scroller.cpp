@@ -227,9 +227,49 @@ int Scroller::event(SDL_Event *e, int x_offset, int y_offset)
       break;
     }
     case SDL_KEYDOWN:
-      fprintf(stderr, "HANDLE ME! Make this jump to the specified letter!");
-      //char c = (char)e->key.keysym.unicode;
+    {
+      //Filter based on letter presses.
+      //For now, just jump to the first thing that starts at or after that letter.
+      char c = (char)e->key.keysym.unicode;
+      if ( 'A' <= c && c <= 'Z' )
+        c -= 'A' - 'a';
+
+      if ( 'a' <= c && c <= 'z' )
+      {
+        //find this letter in the roms...
+        int index = 0;
+        while( index < count )
+        {
+          char c_file = *names[index];
+          if ( 'A' <= c_file && c_file <= 'Z' )
+            c_file -= 'A' - 'a';
+          if ( c_file >= c )
+            break;
+          index++;
+        }
+        // Didn't find it, scroll to bottom
+        if (index > count)
+        {
+          offset = 1.0f;
+          break;
+        }
+
+        // If we have less roms than fit on the screen,
+        // offset is always zero.
+        float total_height = count * text_height;
+        if (total_height > RI.height)
+        {
+          offset = 0.0f;
+          break;
+        }
+
+        // given index, get offset:
+        offset = (index * total_height / (float)count) / (total_height - (float)RI.height);
+
+        vel = 0; // stop scrolling
+      }
       break;
+    }
     default:
       break;
   }
@@ -294,82 +334,6 @@ SDL_Surface * Scroller::cacheLookup( int index )
   // Return the surface we created!
   return e.surface;
 }
-
-#if 0
-    if (autoscrolling)
-    {
-      scroll_offset_actual += scroll_speed;
-      scroll_offset = (int)scroll_offset_actual;
-      if ( scroll_offset > filecount - num_roms_display )
-      {
-        scroll_offset = filecount - num_roms_display;
-        scroll_offset_actual = scroll_offset;
-        autoscrolling = false;
-      }
-      if ( scroll_offset < 0 )
-      {
-        scroll_offset = 0;
-        scroll_offset_actual = scroll_offset;
-        autoscrolling = false;
-      }
-
-      scroll_speed *= SLOW_FACTOR;
-
-      if ( scroll_speed < MIN_SCROLL_SPEED &&
-          scroll_speed > -MIN_SCROLL_SPEED )
-        autoscrolling = false;
-    }
-
-    if ( scroll_offset + num_roms_display > filecount )
-    {
-      num_roms_display = filecount - scroll_offset;
-    }
-
-    //Draw border/text
-    SDL_FillRect( selector, NULL, borderColor );
-    apply_surface( selector->w - author->w - 10, selector->h - author->h - 10, author, selector );
-    apply_surface( 20, selector->h - options->h - 10, options, selector );
-    apply_surface( 10, 10, title, selector );
-
-    //Clear middle
-    SDL_FillRect(selector, &drawRect, black);
-
-    //Draw roms list
-    for ( int i = 0; i < num_roms_display; i++ )
-    {
-      int index = scroll_offset + i;
-      if ( index == romSelected )
-      {
-        int hiColor = SDL_MapRGB( selector->format, 128, 128, 0 );
-        SDL_Rect hiRect;
-        hiRect.x = 10;
-        hiRect.y = top+(10+rom_height)*i - 5;
-        hiRect.h = rom_height+5;
-        hiRect.w = selector->w - 20;
-        SDL_FillRect( selector, &hiRect, hiColor );
-      }
-      apply_surface( 20, top + (10+rom_height)*i, selector->w - 40, getSurfaceFor(filenames[index]), selector );
-    }
-
-    //Draw scrollbar :)
-    int barColor = SDL_MapRGB(selector->format, 200, 200, 255);
-    int tabColor = SDL_MapRGB(selector->format, 255, 255, 255);
-    SDL_Rect scrollRect;
-    scrollRect.x = drawRect.x + drawRect.w - 5;
-    scrollRect.y = drawRect.y;
-    scrollRect.h = drawRect.h;
-    scrollRect.w = 10;
-    SDL_FillRect(selector, &scrollRect, barColor);
-    SDL_Rect scrollTab;
-    scrollTab.w = scrollTab.h = 20;
-    scrollTab.x = scrollRect.x + scrollRect.w/2 - 10;
-    scrollTab.y = scrollRect.y;
-    float percent = 0.0f;
-    if ( filecount > num_roms_display )
-      percent = ((float)scroll_offset)/((float)(filecount - num_roms_display));
-    scrollTab.y += ((float)(scrollRect.h - scrollTab.h))*percent;
-    SDL_FillRect(selector, &scrollTab, tabColor);
-#endif
 
 #if 0
     case SDL_KEYDOWN:
