@@ -19,9 +19,6 @@
 #include "ApplySurface.h"
 #include "RegionTimer.h"
 
-const int Scroller::CACHE_SIZE = 50;
-Scroller::text_cache_t Scroller::text_cache;
-
 // If finger moves less than this, it's still considered a tap
 static const int TAP_TOLERANCE = 15;
 
@@ -40,9 +37,47 @@ void Scroller::init()
   assert(names);
   assert(count > 0);
 
-  text_height = cacheLookup(0)->h + 10;
+  SDL_Surface * current =
+    TTF_RenderText_Blended(RI.textFont, names[0], RI.textColor);
+  text_height = current->h + 10;
+  SDL_FreeSurface(current);
+
+  // Render all the items into a giant texture. weeeeeeeee
+  int total_height = count * text_height;
+
+  SDL_Surface * scroll =
+    SDL_CreateRGBSurface(SDL_SWSURFACE, RI.width, total_height,
+        32, 0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000);
+  assert(scroll);
+
+  unsigned i = 0;
+
+  // Make it all black.
+  int black = SDL_MapRGB(scroll->format, 0, 0, 0);
+  SDL_FillRect(scroll, NULL, black);
+
+  // Render each internal item
+  for(unsigned i = 0; i < count; ++i)
+  {
+    SDL_Surface * current =
+      TTF_RenderText_Blended(RI.textFont, names[i], RI.textColor);
+    apply_surface(5, i*text_height, RI.width - 10,
+        current, scroll);
+    SDL_FreeSurface(current);
+  }
+
+  // For now, pretend these coords are right.
+  // They are not, as they're fullscreen.
+  full_scroll = GL_SurfaceToTexture(scroll, portrait_vertexCoords);
 }
 
+GLLayer Scroller::getGLLayer()
+{
+  return full_scroll;
+}
+
+// TODO: Keeping code around for now, REMOVE
+#if 0
 void Scroller::drawToSurface(SDL_Surface *s, int x, int y)
 {
   RegionTimer T("drawToSurface");
@@ -104,7 +139,7 @@ void Scroller::drawToSurface(SDL_Surface *s, int x, int y)
   scrollTab.y += ((float)(scrollRect.h - scrollTab.h))*offset;
   SDL_FillRect(s, &scrollTab, tabColor);
 }
-
+#endif
 void Scroller::update()
 {
   if (vel < MIN_VEL && vel > -MIN_VEL) {
@@ -142,6 +177,9 @@ void Scroller::update()
       if (vel > 0.0f) vel = 0.0f;
     }
   }
+
+  // Update the GLLayer's offset
+
 }
 
 int Scroller::event(SDL_Event *e, int x_offset, int y_offset)
@@ -288,8 +326,10 @@ void Scroller::recordPtEvent(int x, int y)
 
 Scroller::~Scroller()
 {
+  GL_FreeLayer(full_scroll);
 }
 
+#if 0
 SDL_Surface * Scroller::cacheLookup( int index )
 {
   // First, check cache.
@@ -334,6 +374,7 @@ SDL_Surface * Scroller::cacheLookup( int index )
   // Return the surface we created!
   return e.surface;
 }
+#endif
 
 #if 0
     case SDL_KEYDOWN:

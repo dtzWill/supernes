@@ -453,7 +453,7 @@ void GL_RenderPix(u8 * pix,int w, int h)
       layerCount = 1;
     }
 
-    drawLayers(layers, layerCount);
+    GL_DrawLayers(layers, layerCount);
 }
 
 void SDL_DrawSurfaceAsGLTexture( SDL_Surface * s, float * coords )
@@ -577,7 +577,7 @@ void drawLayer(GLLayer * layer)
   checkError();
 }
 
-void drawLayers(GLLayer *layers, unsigned count)
+void GL_DrawLayers(GLLayer *layers, unsigned count)
 {
   glClear( GL_COLOR_BUFFER_BIT );
   checkError();
@@ -588,4 +588,51 @@ void drawLayers(GLLayer *layers, unsigned count)
   //Push to screen
   SDL_GL_SwapBuffers();
   checkError();
+}
+
+GLLayer GL_SurfaceToTexture( SDL_Surface * s, float * coords )
+{
+  GLLayer layer;
+
+  GLuint tex;
+  // Create the texture
+  {
+    glGenTextures(1, &tex);
+    checkError();
+    glBindTexture( GL_TEXTURE_2D, tex );
+    checkError();
+
+    int num;
+    glGetIntegerv( GL_ACTIVE_TEXTURE, &num );
+    assert( num == GL_TEXTURE0 );
+    checkError();
+
+    // XXX: We assume things about the surface's format that could be incorrect.
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gl_filter );
+    checkError();
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gl_filter );
+    checkError();
+
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+    checkError();
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+    checkError();
+  }
+
+  // Upload the surface's pixels to the texture
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, s->w, s->h, 0, GL_RGB,
+      GL_UNSIGNED_BYTE, s->pixels );
+  checkError();
+
+  // Construct the layer for all this
+  layer.texture = tex;
+  layer.vertexCoords = coords;
+  layer.textureCoords = texCoords;
+
+  return layer;
+}
+void GL_FreeLayer(GLLayer layer)
+{
+  glDeleteTextures(1, &layer.texture);
+  layer.texture = 0;
 }

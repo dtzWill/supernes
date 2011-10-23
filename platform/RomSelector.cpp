@@ -195,6 +195,14 @@ char * romSelector()
   };
   Scroller * scroll = new Scroller(filenames, filecount, RI);
 
+  //Draw border/text
+  SDL_FillRect( selector, NULL, borderColor );
+  apply_surface( selector->w - author->w - 10, selector->h - author->h - 10, author, selector );
+  apply_surface( 20, selector->h - options->h - 10, options, selector );
+  apply_surface( 10, 10, title, selector );
+
+  GLLayer selectorBackground = GL_SurfaceToTexture(selector, portrait_vertexCoords);
+
   while( romSelected == -1 )
   {
     SDL_Event e;
@@ -206,23 +214,23 @@ char * romSelector()
       }
     }
 
-    //Draw border/text
-    SDL_FillRect( selector, NULL, borderColor );
-    apply_surface( selector->w - author->w - 10, selector->h - author->h - 10, author, selector );
-    apply_surface( 20, selector->h - options->h - 10, options, selector );
-    apply_surface( 10, 10, title, selector );
-
+    // Process the update
     scroll->update();
-    scroll->drawToSurface(selector, 20, top);
 
-    //Update screen.
-    SDL_DrawSurfaceAsGLTexture( selector, portrait_vertexCoords );
+
+    // Update the screen
+    GLLayer scrollerLayer = scroll->getGLLayer();
+    GLLayer layers[2] = { selectorBackground, scrollerLayer };
+    GL_DrawLayers(layers, 2);
   }
+
   SDL_Delay(100);
   SDL_FreeSurface( title );
   SDL_FreeSurface( author );
   SDL_FreeSurface( options );
   SDL_FreeSurface( selector );
+
+  GL_FreeLayer(selectorBackground);
 
   char * rom_base = roms[romSelected]->d_name;
   char * rom_full_path = (char *)malloc( strlen( ROM_PATH ) + strlen( rom_base ) + 2 );

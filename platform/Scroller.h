@@ -22,6 +22,8 @@
 #include <list>
 #include <cassert>
 
+#include "GLUtil.h"
+
 class Scroller
 {
 public:
@@ -46,14 +48,13 @@ private:
   Uint32 last_update; // Time of last update
   float vel;          // Scroll velocity
 
-  // Cache of rendered text titles;
-  typedef struct {
-    int index;
-    SDL_Surface * surface;
-  } text_cache_element;
-  typedef std::list<text_cache_element> text_cache_t;
-  static const int CACHE_SIZE;
-  static text_cache_t text_cache;
+  // For now, render the entire scroller to a single GL layer (texture).
+  // And just adjust the texture offset used for rendering.
+  // Biggest concern is that for large # of roms, this might
+  // be entirely impractical.
+  // Will evaluate that as-needed.
+  GLLayer full_scroll;
+  float coords[8];
 
   // Event state
   bool e_tap;
@@ -73,8 +74,7 @@ private:
       vel(0.0f)
     { init(); }
 
-    // Draw ourselves to the specified surface at the specified offsets.
-    void drawToSurface(SDL_Surface *s, int x, int y);
+    GLLayer getGLLayer();
 
     // Update ourselves based on elapsed time
     void update();
