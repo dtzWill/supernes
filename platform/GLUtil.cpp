@@ -403,36 +403,6 @@ void updateOrientation()
     //PDL_SetOrientation( notification_direction );
 }
 
-void drawSkin()
-{
-  // Use the program object
-  glUseProgram ( programObject );
-  checkError();
-
-  glVertexAttribPointer( positionLoc, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GLfloat), controller_coords );
-  checkError();
-  glVertexAttribPointer( texCoordLoc, 2, GL_FLOAT, GL_FALSE, 2*sizeof(GLfloat), texCoords );
-
-  checkError();
-
-  glEnableVertexAttribArray( positionLoc );
-  checkError();
-  glEnableVertexAttribArray( texCoordLoc );
-  checkError();
-
-  checkError();
-
-  //sampler texture unit to 0
-  glBindTexture(GL_TEXTURE_2D, controller_tex);
-  glUniform1i( samplerLoc, 0 );
-  checkError();
-
-  glDrawElements( GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, indices );
-  checkError();
-
-}
-
-
 void GL_RenderPix(u8 * pix,int w, int h)
 {
     // Update the texture dimensions/scaling depending on the rendered image size.
@@ -446,60 +416,44 @@ void GL_RenderPix(u8 * pix,int w, int h)
     glClear( GL_COLOR_BUFFER_BIT );
     checkError();
 
-    /*-----------------------------------------------------------------------------
-     *  Background Skin
-     *-----------------------------------------------------------------------------*/
-    if ( use_on_screen && skin && !skin->transparent)
-    {
-      drawSkin();
-    }
+    GLLayer skinLayer, frameLayer;
 
-    /*-----------------------------------------------------------------------------
-     *  Draw the frame of the snes
-     *-----------------------------------------------------------------------------*/
+    skinLayer.texture = controller_tex;
+    skinLayer.vertexCoords = controller_coords;
+    skinLayer.textureCoords = texCoords;
 
-    // Use the program object
-    glUseProgram ( programObject );
-    checkError();
+    frameLayer.texture = texture;
+    frameLayer.vertexCoords = vertexCoords;
+    frameLayer.textureCoords = texCoords;
 
-    glVertexAttribPointer( positionLoc, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GLfloat), vertexCoords );
-    checkError();
-    glVertexAttribPointer( texCoordLoc, 2, GL_FLOAT, GL_FALSE, 2*sizeof(GLfloat), texCoords );
-
-    checkError();
-
-    glEnableVertexAttribArray( positionLoc );
-    checkError();
-    glEnableVertexAttribArray( texCoordLoc );
-    checkError();
-
+    // Upload updated frame (pix) to the texture
     glBindTexture(GL_TEXTURE_2D, texture);
     glTexSubImage2D( GL_TEXTURE_2D,0,
             0,0, srcWidth,srcHeight,
             GL_RGB,GL_UNSIGNED_SHORT_5_6_5,pix);
 
-    checkError();
+    GLLayer layers[2];
+    int layerCount = 0;
 
-    //sampler texture unit to 0
-    glUniform1i( samplerLoc, 0 );
-    checkError();
-
-    glDrawElements( GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, indices );
-    checkError();
-
-    /*-----------------------------------------------------------------------------
-     *  Skin Overlay
-     *-----------------------------------------------------------------------------*/
-    if ( use_on_screen && skin && skin->transparent)
+    if (use_on_screen)
     {
-      drawSkin();
+      if (!skin->transparent)
+      {
+        layers[0] = skinLayer;
+        layers[1] = frameLayer;
+      } else
+      {
+        layers[0] = frameLayer;
+        layers[1] = skinLayer;
+      }
+      layerCount = 2;
+    } else
+    {
+      layers[0] = frameLayer;
+      layerCount = 1;
     }
 
-
-    //Push to screen
-    SDL_GL_SwapBuffers();
-    checkError();
-
+    drawLayers(layers, layerCount);
 }
 
 void SDL_DrawSurfaceAsGLTexture( SDL_Surface * s, float * coords )
@@ -591,4 +545,47 @@ int GL_GetNativeWidth()
 int GL_GetNativeHeight()
 {
   return destHeight;
+}
+
+void drawLayer(GLLayer * layer)
+{
+  // Use the program object
+  glUseProgram ( programObject );
+  checkError();
+
+  glVertexAttribPointer( positionLoc, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GLfloat),
+      layer->vertexCoords );
+  checkError();
+  glVertexAttribPointer( texCoordLoc, 2, GL_FLOAT, GL_FALSE, 2*sizeof(GLfloat),
+      layer->textureCoords );
+
+  checkError();
+
+  glEnableVertexAttribArray( positionLoc );
+  checkError();
+  glEnableVertexAttribArray( texCoordLoc );
+  checkError();
+
+  glBindTexture(GL_TEXTURE_2D, layer->texture);
+  checkError();
+
+  //sampler texture unit to 0
+  glUniform1i( samplerLoc, 0 );
+  checkError();
+
+  glDrawElements( GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, indices );
+  checkError();
+}
+
+void drawLayers(GLLayer *layers, unsigned count)
+{
+  glClear( GL_COLOR_BUFFER_BIT );
+  checkError();
+
+  for(unsigned i = 0; i < count; ++i)
+    drawLayer(&layers[i]);
+
+  //Push to screen
+  SDL_GL_SwapBuffers();
+  checkError();
 }

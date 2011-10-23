@@ -54,6 +54,16 @@ extern void GL_RenderPix(u8 * pix,int w, int h);
 extern int GL_GetNativeWidth();
 extern int GL_GetNativeHeight();
 
+// Some-what generalized layered texture rendering
+typedef struct
+{
+  GLuint texture;
+  float * vertexCoords;
+  float * textureCoords;
+} GLLayer;
+
+extern void drawLayers(GLLayer *layers, unsigned count);
+
 enum orientation
 {
     ORIENTATION_PORTRAIT,    // default mode, portrait
