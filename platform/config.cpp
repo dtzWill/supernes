@@ -196,9 +196,9 @@ static void loadDefaults()
   Config.joypad1Enabled = true;
   Config.joypad2Enabled = false;
 
-	Settings.SoundPlaybackRate = 22050;
+	Settings.SoundPlaybackRate = 44100;
 	Settings.Stereo = TRUE;
-	Settings.SoundBufferSize = 512; // in samples
+	Settings.SoundBufferSize = 2048; // in samples
 	Settings.CyclesPercentage = 100;
 	Settings.APUEnabled = FALSE;		// We'll enable it later
 	Settings.H_Max = SNES_CYCLES_PER_SCANLINE;
