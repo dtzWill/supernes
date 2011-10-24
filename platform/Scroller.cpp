@@ -77,7 +77,7 @@ void Scroller::init()
   update();
 }
 
-GLLayer Scroller::getGLLayer(int x, int y)
+void Scroller::draw(int x, int y)
 {
   // Update texture coordinates to reflect
   // current scroll status:
@@ -135,7 +135,9 @@ GLLayer Scroller::getGLLayer(int x, int y)
 
   }
 
-  return full_scroll;
+  GLLayer layers[1] = {full_scroll};
+
+  GL_DrawLayers(layers, 1, false);
 }
 
 // TODO: Keeping code around for now, REMOVE

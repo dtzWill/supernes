@@ -453,7 +453,7 @@ void GL_RenderPix(u8 * pix,int w, int h)
       layerCount = 1;
     }
 
-    GL_DrawLayers(layers, layerCount);
+    GL_DrawLayers(layers, layerCount, true);
 }
 
 void SDL_DrawSurfaceAsGLTexture( SDL_Surface * s, float * coords )
@@ -578,17 +578,21 @@ void drawLayer(GLLayer * layer)
   checkError();
 }
 
-void GL_DrawLayers(GLLayer *layers, unsigned count)
+void GL_DrawLayers(GLLayer *layers, unsigned count, bool flush)
 {
-  glClear( GL_COLOR_BUFFER_BIT );
-  checkError();
+  //TODO: Not doing this might cause issues!
+  //glClear( GL_COLOR_BUFFER_BIT );
+  //checkError();
 
   for(unsigned i = 0; i < count; ++i)
     drawLayer(&layers[i]);
 
   //Push to screen
-  SDL_GL_SwapBuffers();
-  checkError();
+  if (flush)
+  {
+    SDL_GL_SwapBuffers();
+    checkError();
+  }
 }
 
 GLLayer GL_SurfaceToTexture( SDL_Surface * s, float * coords )

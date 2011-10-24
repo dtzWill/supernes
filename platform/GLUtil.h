@@ -62,7 +62,7 @@ typedef struct
   float * textureCoords;
 } GLLayer;
 
-extern void GL_DrawLayers(GLLayer *layers, unsigned count);
+extern void GL_DrawLayers(GLLayer *layers, unsigned count, bool flush);
 
 extern GLLayer GL_SurfaceToTexture( SDL_Surface * s, float * coords );
 extern void GL_FreeLayer(GLLayer layer);

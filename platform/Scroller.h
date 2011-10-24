@@ -75,7 +75,8 @@ private:
       vel(0.0f)
     { init(); }
 
-    GLLayer getGLLayer(int x, int y);
+    // Render! Does not flush
+    void draw(int x, int y);
 
     // Update ourselves based on elapsed time
     void update();
