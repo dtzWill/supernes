@@ -87,10 +87,10 @@ GLLayer Scroller::getGLLayer(int x, int y)
     float total_height = count * text_height;
 
     float width = 1.0f; // full texture
-    float height = 1.0f / total_height * RI.height; // amount on screen
 
-    float y_offset = offset - height;
-    if (y_offset < 0.0f) y_offset = 0.0f;
+    float height = ((float)RI.height) / total_height;
+
+    float y_offset = offset * (1.0f - height);
 
     // UL
     texCoords[0] = 0.0f;
@@ -388,53 +388,6 @@ Scroller::~Scroller()
 {
   GL_FreeLayer(full_scroll);
 }
-
-#if 0
-SDL_Surface * Scroller::cacheLookup( int index )
-{
-  // First, check cache.
-  // If we already have a surface, use that and update it in the 'LRU' policy.
-
-  text_cache_t::iterator I = text_cache.begin(),
-    E = text_cache.end();
-  for ( ; I != E; ++I )
-  {
-    if ( I->index == index )
-    {
-      // Found it!
-      text_cache_element result = *I;
-
-      // Move it to the front...
-      text_cache.erase(I);
-      text_cache.push_front(result);
-
-      return result.surface;
-    }
-  }
-
-  // Okay, so it's not in the cache.
-  // Create the surface requested:
-  text_cache_element e;
-  e.index = index;
-  e.surface = TTF_RenderText_Blended( RI.textFont, names[index], RI.textColor );
-
-  // Add to front
-  text_cache.push_front(e);
-
-  // Is the cache too large as a result of adding this element?
-  if ( text_cache.size() > CACHE_SIZE )
-  {
-    text_cache_element remove = text_cache.back();
-    text_cache.pop_back();
-
-    // Free memory for this item
-    SDL_FreeSurface(remove.surface);
-  }
-
-  // Return the surface we created!
-  return e.surface;
-}
-#endif
 
 #if 0
     case SDL_KEYDOWN:
