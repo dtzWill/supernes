@@ -54,7 +54,8 @@ private:
   // be entirely impractical.
   // Will evaluate that as-needed.
   GLLayer full_scroll;
-  float coords[8];
+  float vertexCoords[8];
+  float texCoords[8];
 
   // Event state
   bool e_tap;
@@ -74,7 +75,7 @@ private:
       vel(0.0f)
     { init(); }
 
-    GLLayer getGLLayer();
+    GLLayer getGLLayer(int x, int y);
 
     // Update ourselves based on elapsed time
     void update();

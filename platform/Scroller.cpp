@@ -19,6 +19,8 @@
 #include "ApplySurface.h"
 #include "RegionTimer.h"
 
+#include <snes9x.h>
+
 // If finger moves less than this, it's still considered a tap
 static const int TAP_TOLERANCE = 15;
 
@@ -47,7 +49,7 @@ void Scroller::init()
 
   SDL_Surface * scroll =
     SDL_CreateRGBSurface(SDL_SWSURFACE, RI.width, total_height,
-        32, 0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000);
+        24, 0x0000ff, 0x00ff00, 0xff0000, 0);
   assert(scroll);
 
   unsigned i = 0;
@@ -68,11 +70,71 @@ void Scroller::init()
 
   // For now, pretend these coords are right.
   // They are not, as they're fullscreen.
-  full_scroll = GL_SurfaceToTexture(scroll, portrait_vertexCoords);
+  full_scroll = GL_SurfaceToTexture(scroll, vertexCoords);
+
+  full_scroll.textureCoords = texCoords;
+
+  update();
 }
 
-GLLayer Scroller::getGLLayer()
+GLLayer Scroller::getGLLayer(int x, int y)
 {
+  // Update texture coordinates to reflect
+  // current scroll status:
+  // texCoords:
+  // (UL), (UR), (LL), (LR)
+  {
+    float total_height = count * text_height;
+
+    float width = 1.0f; // full texture
+    float height = 1.0f / total_height * RI.height; // amount on screen
+
+    float y_offset = offset - height;
+    if (y_offset < 0.0f) y_offset = 0.0f;
+
+    // UL
+    texCoords[0] = 0.0f;
+    texCoords[1] = y_offset;
+    // LL
+    texCoords[2] = 0.0f;
+    texCoords[3] = y_offset + height;
+    // UR
+    texCoords[4] = width;
+    texCoords[5] = y_offset;
+    // LR
+    texCoords[6] = width;
+    texCoords[7] = y_offset + height;
+  }
+
+  // Update our vertex coordinates.  This should really be done by GLUtil...
+  // And done only once...
+  {
+    x = NATIVE_RES_WIDTH - (RI.width + x); // measured from wrong side
+    float scaled_x = ((float)x)/NATIVE_RES_WIDTH;
+    float scaled_y = ((float)y)/NATIVE_RES_HEIGHT;
+
+    float scaled_width = ((float)RI.width)/NATIVE_RES_WIDTH;
+    float scaled_height = ((float)RI.height)/NATIVE_RES_HEIGHT;
+
+    memcpy(vertexCoords, portrait_vertexCoords, sizeof(vertexCoords));
+
+    for (unsigned i = 0; i < 4; ++i)
+    {
+      vertexCoords[2*i] *= scaled_width;
+      vertexCoords[2*i+1] *= scaled_height;
+    }
+
+    float x_offset = (1.0 - scaled_width) - scaled_x * 2;
+    float y_offset = (1.0 - scaled_height) - scaled_y * 2;
+
+    for (unsigned i = 0; i < 4; ++i)
+    {
+      vertexCoords[2*i] += x_offset;
+      vertexCoords[2*i+1] += y_offset;
+    }
+
+  }
+
   return full_scroll;
 }
 
@@ -177,8 +239,6 @@ void Scroller::update()
       if (vel > 0.0f) vel = 0.0f;
     }
   }
-
-  // Update the GLLayer's offset
 
 }
 

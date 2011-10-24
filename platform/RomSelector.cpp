@@ -217,9 +217,8 @@ char * romSelector()
     // Process the update
     scroll->update();
 
-
     // Update the screen
-    GLLayer scrollerLayer = scroll->getGLLayer();
+    GLLayer scrollerLayer = scroll->getGLLayer(20, top);
     GLLayer layers[2] = { selectorBackground, scrollerLayer };
     GL_DrawLayers(layers, 2);
   }
