@@ -499,6 +499,7 @@ void SDL_DrawSurfaceAsGLTexture( SDL_Surface * s, float * coords )
     w = s->w; h = s->h;
   }
 
+  glBindTexture( GL_TEXTURE_2D, surface_tex );
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, s->w, s->h, 0, GL_RGB,
       GL_UNSIGNED_BYTE, s->pixels );
   checkError();
