@@ -89,6 +89,9 @@ void Scroller::draw(int x, int y)
   float y_offset = 0.0f;
   if (total_height > RI.height)
     y_offset = offset * (total_height - (float)RI.height);
+  
+  glEnable(GL_SCISSOR_TEST);
+  glScissor(x, y, RI.width, RI.height);
 
   // Set vertex coordinates to reflect our current scroll.
   x = NATIVE_RES_WIDTH - (RI.width + x); // measured from wrong side
@@ -127,6 +130,8 @@ void Scroller::draw(int x, int y)
       GL_DrawLayers(&scroll_tex[i], 1, false);
     }
   }
+
+  glDisable(GL_SCISSOR_TEST);
 }
 
 // TODO: Keeping code around for now, REMOVE
