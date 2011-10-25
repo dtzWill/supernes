@@ -24,12 +24,12 @@
 // If finger moves less than this, it's still considered a tap
 static const int TAP_TOLERANCE = 15;
 
-static const int POINT_HISTORY_SIZE = 10;
+static const int POINT_HISTORY_SIZE = 2;
 
-static const float MIN_VEL = 0.5f;
-static const float MAX_VEL = 3.0f;
+static const float MIN_VEL = 0.1f / 1000.0f;
+static const float MAX_VEL = 100.0f / 1000.0f; //100 items per second
 
-static const float SCROLL_ACCEL = 1.0f;
+static const float SCROLL_ACCEL = 1.0f / 1000.0f;
 
 static const int ITEMS_PER_TEXTURE = 4;
 
@@ -228,10 +228,10 @@ void Scroller::update()
   } else {
     // Update velocity
     if (vel > 0.0f) {
-      vel -= SCROLL_ACCEL * dt * adjust;
+      vel -= SCROLL_ACCEL * dt * dt * adjust;
       if (vel < 0.0f) vel = 0.0f;
     } else {
-      vel += SCROLL_ACCEL * dt * adjust;
+      vel += SCROLL_ACCEL * dt * dt * adjust;
       if (vel > 0.0f) vel = 0.0f;
     }
   }
@@ -311,7 +311,7 @@ int Scroller::event(SDL_Event *e, int x_offset, int y_offset)
         float dy = e->button.y - p.y;
         float dt = time - p.time;
 
-        vel = -dy/dt;
+        vel = -dy/dt/10;
 
         if (vel > MAX_VEL) vel = MAX_VEL;
         if (vel < -MAX_VEL) vel = -MAX_VEL;
