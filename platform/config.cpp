@@ -198,7 +198,7 @@ static void loadDefaults()
 
 	Settings.SoundPlaybackRate = 32000;
 	Settings.Stereo = TRUE;
-	Settings.SoundBufferSize = 128; // in samples
+	Settings.SoundBufferSize = 256; // in samples
   Settings.InterpolatedSound = true;
 	Settings.CyclesPercentage = 100;
 	Settings.APUEnabled = FALSE;		// We'll enable it later
