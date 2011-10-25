@@ -31,6 +31,8 @@ static const float MAX_VEL = 3.0f;
 
 static const float SCROLL_ACCEL = 1.0f;
 
+static const int ITEMS_PER_TEXTURE = 4;
+
 #define min(a,b) (((a) < (b)) ? (a) : (b))
 
 void Scroller::init()
@@ -44,100 +46,86 @@ void Scroller::init()
   text_height = current->h + 10;
   SDL_FreeSurface(current);
 
-  // Render all the items into a giant texture. weeeeeeeee
-  int total_height = count * text_height;
+  // Render every few items into a texture
+  tex_count = (count + ITEMS_PER_TEXTURE -1) / ITEMS_PER_TEXTURE;
 
+  scroll_tex = (GLLayer*)malloc(tex_count*sizeof(GLLayer));
+  vertexCoords = (float*)malloc(tex_count*8*sizeof(float));
+
+  // Scratch surface for staging fonts to
+  int tex_height = ITEMS_PER_TEXTURE * text_height;
   SDL_Surface * scroll =
-    SDL_CreateRGBSurface(SDL_SWSURFACE, RI.width, total_height,
+    SDL_CreateRGBSurface(SDL_SWSURFACE, RI.width, tex_height,
         24, 0x0000ff, 0x00ff00, 0xff0000, 0);
   assert(scroll);
-
-  unsigned i = 0;
-
-  // Make it all black.
-  int black = SDL_MapRGB(scroll->format, 0, 0, 0);
-  SDL_FillRect(scroll, NULL, black);
-
-  // Render each internal item
-  for(unsigned i = 0; i < count; ++i)
+  for(unsigned i = 0; i < tex_count; ++i)
   {
-    SDL_Surface * current =
-      TTF_RenderText_Blended(RI.textFont, names[i], RI.textColor);
-    apply_surface(5, i*text_height, RI.width - 10,
-        current, scroll);
-    SDL_FreeSurface(current);
+    // Make it all black.
+    int black = SDL_MapRGB(scroll->format, 0, 0, 0);
+    SDL_FillRect(scroll, NULL, black);
+
+    // Render each internal item
+    unsigned base = ITEMS_PER_TEXTURE * i;
+    for(unsigned j = 0; (j < ITEMS_PER_TEXTURE) && (base + j < count); ++j)
+    {
+      SDL_Color black = {0, 0, 0};
+      SDL_Surface * current =
+        TTF_RenderText_Shaded(RI.textFont, names[base + j], RI.textColor, black);
+      apply_surface(5, j*text_height, RI.width - 10,
+          current, scroll);
+      SDL_FreeSurface(current);
+    }
+
+    scroll_tex[i] = GL_SurfaceToTexture(scroll, &vertexCoords[i*8]);
   }
+  SDL_FreeSurface(scroll);
 
-  // For now, pretend these coords are right.
-  // They are not, as they're fullscreen.
-  full_scroll = GL_SurfaceToTexture(scroll, vertexCoords);
-
-  full_scroll.textureCoords = texCoords;
-
+  fprintf(stderr, "Survived scrolled texture initialization!");
   update();
 }
 
 void Scroller::draw(int x, int y)
 {
-  // Update texture coordinates to reflect
-  // current scroll status:
-  // texCoords:
-  // (UL), (UR), (LL), (LR)
+  float total_height = count * text_height;
+  float y_offset = 0.0f;
+  if (total_height > RI.height)
+    y_offset = offset * (total_height - (float)RI.height);
+
+  // Set vertex coordinates to reflect our current scroll.
+  x = NATIVE_RES_WIDTH - (RI.width + x); // measured from wrong side
+  for(unsigned i = 0; i < tex_count; ++i)
   {
-    float total_height = count * text_height;
+    float * vCoords = scroll_tex[i].vertexCoords;
+    float tex_height = ITEMS_PER_TEXTURE*text_height;
+    float offset = -y_offset + i*tex_height;
+    {
+      float scaled_x = ((float)x)/NATIVE_RES_WIDTH;
+      float scaled_y = (offset+ (float)y)/NATIVE_RES_HEIGHT;
 
-    float width = 1.0f; // full texture
+      float scaled_width = ((float)RI.width)/NATIVE_RES_WIDTH;
+      float scaled_height = ((float)tex_height)/NATIVE_RES_HEIGHT;
 
-    float height = ((float)RI.height) / total_height;
+      memcpy(vCoords, portrait_vertexCoords, 8*sizeof(float));
 
-    float y_offset = offset * (1.0f - height);
+      for (unsigned i = 0; i < 4; ++i)
+      {
+        vCoords[2*i] *= scaled_width;
+        vCoords[2*i+1] *= scaled_height;
+      }
 
-    // UL
-    texCoords[0] = 0.0f;
-    texCoords[1] = y_offset;
-    // LL
-    texCoords[2] = 0.0f;
-    texCoords[3] = y_offset + height;
-    // UR
-    texCoords[4] = width;
-    texCoords[5] = y_offset;
-    // LR
-    texCoords[6] = width;
-    texCoords[7] = y_offset + height;
+      float x_offset = (1.0 - scaled_width) - scaled_x * 2;
+      float y_offset = (1.0 - scaled_height) - scaled_y * 2;
+
+      for (unsigned i = 0; i < 4; ++i)
+      {
+        vCoords[2*i] += x_offset;
+        vCoords[2*i+1] += y_offset;
+      }
+
+    }
   }
 
-  // Update our vertex coordinates.  This should really be done by GLUtil...
-  // And done only once...
-  {
-    x = NATIVE_RES_WIDTH - (RI.width + x); // measured from wrong side
-    float scaled_x = ((float)x)/NATIVE_RES_WIDTH;
-    float scaled_y = ((float)y)/NATIVE_RES_HEIGHT;
-
-    float scaled_width = ((float)RI.width)/NATIVE_RES_WIDTH;
-    float scaled_height = ((float)RI.height)/NATIVE_RES_HEIGHT;
-
-    memcpy(vertexCoords, portrait_vertexCoords, sizeof(vertexCoords));
-
-    for (unsigned i = 0; i < 4; ++i)
-    {
-      vertexCoords[2*i] *= scaled_width;
-      vertexCoords[2*i+1] *= scaled_height;
-    }
-
-    float x_offset = (1.0 - scaled_width) - scaled_x * 2;
-    float y_offset = (1.0 - scaled_height) - scaled_y * 2;
-
-    for (unsigned i = 0; i < 4; ++i)
-    {
-      vertexCoords[2*i] += x_offset;
-      vertexCoords[2*i+1] += y_offset;
-    }
-
-  }
-
-  GLLayer layers[1] = {full_scroll};
-
-  GL_DrawLayers(layers, 1, false);
+  GL_DrawLayers(scroll_tex,tex_count, false);
 }
 
 // TODO: Keeping code around for now, REMOVE
@@ -388,7 +376,13 @@ void Scroller::recordPtEvent(int x, int y)
 
 Scroller::~Scroller()
 {
-  GL_FreeLayer(full_scroll);
+  free(vertexCoords);
+
+  for(unsigned i = 0; i < tex_count; ++i)
+  {
+    GL_FreeLayer(scroll_tex[i]);
+  }
+  free(scroll_tex);
 }
 
 #if 0

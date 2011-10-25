@@ -48,14 +48,10 @@ private:
   Uint32 last_update; // Time of last update
   float vel;          // Scroll velocity
 
-  // For now, render the entire scroller to a single GL layer (texture).
-  // And just adjust the texture offset used for rendering.
-  // Biggest concern is that for large # of roms, this might
-  // be entirely impractical.
-  // Will evaluate that as-needed.
-  GLLayer full_scroll;
-  float vertexCoords[8];
-  float texCoords[8];
+  // Array of the underlying textures used in the scroller
+  int tex_count;
+  GLLayer *scroll_tex;
+  float * vertexCoords;
 
   // Event state
   bool e_tap;
@@ -87,7 +83,6 @@ private:
 
     ~Scroller();
   private:
-    SDL_Surface * cacheLookup( int index );
     void init();
     void recordPtEvent(int x, int y);
 
