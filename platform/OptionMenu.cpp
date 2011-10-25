@@ -418,6 +418,16 @@ eMenuResponse optionsMenu()
   return menuResponse;
 }
 
+static int base_height(size_t options_count)
+{
+  return
+    (
+     NATIVE_RES_HEIGHT
+     - options_count * OPTION_SPACING
+     + OPTION_SPACING - OPTION_SIZE
+    ) / 2;
+}
+
 void initializeMenu()
 {
   menu_font = TTF_OpenFont( FONT, 18 );
@@ -431,7 +441,7 @@ void initializeMenu()
 
   //Top-level menu
   int x = 0;
-  int base = ( NATIVE_RES_HEIGHT - TOP_LEVEL_COUNT * OPTION_SPACING ) / 2;
+  int base = base_height(TOP_LEVEL_COUNT);
   topMenu = (menuOption*)malloc( TOP_LEVEL_COUNT*sizeof(menuOption));
   if (Config.running)
     topMenu[x++] = createButton( "Save states",           changeToSaveState,    base+x*OPTION_SPACING );
@@ -454,7 +464,7 @@ void initializeMenu()
   
   //Options menu
   x = 0;
-  base = ( NATIVE_RES_HEIGHT - OPTIONS_COUNT * OPTION_SPACING ) / 2;
+  base = base_height(OPTIONS_COUNT);
   optionMenu = (menuOption*)malloc(OPTIONS_COUNT*sizeof(menuOption));
   optionMenu[x++] = createToggle( "Orientation",   "Port",   "Land",  base+x*OPTION_SPACING,
       menuSetOrientation, menuGetOrientation );
@@ -474,7 +484,7 @@ void initializeMenu()
   
   //Skin menu
   x = 0;
-  base = (NATIVE_RES_HEIGHT - (OPTION_SPACING*3 + SKIN_SPACING))/2;
+  base = base_height(3) - SKIN_SPACING/2;
   skinMenu = (menuOption*)malloc(3*sizeof(menuOption));
   skinMenu[x++] = createToggle( "Display skin",   "On",     "Off",   base+x*OPTION_SPACING,
       menuSetOnscreen, menuGetOnscreen );
@@ -483,17 +493,19 @@ void initializeMenu()
 
   //Help menu
   x = 0;
+  base = base_height(5);
   helpMenu = (menuOption*)malloc(5*sizeof(menuOption));
-  helpMenu[x++] = createButton( "Getting Started", changeToHelpROMsState,     100+x*OPTION_SPACING);
-  helpMenu[x++] = createButton( "Controls",        changeToHelpControlsState, 100+x*OPTION_SPACING);
-  helpMenu[x++] = createButton( "Settings",        changeToHelpSettingsState, 100+x*OPTION_SPACING);
-  helpMenu[x++] = createButton( "Wiki",            changeToHelpWikiState,     100+x*OPTION_SPACING);
-  helpMenu[x++] = createButton( "Return",          changeToMainState,         100+x*OPTION_SPACING );
+  helpMenu[x++] = createButton( "Getting Started", changeToHelpROMsState,     base+x*OPTION_SPACING);
+  helpMenu[x++] = createButton( "Controls",        changeToHelpControlsState, base+x*OPTION_SPACING);
+  helpMenu[x++] = createButton( "Settings",        changeToHelpSettingsState, base+x*OPTION_SPACING);
+  helpMenu[x++] = createButton( "Wiki",            changeToHelpWikiState,     base+x*OPTION_SPACING);
+  helpMenu[x++] = createButton( "Return",          changeToMainState,         base+x*OPTION_SPACING );
 
   //Confirmation menu
+  base = base_height(2);
   confirmMenu = (menuOption*)malloc(2*sizeof(menuOption));
-  confirmMenu[0] = createButton( "Yes, reset game!", resetGame, 200);
-  confirmMenu[1] = createButton( "No, don't reset!", changeToMainState, 200+OPTION_SPACING );
+  confirmMenu[0] = createButton( "Yes, reset game!", resetGame, base);
+  confirmMenu[1] = createButton( "No, don't reset!", changeToMainState, base+OPTION_SPACING );
 }
 
 void freeMenu( menuOption ** opt, int numOptions )
