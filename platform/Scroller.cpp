@@ -80,7 +80,6 @@ void Scroller::init()
   }
   SDL_FreeSurface(scroll);
 
-  fprintf(stderr, "Survived scrolled texture initialization!");
   update();
 }
 
@@ -98,6 +97,9 @@ void Scroller::draw(int x, int y)
     float * vCoords = scroll_tex[i].vertexCoords;
     float tex_height = ITEMS_PER_TEXTURE*text_height;
     float offset = -y_offset + i*tex_height;
+
+    // If this in viewing 'range'
+    if (offset + tex_height > 0 && offset < RI.height)
     {
       float scaled_x = ((float)x)/NATIVE_RES_WIDTH;
       float scaled_y = (offset+ (float)y)/NATIVE_RES_HEIGHT;
@@ -107,25 +109,24 @@ void Scroller::draw(int x, int y)
 
       memcpy(vCoords, portrait_vertexCoords, 8*sizeof(float));
 
-      for (unsigned i = 0; i < 4; ++i)
+      for (unsigned j = 0; j < 4; ++j)
       {
-        vCoords[2*i] *= scaled_width;
-        vCoords[2*i+1] *= scaled_height;
+        vCoords[2*j] *= scaled_width;
+        vCoords[2*j+1] *= scaled_height;
       }
 
       float x_offset = (1.0 - scaled_width) - scaled_x * 2;
       float y_offset = (1.0 - scaled_height) - scaled_y * 2;
 
-      for (unsigned i = 0; i < 4; ++i)
+      for (unsigned j = 0; j < 4; ++j)
       {
-        vCoords[2*i] += x_offset;
-        vCoords[2*i+1] += y_offset;
+        vCoords[2*j] += x_offset;
+        vCoords[2*j+1] += y_offset;
       }
 
+      GL_DrawLayers(&scroll_tex[i], 1, false);
     }
   }
-
-  GL_DrawLayers(scroll_tex,tex_count, false);
 }
 
 // TODO: Keeping code around for now, REMOVE
